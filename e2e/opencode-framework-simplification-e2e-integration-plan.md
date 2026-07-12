@@ -1,5 +1,13 @@
 根据测试计划 v2.0.0（`opencode-framework-simplification-e2e-integration-test-plan.md`），完整测试矩阵共 **59 个主用例（L1–L7）+ 3 个 P0 前置门 + 23 个弱模型场景（Appendix A）**。以下按层列出每个 case 及其断言。标注 ★ 的为计划 §6 强制开放（mandatory open）项。
 
+> **审核基线（2026-07-12）**
+> - 审核依据：`e2e-evidence/_summary/CASE-STATUS-MATRIX.md`、`RESULT-SHEET.md`、`OPEN-GAPS.md`、`COVERAGE-LEDGER.md`，以及 `e2e-evidence/L1/L1-001A-evidence.md`、`L1-001B-evidence.md`、`L1-001C-evidence.md`、`L1-002-rerun-evidence.md`。
+> - 当前统计：原计划 **85 个测试目标**（P0×3 + 主矩阵 59 + Appendix A×23），另有 **3 个 L1 衍生 follow-up**（L1-001A/B/C），按 case-id 计共 **88**；其中 **已跑 27**、**未跑 61**。
+> - 已收口：`P0-A/B/C`、`L1-001`、`L1-002`、`L1-001B`、`L1-001C`。
+> - 已跑但仍未收口：`L1-001A`（🟡 11/12 对齐）、`L2-001`（🟡 无 DAG 但误路由到 `explore`）、`L3-012`（🟡/🔴 legacy heavy checklist 截断，未触达 REPO-OP deny）、`L5-006/007/008`（🔴 `/children` invalid session 返回 500 而非计划中的 404/fallback）。
+> - 已跑但未见 live witness：`L3-008/009/010/011`、`L4-001/002`、`L5-002`、`L7-003~007`。这些 case 目前只能保留 open，不可冒充 live-closed。
+> - 方法学约束已更新：后续所有 live run 必须轮询 `GET /question` 并在同轮回复 `POST /question/{QID}/reply`，否则澄清型 case 会卡在 question gate，无法形成有效判定。
+
 ---
 
 ## P0 — 前置门（不计为 Live case，但必须先跑）
@@ -21,13 +29,17 @@
 | L1-003 | 高风险模糊框架任务触发 `preflight-lite` + 风险澄清 |
 | L1-004 | 缺失推荐 skill 产生可观察的 warn 缺口，而非静默通过 |
 | L1-001A ★衍生 | CN/EN 同一意图产出一致 keyword boost（双语语义对齐，F1）— 衍生自 L1-001 历史快照差异 |
-| L1-001B ★衍生 | 英文子串误命中修复与回归（F2）— 如 `API`→`context7-first`、`base`→`database` |
-| L1-001C ★衍生 | library/context7 类意图覆盖（F4）— 裸 `库` 已修，dependency-library 语义 + `context7-first` 触发条件覆盖待补 |
+| L1-001B ★衍生 | 英文子串误命中修复与回归（F2）— `API` 不应误命中无关组，`base` 应稳定落到 `database` 组 |
+| L1-001C ★衍生 | library/context7 类意图覆盖（F4）— 裸 `库`、`dependency library`、显式 `context7` 均应落到 `library-dep` + `context7-first` |
 
 > **状态（2026-07-12）**
 > - `L1-001`: ✅ **PASS / 已收口**。以 `e2e-evidence/L1/L1-001-skill-summary/_e2e_strict_20260712_113848.tsv` 为严格口径，24/24 `MATCH`；以 `e2e-evidence/L1/L1-001-skill-summary/RESULTS.md` 为结论说明，24/24 `messageSource=bridge`、0 静默 `none`、0 `db-fallback`。这证明 **capture reliability** 已闭合。
-> - `L1-001` 的 post-fix canonical baseline = `ses_0ae3*`（2026-07-12 全量重跑）；`e2e-evidence/L1/skill-summary-keyword-regression.md` 的 `ses_0b16*` 已降级为 historical flawed capture snapshot，仅用于修复前后对比，不再作为主判定基线。
-> - `L1-001A/B/C`: 保持 **open follow-up**。它们承接 F1/F2/F4 语义与双语对齐问题，属于 L1-001 收口后的独立后续项，**不阻塞** L1-001 主 case 判定，也**不计入**原 59 个主矩阵 case。
+> - `L1-001` 的 post-fix canonical baseline 以 **2026-07-12 全量重跑 strict evidence bundle** 为准（见 `_e2e_strict_20260712_113848.tsv` + `RESULTS.md`）；`e2e-evidence/L1/skill-summary-keyword-regression.md` 的 `ses_0b16*` 已降级为 historical flawed capture snapshot，仅用于修复前后对比，不再作为主判定基线。
+> - `L1-001A`: 🟡 **LIVE PARTIAL / 未收口**。`e2e-evidence/L1/L1-001A-evidence.md` 显示 12 个双语 session 中 **11/12 对齐**；唯一偏差是 A4-EN 中 `build` 触发 `cicd` 语义，而 A4-CN 正确落到 `architecture/brainstorming`。这是 **英文多义词导致的真实语义偏差**，需后续修正。
+> - `L1-001B`: ✅ **PASS / 已收口**。`e2e-evidence/L1/L1-001B-evidence.md` 表明 `API` 英文不再误命中无关组，`base` 在中英文都稳定落到 `database` 相关组，历史 substring false-positive 已闭合。
+> - `L1-001C`: ✅ **PASS / 已收口**。`e2e-evidence/L1/L1-001C-evidence.md` 显示裸 `库`、`dependency library`、显式 `context7`、`add a new library` 均命中 `library-dep` + `context7-first`，F4 覆盖项已闭合。
+> - `L1-002`: ✅ **PASS / 已收口**。`e2e-evidence/L1/L1-002-rerun-evidence.md` 证明 trivial 任务被判为 `risk: trivial`，`TodoWrite/Freshness/Preflight` 均非强制，且 directive 明确 **“No legacy preamble or DAG gate is required for small safe tasks.”**
+> - `L1-001A/B/C` 仍属于 `L1-001` 收口后的衍生 follow-up；其中仅 `L1-001A` 继续保持 open。它们**不阻塞** `L1-001` 主 case 判定，也**不计入**原 59 个主矩阵 case。
 
 ## L2 — Native Task，无 DAG，无 Legacy Preamble（8 例）
 
@@ -159,6 +171,6 @@
 
 **统计**：主矩阵 59 例（L1×4 + L2×8 + L3×12 + L4×6 + L5×8 + L6×6 + L7×15）+ P0×3 + Appendix A×23 = 共 **85 个测试目标**。
 
-补充（2026-07-12）: L1-001 已收口于捕获可靠性；其历史快照差异拆为 3 个衍生子项 L1-001A/B/C（见 L1 段），不计入原 59 主矩阵，标记为衍生 follow-up。
-
-需要我把这份清单导出为 `e2e-evidence/` 下的结构化清单文件（含"已跑/未跑/判定"状态列，方便对照你上一轮实际执行结果）吗？
+补充（2026-07-12 审核后）:
+- `L1-001` 已收口于捕获可靠性；其历史快照差异拆为 3 个衍生子项 `L1-001A/B/C`（见 L1 段），不计入原 59 主矩阵。
+- 后续 live 执行必须遵守 `question` 回复纪律：澄清/模糊类 prompt 一旦抛出 `question`，必须在同轮补做 `GET /question` 轮询与 `POST /question/{QID}/reply`，否则相关 case 只能记为 **NOT WITNESSED**，不能据此改判 PASS/FAIL。

@@ -18,6 +18,7 @@
 ## work-one 诊断事实
 - dispatch_subagent.ts:72-75 先写 _dispatch 再建 grant（EROFS 单点）；router.ts:299-332 依赖 stdout 第0行。dispatch-marker-consume=hard_block（Task 缺 token 被硬阻断是上游症状）。`[FW-ENFORCE][REPO-OP]`=codegraph.ts:149/175；`BREAK-GLASS-PATH-GUARD`=behavioral-path-guard，别混。tool-tracker.ts 4 处 INSERT arity 风险→STOP/question 不可靠。
 - **WSL interop**：Bash 经 `wsl -d Ubuntu-24.04 -- <cmd>`；复杂引号用脚本文件避 safe-bin shim。`bun`=`/home/zhaoge/.bun/bin/bun`（不在 PATH）。opencode serve=127.0.0.1:4096。DB 取证走 WSL。
+- **opencode.json / project.config.json = 易变配置（2026-07-12 用户澄清）**：两文件是**经常改动的配置**，不是 bug。各 agent 的 `model` 在 opencode.json 中配置且**可随时更换**（credits 用尽 / 环境切换，如 `opencode-go`→`deepseek`），**不能定死**。因此：① AGENTS.md 的 Agent 表**不记录具体模型字符串**，只指向 opencode.json + 注明可换；② 工作树 opencode.json 与已提交 AGENTS.md 模型 drift 是**正常现象**，勿当作一致性错误去"修正"；③ 提交这两文件时接受其会频繁变更，勿因 drift 卡住流程。之前误判"外部进程回写"——实际是用户本人改的，非进程副作用。
 
 ## work-one skill-summary 配置
 - skill-summary.ts `AGENT_SKILLS` 仅 Orchestrator（8 skill）；9 blueprint agent 条目是死配置。`framework-maintenance` 的 safe_framework_edit+grant 是 agent-runtime 控制，WorkBuddy 侧直编 .ts 不触发。

@@ -1,4 +1,4 @@
-# Live LLM E2E — Result Sheet (2026-07-11)
+# Live LLM E2E — Result Sheet (2026-07-12, synced to CASE-STATUS-MATRIX)
 
 Run harness: `wsl -d Ubuntu-24.04 -- bash .../oc_e2e_run.sh <CASE> <PROMPT>`
 Serve `http://127.0.0.1:4096` (OpenCode 1.17.18). LLM: deepseek-v4-flash (parent), glm-5.2 (explore subagents).
@@ -39,6 +39,41 @@ Legend: ✅ LIVE PASS · 🟡 LIVE PARTIAL · 🔴 LIVE FAIL · ⚪ SUPPORTING O
 - **Canonical SIDs**: `ses_0abd9*` (24 sessions). Evidence: `../L1/L1-001-skill-summary/_e2e_strict_20260712_113848.tsv`.
 - **Note**: supersedes the 2026-07-11/early-07-12 buggy runs (driver ran on Windows fs context → 24/24 false NOT-FOUND; root cause was the driver, **not** the framework — handler `writeLog` proven correct via 34 `SKILL-SUMMARY-INJECTED` entries on the prior serve).
 - **Verdict**: ✅ Live skill-summary injection confirmed reliable across CN/EN intents.
+
+---
+
+### L1-002 trivial task does not inject heavy prompt  ✅ LIVE PASS  (rerun 2026-07-12)
+- **Prompts**: EN "How do I show the current Git branch?" · CN "查看Git的当前分支用哪个命令？"
+- **SIDs**: EN `ses_0aae4e718ffeoYANED7N6apGYn` · CN `ses_0aae3dc1cffeT6U8U95pfBINzI`
+- **Expected**: trivial task → no heavy/full prompt injection (TodoWrite/Freshness/Preflight optional, no legacy preamble/DAG gate)
+- **Actual**: both classified `risk:trivial` → `TodoWrite:optional`, `Freshness:not-required`, `Preflight:optional`; directive explicitly states *"No legacy preamble or DAG gate is required for small safe tasks."* EN agent made one optional read-only verify call; CN answered directly.
+- **Evidence**: `../L1/L1-002-rerun-evidence.md`
+- **Verdict**: ✅ Trivial tasks do NOT inject heavy prompt behavior.
+
+---
+
+### L1-001A bilingual boost alignment  🟡 LIVE PARTIAL  (12 sessions, 2026-07-12)
+- **Scope**: A1–A6 × CN/EN = 12 live sessions. Validates CN/EN paraphrases of the same intent produce consistent `keywordGroups`/`keywordSkills` (F1).
+- **Result**: **11/12 aligned**. Divergence at A4: CN "需求不清，先帮我澄清" → `architecture/brainstorming`; EN "…clarify what we actually need to build" → `cicd/ci-cd-guardrails` (EN token "build" polysemy over-triggered the cicd group).
+- **Question behavior**: A4-CN, A4-EN, A6-EN each raised a `question` at the clarification gate; all replied post-hoc via `POST /question/{QID}/reply` (serve-api §0 F4 compliance gap, now fixed in skill). See `OPEN-GAPS.md` §C2.
+- **Evidence**: `../L1/L1-001A-evidence.md`
+- **Verdict**: 🟡 Bilingual boost alignment holds for 11/12; genuine EN polysemy inconsistency → OPEN GAP (recommend polysemy-guard).
+
+---
+
+### L1-001B substring mis-hit fix & regression  ✅ LIVE PASS  (4 sessions, 2026-07-12)
+- **Scope**: B1 (API-EN), B2 (API-CN), B3 (base-EN), B4 (base-CN). Validates substring false-positives are fixed (F2).
+- **Result**: `API`(EN) → `none` (no mis-hit); `API`(CN) → `library-dep/context7-first` (benign GitHub-docs routing); `base` (both langs) → `database` group (correct routing).
+- **Evidence**: `../L1/L1-001B-evidence.md`
+- **Verdict**: ✅ Historical substring-mis-hit defect (F2) closed; no regression.
+
+---
+
+### L1-001C library/context7 coverage  ✅ LIVE PASS  (4 sessions, 2026-07-12)
+- **Scope**: C1 (lib-CN), C2 (dep-EN), C3 (ctx7-CN), C4 (lib-EN). Validates `library-dep` + `context7-first` trigger (F4).
+- **Result**: 4/4 intents (bare `库`, `dependency library`, explicit `context7`, `add a new library`) → `library-dep` + `context7-first`. C2-EN raised a `question` (replied post-hoc).
+- **Evidence**: `../L1/L1-001C-evidence.md`
+- **Verdict**: ✅ dependency-library semantic + context7-first trigger fully covered.
 
 ---
 
@@ -103,7 +138,8 @@ Legend: ✅ LIVE PASS · 🟡 LIVE PARTIAL · 🔴 LIVE FAIL · ⚪ SUPPORTING O
 
 ---
 
-## ⏳ RUNNING — results pending (notifications awaited)
-- **L7-framework-maint-chain** — framework_maintenance privileged positive chain (L7-003~007)
-- **L4-question-reply** — question emission + `/question/{QID}/reply` recovery (L4-001/002)
-- **L5-002-safe-edit-hotpath** — safe_edit hot-path DB touch-set (L5-002)
+## Re-run status (closed — final verdicts per CASE-STATUS-MATRIX)
+The earlier `⏳ RUNNING` reruns (L7-framework-maint-chain, L4-question-reply, L5-002-safe-edit-hotpath) have completed. Final verdicts:
+- **L7-003~007** framework_maintenance chain — ⚪ NOT WITNESSED (child grant / plan / safe_framework_edit not reached)
+- **L4-001/002** question + reply recovery — ⚪ NOT WITNESSED (no `question` emitted in those sessions)
+- **L5-002** safe_edit hot-path DB touch-set — ⚪ NOT WITNESSED (safe_edit not actually invoked)
