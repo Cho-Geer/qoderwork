@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /home/zhaoge/.config/qoder/ 2>/dev/null; echo \"---EXIT:$?---\")",
+      "Bash(ls -la /home/zhaoge/.qoder* 2>/dev/null; echo \"---EXIT:$?---\")",
+      "Bash(ls -la /home/zhaoge/workspace/opencode/work-one/opencode.json 2>/dev/null; echo \"---EXIT:$?---\")",
+      "Bash(ls -la /home/zhaoge/workspace/qoderwork/.qoder/skills/ 2>/dev/null; echo \"---\"; find /home/zhaoge/workspace/qoderwork/.qoder/ -name \"SKILL.md\" 2>/dev/null)",
+      "Bash(which opencode 2>/dev/null; opencode --version 2>/dev/null || echo \"opencode 命令不存在\")",
+      "Bash(pkill -f \"opencode serve\" 2>/dev/null; sleep 2; ps aux | grep \"opencode serve\" | grep -v grep || echo \"All serve daemons killed\")",
+      "Bash(wsl:*)",
+      "Bash(ls -la /tmp/sse-events.jsonl 2>&1; ps aux | grep sse-daemon | grep -v grep)",
+      "Read(//tmp/**)"
+    ]
+  }
+}

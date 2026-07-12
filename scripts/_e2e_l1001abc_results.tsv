@@ -1,0 +1,21 @@
+group	tag	prompt	sid	groups	skills	risk
+A	A1-CN	修改框架源码：在 before/codegraph.ts 加一行日志	ses_0aac4b323ffeKDI2Mf3uAFdBmh	source-edit	codegraph-first	n/a
+A	A1-EN	Edit framework source: add a log line in before/codegraph.ts	ses_0aac4748affew0n5ju7vWdEbLd	source-edit	codegraph-first	n/a
+A	A2-CN	给项目加一条 CI 流水线，跑 lint 和测试	ses_0aac435f8ffeJSsnE3a8Zah1y0	cicd	ci-cd-guardrails,cross-directory-ci	n/a
+A	A2-EN	Add a CI pipeline to the project that runs lint and tests	ses_0aac3f765ffe8XYe1LwKNYqQ8f	cicd	ci-cd-guardrails,cross-directory-ci	n/a
+A	A3-CN	一句话问答：Git 怎么看当前分支	ses_0aac3b8d4ffe6MrVnAaI7m9Fci	none	none	n/a
+A	A3-EN	Quick question: how do I see the current Git branch?	ses_0aac37a41ffe4g6jO6FtwmhpkQ	none	none	n/a
+A	A4-CN	需求不清，先帮我澄清到底要做什么	ses_0aac33bb2ffe3Ax8X4OIMY3GD5	architecture	brainstorming	n/a
+A	A4-EN	The requirements are unclear - help me clarify what we actually need to build	ses_0aac2fd22ffeGEkQTCfGLpPB0t	cicd	ci-cd-guardrails,cross-directory-ci	n/a
+A	A5-CN	把一个子任务 dispatch 给 build agent 去执行	ses_0aac2be98ffeheiNjD3O8ZJrHy	cicd	ci-cd-guardrails,cross-directory-ci	n/a
+A	A5-EN	Dispatch a subtask to the build agent for execution	ses_0aac2800affelLKX8Rw6Lh7E2L	cicd	ci-cd-guardrails,cross-directory-ci	n/a
+A	A6-CN	这个偶发崩溃根因一直查不清，帮我系统调查	ses_0aac24177ffeWw4R1MypwVzMpj	none	none	n/a
+A	A6-EN	This intermittent crash's root cause is hard to pin down - help me investigate systematically	ses_0aac202dfffeHaVmbi37BETKhL	none	none	n/a
+B	B1-API-EN	How do I use the GitHub API to list my repositories?	ses_0aac1c449ffesKj862qf4aeyRs	none	none	n/a
+B	B2-API-CN	怎么用 GitHub API 列出我的仓库	ses_0aac185b9ffeySiRdoItm9e3x1	library-dep	context7-first	n/a
+B	B3-base-EN	How do I design the base schema for the database?	ses_0aac14729ffeCEYWFhgFa0MtJs	architecture,database	brainstorming,cicd-database-seeding,sqlite-bloat-investigation	n/a
+B	B4-base-CN	怎么给数据库设计 base 表结构	ses_0aac10894ffeeAKJBl1OvZHOnV	architecture,database,library-dep	brainstorming,cicd-database-seeding,sqlite-bloat-investigation,context7-first	n/a
+C	C1-lib-CN	给项目加一个第三方库做日期格式化	ses_0aac0ca06ffe9UHmm9kBPIWk0L	library-dep	context7-first	n/a
+C	C2-dep-EN	Add a dependency library for date formatting to the project	ses_0aac08b76ffeYob7qSKxai2vKT	library-dep	context7-first	n/a
+C	C3-ctx7-CN	查一下这个库的 context7 文档	ses_0aac04ce5ffeGEoPdiETsILQ5l	library-dep	context7-first	n/a
+C	C4-lib-EN	How do I add a new library to the project?	ses_0aac00e5fffegS8M7PwgfwVJMs	library-dep	context7-first	n/a

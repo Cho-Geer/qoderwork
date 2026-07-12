@@ -1,0 +1,7 @@
+{
+  "name": "qoderwork-scripts",
+  "private": true,
+  "devDependencies": {
+    "bun-types": "^1.3.14"
+  }
+}

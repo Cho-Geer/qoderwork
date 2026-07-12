@@ -1,0 +1,25 @@
+tag	prompt	sid	groups	boost	messageSource	recentTextLength	golden	verdict
+1-CN	需求不清，先帮我澄清到底要做什么	ses_0ae3fccc1ffeIYJ7mLDECUmga1	architecture	brainstorming	bridge	16	brainstorming	MATCH
+1-EN	The requirements are unclear — help me clarify what we actually need to build	ses_0ae3fcb59ffeHkNX2isN8pu3hr	cicd	ci-cd-guardrails,cross-directory-ci	bridge	77	ci-cd-guardrails,cross-directory-ci	MATCH
+2-CN	修改 `.opencode/tools/safe_edit.ts` 的实现逻辑	ses_0ae3fc9feffe3zFO8YPoTlMO7r	source-edit	codegraph-first	bridge	39	codegraph-first	MATCH
+2-EN	Modify the implementation logic in `.opencode/tools/safe_edit.ts`	ses_0ae3fc89affeqlcqKKIieTyuGc	source-edit	codegraph-first	bridge	65	codegraph-first	MATCH
+3-CN	修改 OpenCode 框架的 before hook 做路径校验	ses_0ae3fc752ffeuY5FA5e0Vz35DU	source-edit	codegraph-first	bridge	33	codegraph-first,ci-cd-guardrails,cross-directory-ci	DRIFT
+3-EN	Edit the OpenCode framework's before hook to add path validation	ses_0ae3fc618ffeIvVTMp6PFzPGTl	source-edit	codegraph-first	bridge	64	brainstorming	DRIFT
+4-CN	把一个子任务 dispatch 给 build agent 去执行	ses_0ae3fc4d4ffeHhwSNysFxULd99	cicd,dispatch-protocol	ci-cd-guardrails,cross-directory-ci,dispatch-protocol,multi-agent-orchestration	bridge	33	ci-cd-guardrails,cross-directory-ci	DRIFT
+4-EN	Dispatch a subtask to the build agent for execution	ses_0ae3fc39affeNtuVsX8EZQo6Px	cicd,dispatch-protocol	ci-cd-guardrails,cross-directory-ci,dispatch-protocol,multi-agent-orchestration	bridge	51	ci-cd-guardrails,cross-directory-ci	DRIFT
+5-CN	交付前帮我做验收，确认产出达标	ses_0ae3fc25dffeFPROYehyJsAr8e	none	none	bridge	15	none	MATCH
+5-EN	Before delivery, help me do acceptance and confirm the output meets the bar	ses_0ae3fc11effeWbXVIda8HgEVUb	none	none	bridge	75	none	MATCH
+6-CN	给项目加一条 CI 流水线，跑 lint 和测试	ses_0ae3fbfe5ffeHEWh7WQ0W0GpgX	cicd	ci-cd-guardrails,cross-directory-ci	bridge	24	ci-cd-guardrails,cross-directory-ci	MATCH
+6-EN	Add a CI pipeline to the project that runs lint and tests	ses_0ae3fbeaeffep0X67hw37Y9w6Z	cicd	ci-cd-guardrails,cross-directory-ci	bridge	57	ci-cd-guardrails,cross-directory-ci	MATCH
+7-CN	数据库迁移：把用户表拆成两张并迁移数据	ses_0ae3fbd76ffe1QM1cXJ64BkgKp	database	cicd-database-seeding,sqlite-bloat-investigation	bridge	19	cicd-database-seeding,sqlite-bloat-investigation,context7-first	DRIFT
+7-EN	Database migration: split the user table into two and migrate the data	ses_0ae3fbc34ffeeobt2EaOF9vgk5	database	cicd-database-seeding,sqlite-bloat-investigation	bridge	70	cicd-database-seeding,sqlite-bloat-investigation	MATCH
+8-CN	查一下当前 axios 最新版本和 breaking change	ses_0ae3fbafbffeNc1114fnQTt8lQ	source-edit,architecture,library-dep	codegraph-first,brainstorming,context7-first	bridge	33	codegraph-first,brainstorming,context7-first	MATCH
+8-EN	Check the latest axios version and its breaking changes	ses_0ae3fb9bbffepDeMHkl3rkKCUF	cicd	ci-cd-guardrails,cross-directory-ci	bridge	55	ci-cd-guardrails,cross-directory-ci	MATCH
+9-CN	这个偶发崩溃根因一直查不清，帮我系统调查	ses_0ae3fb86fffeh1Ho8LmgoAO912	none	none	bridge	20	none	MATCH
+9-EN	This intermittent crash's root cause is hard to pin down — help me investigate systematically	ses_0ae3fb723ffeGLRx95aK5AV130	dispatch-protocol	dispatch-protocol,multi-agent-orchestration	bridge	93	none	DRIFT
+10-CN	多份文档对同一个 API 行为说法冲突，帮我定论	ses_0ae3fb5e2ffeVmigNgmaimfL36	none	none	bridge	24	none	MATCH
+10-EN	Multiple docs conflict on the same API's behavior — help me settle it	ses_0ae3fb479ffeMtP5OlusTY5CKS	none	none	bridge	69	none	MATCH
+11-CN	修改框架源码：在 `before/codegraph.ts` 加一行日志	ses_0ae3fb33dffegr9IcXCMmslYet	source-edit	codegraph-first	bridge	36	codegraph-first	MATCH
+11-EN	Edit framework source: add a log line in `before/codegraph.ts`	ses_0ae3fb1f2ffe0ngXTSSm3pTlxg	source-edit	codegraph-first	bridge	62	codegraph-first	MATCH
+12-CN	一句话问答：Git 怎么看当前分支	ses_0ae3fb06dffe8OPICcfBAjwQ0v	none	none	bridge	17	none	MATCH
+12-EN	Quick question: how do I see the current Git branch?	ses_0ae3faf1affexYKGlK1WEKmR1G	none	none	bridge	52	none	MATCH

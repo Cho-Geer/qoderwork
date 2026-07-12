@@ -1,0 +1,23 @@
+# Runtime state
+.task_temp/
+.opencode/node_modules/
+.opencode/state/
+
+# Local dependencies and secrets
+scripts/node_modules/
+scripts/.env
+
+# Tool-specific local state
+.codeartsdoer/
+
+# Python cache
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Windows metadata artifacts
+*:Zone.Identifier*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

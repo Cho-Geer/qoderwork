@@ -1,0 +1,5 @@
+[2026-07-11T09:05:56Z] case=probe-trivial
+SID=ses_0af92e07dffeCgAzldJAoBrB7W
+[2026-07-11T09:05:56Z] sending message (timeout 120s)
+[2026-07-11T09:06:01Z] stream bytes: 1598
+children http: 2 bytes
