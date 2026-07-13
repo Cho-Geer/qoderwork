@@ -19,6 +19,10 @@ version: 1.0.0
 
 ## 排查流程（6 层，从外到内）
 
+> **步骤类型标注**：Phase 1-4 是 `[ANALYSIS]`（读配置/代码/prompt），Phase 5 是 `[VERIFICATION]`（重启 serve 验证配置生效），Phase 6 是 `[VERIFICATION]`（serve API 端到端验证工具调用）。
+> **关键约束**：Phase 1-4 的配置分析通过 ≠ 工具访问已修复。必须执行 Phase 5-6 的运行态验证。
+> **合理化检测**：如果你发现自己在想「配置已经改对了，工具肯定能用了」--停下来，这是 ANALYSIS vs VERIFICATION 混淆。配置正确不等于运行态生效。
+
 ### Phase 1: opencode.json 权限检查
 
 检查目标工具在各 agent 的 tools 段中的 allow/deny 配置。
@@ -116,7 +120,10 @@ grep -in 'do not\|don.t\|never\|must not\|禁止' .opencode/subagent-preamble.md
 
 **注意**：prompt 约束是最弱的一层——agent 可能忽略它，但也可能被其他 agent 的 system prompt 覆盖。建议同时修复 prompt 和配置层。
 
-### Phase 5: 修复与重启
+### Phase 5: 修复与重启 `[VERIFICATION]`
+
+> **本步骤是 `[VERIFICATION]`**--重启 serve 使配置生效，并验证 serve 进程正常运行。
+> Phase 1-4 的配置修改（`[ANALYSIS]`）在此步骤之前不会生效。
 
 修改完成后，执行以下步骤使配置生效：
 
@@ -143,7 +150,11 @@ pgrep -af 'opencode serve'
 ss -tlnp | grep 4096
 ```
 
-### Phase 6: serve API 端到端验证
+### Phase 6: serve API 端到端验证 `[VERIFICATION]`
+
+> **本步骤是 `[VERIFICATION]`**--通过 serve API 实际触发工具调用，验证修复生效。
+> 这是六层排查的最终验证。Phase 1-5 通过不保证工具访问已修复，必须通过本步骤的运行态验证。
+> 执行后记录 `Verified-by: session ID + 工具调用结果（成功/失败 + 错误消息）`。
 
 通过 serve API 启动 session 并验证工具调用成功。
 

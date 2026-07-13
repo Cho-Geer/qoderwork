@@ -23,6 +23,8 @@ version: 1.1.0
 
 根因分析必须基于实测验证。通过日志分析、ACP session 测试、代码审查等手段确认因果链后，才能进入方案设计。
 
+> **步骤类型区分**：「日志分析」和「ACP session 测试」是 `[VERIFICATION]`（产出运行态证据）；「代码审查」是 `[ANALYSIS]`（仅产生理解）。根因结论必须基于至少一项 `[VERIFICATION]` 证据，不能仅凭代码审查。
+
 **反面案例**：假设"agent 不读取 skill 是因为 skill 内容没有注入 system prompt"，但实测发现 agent 确实没有调用 `read_skill()`，根因是"没有硬约束强制 agent 读取"而非"注入缺失"。
 
 ### 复用优先于新建

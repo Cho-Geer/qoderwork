@@ -29,6 +29,10 @@ These behaviors burn tokens (money) and clock time while producing unreliable co
 
 ### The 4-Step Loop
 
+> **步骤类型标注**：Step 1-2 是 `[ANALYSIS]`（形成假设+插入日志），Step 3 是 `[VERIFICATION]`（运行代码+捕获日志），Step 4 是 `[OBSERVATION]`（基于日志定位根因）。
+> **关键约束**：Step 3 不可跳过。「我已经从代码理解了问题」不是跳过 Step 3 的理由--代码告诉你的是意图，运行告诉你的是事实。
+> **合理化检测**：如果你发现自己在想「代码已经清楚表明了问题根因，不需要运行」--停下来，这是 ANALYSIS vs VERIFICATION 混淆。
+
 #### Step 1: Form a Minimal Hypothesis (< 2 minutes)
 
 Based on the error message or symptom, spend at most 2 minutes forming a rough hypothesis. Acceptable inputs:
@@ -62,9 +66,13 @@ import sys
 print(f"[DEBUG-TMP] process_item: item={item!r}, len(queue)={len(queue)}", file=sys.stderr)
 ```
 
-#### Step 3: Run and Observe
+#### Step 3: Run and Observe `[VERIFICATION]`
 
 Execute the code to reproduce the issue. Capture the log output. This is non-negotiable — you must actually run the code.
+
+> **本步骤是 `[VERIFICATION]`**——必须实际运行代码并捕获日志输出。
+> 执行后记录 `Verified-by: 运行命令 + 日志输出摘要`。
+> 如果跳过本步骤，Step 4 的根因结论将缺乏运行态证据支撑。
 
 - If the bug reproduces: examine log output to confirm or refute the hypothesis
 - If the bug doesn't reproduce: check whether your logs are actually being hit; adjust log placement and retry

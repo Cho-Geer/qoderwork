@@ -42,7 +42,9 @@ Phase 1: 诊断 → Phase 2: 合并 → Phase 3: ACP 清理 → Phase 4: 自动�
 
 ---
 
-## Phase 1: 诊断
+## Phase 1: 诊断 `[ANALYSIS]`
+
+> **注意**：本阶段全部是静态文件读取和评分，不产生运行态证据。诊断结果是基于代码分析的判断，不是运行态验证。
 
 ### Step 1: 获取全部已安装 skill 列表
 
@@ -77,6 +79,25 @@ mcp__qw-builtin__qw_query({ key: "qoderwork.settings.skills" })
 | **正文结构** | 检查正文是否有编号步骤（`1.` `2.`）或分节（`##`） | 有 → ✅；无 → ❌ |
 | **空描述/空目录** | description 为空或目录下无 SKILL.md | 空 → ❌ 严重 |
 | **.bak 残留** | 目录下存在 `*.bak` 文件 | 有 → ❌ |
+
+### Step 3b: 认知缺陷防护评分
+
+对每个 skill 检查以下 4 个维度：
+
+| 维度 | 检查方法 | 评分 |
+|------|---------|------|
+| **步骤类型标注** | 检查正文是否有 `[ANALYSIS]`/`[VERIFICATION]`/`[OBSERVATION]` 标注 | 有验证步骤但无标注 -> ❌；有标注 -> ✅；无验证步骤 -> ⏭️ 不适用 |
+| **证据行要求** | 检查 `[VERIFICATION]` 步骤后是否有 `Verified-by:` 证据行要求 | 有验证步骤但无证据行 -> ❌；有证据行 -> ✅；无验证步骤 -> ⏭️ 不适用 |
+| **合理化检测** | 检查是否有「如果你发现自己在想 X--停下来，这是跳步信号」模式 | 有验证步骤但无合理化检测 -> ⚠️；有 -> ✅；无验证步骤 -> ⏭️ 不适用 |
+| **认知说明** | 检查是否有「源码分析回答意图，运行态验证回答事实」类认知说明 | 有 ANALYSIS->VERIFICATION 流程但无认知说明 -> ⚠️；有 -> ✅；无此流程 -> ⏭️ 不适用 |
+
+**适用判断**：纯操作型技能（如 docx/pdf/pptx/xlsx）无验证步骤，4 个维度均标为 ⏭️ 不适用，不影响总评。
+
+**检测方法**：用 Grep 工具搜索以下关键词：
+- 步骤类型标注：`\[ANALYSIS\]|\[VERIFICATION\]|\[OBSERVATION\]`
+- 证据行：`Verified-by:`
+- 合理化检测：`合理化检测|跳步信号`
+- 认知说明：`源码分析|运行态验证|意图.*事实`
 
 ### Step 4: 重叠检测
 
@@ -210,12 +231,28 @@ ACP bridge|ACP 模式|ACP stdio|mcp__acp-bridge|
 1. 先删除空目录和 .bak 文件（Step 19-20）
 2. 再修复 description 问题（Step 13-18）
 3. 最后处理正文过长（Step 21）
+4. 最后处理认知缺陷防护（Step 21b）
+
+### Step 21b: 认知缺陷防护修复
+
+对 Phase 1 Step 3b 检测出的问题执行修复：
+
+| 问题 | 修复方法 |
+|------|---------|
+| **验证步骤无类型标注** | 找到含「验证」「测试」「确认」「verify」关键词的步骤标题，追加 ` \`[VERIFICATION]\`` 标注；找到含「分析」「读取」「检查配置」关键词的步骤，追加 ` \`[ANALYSIS]\`` 标注 |
+| **验证步骤无证据行** | 在每个 `[VERIFICATION]` 步骤的说明后添加 `> 执行后记录 \`Verified-by: <命令> -> <关键返回>\`` |
+| **验证步骤无合理化检测** | 在每个 `[VERIFICATION]` 步骤前添加 `> **合理化检测**：如果你发现自己在想「<推断常见跳步理由>」--停下来，这是跳步信号。必须实际执行。` |
+| **ANALYSIS->VERIFICATION 流程无认知说明** | 在 ANALYSIS 步骤和 VERIFICATION 步骤之间添加 `> **注意**：源码分析回答「代码意图是什么」，运行态验证回答「运行态实际是什么」。两者可能不一致。` |
+
+**跳过条件**：纯操作型技能（4 个维度均为 ⏭️ 不适用）跳过本步骤。
 
 ---
 
 ## Phase 5: 报告
 
 ### Step 22: 生成报告
+
+> **注意**：报告中的数据必须来自实际执行结果，不是自报。每个声称必须有对应的命令输出作为证据。
 
 报告格式：
 
@@ -269,6 +306,14 @@ ACP bridge|ACP 模式|ACP stdio|mcp__acp-bridge|
 | skill-b | description 过短 | "做 X"（20 chars） | "做 X。Trigger: x, y. Not for: z."（180 chars） |
 | skill-c | .bak 残留 | 存在 index.ts.bak | 已删除 |
 
+### 4.1 认知缺陷防护修复结果
+
+| Skill 名称 | 步骤类型标注 | 证据行 | 合理化检测 | 认知说明 |
+|-----------|:---:|:---:|:---:|:---:|
+| skill-a | ✅ 已有 | ✅ 已有 | ✅ 已有 | ✅ 已有 |
+| skill-b | ✅ 已添加 | ✅ 已添加 | ⚠️ 不适用 | ⚠️ 不适用 |
+| skill-c | ⏭️ 纯操作型 | ⏭️ | ⏭️ | ⏭️ |
+
 ## 5. 健康指标
 
 | 指标 | 修复前 | 修复后 | 最佳区间 |
@@ -278,6 +323,7 @@ ACP bridge|ACP 模式|ACP stdio|mcp__acp-bridge|
 | ACP 残留数 | X | 0 | 0 |
 | 空描述数 | X | 0 | 0 |
 | .bak 残留数 | X | 0 | 0 |
+| 认知缺陷防护缺失数 | X | 0 | 0 |
 | description 过短数 | X | 0 | 0 |
 | description 过长数 | X | 0 | 0 |
 ```
@@ -333,15 +379,34 @@ ACP 残留: X → 0
 - `skill-creator`：创建单个新 skill 的标准流程
 - `pre-flight-enforcement`：本 skill 执行时建议配合使用，约束五阶段顺序执行
 
-## 验证清单
+## 验证清单 `[VERIFICATION]`
+
+> **注意**：以下每项验证必须基于实际命令输出，不是自检 checkbox。每项必须附 `Verified-by:` 证据行。
+> **合理化检测**：如果你发现自己在想「我刚才修过这些文件，肯定没问题」--停下来，这是跳步信号。必须实际运行验证命令。
 
 执行完成后，验证以下项目：
 
 - [ ] 所有 skill 的 description 长度在 150-500 chars 之间
+  - `Verified-by: 实际 grep/wc 输出证明每个 description 的字符数`
 - [ ] 所有 skill 的 description 含触发词和负面边界
+  - `Verified-by: 实际 grep 输出证明 Trigger/Not for 关键词存在`
 - [ ] skill 总数 ≤ 15（或已无可合并组）
+  - `Verified-by: 实际 ls/qw_query 输出的 skill 计数`
 - [ ] 所有 SKILL.md 中无 ACP bridge 引用（`acp_notify` 除外）
+  - `Verified-by: 实际 grep 输出证明 ACP 关键词匹配数 = 0`
 - [ ] 无 `.bak` 残留文件
+  - `Verified-by: 实际 find 输出证明无 *.bak 文件`
 - [ ] 无空 skill 目录
+  - `Verified-by: 实际 find 输出证明每个 skill 目录都有 SKILL.md`
 - [ ] 报告已保存到 `REPORT_PATH`
+  - `Verified-by: 实际 ls -la 输出证明文件存在`
 - [ ] 飞书通知已发送（或记录失败原因）
+  - `Verified-by: 飞书 API 返回或失败日志`
+- [ ] 所有含验证步骤的 skill 有 `[VERIFICATION]`/`[ANALYSIS]` 标注
+  - `Verified-by: 实际 grep '\[VERIFICATION\]|\[ANALYSIS\]' 输出证明标注存在`
+- [ ] 所有 `[VERIFICATION]` 步骤有 `Verified-by:` 证据行要求
+  - `Verified-by: 实际 grep 'Verified-by:' 输出证明证据行存在`
+- [ ] 所有含验证步骤的 skill 有合理化检测提示
+  - `Verified-by: 实际 grep '合理化检测\|跳步信号' 输出`
+- [ ] 所有含 ANALYSIS->VERIFICATION 流程的 skill 有认知说明
+  - `Verified-by: 实际 grep '源码分析\|运行态验证\|意图' 输出`

@@ -1,12 +1,23 @@
 ---
 name: serve-api
 description: "通过 serve API (localhost:4096) + SSE 守护进程直接与 OpenCode 交互的操作手册。覆盖 session 生命周期、消息发送、事件轮询(SSE JSONL)、question 检测与回复、session 树查询、子 agent 监控、主动干预。Trigger: serve API, curl, SSE daemon, session 操作, question 回复, 直连 OpenCode, session 验证, session 树, 子 agent 监控, 主动干预, turn 状态. Not for: ACP bridge 功能开发, anti-bypass 专项测试."
-version: 1.3.1
+version: 1.4.1
 ---
 
 # Serve API 交互验证与事件测试套件
 
 整合 serve API 直调操作、session 能力端到端验证、事件覆盖验证三大流程。详细测试步骤见 [reference.md](./reference.md)。
+
+> **角色定位**: serve-api 是 `[VERIFICATION]` 技能。它的全部价值在于**与真实运行态交互并产生运行态证据**。
+> 使用本技能意味着你在做「验证」而非「分析」——每次 serve API 调用后，必须记录可引用的证据。
+>
+> **与 pre-flight-enforcement 配合**: 当与 pre-flight-enforcement 组合使用时，serve-api 的步骤应标注为 `[VERIFICATION]`。
+> 每个 serve API 调用完成后，必须输出 `Verified-by:` 证据行（session ID、curl 返回摘要、日志行号）。
+> 如果写不出证据行，说明该步骤未实际执行。
+>
+> **为什么源码分析不能替代 serve API 验证**: 源码分析回答的是「代码意图是什么」，serve API 真实触发回答的是「运行态实际是什么」。
+> 两者可能不一致（配置覆盖、handler 跳过、已修复 bug 但注释未更新、条件分支未覆盖等）。
+> serve API 验证不是源码分析的冗余——它是唯一能发现「代码意图 vs 运行态行为」差距的手段。
 
 ## 1. Serve API 直调操作
 
@@ -79,19 +90,26 @@ wsl.exe -d Ubuntu-24.04 -- bash -c "pkill -f sse-daemon 2>/dev/null; sleep 1; ex
 
 #### 快速参考
 
-| # | 操作 | 命令 |
-|---|------|------|
-| 1 | 创建 Session | `POST /session` |
-| 2 | 发送消息(同步) | `POST /session/{SID}/message` |
-| 2b | 发送消息(异步) | `POST /session/{SID}/prompt_async` |
-| 3 | 读取回复 | `GET /session/{SID}/message?limit=N` |
-| 4 | 读取事件 | `tail /tmp/sse-events.jsonl` |
-| 5 | 检查 Questions | `GET /question` |
-| 6 | 回复 Question | `POST /question/{QID}/reply` |
-| 7 | 终止 Session | `POST /session/{SID}/abort` |
-| 8 | 列出 Sessions | `GET /session` |
-| 9 | 获取子 Sessions | `GET /session/{SID}/children` |
-| 10 | Session 状态 | `GET /session/status` |
+| # | 操作 | 命令 | 证据产出 |
+|---|------|------|---------|
+| 1 | 创建 Session | `POST /session` | `Verified-by: session ID = <返回的 id>` |
+| 2 | 发送消息(同步) | `POST /session/{SID}/message` | `Verified-by: agent 回复摘要 + info.modelID` |
+| 2b | 发送消息(异步) | `POST /session/{SID}/prompt_async` | `Verified-by: 异步已提交，后续通过 SSE 或 GET message 获取结果` |
+| 3 | 读取回复 | `GET /session/{SID}/message?limit=N` | `Verified-by: 消息列表 + 最新 assistant 文本前 200 字` |
+| 4 | 读取事件 | `tail /tmp/sse-events.jsonl` | `Verified-by: 事件类型 + session ID 过滤结果行数` |
+| 5 | 检查 Questions | `GET /question` | `Verified-by: pending question 数量 + 各 session ID` |
+| 6 | 回复 Question | `POST /question/{QID}/reply` | `Verified-by: 返回 true + 被回复的 QID` |
+| 7 | 终止 Session | `POST /session/{SID}/abort` | `Verified-by: 返回 true + 终止的 SID` |
+| 8 | 列出 Sessions | `GET /session` | `Verified-by: session 列表 + 各 session 的 agent/title` |
+| 9 | 获取子 Sessions | `GET /session/{SID}/children` | `Verified-by: children 列表 + 各 child 的 agent` |
+| 10 | Session 状态 | `GET /session/status` | `Verified-by: 状态信息摘要` |
+
+**证据规则**: 每次 serve API 调用后，必须记录 `Verified-by:` 证据行。证据行应包含：
+- 调用的端点和方法（如 `POST /session`）
+- 返回的关键信息（session ID、错误消息、状态等）
+- 如果是错误响应，记录完整错误信息而非摘要
+
+如果写不出证据行，说明该步骤未实际执行，必须补做。
 
 #### 详细用法
 
@@ -102,6 +120,7 @@ curl -s -X POST http://localhost:4096/session \
   -d '{"title":"Task Title","agent":"Orchestrator"}'
 # 返回: {"id":"ses_xxx", ...}
 # ⚠️ agent 字段必填，不传则写入 "unknown" 导致身份断链
+# 证据: Verified-by: POST /session → session ID = ses_xxx, agent = Orchestrator
 ```
 
 **2. 发送消息（同步 vs 异步）**
@@ -110,11 +129,13 @@ curl -s -X POST http://localhost:4096/session \
 curl -s -X POST http://localhost:4096/session/{SID}/message \
   -H 'Content-Type: application/json' \
   -d '{"parts":[{"type":"text","text":"Your message"}]}'
+# 证据: Verified-by: POST /session/{SID}/message → agent 回复摘要 + info.modelID
 
 # 异步：立即返回，agent 在后台处理，适合长任务 + 轮询
 curl -s -X POST http://localhost:4096/session/{SID}/prompt_async \
   -H 'Content-Type: application/json' \
   -d '{"parts":[{"type":"text","text":"Your message"}]}'
+# 证据: Verified-by: POST /session/{SID}/prompt_async → 异步已提交，后续通过 SSE 或 GET message 获取结果
 ```
 
 **3. 读取 Agent 回复**
@@ -125,7 +146,7 @@ curl -s "http://localhost:4096/session/{SID}/message?limit=5"
 # 提取最新 assistant 回复文本
 curl -s "http://localhost:4096/session/{SID}/message?limit=1" | \
   python3 -c "import sys,json; msgs=json.load(sys.stdin); parts=msgs[0]['parts'] if msgs else []; [print(p.get('text','')) for p in parts if p.get('type')=='text']"
-```
+# 证据: Verified-by: GET /session/{SID}/message?limit=N → 返回 N 条消息，最新 role=assistant 文本前 200 字
 
 **4. 读取事件 (SSE JSONL)**
 ```bash
@@ -138,6 +159,7 @@ tail -100 /tmp/sse-events.jsonl | python3 -c "
 import sys,json,collections
 c=collections.Counter(json.loads(l)['type'] for l in sys.stdin if l.strip())
 [print(f'  {t}: {n}') for t,n in c.most_common()]"
+# 证据: Verified-by: tail /tmp/sse-events.jsonl → 过滤后 X 行，事件类型包括 [类型列表]
 ```
 
 **5. 检查 Pending Questions**
@@ -151,6 +173,7 @@ import sys,json
 questions = json.load(sys.stdin)
 for q in questions:
     print(f'  {q[\"sessionID\"][:20]}... | {q[\"questions\"][0][\"question\"][:60]}...')"
+# 证据: Verified-by: GET /question → X 个 pending question，涉及 session [SID 列表]
 ```
 
 **6. 回复 Question**
@@ -160,14 +183,22 @@ curl -s -X POST http://localhost:4096/question/{QID}/reply \
   -H 'Content-Type: application/json' \
   -d '{"answers":[["option-label"]]}'
 # 返回: true
+# 证据: Verified-by: POST /question/{QID}/reply → true，已回复 QID
 ```
 
 **7-10. Session 管理**
 ```bash
 curl -s -X POST http://localhost:4096/session/{SID}/abort       # 终止
+# 证据: Verified-by: POST /session/{SID}/abort → true，已终止 SID
+
 curl -s http://localhost:4096/session                            # 列出所有
+# 证据: Verified-by: GET /session → X 个 session，包括 [SID 列表]
+
 curl -s "http://localhost:4096/session/{SID}/children"           # 子 sessions
+# 证据: Verified-by: GET /session/{SID}/children → X 个 child，agent 为 [agent 列表]
+
 curl -s http://localhost:4096/session/status                     # 状态
+# 证据: Verified-by: GET /session/status → [状态摘要]
 ```
 
 ### Agent 完成检测
@@ -244,6 +275,89 @@ grep "ses_XXXXX" /tmp/sse-events-archive/*.jsonl
 - **SSE daemon 崩溃**：用 `ps aux | grep sse-daemon` 检查，`setsid` 重启
 - **JSONL 文件管理**：daemon 自动每小时归档，溢出保护 10MB，无需手动管理
 - **question 回复时机**：`GET /question` 返回所有 session 的 pending questions，按 sessionID 匹配回复
+- **源码分析不能替代 serve API 验证**：源码分析回答「代码意图是什么」，serve API 真实触发回答「运行态实际是什么」。两者可能不一致——配置覆盖、handler 跳过、已修复 bug 但注释未更新、条件分支未覆盖等都可能造成差距。**serve API 验证不是源码分析的冗余，而是唯一能发现「意图 vs 行为」差距的手段。**
+
+### 验证完成检查清单
+
+每次使用 serve-api 技能完成一轮验证后，检查以下各项：
+
+- [ ] **session ID 已记录**：每个创建的 session 的 ID 已保存
+- [ ] **每个 VERIFICATION 步骤有证据行**：格式 `Verified-by: <端点> → <关键返回信息>`
+- [ ] **错误信息完整**：如果调用被阻断，记录了完整的错误消息（不是摘要）
+- [ ] **日志行可引用**：如果需要，能从 `/tmp/sse-events.jsonl` 或 `.task_temp/_logs/` 中找到对应日志行
+- [ ] **与 pre-flight-enforcement 的 audit 对齐**：audit 中的证据行与本检查清单一致
+
+### Windows/WSL 调用模式
+
+当 QoderWork 运行在 Windows 上、serve API 运行在 WSL 内时，curl 命令需要穿过 PowerShell -> `wsl.exe` -> `bash -c` 三层。这会导致 **quoting 冲突** 和 **Unicode 编码问题**。以下三种模式按场景选用：
+
+#### 模式 A：简单命令（无 JSON payload）
+
+适合 `GET /session`、`GET /question`、`tail` 等不含 JSON body 的操作。用双引号包裹 bash 命令，内部用单引号：
+
+```powershell
+wsl -d Ubuntu-24.04 bash -c "curl -s http://localhost:4096/session"
+wsl -d Ubuntu-24.04 bash -c "tail -50 /tmp/sse-events.jsonl | grep ses_XXX"
+```
+
+#### 模式 B：Invoke-RestMethod（PowerShell 原生，推荐用于含 JSON 的操作）
+
+适合 `POST /session`、`POST /session/{SID}/message` 等含 JSON body 的操作。完全绕过 bash quoting，用 PowerShell 原生 HTTP 客户端：
+
+```powershell
+# 创建 session
+$response = Invoke-RestMethod -Uri "http://localhost:4096/session" -Method Post `
+  -ContentType "application/json; charset=utf-8" `
+  -Body '{"title":"test","agent":"Orchestrator"}'
+$sid = $response.id
+
+# 发送消息（含中文 -- 必须用 charset=utf-8 避免乱码）
+$body = @{ parts = @(@{ type = "text"; text = "尝试执行 gh issue create" }) } | ConvertTo-Json -Depth 5
+$bytes = [System.Text.Encoding]::UTF8.GetBytes($body)
+Invoke-RestMethod -Uri "http://localhost:4096/session/$sid/message" -Method Post `
+  -ContentType "application/json; charset=utf-8" -Body $bytes
+```
+
+> **⚠️ Unicode 编码**：PowerShell `ConvertTo-Json` 默认可能将中文编码为 `\uXXXX` 或乱码。必须：
+> 1. Content-Type 加 `charset=utf-8`
+> 2. 用 `[System.Text.Encoding]::UTF8.GetBytes($body)` 转为字节数组再传递
+> 3. 不要用 `ConvertTo-Json | Out-String` 链式调用（会引入 BOM）
+
+#### 模式 C：写 JSON 到文件再 curl -d @file（最可靠）
+
+适合复杂 JSON payload 或需要管道处理的场景。先在 WSL 内写 JSON 文件，再用 `curl -d @file` 读取：
+
+```bash
+# 1. 在 WSL 内写 JSON 文件
+wsl -d Ubuntu-24.04 bash -c 'cat > /tmp/msg.json << '"'"'EOF'"'"'
+{"parts":[{"type":"text","text":"尝试执行 gh issue create --repo microsoft/vscode"}]}
+EOF'
+
+# 2. 用 curl -d @file 发送
+wsl -d Ubuntu-24.04 bash -c "curl -s -X POST http://localhost:4096/session/$SID/message -H 'Content-Type: application/json' -d @/tmp/msg.json"
+```
+
+#### 模式 D：Python 脚本统一执行（推荐用于 E2E 测试）
+
+复杂 E2E 测试场景中，将完整测试逻辑写成 Python 脚本放在 WSL 本地路径，避免所有 quoting 问题：
+
+```bash
+# 1. 将脚本放在 WSL 本地路径（不经过 Windows 文件系统）
+#    路径示例: /home/zhaoge/workspace/qoderwork/scripts/e2e-test.py
+
+# 2. 执行
+wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin' && python3 /home/zhaoge/workspace/qoderwork/scripts/e2e-test.py"
+```
+
+**选择规则**：
+
+| 场景 | 推荐模式 | 原因 |
+|------|---------|------|
+| GET 请求、tail 日志 | A | 无 JSON body，quoting 简单 |
+| POST 含 JSON（英文） | B | PowerShell 原生，最简洁 |
+| POST 含 JSON（中文） | B + UTF8 编码 | 必须处理 Unicode |
+| 复杂管道、多步 E2E | C 或 D | 完全避免 quoting 层叠 |
+| 需要可复现的 E2E 测试 | D | 脚本化，可版本控制 |
 
 ---
 
@@ -321,6 +435,9 @@ grep "ses_XXXXX" /tmp/sse-events-archive/*.jsonl
 - **notify-server 不可见**：检查 `mcp-role-filter.ts` 的 `SERVER_PREFIXES` 和 `AGENT_MCP_SERVERS` 配置
 - **SSE 事件为空**：确认 SSE daemon 在 session 创建前启动，首次调用可能无历史事件，先发送消息触发 agent 行为
 - **WSL 路径问题**：`$` 变量需转义为 `\$`，或使用脚本文件方式避免展开问题
+- **PowerShell -> WSL quoting 冲突**：`wsl bash -c "curl -d '{"key":"val"}'"` 中 PowerShell 和 bash 对引号的处理不一致，导致 JSON payload 传递失败。解决方案见上方「Windows/WSL 调用模式」：简单命令用模式 A，含 JSON 用模式 B（Invoke-RestMethod），复杂场景用模式 C 或 D
+- **PowerShell Unicode 编码乱码**：PowerShell `ConvertTo-Json` 会将中文编码为 `\uXXXX` 或 `?????????`，导致 `POST /session/{SID}/message` 发送的中文内容乱码。必须用 `[System.Text.Encoding]::UTF8.GetBytes($body)` + `charset=utf-8` Content-Type（见模式 B）
+- **复杂 E2E 测试推荐 Python 脚本**：含多步 curl + 管道 + JSON 解析的 E2E 测试，不要试图在 PowerShell -> WSL bash -c 中嵌套实现。将完整逻辑写成 Python 脚本放在 WSL 本地路径（`/home/zhaoge/workspace/qoderwork/scripts/`），通过 `wsl python3 /path/script.py` 执行（见模式 D）
 
 ---
 
@@ -594,7 +711,7 @@ Turn N:  [LLM][tool:question][暂停]───等待 reply───[继续][tool
 
 ---
 
-## 5. TodoWrite 驱动的监督闭环（v1.4.0 新增）
+## 5. TodoWrite 驱动的监督闭环（v1.3.0 新增）
 
 `tree-watcher.ts` 在 monitor-tree 基础上增加 SSE 事件和 quality.jsonl 观察，输出 **evidence capsule** 和 **L0-L4 干预建议**，实现弱模型自治 + 强模型关键监督。
 

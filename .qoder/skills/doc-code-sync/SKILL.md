@@ -67,7 +67,9 @@ Read `documents/INDEX.md` in full. Parse out:
 - The "按场景推荐阅读" (scenario recommendations) section
 - The existing "最近更新" / "历史更新" notes
 
-### Step 3: Compare & Detect Changes
+### Step 3: Compare & Detect Changes `[VERIFICATION]`
+
+> **本步骤是 `[VERIFICATION]`**--必须实际运行文件计数/行数对比命令，记录 `Verified-by: 实际 wc -l / find 输出`。「文档看起来和代码一致」不是验证。
 
 A document needs re-summarizing if **any** of these are true:
 1. **New file** — exists in `documents/` but not in INDEX.md table

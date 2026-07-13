@@ -673,7 +673,8 @@ Preferred process:
 4. Optionally add `README.md`.
 5. Call `qoderwork.settings.plugins.install_from_path` with action `execute` and params `{ "sourcePath": "<plugin-directory>" }` to register and activate it. This API copies the plugin into the correct product-specific `plugins-custom/` directory.
 6. If the API reports a name conflict, ask whether to replace or create a new copy, then retry with `conflictStrategy: "replace"` or `"new"`.
-7. Inform the user that the plugin is installed and available.
+7. **Verify plugin registered** `[VERIFICATION]`: Query `qoderwork.settings.skills` (or `qoderwork.settings.plugins`) to confirm the new plugin appears in the list. Record `Verified-by: qw_query 返回中包含新插件名`。「install_from_path 返回成功」不等于插件已注册--必须实际查询确认。
+8. Inform the user that the plugin is installed and available.
 
 Important:
 - `~/{{.DataDirName}}/plugins/` is reserved for built-in plugin copies — do not write to it.

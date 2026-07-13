@@ -1,7 +1,7 @@
 ---
 name: pre-flight-enforcement
-description: "强制在执行 skill 引导任务前输出 pre-flight checklist，声明适用 skill 和步骤顺序；执行后输出 audit 报告。v2.0 新增 Phase -1 Skill 发现与选择、约束+执行 skill 组合模式、Skill 不匹配处理。Enforce pre-flight checklist before skill-guided tasks, output audit report after. Trigger: pre-flight, 执行前检查, skill 遵循, audit, 合规审计, checklist. Not for: 纯对话, 简单查询, 无需特定 skill 的通用任务."
-version: 2.0.0
+description: "强制在执行 skill 引导任务前输出 pre-flight checklist，声明适用 skill 和步骤顺序；执行后输出 audit 报告。v2.2 新增步骤类型标注（ANALYSIS/VERIFICATION/OBSERVATION）、ANALYSIS→VERIFICATION 间隙自检、Audit 合理化模式检测。Enforce pre-flight checklist before skill-guided tasks, output audit report after. Trigger: pre-flight, 执行前检查, skill 遵循, audit, 合规审计, checklist. Not for: 纯对话, 简单查询, 无需特定 skill 的通用任务."
+version: 2.2.0
 ---
 
 # Pre-Flight Enforcement
@@ -129,10 +129,15 @@ Phase 2: Post-Execution Audit
 
 **执行计划**:
 - [ ] Skill 选择校验: 确认选定的执行 skill 是最佳匹配
-- [ ] 步骤 1: [本次任务的具体操作]
-- [ ] 步骤 2: [本次任务的具体操作]
-- [ ] 步骤 3: [本次任务的具体操作]
+- [ ] [ANALYSIS] 步骤 1: [分析/阅读/理解类操作]
+- [ ] [VERIFICATION] 步骤 2: [验证/触发/测试类操作 — 必须产生运行态证据]
+- [ ] [OBSERVATION] 步骤 3: [观察/检查/确认类操作]
 ...
+
+**步骤类型规则**:
+- `[ANALYSIS]`: 源码分析、文档阅读、代码理解。**仅产生理解，不产生运行态证据。**
+- `[VERIFICATION]`: 真实触发、API 调用、命令执行。**必须产生可引用的运行态证据。**
+- `[OBSERVATION]`: 检查日志、查看结果、确认输出。**基于 VERIFICATION 的证据做判断。**
 
 **承诺**: 严格按上述顺序执行，不跳步、不调序。如需偏差，在 audit 中说明原因。
 ```
@@ -147,6 +152,30 @@ Phase 2: Post-Execution Audit
 4. **多 skill 场景**: 如果任务涉及多个 skill，在 pre-flight 中全部列出，按逻辑顺序整合步骤
 5. **Skill 角色明确**（v2.0 新增）: 约束 skill 和执行 skill 必须在 pre-flight 中明确区分
 6. **Skill 选择校验**（v2.0 新增）: 执行计划第一步必须是"Skill 选择校验"
+7. **ANALYSIS→VERIFICATION 间隙自检**（v2.2 新增）: 完成所有 `[ANALYSIS]` 步骤后、开始 `[VERIFICATION]` 步骤前，必须回答以下三个问题并输出：
+   ```
+   ## ANALYSIS→VERIFICATION 间隙自检
+
+   **问题 1 — 代码 vs 运行态差距**: 代码分析和运行态行为可能在哪些地方不一致？
+   （考虑：配置覆盖、handler 跳过、已修复 bug 但注释未更新、条件分支未覆盖等）
+   → [具体列举]
+
+   **问题 2 — 现有证据**: 我目前有什么运行态证据证明代码分析结论成立？
+   → [无 / 具体证据来源]
+
+   **问题 3 — 不验证的风险**: 如果跳过 VERIFICATION，最坏情况下我会得出什么错误结论？
+   → [具体描述]
+
+   **判定**: [必须验证 / 可跳过（需在 audit 说明理由）]
+   ```
+   **如果问题 2 的回答是「无」且问题 3 的风险不可接受，则不得跳过 VERIFICATION 步骤。**
+8. **证据行要求**（v2.2 新增）: 每个 `[VERIFICATION]` 步骤完成后，必须输出一行 `Verified-by:` 证据行，写明具体的运行态证据来源（session ID、日志行号、curl 返回、命令输出）。如果写不出证据行，说明该步骤未实际执行，必须补做。
+9. **合理化模式检测**（v2.2 新增）: 在执行过程中和 audit 输出前，扫描自己的推理和输出中是否包含以下模式：
+   - 「无需实际触发」/「无需验证」/「源码已足够」/「显而易见」/「可以推断」/「无需实际执行」
+   - 「代码已经清楚表明」/「从代码可以看出」
+   - 任何为跳过已声明步骤提供理由的表述
+   
+   **检测到上述模式时，必须暂停当前流程，重新检查是否跳过了 `[VERIFICATION]` 步骤。如果确认跳过，必须先补做再继续。**
 
 ---
 
@@ -164,10 +193,20 @@ Phase 2: Post-Execution Audit
 
 **遵循情况**:
 - [x/✗] Skill 选择校验: [校验结果简述]
-- [x/✗] 步骤 1: [实际执行结果简述]
-- [x/✗] 步骤 2: [实际执行结果简述]
-- [x/✗] 步骤 3: [实际执行结果简述]
+- [x/✗] [ANALYSIS] 步骤 1: [实际执行结果简述]
+- [x/✗] [VERIFICATION] 步骤 2: [实际执行结果简述]
+  - 证据行: `Verified-by: [session ID / 日志行 / curl 返回 / 命令输出]`
+- [x/✗] [OBSERVATION] 步骤 3: [实际执行结果简述]
 ...
+
+**ANALYSIS→VERIFICATION 间隙自检**（如适用）:
+- [x/✗] 间隙自检已执行
+- [x/✗] 判定结论: [必须验证 / 可跳过]
+- [x/✗] 如判定为「可跳过」，理由是否充分: [是/否]
+
+**合理化模式检测**:
+- [x/✗] 执行过程中未出现合理化跳步表述
+- [x/✗] 如出现，已暂停并补做
 
 **偏差说明**: [无 / 详细说明偏差原因和应对措施]
 
@@ -212,8 +251,13 @@ Phase 2: Post-Execution Audit
 
 **执行计划**:
 - [x] Skill 选择校验: serve-api 是最佳匹配
-- [ ] 步骤 1: curl GET /session 查看 session 列表
-- [ ] 步骤 2: tail /tmp/sse-events.jsonl 确认事件状态
+- [ ] [VERIFICATION] 步骤 1: curl GET /session 查看 session 列表
+- [ ] [OBSERVATION] 步骤 2: tail /tmp/sse-events.jsonl 确认事件状态
+
+**步骤类型规则**:
+- `[ANALYSIS]`: 源码分析、文档阅读、代码理解。**仅产生理解，不产生运行态证据。**
+- `[VERIFICATION]`: 真实触发、API 调用、命令执行。**必须产生可引用的运行态证据。**
+- `[OBSERVATION]`: 检查日志、查看结果、确认输出。**基于 VERIFICATION 的证据做判断。**
 
 **承诺**: 严格按上述顺序执行，不跳步、不调序。
 ```
@@ -230,8 +274,14 @@ Phase 2: Post-Execution Audit
 
 **遵循情况**:
 - [x] Skill 选择校验: serve-api 完全匹配任务
-- [x] 步骤 1: curl GET /session，发现 2 个活跃 session
-- [x] 步骤 2: tail SSE 事件，确认 session 状态为 idle
+- [x] [VERIFICATION] 步骤 1: curl GET /session，发现 2 个活跃 session
+  - 证据行: `Verified-by: curl http://localhost:4096/session → 返回 session 列表`
+- [x] [OBSERVATION] 步骤 2: tail SSE 事件，确认 session 状态为 idle
+
+**ANALYSIS→VERIFICATION 间隙自检**: 不适用（无 ANALYSIS 步骤）
+
+**合理化模式检测**:
+- [x] 执行过程中未出现合理化跳步表述
 
 **偏差说明**: 无
 
@@ -278,13 +328,38 @@ Phase 2: Post-Execution Audit
 
 **执行计划**:
 - [x] Skill 选择校验: 三 skill 组合使用
-- [ ] 步骤 1: 提取 blueprint 中的可验证声明
-- [ ] 步骤 2: 用 WSL 命令逐项核实声明
-- [ ] 步骤 3: 对比 blueprint-creation 标准模板
-- [ ] 步骤 4: 生成差异报告
-- [ ] 步骤 5: 修正文档
+- [ ] [ANALYSIS] 步骤 1: 提取 blueprint 中的可验证声明
+- [ ] [VERIFICATION] 步骤 2: 用 WSL 命令逐项核实声明
+- [ ] [ANALYSIS] 步骤 3: 对比 blueprint-creation 标准模板
+- [ ] [ANALYSIS] 步骤 4: 生成差异报告
+- [ ] [VERIFICATION] 步骤 5: 修正文档并验证修改
+
+**步骤类型规则**:
+- `[ANALYSIS]`: 源码分析、文档阅读、代码理解。**仅产生理解，不产生运行态证据。**
+- `[VERIFICATION]`: 真实触发、API 调用、命令执行。**必须产生可引用的运行态证据。**
+- `[OBSERVATION]`: 检查日志、查看结果、确认输出。**基于 VERIFICATION 的证据做判断。**
 
 **承诺**: 严格按上述顺序执行，不跳步、不调序。
+```
+
+**Phase 1: 执行中的 ANALYSIS→VERIFICATION 间隙自检**
+
+```markdown
+## ANALYSIS→VERIFICATION 间隙自检
+
+（步骤 1 完成后、步骤 2 开始前）
+
+**问题 1 — 代码 vs 运行态差距**: 代码分析和运行态行为可能在哪些地方不一致？
+→ blueprint 声明的文件计数可能基于旧 commit，实际文件数可能不同。
+→ 函数签名可能在近期重构中已变更但文档未更新。
+
+**问题 2 — 现有证据**: 我目前有什么运行态证据证明代码分析结论成立？
+→ 无。步骤 1 仅从文档提取声明，未执行任何命令验证。
+
+**问题 3 — 不验证的风险**: 如果跳过 VERIFICATION，最坏情况下我会得出什么错误结论？
+→ 可能报告「blueprint 与代码一致」但实际上文件数/行数/函数签名已变化。
+
+**判定**: 必须验证
 ```
 
 **Phase 2: Post-Execution Audit**
@@ -299,11 +374,21 @@ Phase 2: Post-Execution Audit
 
 **遵循情况**:
 - [x] Skill 选择校验: 三 skill 组合为最优方案
-- [x] 步骤 1: 提取了 12 个可验证声明
-- [x] 步骤 2: 逐项核实发现 4 个差异
-- [x] 步骤 3: 对比标准发现缺失 12 子系统审计
-- [x] 步骤 4: 生成差异报告
-- [x] 步骤 5: 修正文档至 v2.0
+- [x] [ANALYSIS] 步骤 1: 提取了 12 个可验证声明
+- [x] [VERIFICATION] 步骤 2: 逐项核实发现 4 个差异
+  - 证据行: `Verified-by: wc -l src/file.ts → 125 行（blueprint 声明 150 行）`
+- [x] [ANALYSIS] 步骤 3: 对比标准发现缺失 12 子系统审计
+- [x] [ANALYSIS] 步骤 4: 生成差异报告
+- [x] [VERIFICATION] 步骤 5: 修正文档至 v2.0
+  - 证据行: `Verified-by: git diff --stat → 3 files changed, 45 insertions`
+
+**ANALYSIS→VERIFICATION 间隙自检**:
+- [x] 间隙自检已执行
+- [x] 判定结论: 必须验证
+- [x] 判定后正确执行了 VERIFICATION 步骤
+
+**合理化模式检测**:
+- [x] 执行过程中未出现合理化跳步表述
 
 **偏差说明**: 无
 
@@ -340,17 +425,17 @@ Phase 2: Post-Execution Audit
 
 ---
 
-## v1.0 → v2.0 变更记录
+## v1.0 → v2.0 → v2.2 变更记录
 
-| 变更项 | v1.0 | v2.0 |
-|--------|------|------|
-| Skill 发现与选择 | 无（假设 skill 已选好） | 新增 Phase -1 |
-| Skill 角色区分 | 无（单一"适用 skill"） | 区分约束 skill + 执行 skill + 标准来源 skill |
-| Skill 不匹配处理 | 无 | 新增用户意图校验流程 |
-| Pre-Flight 模板 | "适用 skill: [名称]" | "约束 skill + 执行 skill" + "Skill 选择校验"检查项 |
-| Audit 模板 | 仅遵循情况 | 新增 Skill 选择评估 + 改进建议 |
-| 示例 | 1 个（单一 skill） | 3 个（单一、组合、不匹配） |
-| 执行约束 | 4 条 | 6 条（新增 Skill 角色明确 + Skill 选择校验） |
+| 变更项 | v1.0 | v2.0 | v2.2 |
+|--------|------|------|------|
+| Skill 发现与选择 | 无（假设 skill 已选好） | 新增 Phase -1 | 同 v2.0 |
+| Skill 角色区分 | 无（单一"适用 skill"） | 区分约束 skill + 执行 skill + 标准来源 skill | 同 v2.0 |
+| Skill 不匹配处理 | 无 | 新增用户意图校验流程 | 同 v2.0 |
+| Pre-Flight 模板 | "适用 skill: [名称]" | "约束 skill + 执行 skill" + "Skill 选择校验"检查项 | **新增步骤类型标注 `[ANALYSIS]/[VERIFICATION]/[OBSERVATION]` + 步骤类型规则说明** |
+| Audit 模板 | 仅遵循情况 | 新增 Skill 选择评估 + 改进建议 | **新增证据行检查 + ANALYSIS→VERIFICATION 间隙自检 + 合理化模式检测** |
+| 执行约束 | 4 条 | 6 条（新增 Skill 角色明确 + Skill 选择校验） | **9 条（新增 ANALYSIS→VERIFICATION 间隙自检、证据行要求、合理化模式检测）** |
+| 示例 | 1 个（单一 skill） | 3 个（单一、组合、不匹配） | **示例 1/2 升级为 v2.2 模板，新增间隙自检展示** |
 
 ---
 

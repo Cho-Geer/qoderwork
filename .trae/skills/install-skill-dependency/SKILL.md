@@ -94,7 +94,9 @@ After receiving authorization:
 2. Verify each installation succeeded before moving to the next
 3. Report success or failure for each dependency
 
-### Step 6: Verify and Report
+### Step 6: Verify and Report `[VERIFICATION]`
+
+> **本步骤是 `[VERIFICATION]`**--必须实际重新运行 which/version 命令验证每个依赖，记录 `Verified-by: 实际命令输出`。「刚装完肯定有了」不是验证。
 
 After all installations complete:
 1. Re-run the dependency scan from Step 2

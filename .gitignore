@@ -9,6 +9,7 @@ scripts/.env
 
 # Tool-specific local state
 .codeartsdoer/
+.zcode/
 
 # Python cache
 **/__pycache__/
