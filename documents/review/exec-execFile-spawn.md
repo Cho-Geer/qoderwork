@@ -1,178 +1,52 @@
-# exec/ execFile/ spawn对比表
-这是一张从原理到实战的 exec/ execFile/ spawn对比表，也是 Node.js 子进程模块的核心知识。
----
-## 🆚 exec / execFile / spawn 核心对比表
-|维度|exec​|execFile​|spawn​|
-|-|-|-|-|
-|所属模块​|child_process|child_process|child_process|
-|是否启动 shell​|✅ 是​ (/bin/sh)|❌ 否​|❌ 否​|
-|安全风险​|⚠️ 高（极易注入）|✅ 低​|✅ 低​|
-|命令传参方式​|字符串（拼接）|数组​|数组​|
-|输出处理方式​|一次性缓存​|一次性缓存​|流式（Stream）​|
-|适合输出大小​|❌ 小输出（< 1MB）|❌ 小输出（< 1MB）|✅ 大输出 / 持续输出​|
-|实时输出​|❌ 不支持|❌ 不支持|✅ 支持​|
-|内存占用​|较高（缓存全部输出）|较高|低（边读边处理）|
-|API 风格​|回调|回调|事件 / Stream|
-|Promise 支持​|✅ promisify|✅ promisify|✅ spawn + async iterator|
-|默认返回​|stdout, stderr|stdout, stderr|stdout, stderr流|
-|复杂度​|⭐ 简单|⭐⭐ 简单|⭐⭐⭐ 稍复杂|
+# Node.js `exec` / `execFile` / `spawn` 安全对照
 
-            维度
-            exec​
-            execFile​
-            spawn​
-            所属模块​
-            child_process
-            child_process
-            child_process
-            是否启动 shell​
-            ✅ 是​ (/bin/sh)
-            ❌ 否​
-            ❌ 否​
-            安全风险​
-            ⚠️ 高（极易注入）
-            ✅ 低​
-            ✅ 低​
-            命令传参方式​
-            字符串（拼接）
-            数组​
-            数组​
-            输出处理方式​
-            一次性缓存​
-            一次性缓存​
-            流式（Stream）​
-            适合输出大小​
-            ❌ 小输出（< 1MB）
-            ❌ 小输出（< 1MB）
-            ✅ 大输出 / 持续输出​
-            实时输出​
-            ❌ 不支持
-            ❌ 不支持
-            ✅ 支持​
-            内存占用​
-            较高（缓存全部输出）
-            较高
-            低（边读边处理）
-            API 风格​
-            回调
-            回调
-            事件 / Stream
-            Promise 支持​
-            ✅ promisify
-            ✅ promisify
-            ✅ spawn + async iterator
-            默认返回​
-            stdout, stderr
-            stdout, stderr
-            stdout, stderr流
-            复杂度​
-            ⭐ 简单
-            ⭐⭐ 简单
-            ⭐⭐⭐ 稍复杂
----
-## 📌 代码示例对比
-### 1️⃣ exec（不推荐，除非必须）
-```plaintext
-import { exec } from "child_process";
+本文是 work-one 子进程执行层的强制选型规则。安全结论只在 `shell: false`、可执行文件固定或受白名单约束、参数逐项校验、工作目录受控、环境变量最小化时成立。
 
-exec("ls -l /tmp", (err, stdout, stderr) => {
-  console.log(stdout);
+## 固定结论
+
+| API | 是否启动 shell | 参数形式 | 输出模型 | work-one 规则 |
+|---|---|---|---|---|
+| `exec` / `execSync` | 是 | 单个命令字符串 | 全量缓冲 | 禁止用于 `safe_shell` 和任何含外部输入的路径 |
+| `execFile` | 默认否 | `file` + `args[]` | 全量缓冲 | 仅用于有界短输出命令 |
+| `spawn` | 默认否 | `file` + `args[]` | 流式 | 用于长任务、大输出或需要实时消费输出的命令 |
+
+不得设置 `shell: true`。一旦启用 shell，`execFile` 和 `spawn` 会重新暴露 shell 注入面。
+
+## 固定路由规则
+
+1. 将请求解析为单个可执行文件和参数数组。
+2. 校验可执行文件白名单、每个参数、`cwd`、目标路径和环境变量。
+3. 出现 `;`、`&&`、`||`、管道、重定向、命令替换、后台执行、通配符展开或环境变量展开需求时，拒绝请求；改用一等工具或仓库内已审核脚本。
+4. 输出上限明确且结果较小时使用异步 `execFile`。
+5. 输出可能较大、持续运行或需要实时消费时使用 `spawn`，并逐块计数，超过上限立即终止子进程。
+
+## 共同安全约束
+
+- 禁止把用户或模型输入拼接进命令字符串。
+- 禁止依赖 `PATH` 解析不受控程序；生产路径使用固定绝对路径或经过校验的可执行文件映射。
+- 固定 `cwd`，并在执行前对路径做规范化、边界检查和符号链接检查。
+- 使用最小环境变量集合，删除可改变加载行为的变量，例如 `NODE_OPTIONS`、`BASH_ENV`、`LD_PRELOAD`。
+- 必须设置超时、输出字节上限和 `AbortSignal`；超限、超时或取消后终止整个子进程树。
+- stderr 不等于失败；以退出码、信号和调用契约共同判断结果。
+- 日志记录规则 ID、可执行文件、脱敏参数、退出码、信号、耗时和截断状态；不得记录密钥和完整敏感参数。
+- `execFile`/`spawn` 只能消除 shell 解析，不会消除参数注入、选项注入、路径穿越、恶意配置或被执行程序自身的漏洞。
+
+## 安全示例
+
+```ts
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const runFile = promisify(execFile);
+const result = await runFile("/usr/bin/git", ["status", "--short"], {
+  cwd: verifiedRepoRoot,
+  env: minimalEnv,
+  encoding: "utf8",
+  timeout: 30_000,
+  maxBuffer: 1 * 1024 * 1024,
+  signal,
+  shell: false,
 });
 ```
-🚨 危险点：
-```plaintext
-exec(`ls ${userInput}`); // 用户可注入 ; rm -rf /
-```
----
-### 2️⃣ execFile（✅ 推荐用于短命令）
-```plaintext
-import { execFile } from "child_process";
 
-execFile("ls", ["-l", "/tmp"], (err, stdout, stderr) => {
-  console.log(stdout);
-});
-```
-✅ 安全原因：
-- 不启动 shell
-- 参数不会被解析为命令
----
-### 3️⃣ spawn（✅ 推荐用于长任务 / 大数据）
-```plaintext
-import { spawn } from "child_process";
-
-const ls = spawn("ls", ["-l", "/tmp"]);
-
-ls.stdout.on("data", (chunk) => {
-  process.stdout.write(chunk); // 实时输出
-});
-
-ls.stderr.on("data", (chunk) => {
-  process.stderr.write(chunk);
-});
-
-ls.on("close", (code) => {
-  console.log(`exit code: ${code}`);
-});
-```
-✅ 优势：
-- 不会卡死大输出
-- 适合日志、视频处理、构建工具
----
-## 🎯 使用场景速查表
-|场景|推荐|
-|-|-|
-|执行简单系统命令|✅ execFile|
-|用户输入参与命令|✅ 必须用 execFile / spawn​|
-|需要 shell 特性（&&, >）|⚠️ exec（慎用）|
-|实时日志 / 长时间运行|✅ spawn|
-|大文件 / 大量输出|✅ spawn|
-|CLI 工具开发|✅ spawn|
-|快速脚本 / 原型|execFile|
-|安全敏感环境|❌ 禁止 exec|
-
-            场景
-            推荐
-            执行简单系统命令
-            ✅ execFile
-            用户输入参与命令
-            ✅ 必须用 execFile / spawn​
-            需要 shell 特性（&&, >）
-            ⚠️ exec（慎用）
-            实时日志 / 长时间运行
-            ✅ spawn
-            大文件 / 大量输出
-            ✅ spawn
-            CLI 工具开发
-            ✅ spawn
-            快速脚本 / 原型
-            execFile
-            安全敏感环境
-            ❌ 禁止 exec
----
-## ⚠️ 常见误区
-### ❌ “execFile 一定比 spawn 简单”
-→ 对，但 不适合长任务
-### ❌ “spawn 太复杂，我用 exec 就行”
-→ 一旦输出超过 ~1MB，exec 会直接失败
-### ❌ “用了 execFile 就不需要校验参数”
-→ 错，路径穿越、逻辑漏洞仍然存在
----
-## ✅ 一句话选择指南
-> **能用 execFile就用 execFile，要实时输出或大流量用 spawn，除非你明确需要 shell，否则永远不要用 exec。**
----
-## 🧠 进阶提示（很重要）
-### Promise 写法（现代 Node.js）
-```plaintext
-import { promisify } from "util";
-import { execFile } from "child_process";
-
-const run = promisify(execFile);
-await run("ls", ["-l"]);
-```
-### spawn + async/await（Node 18+）
-```plaintext
-for await (const chunk of spawn("ls", ["-l"]).stdout) {
-  process.stdout.write(chunk);
-}
-```
----
+参数若可能以 `-` 开头，必须按目标程序语义使用 `--` 终止选项，或拒绝该参数；不能假设参数数组会自动阻止选项注入。

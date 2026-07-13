@@ -2,15 +2,11 @@
 
 > 本文件由 QoderWork Session Startup 自动扫描。新增文档时请同步更新此索引。
 >
-> **最近更新**: 2026-07-12 — 新增框架废弃内容审计 blueprint：
-> - **新增收录**: blueprints/2026-07-12-framework-deprecated-content-audit-blueprint.md（废弃/过时内容清理施工图）
-> - **同步修正**: native-opencode integration 摘要移除已废弃 Scout 表述
+> **最近更新**: 2026-07-13 — 收敛 Node.js 子进程安全执行规范：
+> - **更新**: review/exec-execFile-spawn.md — 固定 execFile/spawn 路由与共同安全约束
+> - **更新**: review/execFile-usage.md — 补齐参数注入、资源上限、进程终止与 fail-closed 契约
 >
-> **历史更新**: 2026-07-10 — 文档与代码一致性校准（代码实测验证）：
-> - **全局修正**: 自定义工具 22→37、Schema v32→v37、DB 表 41→50（54 CREATE - 4 DROP）、Plugin handler 29→39、Lib 50→51、MCP Server 11→12
-> - **新增收录**: review/exec-execFile-spawn.md、review/execFile-usage.md（Node.js child_process 参考）
-> - **行数校准**: session-id-acquisition-matrix ~124→~154
-> - **校准文件**: cognitive-map、tool-reference、enforcement-exemption-matrix、db-canonical-design、工具调用失败链、architecture-assessment
+> **历史更新**: 2026-07-12 — 新增框架废弃内容审计 blueprint，并修正 native-opencode integration 的 Scout 漂移。
 >
 > **历史更新**: 2026-07-09 — 新增 tool-permission-interception-authorization-layer-map.md + session-id-acquisition-matrix.md
 
@@ -35,8 +31,8 @@
 | native-opencode/native-opencode-worktree.md | Worktree 活用机制 | Git Worktree 天然兼容、CWD 边界会话隔离、多 Agent 并行开发与分支隔离。面向多任务并行研发流程。 | ~168 |
 | review/opencode-framework-architecture-assessment.md | 框架架构深度评估 | 七维度评估（轻量/复用/高效/稳定/可靠/维护/健壮）、代码实测 vs 文档声明对比（2026-07-10 校准：37 工具/50 表/v37/39 handler）、308 .ts / 65,151 行验证数据。 | ~249 |
 | review/skill-audit-report.md | Skill 诊断与优化报告 | 22 个 user skill 多维度评分诊断、合并优化（→15 个以内）、ACP 引用清理、自动修复结果。 | ~169 |
-| review/exec-execFile-spawn.md | exec/execFile/spawn 对比表 | Node.js child_process 三种子进程调用方式全维度对比：shell 启动、安全风险、参数传递、输出处理、Promise 支持。面向安全 shell 工具选型。 | ~177 |
-| review/execFile-usage.md | execFile 用法详解 | Node.js execFile 函数详解：与 exec 的核心区别（不启动 shell）、安全执行外部命令的最佳实践、参数数组传递方式。面向 safe_shell 底层实现理解。 | ~145 |
+| review/exec-execFile-spawn.md | 子进程 API 安全路由 | 固定 execFile/spawn 路由、禁用 shell 与资源边界。面向安全执行层实施。 | ~52 |
+| review/execFile-usage.md | execFile 安全规范 | 规定 file/argv/cwd/env 校验、拒绝条件与错误处理。面向 safe_shell 实施。 | ~53 |
 
 ## 按场景推荐阅读
 

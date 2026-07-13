@@ -1,146 +1,53 @@
-# execFile
-execFile是 Node.js 内置模块 child_process​ 中的一个函数。
----
-## 📦 它来自哪里？
-```plaintext
-import { execFile } from "child_process";
-// 或 CommonJS
-const { execFile } = require("child_process");
-```
-📘 官方文档：
-https://nodejs.org/api/child_process.html#child_processexecfilefile-args-options-callback
----
-## 🧠 它是什么？
-execFile用来 直接执行一个可执行文件（命令），而不会启动系统的 shell。
-> ✅ 这是它和 exec最核心的区别。
----
-## 🔑 主要作用
-安全地执行外部命令 / 子进程
-比如：
-- 执行 ls
-- 执行 git
-- 执行你自己的脚本
-- 执行系统工具（如 ffmpeg, python, docker）
----
-## 🆚 exec vs execFile（重点）
-|对比项|exec|execFile|
-|-|-|-|
-|是否启动 shell|✅ 是|❌ 否|
-|是否解析 `;|&& >`|✅ 会|
-|是否容易注入|❌ 非常容易|✅ 非常安全|
-|参数传递方式|字符串拼接|参数数组|
-|推荐程度|❌ 不推荐|✅ 强烈推荐|
+# `execFile` 安全使用规范
 
-            对比项
-            exec
-            execFile
-            是否启动 shell
-            ✅ 是
-            ❌ 否
-            是否解析 `;
-            && >`
-            ✅ 会
-            是否容易注入
-            ❌ 非常容易
-            ✅ 非常安全
-            参数传递方式
-            字符串拼接
-            参数数组
-            推荐程度
-            ❌ 不推荐
-            ✅ 强烈推荐
----
-## ✅ execFile 基本用法
-```plaintext
-import { execFile } from "child_process";
+`execFile(file, args, options, callback)` 默认直接启动可执行文件，不经过 shell。它是 work-one 有界短输出命令的执行接口，不是完整安全边界。
 
-execFile("ls", ["-l", "/tmp"], (error, stdout, stderr) => {
-  if (error) {
-    console.error("执行失败:", error);
-    return;
-  }
-  console.log(stdout);
+## 强制调用契约
+
+```ts
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
+
+const { stdout, stderr } = await execFileAsync(verifiedExecutable, verifiedArgs, {
+  cwd: verifiedCwd,
+  env: minimalEnv,
+  encoding: "utf8",
+  timeout: 30_000,
+  maxBuffer: 1 * 1024 * 1024,
+  signal,
+  shell: false,
+  windowsHide: true,
 });
 ```
-### 参数说明
-```plaintext
-execFile(command, [args], options, callback)
-```
-|参数|说明|
-|-|-|
-|command|要执行的命令（必须是可执行文件路径或命令名）|
-|args|参数数组（不会当成 shell 语法解析）|
-|callback|执行完成后的回调|
 
-            参数
-            说明
-            command
-            要执行的命令（必须是可执行文件路径或命令名）
-            args
-            参数数组（不会当成 shell 语法解析）
-            callback
-            执行完成后的回调
----
-## 🔐 为什么 execFile 更安全？
-### ❌ 危险的 exec
-```plaintext
-exec(`ls ${userInput}`);
-// userInput = ".; rm -rf /"
-// shell 会执行两条命令！
-```
-### ✅ 安全的 execFile
-```plaintext
-execFile("ls", [userInput]);
-// userInput = ".; rm -rf /"
-// 只是一个普通参数，不会被 shell 解析
-```
-👉 shell 根本没启动，注入无从谈起
----
-## ⚠️ 什么时候不能用 execFile？
-|场景|原因|
-|-|-|
-|需要 shell 特性|如通配符 *.js、管道 `|
-|需要环境变量展开|$PATH|
-|需要链式命令|cmd1 && cmd2|
+调用前必须全部满足：
 
-            场景
-            原因
-            需要 shell 特性
-            如通配符 *.js、管道 `
-            需要环境变量展开
-            $PATH
-            需要链式命令
-            cmd1 && cmd2
-👉 这类情况才考虑 exec，但一定要极度谨慎
----
-## ✅ 实战推荐组合（最佳实践）
-```plaintext
-import { execFile } from "child_process";
+1. `verifiedExecutable` 来自固定映射或严格白名单，不直接接受任意路径或命令名。
+2. `verifiedArgs` 由语义解析器生成，每一项按对应命令的参数 schema 校验，禁止字符串拼接。
+3. `verifiedCwd` 已规范化并确认位于允许根目录内；涉及文件时完成符号链接边界检查。
+4. `minimalEnv` 只包含执行所需变量，不继承可能改变解释器或模块加载行为的危险变量。
+5. `timeout`、`maxBuffer`、`signal` 均已设置；调用方能区分超时、取消、信号退出、非零退出和输出超限。
+6. `shell` 显式为 `false`，任何代码路径都不得覆盖为 `true`。
 
-const ALLOWED = ["ls", "pwd", "date"];
+## 必须拒绝的输入
 
-function safeRun(cmd: string, args: string[]) {
-  if (!ALLOWED.includes(cmd)) {
-    throw new Error("非法命令");
-  }
+- 需要 `;`、`&&`、`||`、`|`、`>`、`<`、反引号、`$()`、后台执行或 shell 展开的请求。
+- 未知可执行文件、未知子命令、未知选项或无法解析的复合命令。
+- 可能把输入解释为选项但又无法安全使用 `--` 的参数。
+- 超出允许工作目录的路径、未通过符号链接检查的路径、设备文件和特殊文件。
+- 包含密钥但日志层无法可靠脱敏的参数。
 
-  return execFile(cmd, args);
-}
-```
----
-## 🧩 常见误区
-❌ “我用 execFile 就不用校验参数了”​
-→ 错！参数仍可能影响程序行为（路径穿越、逻辑漏洞）
-✅ 正确姿势：
-- 白名单命令
-- 校验参数格式
-- 最小权限运行 Node 进程
----
-## ✅ 一句话总结
-> execFile是 Node.js 中用于“不通过 shell、直接执行命令”的安全接口，是防止命令注入的首选方案。
----
-如果你愿意，我可以再帮你：
-- ✅ 写一个 exec / execFile / spawn 对比表
-- ✅ 用 TypeScript 封装一个安全执行工具
-- ✅ 讲清楚 spawn 和 execFile 的区别
-你现在是在写 CLI 工具、后端服务，还是 Electron 应用？我可以按场景给你最合适的使用方案。
+复合工作流必须改用一等工具或仓库内已审核脚本。不得通过 `/bin/sh -c`、`bash -c` 或 `shell: true` 绕过限制。
+
+## 错误与输出处理
+
+- `execFile` 会缓冲 stdout/stderr；输出不可证明有界时改用 `spawn`。
+- 非零退出时保留退出码、信号、已捕获 stdout/stderr 和截断标志，但对模型返回前必须脱敏。
+- stderr 有内容不自动代表失败，退出码为零也不自动代表业务成功；调用方按命令契约判定。
+- 超时、取消或输出超限必须终止子进程及其后代，不能只停止等待回调。
+
+## 安全边界
+
+参数数组避免了 shell 对元字符的二次解释，但被执行程序仍会解析参数。`--config`、`--output`、`-C`、响应文件、插件加载参数和以 `-` 开头的值都可能改变程序行为，必须逐命令建模和校验。
