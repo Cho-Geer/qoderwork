@@ -1,28 +1,61 @@
 # Blueprint: 工具治理链重构（MVC + 统一日志 + 高扩展）
 
-**版本**: v2.3.2
-**日期**: 2026-07-11
-**状态**: 部分实施（Phase 0-4 已落地；治理日志字段已闭合；safe_shell protected-read 边界已修复；Phase 5 仅剩 live LLM E2E 待闭合）
+**版本**: v2.9.0
+**日期**: 2026-07-13
+**状态**: 部分实施（Phase 0-6 core 已有组件 + import + L3-012 live E2E 证据；Phase 7 子进程执行器去 shell 化已完成组件/工具边界接线；v2.9.0 新增弱模型安全实施协议：弱模型只负责窄任务实施，最终完成判定必须由强审查模型/人工完成）
 **优先级**: P0
 
 ---
 
-## 0. Live 实施状态（2026-07-11 再次交叉审核）
+## 0. Live 实施状态（2026-07-13 复核）
 
 | 范围 | 当前状态 | 证据等级 | 证据 |
 |---|---|---|---|
 | Phase 0 repo 分类器 hotfix | ✅ 已完成 | component + direct tool smoke | `RepoProvider` 已含 `"none"`；`classifyRepoShellCommand()` 对 `cat`/`sha256sum`/`ls` 返回 `provider:"none"`；`classify.test.ts` 72/72 PASS |
-| before/codegraph repo-op 边界 | ✅ 已完成 | component + static/code | `codegraph.ts` 已移除 `classifyRepoShellCommand` / `isRepoReadOperation` 依赖；`codegraph.test.ts` 5/5 PASS，并确认 `safe_shell git add a.ts` 不再被 codegraph 的 REPO-OP 裁决阻断（repo-op 已委让给 governance repo-policy） |
+| before/codegraph repo-op 边界 | ✅ 已完成 | component + static/code | `codegraph.ts` 已改为复用 `extractShellEvidenceTarget()`；`extractShellEvidenceTarget()` 对 `git` / `gh` 返回空 target；`codegraph.test.ts` 覆盖 `safe_shell gh issue create` defer，2026-07-13 组件套件 104/104 PASS |
 | safe_shell 执行层边界 | ✅ 已完成 | direct tool smoke | `safeBashTool({agent:"Orchestrator", command:"cat ..."})` 与 `sha256sum ...` 成功；`build/general git status --short` 成功；`git add` fail-closed 并提示 `safe_repo_*` |
 | 统一 `service/tool-governance/**` 领域模型 | ✅ 已落地 | static/code + unit | 目录已存在，含 10 个 source 模块 + 8 个测试文件；`context` / `decision` / `controller` / `presenter` / 6 个 policy 均可导入；tool-governance 测试 30/30 PASS |
 | governance controller 可运行性 | ✅ 已修复 | component | `bun test .opencode/service/tool-governance/controller.ts .opencode/plugin-handlers/before/tool-governance-handler.ts` 可完成导入检查；controller/handler direct smoke 覆盖 allow、repo deny、protected path deny |
-| handler adapter / runtime 接线 | ✅ 已接入 | static/code | 新增 `.opencode/plugin-handlers/before/tool-governance-handler.ts`；`before-dispatcher.ts` 注册 `tool-governance`；`project.config.json.plugin_execution_order.before` 当前为 11 项，`tool-governance` 位于末位 |
-| `codegraph.ts` / `shell-guard.ts` 收缩 | ✅ 已完成 | static/code + component | `shell-guard.ts` 已移除 repo 分类主裁决，仅保留执行层权限/危险命令/allowlist 兜底；`codegraph.ts` 已收敛为 CodeGraph evidence adapter，`classifyRepoShellCommand` impact 不再包含 `codegraph.ts` |
+| handler adapter / runtime 接线 | ✅ import 已闭合 | static/code + import smoke | `.opencode/plugin-handlers/before/tool-governance-handler.ts` 已接入；`before-dispatcher.ts` / `project.config.json` 中 `tool-governance` 已位于 `path-validate` / `codegraph` 之前；`bun -e 'await import("./.opencode/plugins/before-dispatcher.ts")'` 输出 `before-dispatcher import ok` |
+| `codegraph.ts` / `shell-guard.ts` 收缩 | ✅ 组件级已完成 | static/code + component | `shell-guard.ts` 已移除 repo 分类主裁决，仅保留执行层权限/危险命令/allowlist 兜底；`codegraph.ts` 已去掉 repo-op 主裁决，并对 repo/gh shell 命令 defer；`codegraph.test.ts` 当前通过 |
 | policy 测试覆盖 | ✅ 已补齐组件测试 | component | `service/tool-governance/__tests__/*.test.ts` 30/30 PASS，覆盖 6 个 policy；`tool-governance-handler.test.ts` 2/2 PASS；`safe-bash-core.test.ts` 23/23 PASS |
 | 统一治理日志 `ruleId/layer/outcome` | ✅ 已完成 | static/code + runtime log smoke | `presentBlock()` 与 `presentAllow()` 均写 `ruleId/layer/outcome` 到 runtime log；block/allow 的 `audit.jsonl` 事件均含 `outcome` 字段 |
-| safe_shell path 边界 | ✅ 已修复 | component + direct handler smoke | `path-policy.ts` 的只读命令豁免正则已从错误控制字符修正为 `\\b` 单词边界；新增 `path-policy.test.ts` 回归用例；`safe_shell cat package.json` 与 `safe_shell cat .opencode/service/repo/types.ts` 现在都经 governance allow（direct `bun -e` 返回 `null`） |
+| safe_shell path 边界 | ✅ 组件级已修复 | component + static/code | `path-validate.ts` 已改为复用 `service/tool-governance/shell-targets.ts` 的 `extractShellLocalPaths()`；`path-validate.test.ts` 28/28 PASS，并确认 `gh --repo` / `gh api repos/...` / JSON body / `/dev/null` 不再被误识别为本地路径 |
+| Phase 6 parser 单源化 | 🟡 core 已闭合，落盘仍待收口 | static/code + CodeGraph impact + import smoke | `path-validate.ts`、`tool-scope-paths.ts`、`tool-scope-match.ts`、`codegraph.ts` 均已复用 `service/tool-governance/shell-targets.ts`；`parseShellWriteTargets` re-export 兼容缺口已修复并通过 before-dispatcher import smoke；但 `shell-targets.ts` / test 仍需纳入 git 跟踪并做正式收口 |
+| active before 链单一裁决收口 | ✅ core L3-012 已闭合 | live LLM E2E + component | `tool-governance` 已位于 `path-validate` / `codegraph` 之前；L3-012 session `ses_0a66bc378ffelPj4R46sNeG0zR` 见证固定 `safe_shell gh issue create --repo ...` 首个业务阻断为 `[REPO-OP] ... layer=repo-policy outcome=deny`，未出现 `WORKTREE_BOUNDARY` / `CODEGRAPH-ENFORCE` |
+| L3-012 live Orchestrator E2E | ✅ PASS（core） | live serve API + messages snapshot | `e2e-evidence/L3/L3-012/messages-final.json` 见证真实 `Orchestrator` 调用固定命令并被 `repo-policy` deny；证据包为最小包，缺 prompt/question/monitor 完整留痕；不覆盖全部 `gh` remote_write 变体 |
+| Phase 7 safe_shell 去 shell 化 | 🟡 组件/工具边界已实施 | static/code + component + direct tool smoke | `shell-guard.ts` 已移除 `execSync(command)` 路径，`safe_shell.ts` 变为 async 薄适配器并消费 `__verified_command_plan`；`command-executor.ts` 使用 `execFile`/`spawn` 且 `shell:false`；104/104 相关测试 PASS；direct tool smoke `pwd` 成功 |
 
-**当前结论**: 本 blueprint 已推进到“统一治理域已接入 before 链、repo-op 主裁决已从 codegraph/shell-guard 收敛到 repo-policy、组件测试通过、治理日志字段闭合、protected-path read 回归已修复”。下一步重点是补真正的 Orchestrator -> build live LLM E2E。
+**当前结论**: 本 blueprint 仍**不能宣称完成**。Phase 6 的 core blocker（dispatcher import 与 L3-012 首裁决）已关闭，Phase 7 的核心代码路径也已从 `execSync(command)` 迁移到 `VerifiedCommandPlan` + `execFile`/`spawn`（`shell:false`）。剩余收口项是：纳入 untracked 新文件、补齐 L3-012 完整证据包或明确保留最小证据边界、扩展 `gh` remote_write 变体 E2E、补 Phase 7 allow-path live E2E（含资源上限、中断、进程树终止）并完成正式回归/提交。
+
+### 0.1 弱模型安全实施协议（2026-07-13）
+
+本 blueprint 允许弱模型参与实施，但**弱模型不得拥有最终完成判定权**。执行分工固定如下：
+
+| 角色 | 允许做 | 禁止做 | 交付物 |
+|---|---|---|---|
+| 弱模型实施者 | 按 §4.3 的单张任务卡修改指定文件；运行任务卡列出的固定验证命令；记录实际输出 | 自行扩大范围；跨任务批量重构；新增 shell fallback；把 `[ ]` 改成 `[x]`；删除/改写失败测试；宣称 blueprint 完成 | patch diff、命令输出、失败日志、未解决问题 |
+| 强审查模型 / 人工 reviewer | 审查 diff、重跑验证、补做 live E2E、决定是否勾选完成项 | 直接相信弱模型口头结论 | review finding、验证证据、状态更新 |
+
+**弱模型全局硬约束**：
+
+1. 一次只领取一张任务卡；每张任务卡最多修改 3 个源码文件和 2 个测试/文档文件。
+2. 修改前必须记录 `git status --short`，遇到非本任务相关 dirty 文件只能忽略，不得回滚。
+3. 修改 work-one 代码前必须先跑 `codegraph status`，并对任务卡指定的入口符号跑 `codegraph impact`。
+4. 不得使用 `exec`、`execSync`、`execFileSync`、`shell:true`、`sh -c`、`bash -c`、`/bin/sh -c`，也不得新增 `allowShellFallback` / `rawCommand` / `shellCommand` 兼容字段。
+5. 不得把组件测试通过外推为 live E2E 通过；不完整证据只能写 `PARTIAL` 或 `CORE PASS`，不得写 `COMPLETE`。
+6. 不得修改本 blueprint 的状态、checkbox 或成功标准；状态更新只能由强审查模型 / 人工 reviewer 在复核后完成。
+7. 任何验证失败时必须停止当前任务卡，保留失败输出，不得继续“顺手修别的”。
+
+**完成判定门**：
+
+弱模型交付后，必须由强审查模型 / 人工 reviewer 完成以下最小复核，才允许勾选任务卡：
+
+- 复查 diff 是否只触及任务卡允许文件。
+- 重跑任务卡固定验证命令。
+- 对安全相关代码做负向搜索：`execSync`、`shell:true`、`bash -c`、`allowShellFallback`、`rawCommand`。
+- 若任务卡声称 live E2E，通过 `messages-final.json` / `monitor.log` / session id 复核真实工具调用和阻断层。
+- 将复核结果写入 `logs/YYYY-MM-DD-<topic>.md` 或对应 E2E evidence。
 
 ---
 
@@ -37,6 +70,7 @@
 3. **语义混合**：有的模块同时承担"权限判断 + 领域分类 + 审计输出 + 用户错误消息拼接"。
 4. **修复前误拦截风险**：`safe_shell cat <file>` 曾被 `[FW-ENFORCE][REPO-OP]` 阻断，暴露出 repo 分类器和上层阻断器语义未对齐；当前 Phase 0 已修复该误拦截。
 5. **维护成本高**：排查一次阻断经常需要同时跨 `before-dispatcher`、`scope-validate`、`codegraph`、`classify`、`shell-guard`、`safe_*` 工具文件。
+6. **新增实锤偏差（2026-07-12）**：`path-validate.ts` 曾对 `safe_shell` 命令字符串直接扫斜杠，导致 `gh issue create --repo microsoft/vscode`、`gh api repos/...`、JSON body、`/dev/null` 被误识别为本地路径；后续又发现 `codegraph.ts` 会对这类 repo/gh 远程写先抛 `CODEGRAPH-ENFORCE`，说明 active 链当时尚未真正收口为统一治理入口。
 
 ### 1.2 根因分析
 
@@ -52,7 +86,7 @@
 
 当前复核（2026-07-11 交叉审核）：`classifyRepoShellCommand()` 已对 `cat` / `sha256sum` / `ls` 返回 `provider: "none"`；`classify.test.ts` 72/72 PASS；`codegraph.test.ts` 5/5 PASS；`safeBashTool` 直接执行 `cat` / `sha256sum` 成功；`build` / `general` 执行 `git status --short` 成功，`git add` 仍 fail-closed。
 
-**根本原因**：框架缺少一个统一的 **Tool Governance Domain Model**。系统没有把"静态访问控制 / 运行时策略判断 / 动态任务授权 / 工具执行器 / 审计与展示"明确分层，导致控制器层、领域服务层、工具执行层之间发生长期耦合。
+**根本原因**：框架虽然已引入统一的 **Tool Governance Domain Model**，但 active before 链仍保留多条不完全收口的历史 gate。系统尚未把"静态访问控制 / shell 目标解析 / 运行时策略判断 / 动态任务授权 / 工具执行器 / 审计与展示"完全收敛到单一领域入口，导致 Controller 链、独立 gate、领域服务层之间继续存在长期耦合和优先级竞争。
 
 修复前三处阻断点的代码位置：
 
@@ -61,6 +95,7 @@
 | 分类器 | `.opencode/service/repo/classify.ts` | 580-581 | 非 git/gh 命令返回 `provider: "git"` | 已改为 `provider: "none"` |
 | before hook | `.opencode/plugin-handlers/before/codegraph.ts` | 163 | `provider === "git"` 即进入 repo-op 阻断 | repo-op / GitHub write 裁决已移入 `service/tool-governance/policies/repo-policy.ts`；`codegraph.ts` 仅保留 evidence gate |
 | 工具内 guard | `.opencode/service/file-guard/shell-guard.ts` | 216 | 同上，重复裁决 | repo 分类主裁决已移除；仍保留执行层危险命令/allowlist 兜底 |
+| 结构路径 gate | `.opencode/plugin-handlers/before/path-validate.ts` | 49-57（修复前） | 对 `safe_shell` 命令直接扫 `/...` / `../...` 片段，把 repo slug、API route、正文字符串误判成本地路径 | 2026-07-12 已改为 statement/argv 级路径提取，但仍是治理域外的独立 parser |
 
 ### 1.3 修复前实测验证
 
@@ -79,41 +114,24 @@
 5. `bun test .opencode/plugin-handlers/before/__tests__/tool-governance-handler.test.ts`：2/2 PASS，覆盖 GitHub MCP read/write 委让到 governance。
 6. `bun test .opencode/lib/__tests__/safe-bash-core.test.ts`：23/23 PASS，旧角色 allowlist 期望已修正为 5-agent 边界。
 7. 直接调用治理 handler：`cat package.json` allow；`git add a.ts` 触发 `repo-policy` deny；`github_create_issue` 触发 `repo-policy` deny；修复 `path-policy.ts` 正则后，`cat .opencode/service/repo/types.ts` 也按只读命令豁免返回 allow。
-8. 直接调用 `codegraph.handle()`：`safe_shell git add a.ts` 不再触发 REPO-OP；若缺少 CodeGraph impact，会先被 `CODEGRAPH-ENFORCE` evidence gate 阻断。
+8. 2026-07-12 直接调用 `codegraph.handle()`：`safe_shell git add a.ts` 不再触发 REPO-OP；但当时若缺少 CodeGraph impact，会先被 `CODEGRAPH-ENFORCE` evidence gate 阻断。
 9. 直接调用 `safeBashTool()`：`cat` / `sha256sum` 成功，`build/general git status --short` 成功，`build/general git add a.ts` 在 dry-run 下 fail-closed；当前阻断来自执行层 allowlist 兜底，不再是 `shell-guard.ts` 的 repo-op 分类主裁决。
+10. `bun test ./.opencode/plugin-handlers/before/__tests__/path-validate.test.ts`：2026-07-13 复核为 **28/28 PASS**，覆盖 `gh --repo` / `gh api repos/...` / JSON body / `/dev/null` / `cd && relative path` / `node -e` 等场景。
+11. direct smoke（2026-07-12）：`pathValidate.handle("gh issue create --repo microsoft/vscode ...")` → **ALLOW**；`toolGovernance.handle(...)` → **`REPO-OP deny`**；`codegraph.handle(...)` → **`[CODEGRAPH-ENFORCE] safe_shell blocked`**。该失败已由 Phase 6 的 `extractShellEvidenceTarget()` defer 方案在组件测试中修正，并在 2026-07-13 L3-012 live E2E 中确认未再出现 `CODEGRAPH-ENFORCE`。
+12. 2026-07-13 复核：`bun -e 'await import("./.opencode/plugins/before-dispatcher.ts")'` → **PASS**，输出 `before-dispatcher import ok`，`parseShellWriteTargets` re-export 兼容破口已关闭。
+13. 2026-07-13 复核：`bun test ./.opencode/plugin-handlers/before/__tests__/tool-governance-handler.test.ts ./.opencode/plugin-handlers/before/__tests__/codegraph.test.ts ./.opencode/plugin-handlers/before/__tests__/path-validate.test.ts ./.opencode/service/tool-governance/__tests__/*.test.ts ./.opencode/service/file-guard/__tests__/safe-bash-execution.test.ts ./.opencode/lib/__tests__/safe-bash-core.test.ts` → **104/104 PASS**。
+14. 2026-07-13 direct tool smoke：`safe_shell.execute({ command: "pwd", __verified_command_plan })` → exitCode `0`，输出 `/home/zhaoge/workspace/opencode/work-one`，证明工具层可消费治理层注入的 `VerifiedCommandPlan` 并通过 `execFile`/`spawn` 执行器完成 allow-path。
+15. 2026-07-13 L3-012 live E2E：session `ses_0a66bc378ffelPj4R46sNeG0zR` 的 `messages-final.json` 见证固定 `safe_shell gh issue create --repo zzzz-invalid-owner-012345/zzzz-invalid-repo-012345 ...` 被 `[REPO-OP] Direct gh remote_write operations are blocked. Use safe_repo_* first-class tools instead.` 阻断，元信息为 `layer=repo-policy outcome=deny tool=safe_shell agent=Orchestrator`，且无 `WORKTREE_BOUNDARY` / `CODEGRAPH-ENFORCE`。
 
-**结论**：问题 4 的原始根因是 `classifyRepoShellCommand()` 对非 git/gh 命令返回了 `provider: "git"`，导致上层 `provider === "git"` 条件误命中。当前 Phase 0 hotfix 已修复；Tool Governance Domain 已建模并接入 before 链；`codegraph.ts` / `shell-guard.ts` 的 repo-op 主裁决已收敛；`path-policy.ts` 的 protected-read 回归也已修复。剩余重点是 live LLM E2E。
+**结论**：问题 4 的原始根因仍然成立，并已在 Phase 0 修复；2026-07-12 暴露的第二类 active 运行态问题（`path-validate` shell 路径误判、`codegraph` 对 `safe_shell` repo/gh 远程写 evidence 过拦截）在 core 路径上已由 Phase 6 + L3-012 关闭。当前实现状态应定义为“治理域 core 链已贯通，仍需补齐变体矩阵、证据完整性和 Phase 7 live allow-path 收口”。
 
 ---
 
-## 二、解决方案
+## 二、确定方案
 
-### 2.1 方案对比
+建立统一 Tool Governance Domain，将治理请求固定拆为 Controller、Model、Service、View 和 Infrastructure 五层。所有实施步骤均以本节为唯一目标架构，不保留并行方案、兼容执行路径或实施者自行选择项。
 
-| 维度 | 方案 A：继续局部修补 | 方案 B：统一治理域服务重构 | 方案 C：把所有规则塞进工具内部 |
-|---|---|---|---|
-| 核心思路 | 在现有 handler 上继续修 bug | 建立统一 Tool Governance Domain，拆分 Controller / Model / Service / View | 弱化 before hooks，工具层自带全部治理 |
-| 实现复杂度 | 低 | 中高 | 中 |
-| 可维护性 | 低 | 高 | 低 |
-| 安全性 | 中 | 高 | 中 |
-| 扩展性 | 低 | 高 | 低 |
-| MVC 一致性 | 差 | 好 | 差 |
-| 日志一致性 | 继续分散 | 可统一收敛 | 工具各自实现，易漂移 |
-| 对误拦截治理 | 临时可修 | 体系化修复 | 容易换一个地方重复出问题 |
-
-### 2.2 选择结论
-
-采用**方案 B：统一治理域服务重构**。引入一个统一的 Tool Governance Domain，把当前治理链拆成清晰的 MVC 分层。
-
-理由：
-1. 用户要求明确包含松耦合高内聚、高维护性、高安全性、高扩展性。
-2. 用户要求符合 MVC 设计架构并正确集成日志系统。
-3. 当前问题已不是“某几个 if 条件修一下”能长期解决，必须把治理决策从散落的 handler/tool 中抽出来。
-
-### 2.3 否决理由
-
-- **否决方案 A**：只能解决个别误拦截，但会继续累积“规则在 hook / tool / service 多处复制”的技术债。
-- **否决方案 C**：看似集中，实则把 Controller / Policy / Execution 混成大工具，破坏 MVC 和可测试性，也不利于统一审计。
+统一治理域负责静态访问控制后的业务裁决、shell 语义解析、repo 策略、路径保护、CodeGraph evidence、grant 校验和统一审计。工具执行层只接收治理域输出的已验证执行计划，并保留不可绕过的最终兜底校验。
 
 ---
 
@@ -185,7 +203,34 @@ export interface ToolGovernanceDecision {
 
 禁止使用 `process.stderr.write`、`console.log`、`writeLogSafe()` 风格的 ad-hoc 日志。
 
-### 3.4 子系统合规审计
+### 3.4 子进程执行安全契约
+
+`safe_shell` 的字符串命令只允许作为治理域输入，不得直接传给 `exec`、`execSync`、`/bin/sh -c`、`bash -c` 或任何 `shell: true` 调用。治理域必须先生成不可变的执行计划：
+
+```typescript
+export interface VerifiedCommandPlan {
+  executable: string;
+  args: readonly string[];
+  cwd: string;
+  env: Readonly<Record<string, string>>;
+  outputMode: "buffered" | "stream";
+  timeoutMs: number;
+  maxOutputBytes: number;
+}
+```
+
+执行规则固定如下：
+
+1. 仅允许单个已建模命令。解析结果含 `;`、`&&`、`||`、`|`、`>`、`<`、反引号、`$()`、后台执行、通配符展开或环境变量展开时，返回 `SHELL-COMPOSITION-DENY`，不得降级到 shell。
+2. 有界短输出命令通过异步 `execFile(executable, args, { shell:false, ... })` 执行；长任务、大输出或实时输出命令通过 `spawn(executable, args, { shell:false, ... })` 执行。禁止 `exec`、`execSync` 和 `execFileSync`。
+3. executable 必须来自配置中的命令到绝对路径映射；未知命令直接拒绝。args 必须按每个命令的子命令、选项、位置参数 schema 校验，必要时插入 `--` 阻止选项注入。
+4. cwd 和路径参数必须经过 normalize、realpath、允许根检查和符号链接边界检查。执行时使用最小 env，并移除 `NODE_OPTIONS`、`BASH_ENV`、`ENV`、`LD_PRELOAD`、`DYLD_INSERT_LIBRARIES` 等加载注入变量。
+5. timeout、AbortSignal 和输出字节上限为必填。超时、取消或输出超限必须终止整个子进程树，并记录 `exitCode/signal/timedOut/aborted/truncated`。
+6. 复合工作流迁移到一等工具或仓库内已审核脚本；脚本路径、内容 hash、解释器和参数 schema 都必须固定并审计。不得增加兼容 shell 分支。
+
+`shell-policy` 负责生成或拒绝 `VerifiedCommandPlan`，`command-executor.ts` 只执行已验证计划，不重新解析原始字符串。`safe_shell.ts` 必须变为异步薄适配器并 `await` 执行器。执行器仍做结构性断言，断言失败时 fail-closed。
+
+### 3.5 子系统合规审计
 
 | # | 子系统 | 状态 | 检查要点 |
 |---|---|---|---|
@@ -200,22 +245,24 @@ export interface ToolGovernanceDecision {
 | 9 | Log Central Management | ✅ | 强制统一到 `log-manager` + `jsonl-writer` |
 | 10 | DB-canonical Management | ✅ | repo grant / dispatch privilege 继续以现有表为主 |
 | 11 | Templatization & Parameterization | ✅ | policy 模块参数化，配置从 `opencode.json` / `project.config.json` 注入 |
-| 12 | TypeScript + Bun Runtime | ⚠️ | 需控制每个 policy 文件规模 ≤ 400 行 |
+| 12 | TypeScript + Bun Runtime | ⚠️ | 每个 policy 文件规模 ≤ 400 行；必须实测 Bun 对 `execFile`/`spawn`、AbortSignal 和子进程树终止的行为 |
 
 ---
 
 ## 四、实施清单
 
-### 4.0 当前实施进度（2026-07-11 再审）
+### 4.0 当前实施进度（2026-07-13 复核）
 
 | 阶段 | 当前状态 | 代码证据 | 阻塞 / 下一步 |
 |---|---|---|---|
 | Phase 0: 问题 4 立即修复 | ✅ 完成 | `types.ts` 增加 `"none"`；`classify.ts` fallback 改为 `"none"`；`classify.test.ts` 72/72 PASS | 无 |
 | Phase 1: 统一领域模型 | ✅ 完成 | `service/tool-governance/` 下 10 个 source 模块 + 8 个测试文件；6 个 policy 文件存在；tool-governance 测试 30/30 PASS | 后续只需继续补 live 场景，不再是骨架阻塞 |
-| Phase 2: Dispatcher 接线 | ✅ 完成 | `tool-governance-handler.ts` 已新增；`before-dispatcher.ts` 已注册；`project.config.json.plugin_execution_order.before` 已包含 `tool-governance` | 需要 live Orchestrator -> build 验证运行时顺序和错误展示 |
-| Phase 3: `safe_shell` / `codegraph` 收缩 | ✅ 完成 | `shell-guard.ts` 已移除 repo 分类主裁决；`codegraph.ts` 已移除 repo-op/GitHub write 主裁决并收敛为 evidence adapter；repo-op 由 `repo-policy` 统一裁决 | 仍需注意 CodeGraph evidence gate 先于 governance：缺 impact 时 `safe_shell git add` 会先被 `CODEGRAPH-ENFORCE` 阻断 |
-| Phase 4: 日志统一 | ✅ 完成 | `presenter.ts` 的 block/allow runtime log 均输出 `ruleId/layer/outcome`；block/allow JSONL 均含 `outcome`；runtime log smoke 可见 `GOVERNANCE-ALLOW` / `GOVERNANCE-BLOCK` | 旧 handler 日志未完全迁移 |
-| Phase 5: 回归与 live E2E | 🟡 部分完成 | component tests、handler tests、direct smoke、D3 runtime log smoke 已有 | 需要真正 Orchestrator -> build live LLM E2E 覆盖 safe_shell/CodeGraph/grant |
+| Phase 2: Dispatcher 接线 | ✅ import 闭合 | `tool-governance-handler.ts` 已新增；`before-dispatcher.ts` 已注册；`project.config.json.plugin_execution_order.before` 已包含 `tool-governance` 且位于 `path-validate` / `codegraph` 之前；before-dispatcher import smoke PASS | 仍需在正式提交前确认 active order 与文档期望是否需要完全一致，而不仅是满足 L3-012 core |
+| Phase 3: `safe_shell` / `codegraph` 收缩 | ✅ 组件级完成 | `shell-guard.ts` 已移除 repo 分类主裁决；`codegraph.ts` 已移除 repo-op/GitHub write 主裁决；repo-op 由 `repo-policy` 统一建模；`codegraph.test.ts` 覆盖 `safe_shell gh issue create` defer | core 路径已由 import smoke + L3-012 live E2E 复验；仍需补其他 remote_write 变体 |
+| Phase 4: 日志统一 | 🟡 治理域内完成，整链未完成 | `presenter.ts` 的 block/allow runtime log 均输出 `ruleId/layer/outcome`；runtime log smoke 可见 `GOVERNANCE-ALLOW` / `GOVERNANCE-BLOCK` | `path-validate` / `behavioral-path-guard` / `codegraph` 等旧 gate 仍写各自审计格式，整条 before 链未完全统一 |
+| Phase 5: 回归与 live E2E | 🟡 core live 已收口，矩阵未完成 | 2026-07-13 相关组件套件 104/104 PASS；L3-012 live Orchestrator E2E PASS（session `ses_0a66bc378ffelPj4R46sNeG0zR`） | L3-012 证据包为最小包；L3-008/009/010/011 和 `gh` remote_write 变体仍需 live witness |
+| Phase 6: active before 链收口 + shell parser 单源化 | 🟡 core 已落地，文件跟踪未收口 | `service/tool-governance/shell-targets.ts` 已存在；`path-validate.ts`、`tool-scope-paths.ts`、`tool-scope-match.ts`、`codegraph.ts` 已复用；`tool-governance` 已前置于 `path-validate` / `codegraph`；import smoke + L3-012 PASS | `shell-targets.ts` / test 等新增文件仍需纳入 git 跟踪；需要补 full evidence rerun 或保留最小证据边界说明 |
+| Phase 7: 子进程执行器去 shell 化 | 🟡 组件/工具边界已实施 | `shell-plan.ts` 生成 `VerifiedCommandPlan`；`command-executor.ts` 使用 async `execFile`/`spawn` 且 `shell:false`；`safe_shell.ts` 消费 `__verified_command_plan`；safe-bash execution tests PASS；direct `pwd` smoke PASS | 仍需 live allow-path E2E，覆盖资源上限、中断、进程树终止、输出截断和真实 before-hook plan 注入 |
 
 ### 4.1 文件变更列表
 
@@ -242,8 +289,202 @@ export interface ToolGovernanceDecision {
 | 19 | `.opencode/service/file-guard/shell-guard.ts` | 修改 | 去掉重复 repo 裁决，收缩为 executor |
 | 20 | `.opencode/tools/safe_shell.ts` | 修改 | 改成薄工具层 |
 | 21 | `.opencode/service/tool-governance/__tests__/*.ts` | 新建 | 新治理域单元测试 |
+| 22 | `.opencode/plugin-handlers/before/path-validate.ts` | 修改 | `safe_shell` 路径提取从斜杠正则升级为 statement/argv 级 shell 解析，并复用 `git/gh` repo classifier |
+| 23 | `.opencode/plugin-handlers/before/__tests__/path-validate.test.ts` | 修改 | 新增 `gh --repo` / `gh api` / JSON body / `/dev/null` / `cd && relative path` / `node -e` 回归用例（28/28 PASS） |
+| 24 | `.opencode/service/tool-governance/shell-targets.ts` | 新建（当前 untracked） | Phase 6 共享 `safe_shell` parser，提供 local path / write target / evidence target 三类解析 |
+| 25 | `.opencode/service/tool-governance/__tests__/shell-targets.test.ts` | 新建（当前 untracked） | 覆盖 repo slug、local write target、repo shell defer、本地 evidence target |
+| 26 | `.opencode/service/dispatch/tool-scope-paths.ts` | 修改 | 改为复用 `shell-targets.ts` 的 `parseShellWriteTargets()`；re-export 兼容已修复并通过 before-dispatcher import smoke |
+| 27 | `.opencode/service/dispatch/tool-scope-match.ts` | 修改 | 改为复用 `shell-targets.ts` 的 `parseShellWriteTargets()` |
+| 28 | `.opencode/service/tool-governance/command-plan.ts` | 新建 | 定义并构造 `VerifiedCommandPlan`，逐命令校验 executable/argv/cwd/env |
+| 29 | `.opencode/service/tool-governance/command-executor.ts` | 新建 | 仅用异步 `execFile`/`spawn` 执行已验证计划，落实超时、取消、输出上限和进程树终止 |
+| 30 | `.opencode/service/tool-governance/__tests__/command-plan.test.ts` | 新建 | 覆盖复合命令拒绝、选项注入、路径与环境边界 |
+| 31 | `.opencode/service/tool-governance/__tests__/command-executor.test.ts` | 新建 | 覆盖 shell=false、输出上限、超时、取消、进程树终止和日志字段 |
 
 ### 4.2 实施步骤
+
+> 截至 2026-07-13，Phase 6 core 已通过 import smoke 与新版 L3-012 live Orchestrator E2E。后续不需要推倒重做；必须纳入 untracked 的 `shell-targets.ts` / 测试文件，补齐完整证据包或记录最小证据边界，并扩展 `gh` remote_write 变体 companion cases。
+
+### 4.3 弱模型可执行任务卡
+
+以下任务卡是弱模型唯一允许领取的实施单元。弱模型不得把多个任务卡合并执行；不得修改任务卡外文件；不得更新本 blueprint 状态。每张任务卡完成后交给强审查模型 / 人工 reviewer 做最终复核。
+
+#### Task Card WG-01: 文件跟踪与基线收口
+
+**目标**: 确认 Phase 6/7 新增文件全部纳入 git 跟踪范围，并生成当前基线清单。
+
+**允许修改**:
+
+- 不修改源码；只允许新增/更新 `logs/YYYY-MM-DD-*.md`
+
+**允许命令**:
+
+```bash
+git status --short -- .opencode/service/tool-governance .opencode/service/file-guard .opencode/plugin-handlers/before .opencode/tools/safe_shell.ts
+git diff --stat -- .opencode/service/tool-governance .opencode/service/file-guard .opencode/plugin-handlers/before .opencode/tools/safe_shell.ts
+```
+
+**交付物**:
+
+- 列出所有 untracked/modified 文件。
+- 标注哪些属于本 blueprint，哪些疑似无关 dirty 文件。
+- 不允许执行 `git add`、`git commit`、`git checkout`、`git reset`。
+
+**Reviewer 验收**:
+
+- reviewer 决定是否 stage/commit；弱模型不得代替 reviewer 做版本控制判定。
+
+#### Task Card WG-02: remote_write 变体 E2E 文档与证据脚手架
+
+**目标**: 为 L3-012 companion cases 建立 E2E 文档和证据目录，覆盖 `gh api -X POST/PATCH/DELETE`、`gh issue comment`、`gh pr create`、release/workflow/secret 等 remote_write 变体。
+
+**允许修改**:
+
+- `e2e/L3-012-safe-shell-gh-remote-write-e2e.md`
+- `e2e/opencode-framework-simplification-e2e-integration-plan.md`
+- `e2e-evidence/L3/L3-012-*/*`（仅新增证据目录和 README/result 模板）
+- `logs/YYYY-MM-DD-*.md`
+
+**禁止修改**:
+
+- `.opencode/**/*.ts`
+- `opencode.json`
+- 本 blueprint 的 checkbox / 状态
+
+**固定验证**:
+
+```bash
+rg -n "gh api|gh issue comment|gh pr create|release|workflow|secret|remote_write" e2e blueprints/blueprint-tool-governance-mvc-refactor.md
+```
+
+**交付物**:
+
+- 每个 companion case 有固定命令、固定 prompt、PASS/FAIL 判定、证据目录。
+- 明确写出“未实际运行”或“NOT WITNESSED”，不得预填 PASS。
+
+**Reviewer 验收**:
+
+- reviewer 检查是否没有误写真实仓库 slug。
+- reviewer 决定何时启动 live serve API E2E。
+
+#### Task Card WG-03: Phase 7 allow-path live E2E
+
+**目标**: 用真实 Orchestrator 会话证明 before-hook 生成的 `VerifiedCommandPlan` 能传到 `safe_shell` 并被最终执行器消费。
+
+**允许修改**:
+
+- `e2e/L3-0xx-safe-shell-verified-plan-allow-path-e2e.md`（如不存在则新建）
+- `e2e-evidence/L3/L3-0xx-safe-shell-verified-plan-allow-path/*`
+- `logs/YYYY-MM-DD-*.md`
+
+**禁止修改**:
+
+- `.opencode/**/*.ts`
+- `opencode.json`
+- 本 blueprint 的 checkbox / 状态
+
+**固定 live 场景**:
+
+- `safe_shell pwd` 应成功，返回 cwd。
+- `safe_shell cat package.json` 应成功。
+- `safe_shell "pwd && whoami"` 应被 `SHELL-COMPOSITION-DENY` 阻断，且不得启动子进程。
+
+**必须保留证据**:
+
+- `session-create.json`
+- `session-id.txt`
+- `prompt.json`
+- `prompt_async-response.txt`
+- `messages-final.json`
+- `children-final.json`
+- `monitor.log`
+- `result.md`
+
+**Reviewer 验收**:
+
+- reviewer 复核 `messages-final.json` 中真实工具调用、返回元信息和错误层。
+- reviewer 重跑 direct smoke 或 live E2E 后，才可更新 §5.3 / §7。
+
+#### Task Card WG-04: Phase 7 资源类 E2E
+
+**目标**: 验证 timeout、AbortSignal、输出上限和 POSIX 进程组终止在 live/runtime 层可观测。
+
+**允许修改**:
+
+- `e2e/L3-0xx-safe-shell-resource-limits-e2e.md`（如不存在则新建）
+- `e2e-evidence/L3/L3-0xx-safe-shell-resource-limits/*`
+- `logs/YYYY-MM-DD-*.md`
+
+**禁止修改**:
+
+- `.opencode/**/*.ts`
+- `opencode.json`
+- 本 blueprint 的 checkbox / 状态
+
+**固定验证要求**:
+
+- 输出超限必须记录 `truncated=true` 或等价结构化字段。
+- timeout 必须记录 `timedOut=true` 或等价结构化字段。
+- abort 必须记录 `aborted=true` 或等价结构化字段。
+- 进程树终止必须有 `ps` / pid 证据或执行器结构化日志证据。
+
+**Reviewer 验收**:
+
+- reviewer 必须检查没有为了测试而引入不安全 shell 组合。
+- reviewer 必须确认测试命令不会污染仓库或系统。
+
+#### Task Card WG-05: grant lifecycle 回归
+
+**目标**: 证明治理域接入后 `safe_repo_*` 与 grant service 生命周期未退化。
+
+**允许修改**:
+
+- 测试文件：`.opencode/service/repo/__tests__/*.test.ts` 或 `.opencode/service/tool-governance/__tests__/*.test.ts`
+- E2E 文档/证据：`e2e/**`、`e2e-evidence/**`
+- `logs/YYYY-MM-DD-*.md`
+
+**禁止修改**:
+
+- DB schema / migration 文件，除非 reviewer 先批准。
+- grant 生产代码，除非任务卡被 reviewer 拆成新的源码任务卡。
+
+**固定验证**:
+
+```bash
+/home/zhaoge/.bun/bin/bun test ./.opencode/service/repo/__tests__/grants.test.ts ./.opencode/service/tool-governance/__tests__/grant-policy.test.ts
+```
+
+**Reviewer 验收**:
+
+- reviewer 复核无 grant、valid grant、consumed grant、expired grant 至少四类结果。
+
+#### Task Card WG-06: 日志字段统一审计
+
+**目标**: 找出旧 gate 中未统一 `sessionID/callID/agent/tool/ruleId/layer/outcome` 的日志，不直接大改。
+
+**允许修改**:
+
+- 新增审计文档：`documents/review/tool-governance-log-field-audit.md`
+- `logs/YYYY-MM-DD-*.md`
+
+**禁止修改**:
+
+- `.opencode/**/*.ts`
+- 本 blueprint 的 checkbox / 状态
+
+**固定验证**:
+
+```bash
+rg -n "writeLog|writeJsonl|process.stderr.write|console.log|ruleId|outcome|layer" .opencode/plugin-handlers .opencode/service/tool-governance .opencode/service/gate
+```
+
+**交付物**:
+
+- 表格列出文件、当前日志字段、缺失字段、建议任务卡。
+- 不允许直接实施日志迁移。
+
+**Reviewer 验收**:
+
+- reviewer 根据审计结果拆后续源码任务卡。
 
 #### Phase 0: 问题 4 立即修复（0.5 天）
 
@@ -626,6 +867,162 @@ layer=<layer> outcome=<outcome> tool=<tool> agent=<agent>
 - `safe_shell sha256sum <file>` 成功
 - `safe_shell node script.ts` 走 script content scan
 
+#### Phase 6: active before 链收口 + shell parser 单源化（必须实施，1-2 天）
+
+本阶段是截至 2026-07-12 唯一仍未闭合的实施缺口。以下步骤是**唯一执行顺序**，按顺序完成后再进入 live E2E。不得以“再补一个判断”替代本阶段。
+
+**步骤 6.1：新建统一 `safe_shell` 解析模块**
+
+文件：`.opencode/service/tool-governance/shell-targets.ts`
+
+必须新建一个共享模块，作为 `safe_shell` 语义解析的唯一来源，并导出以下函数：
+
+- `splitShellStatements(command: string): string[]`
+- `tokenizeShellStatement(statement: string): string[]`
+- `extractShellLocalPaths(command: string): string[]`
+- `parseShellWriteTargets(command: string): ScopePathResult`
+- `extractShellEvidenceTarget(command: string): string`
+
+要求：
+
+- 从 `path-validate.ts` 中迁出 statement/argv 级切分与路径提取逻辑。
+- `extractShellEvidenceTarget()` 只在命令明确指向本地源码/文档文件时返回路径。
+- `git *`、`gh *`、`gh api repos/...`、`gh issue create --repo owner/name ...` 一律返回空字符串，禁止把 repo slug、API route、JSON body 当成本地文件。
+- 本模块成为 `path-validate.ts`、`tool-scope-paths.ts`、`codegraph.ts` 的共同依赖，后续不得再出现第二套私有 `safe_shell` 解析器。
+
+**步骤 6.2：收口 `path-validate.ts`，只保留结构校验**
+
+文件：`.opencode/plugin-handlers/before/path-validate.ts`
+
+必须执行以下修改：
+
+- 删除本文件内私有的 `splitShellStatements()`、`tokenizeShellStatement()`、`stripOuterQuotes()`、`extractShellLocalPaths()` 及其配套 shell 解析辅助函数。
+- 改为 `import { extractShellLocalPaths } from "../../service/tool-governance/shell-targets";`
+- 本文件只负责 null byte、traversal、worktree boundary、path length、invalid chars、reserved names 等结构校验。
+- `path-validate.ts` 不再承担 repo/gh 命令语义识别职责。
+
+**步骤 6.3：收口 `tool-scope-paths.ts`，不再保留第二套写目标解析器**
+
+文件：`.opencode/service/dispatch/tool-scope-paths.ts`
+
+必须执行以下修改：
+
+- 删除本文件中私有的 `parseShellWriteTargets()` 与 `parseSingleCommand()` 分支解析实现。
+- 改为从 `.opencode/service/tool-governance/shell-targets.ts` 导入 `parseShellWriteTargets()`。
+- `getEffectivePathScopePaths()` 的 `safe_shell` 分支必须只调用共享解析器。
+- 禁止继续在 `tool-scope-paths.ts` 中维护独立的 `sed/cp/mv/dd/node -e` 解析规则。
+
+**步骤 6.4：修改 `codegraph.ts`，显式把 repo/gh shell 命令让渡给 governance**
+
+文件：`.opencode/plugin-handlers/before/codegraph.ts`
+
+必须执行以下修改：
+
+- 在 `tool === "safe_shell"` 时，先对 `args.command` 调用 `classifyRepoShellCommand(command)`。
+- 只要分类结果 `provider === "git"` 或 `provider === "gh"`，立即 `return`，不再进入 `extractFilePath()`、`readImpactState()`、`CODEGRAPH-ENFORCE` 分支。
+- 删除本文件私有的 `extractShellTarget()`。
+- 改为从 `.opencode/service/tool-governance/shell-targets.ts` 导入 `extractShellEvidenceTarget()`，仅对真正的本地源码目标执行 evidence gate。
+
+完成后，`codegraph.ts` 的职责必须收敛为：“只对本地源码修改做 impact evidence 校验”，不得再对 repo/gh shell 命令抢先裁决。
+
+**步骤 6.5：调整 before 执行顺序，让治理域成为首个运行时业务裁决层**
+
+文件：
+
+- `.opencode/plugins/before-dispatcher.ts`
+- `.opencode/project.config.json`
+
+必须把 `before` 顺序固定改为：
+
+```json
+[
+  "gate-call-context",
+  "guidance-bridge",
+  "task",
+  "permission-safety",
+  "tool-governance",
+  "behavioral-path-guard",
+  "scope",
+  "path-validate",
+  "codegraph",
+  "skill-policy",
+  "dispatch-signal"
+]
+```
+
+要求：
+
+- 同时修改 `before-dispatcher.ts` 的 `DEFAULT_ORDER` 与 `.opencode/project.config.json` 的 `plugin_execution_order.before`。
+- `permission-safety` 保持在前，先处理静态权限。
+- `tool-governance` 固定在 `path-validate`、`codegraph` 之前，成为首个运行时业务裁决层。
+- 旧 gate 暂时保留，但只能作为后置结构/兼容校验层，不再承担 repo/gh shell 首裁决。
+
+**步骤 6.6：补齐单元测试与组件测试，覆盖收口后的唯一行为**
+
+必须新增或修改以下测试：
+
+- `.opencode/service/tool-governance/__tests__/shell-targets.test.ts`
+- `.opencode/plugin-handlers/before/__tests__/path-validate.test.ts`
+- `.opencode/plugin-handlers/before/__tests__/codegraph.test.ts`
+- `.opencode/service/dispatch/__tests__/tool-scope.test.ts`
+- `.opencode/plugin-handlers/before/__tests__/tool-governance-handler.test.ts`
+
+测试断言必须至少覆盖：
+
+- `safe_shell gh issue create --repo owner/name ...`：`path-validate` 不误判本地路径，`codegraph` 不抛 `CODEGRAPH-ENFORCE`，`tool-governance` 返回 `REPO-OP deny`
+- `safe_shell gh api repos/a/b/issues -X POST ...`：同上
+- `safe_shell git status --short`：`codegraph` 不拦截，`repo-policy` allow
+- `safe_shell git add a.ts`：`codegraph` 不拦截，`repo-policy` deny
+- `safe_shell cat .opencode/service/repo/types.ts`：允许作为 protected-read 通过
+- `safe_shell sed -i 's/x/y/' src/a.ts`：仍然要求 CodeGraph impact
+- `safe_shell node -e '...'`：继续按 opaque write / script 风险路径处理，不能因 parser 收口而放宽
+
+**步骤 6.7：执行 direct smoke，再执行 live E2E**
+
+本阶段完成后，必须按以下顺序验证：
+
+1. direct handler smoke
+   验证 `pathValidate.handle()`、`codegraph.handle()`、`toolGovernance.handle()` 对同一条 `gh issue create --repo owner/name ...` 命令给出一致链路结果。
+2. runtime smoke
+   验证 active before 链对 `safe_shell gh issue create --repo owner/name ...` 的首个业务阻断来自 `tool-governance/repo-policy`，而不是 `path-validate` 或 `codegraph`。
+3. live Orchestrator E2E
+   使用 Orchestrator 会话真实触发该命令，确认最终对模型暴露的阻断文案稳定为 repo-policy / 一等工具迁移指引。
+
+#### Phase 7: 子进程执行器去 shell 化（必须实施，2-3 天）
+
+Phase 7 已在 Phase 6 core 通过后进入实施。当前已有 `VerifiedCommandPlan`、异步 `execFile`/`spawn` 执行器和 `safe_shell` 薄适配器接线；本节后续作为剩余验收清单，而非“尚未开始”的实施说明。
+
+**步骤 7.1：建立命令 schema 与执行计划**
+
+- 新建 `command-plan.ts`，将共享 parser 输出转换为 `VerifiedCommandPlan`。
+- 为允许命令逐个声明 executable 绝对路径、允许子命令、允许选项、位置参数类型、输出模式、超时和输出上限。
+- 未建模命令、未知选项、以 `-` 开头但无法消歧的值、复合 shell 语法和解析不完整输入全部 fail-closed。
+- 不得提供 `rawCommand`、`shellCommand` 或 `allowShellFallback` 字段。
+
+**步骤 7.2：实现唯一执行器**
+
+- 新建 `command-executor.ts`。`buffered` 只调用 promisified `execFile`，`stream` 只调用 `spawn`；两者固定 `shell:false`。
+- 累计 stdout/stderr 的 UTF-8 字节数，达到 `maxOutputBytes` 时停止读取、终止整个进程树并返回 `OUTPUT_LIMIT_EXCEEDED`。
+- timeout、AbortSignal、spawn error、signal exit、非零 exit 分别映射为稳定错误码，禁止用 `err.status || 1` 混淆退出状态。
+- Windows 与 POSIX 的进程树终止分别封装并测试；当前 WSL 路径必须验证 POSIX process group 终止。
+
+**步骤 7.3：迁移调用链并删除旧执行路径**
+
+- `shell-policy.ts` 生成已验证执行计划；`shell-guard.ts` 只保留最终结构断言与执行器调用。
+- `safeBashTool()` 改为 async，所有调用方必须 `await`；TypeScript 编译用于发现遗漏调用方。
+- 删除 `shell-guard.ts` 的 `execSync` import 和 `execSync(command, ...)` 分支。
+- 仓库扫描必须确认 `safe_shell` 调用链中不存在 `exec`、`execSync`、`execFileSync`、`shell:true`、`sh -c` 或 `bash -c`。
+
+**步骤 7.4：迁移现有复合命令**
+
+- 从 allowlist、测试和运行日志中列出所有包含 shell 运算符的现有命令。
+- 每条命令固定迁移到一等工具或仓库内已审核脚本；脚本必须具有固定路径、内容 hash、解释器和参数 schema。
+- 迁移完成前不得删除对应回归测试；不存在“临时允许 shell”的过渡状态。
+
+**步骤 7.5：按固定顺序验证**
+
+依次执行 command-plan 单元测试、command-executor 资源与中断测试、safe_shell 组件测试、before dispatcher import/order smoke、TypeScript 编译、框架回归、runtime smoke、live Orchestrator E2E。任一层失败即停止后续验证并保持 blueprint 未完成。
+
 ---
 
 ## 五、验证计划
@@ -646,32 +1043,61 @@ layer=<layer> outcome=<outcome> tool=<tool> agent=<agent>
 - [x] `shell-policy` 可被导入并覆盖 dangerous / allowlist / bypass 场景
 - [x] `controller.ts` 可被导入并聚合全部 policy
 - [x] `presenter` runtime log 统一格式化错误/放行消息，包含 `ruleId/layer/outcome`
+- [x] `shell-targets.ts` 作为共享 `safe_shell` 解析模块，覆盖 local path / write target / evidence target 三类语义（组件测试通过；文件仍需纳入 git 跟踪）
+- [x] `codegraph.ts` 对 `safe_shell git/gh` 命令直接 defer，不再为 repo/gh shell 命令产出 `CODEGRAPH-ENFORCE`（组件测试通过；L3-012 live core 已复验）
+- [x] `command-plan.ts` 对 shell 组合符、命令替换、未知命令和通配符展开 fail-closed（组件测试覆盖；选项级 schema 仍需按命令细化）
+- [x] `command-executor.ts` 固定使用 `shell:false`，且 `safe_shell` 调用链不再存在字符串命令执行分支
+- [x] `execFile` 路径对 timeout、AbortSignal、maxBuffer 和非零退出返回稳定执行元信息（组件/代码证据；live 资源类 E2E 待补）
+- [x] `spawn` 路径对 stdout/stderr 逐块计数，超限或取消后终止子进程树（组件/代码证据；live 资源类 E2E 待补）
 
 ### 5.2 集成测试
 
 - [x] `before-dispatcher` 接入新 controller 后，handler 顺序与现有兼容（static/component 已通过，active runtime log 已出现 governance 事件）
 - [ ] `scope` adapter 迁薄后，UC7 / backup-bypass / route mismatch 仍按原规则工作
 - [x] `safe_shell` 经统一治理链后，普通读命令不再命中 repo-op 误拦截（`cat package.json` 与 `cat .opencode/service/repo/types.ts` direct smoke 均已通过）
+- [x] `safe_shell` 不再把 `gh --repo owner/name`、`gh api repos/owner/name/...`、JSON body、`/dev/null` 误判为本地路径（`path-validate.test.ts` 28/28 PASS）
 - [ ] `safe_repo_*` 与 grant service 仍保持原 lifecycle
-- [ ] 日志事件统一包含 `sessionID/callID/agent/tool/ruleId/layer/outcome`（runtime log 已具备；block JSONL 缺 `outcome` 字段）
+- [x] `before-dispatcher.ts` 与 `.opencode/project.config.json` 的 `before` 顺序一致，并且 `tool-governance` 位于 `path-validate` / `codegraph` 之前（但未完全匹配 §4.2 固定顺序）
+- [x] active before 链上的首裁决层对 `safe_shell` repo/gh 操作保持一致：L3-012 core 已证明固定 `gh issue create --repo` 不再出现 `path-validate` / `codegraph` 抢先阻断
+- [x] `path-validate.ts`、`tool-scope-paths.ts`、`codegraph.ts` 均复用 `shell-targets.ts`，不存在第二套 `safe_shell` 私有解析器（代码复用与 before-dispatcher import smoke 已见证；文件跟踪仍待收口）
+- [ ] 日志事件统一包含 `sessionID/callID/agent/tool/ruleId/layer/outcome`（治理域 runtime log 已具备；旧 gate JSONL 仍未统一）
+- [x] `safeBashTool()` async 改造后的主要调用方已 `await`，direct tool smoke 通过（仍需正式 TypeScript 全量编译兜底）
+- [x] `safe_shell` 执行链不含 `exec`、`execSync`、`execFileSync`、`shell:true`、`sh -c`、`bash -c`（仓库其他质量/诊断工具仍有独立 `execSync`，不属于 `safe_shell` 执行链）
+- [ ] 现有复合命令均已迁移到一等工具或固定 hash 的受审脚本
 
 ### 5.3 端到端测试
 
 - [ ] Orchestrator -> build 调 `safe_shell cat <file>` 成功，不再报 `[FW-ENFORCE][REPO-OP]`（non-protected / protected path 的 direct smoke 均已通过；仍待真正 live LLM E2E）
 - [ ] Orchestrator -> build 调 `safe_shell git status` 成功
 - [ ] Orchestrator -> build 调 `safe_shell git add a.ts` 被明确引导至 `safe_repo_stage`
+- [x] Orchestrator 直接调 `safe_shell gh issue create --repo owner/name ...` 时，不得再先报 `WORKTREE_BOUNDARY` 或 `CODEGRAPH-ENFORCE`；L3-012 core PASS，阻断来自 repo-policy / 一等工具迁移策略
 - [ ] 无 grant 调 `safe_repo_stage` 报 grant 缺失
 - [ ] 有 grant 且 impact 完成时 `safe_repo_stage` 成功
 - [ ] 未做 CodeGraph 的源码写操作仍被阻断
 - [ ] `safe_hash` 在 `safe_shell` 不可用场景下仍可完成只读 hash
+- [ ] live Orchestrator 请求含 `;`、管道、重定向或 `$()` 时稳定返回 `SHELL-COMPOSITION-DENY`，且没有子进程启动记录
+- [ ] live Orchestrator 执行长输出命令达到上限时子进程树被终止，session 可继续使用
 
 ### 5.4 子系统合规验证
 
 - [ ] MVC Architecture：确认 dispatcher（Controller 层）不含业务逻辑，策略全在 service 层；controller.ts 属于 Service 层而非 Controller 层
+- [ ] MVC Architecture：确认 `safe_shell` 的 shell 路径语义只由 `service/tool-governance/shell-targets.ts` 维护，`path-validate.ts` / `tool-scope-paths.ts` / `codegraph.ts` 不再保留私有解析逻辑
 - [ ] Concurrency Safe：确认 grant bind/check/consume 无竞态退化
 - [ ] Framework Harness：确认旧 harness 名称与新治理域不冲突
 - [ ] Log Central Management：确认治理域所有日志统一走 `log-manager`
 - [ ] TypeScript + Bun Runtime：确认新增 policy 文件均保持小而专一，≤ 400 行
+- [ ] TypeScript + Bun Runtime：在当前 Bun 版本实测 `execFile`/`spawn` 的 AbortSignal、超时、signal exit 和 POSIX 进程组终止
+
+### 5.5 弱模型交付审查门
+
+以下检查只允许强审查模型 / 人工 reviewer 勾选。弱模型实施者不得自行勾选。
+
+- [ ] 每个弱模型任务卡的 diff 仅触及任务卡允许文件。
+- [ ] 每个弱模型任务卡均附带固定验证命令输出；失败输出未被覆盖或删除。
+- [ ] reviewer 已重跑任务卡验证命令，且结果与弱模型报告一致。
+- [ ] reviewer 已执行安全负向搜索，确认未新增 `exec`、`execSync`、`execFileSync`、`shell:true`、`bash -c`、`sh -c`、`allowShellFallback`、`rawCommand`、`shellCommand`。
+- [ ] 所有 live E2E 判定均有 session id、`messages-final.json`、`result.md` 和阻断/放行层证据。
+- [ ] blueprint checkbox / 状态只由 reviewer 更新，未由弱模型实施者直接修改。
 
 ---
 
@@ -681,19 +1107,28 @@ layer=<layer> outcome=<outcome> tool=<tool> agent=<agent>
 
 | 风险 | 影响 | 缓解措施 |
 |---|---|---|
-| 迁移时打破现有阻断链 | 可能出现漏拦或误放行 | 保留双轨阶段：旧 handler 作为 adapter 调新 policy，逐步裁剪 |
+| 迁移时打破现有阻断链 | 可能出现漏拦或误放行 | 每个 Phase 独立提交；旧 handler 只作为调用新 policy 的薄 adapter，不保留第二套裁决逻辑 |
 | 统一治理后单点故障放大 | 核心 controller 出错影响所有工具 | 保持 policy 粒度拆分 + 单元测试覆盖 + fail-closed |
 | 日志字段变化影响现有排障脚本 | 运维/诊断工具需要适配 | 保留旧字段，新增标准字段，分阶段迁移 |
 | `safe_shell` 改造影响大量既有路径 | 部分历史命令用法失效 | 提供迁移矩阵：读命令、repo 命令、脚本命令分别指向一等工具/新适配器 |
-| legacy fallback 清理过快 | 某些旧 agent/旧路径异常 | 先降级为告警，再移除 |
+| legacy fallback 清理导致旧调用失败 | 旧 agent/旧路径异常 | 在删除 fallback 的同一 Phase 先补齐调用方清单与回归测试；出现未知调用立即 fail-closed |
+| shell 路径解析多处复制 | 新增误拦截或漏拦截，且不同 handler 结论不一致 | 删除 `path-validate` / `tool-scope-paths` / `codegraph.extractShellTarget()` 的私有解析逻辑，只调用统一 parser |
+| `codegraph` 先于 repo-policy 出手 | repo/gh 远程写被误要求做 CodeGraph 调查，模型会在错误路径上循环自救 | 固定 repo/gh shell 操作的裁决顺序；`codegraph` 对 repo/gh shell 命令直接 defer 给 governance repo-policy |
+| 去 shell 化后复合命令不可执行 | 历史自动化中断 | 实施前枚举 allowlist、测试和日志中的复合命令，并逐条迁移到一等工具或固定 hash 的受审脚本 |
+| `execFile` 缓冲耗尽内存 | 工具进程失败或 serve 不稳定 | buffered 命令固定 1 MiB 上限；不可证明有界的命令固定走 spawn 流式路径 |
+| 超时或取消后遗留孙进程 | 持续占用资源并污染后续测试 | 使用独立进程组，超时/取消/超限时终止进程组，并用遗留进程扫描测试验证 |
+| 可执行文件或环境被替换 | 执行非预期代码 | 固定绝对 executable 映射、最小 env、受控 cwd；启动前验证 realpath 与文件类型 |
+| 弱模型过度自信标完成 | 未验证路径被误标 PASS，后续安全边界失真 | 弱模型不得修改 checkbox / 状态；所有完成判定必须经 reviewer 重跑验证和证据复核 |
+| 弱模型扩大任务范围 | 一次修改过多文件，review 无法确认因果 | 只允许领取 §4.3 单张任务卡；每卡最多 3 个源码文件和 2 个测试/文档文件 |
+| 弱模型为兼容旧命令引入 shell fallback | 重新打开命令注入风险 | 全局禁止 `exec` / `execSync` / `shell:true` / `bash -c` / `allowShellFallback`；reviewer 必须做负向搜索 |
 
 ### 6.2 回滚方案
 
-1. 保留原 before handlers 的 adapter 包装，统一治理 controller 作为可切换层引入。
-2. 通过 `project.config.json` 增加治理模式开关：`legacy` / `hybrid` / `unified`。
-3. 如果统一治理出现异常：切回 `hybrid`，保留新 policy 模块与测试，仅恢复旧 handler 的裁决权。
-4. 回滚过程中不删除新测试，以便继续定位差异。
-5. Phase 0 的修复（`provider: "none"`）独立于后续阶段，如果后续阶段出问题回滚，Phase 0 的修复保留不动。
+1. 每个 Phase 使用独立 commit；验证未全部通过时不得开始下一 Phase。
+2. Phase 6 失败时只回滚 Phase 6 commit，恢复其开始前已验证的 active before 链；Phase 0-5 保持不动。
+3. Phase 7 失败时只回滚 Phase 7 commit，恢复 `shell-guard.ts` 的既有执行实现，同时保留失败证据；回滚后立即禁止外部不可信输入进入 `safe_shell`，直到 Phase 7 修复完成。
+4. 回滚后执行该 Phase 开始前的完整基线测试、dispatcher import smoke 和 runtime smoke；任一失败则继续保持服务停用，不得宣称回滚成功。
+5. 不新增治理模式开关，不保留 legacy/hybrid/unified 并行裁决路径，不删除失败回归测试。
 
 ---
 
@@ -704,17 +1139,25 @@ layer=<layer> outcome=<outcome> tool=<tool> agent=<agent>
 - [x] `safe_shell sha256sum <file>` 不再报 `[FW-ENFORCE][REPO-OP]`
 - [x] `safe_shell git status` 仍正常工作（build/general/explore 只读 repo 命令 allow；Orchestrator 按静态权限 deny `git *`）
 - [x] `safe_shell git add a.ts` 仍被引导至 `safe_repo_stage` / `safe_repo_*`（hook 层 REPO-OP；工具层 fail-closed）
+- [x] `safe_shell gh issue create --repo owner/name ...` 不再被 `path-validate` 误识别为本地路径（component/direct handler smoke + `path-validate.test.ts` 28/28 PASS）
+- [x] active before 链对 `safe_shell gh issue create --repo owner/name ...` 的首个业务裁决固定来自 `tool-governance/repo-policy`（L3-012 core live PASS）
 - [x] 静态权限、动态授权、impact 证据、path 保护、repo-op 语义分别有独立 policy 模块（`grant-policy` 当前为 delegated/audit_only）
 - [x] `tool-governance/controller.ts` 可被 runtime 正常导入
 - [x] `before-dispatcher` / before handler 已接入统一治理 controller
 - [x] `before-dispatcher` 只做控制器编排，不再堆叠领域细节
 - [ ] `scope-validate.ts` 被拆分，不再承担多种无关责任
-- [x] `codegraph.ts` 收敛为 evidence 相关职责，不再混装 repo-op 主裁决
+- [x] `codegraph.ts` 收敛为 evidence 相关职责，不再对 repo/gh 的 `safe_shell` 远程写抢先给出 `CODEGRAPH-ENFORCE`（组件测试 + import smoke + L3-012 live core 已复验）
 - [x] `safe_shell` 不再重复实现完整 repo-op 裁决链（repo-op 分类主裁决已从 `shell-guard.ts` 移除；执行层兜底仍保留）
-- [ ] 所有治理决策统一记录 `ruleId/layer/outcome`（runtime log 已具备；block JSONL 缺 `outcome` 字段）
+- [x] `service/tool-governance/shell-targets.ts` 成为唯一 `safe_shell` 解析入口，`path-validate` / `tool-scope-paths` / `codegraph` 不再各自维护私有路径解析逻辑（代码复用与 import smoke 已见证；untracked 文件仍需纳入正式收口）
+- [ ] 所有治理决策统一记录 `ruleId/layer/outcome`（治理域 runtime log 已具备；整条 before 链仍未统一）
 - [x] 日志统一走 `log-manager` / `jsonl-writer`
 - [ ] repo grant 与 dispatch privilege 主链在新架构下保持兼容
-- [ ] 新增治理域模块具备完整 unit / integration / E2E 验证闭环
+- [ ] 新增治理域模块具备完整 unit / integration / E2E 验证闭环（unit/component 104/104 PASS；live L3-012 core PASS；变体矩阵和 allow-path live 仍未完成）
+- [x] `safe_shell` 原始字符串不再直接进入任何子进程 API（`safe_shell` 调用链已改为 `VerifiedCommandPlan` → `execFile`/`spawn`）
+- [x] 所有允许命令均生成完整 `VerifiedCommandPlan`，未知或复合命令稳定 fail-closed（组件测试与 direct smoke 已覆盖代表路径）
+- [ ] buffered/stream 两条执行路径的超时、取消、输出超限和进程树终止测试全部通过（代码/组件已有基础覆盖；仍缺 live 资源类 E2E）
+- [ ] 当前 Bun runtime smoke 与 live Orchestrator E2E 均证明去 shell 化后普通读命令可用、复合命令不可执行（direct tool smoke 已证明 `pwd` allow-path；live Orchestrator allow-path 待补）
+- [ ] 弱模型实施协议已执行：所有任务卡均由弱模型提交 diff + 证据，强审查模型 / 人工 reviewer 完成复核后才更新状态
 
 ---
 

@@ -1,24 +1,24 @@
 # Blueprint: OpenCode 框架 Official Native Agent + Skill/Hook 重构路线图
 
-> **版本**: v1.14.4
-> **日期**: 2026-07-11 (v1.14.4 更新：修复 `tool-governance/path-policy.ts` 的 protected-read 回归，同步 30/30 policy 测试与剩余 live E2E 边界)
+> **版本**: v1.14.5
+> **日期**: 2026-07-13 (v1.14.5 更新：收口 L3-012 core live E2E，校准 safe_shell VerifiedCommandPlan / execFile / spawn 状态与剩余 live allow-path 边界)
 > **状态**: 实施中（Phase 0-1 完成；Phase 2-4 主体完成但仍有精确矩阵尾巴；Phase 5 完成）
 > **适用项目**: `/home/zhaoge/workspace/opencode/work-one`
 > **依据**: `documents/review/opencode-framework-architecture-assessment.md` 审核结论 + 当前 work-one 代码与配置核验
 
 ---
 
-## 0.0 Live 实施状态（2026-07-11 交叉审核）
+## 0.0 Live 实施状态（2026-07-13 交叉审核）
 
 | 范围 | 当前状态 | 证据等级 | 证据 | 仍需跟进 |
 |---|---|---|---|---|
-| 基线事实 | ✅ 已更新 | static/code | CodeGraph 419 files；`.opencode` TS 372 / 75,563 lines；DB schema v37 / 49 business / 50 total | `work-one/.opencode/docs/state-tiering.md` 已重写为 v37 7-tier（2026-07-11） |
+| 基线事实 | ✅ 已更新 | static/code | CodeGraph 429 files / 387 TS / 30 JS / 12 YAML；DB schema v37 / 49 business / 50 total | `work-one/.opencode/docs/state-tiering.md` 已重写为 v37 7-tier（2026-07-11）；文件数随 Phase 6/7 新增模块漂移 |
 | Agent 边界 | ✅ 已落地 | static/code | active agent = Orchestrator/build/general/plan/explore；active prompt 仅 `Orchestrator.md`；legacy profile 9 个 | 无 active `scout`；Scout 只能写成 Scout-like research |
 | Handler 链 | ✅ 已收敛 | static/code | before 11 / after 7 / system 2；dispatcher map 与 order 对齐；`path-validate`、`tool-governance` 均在 active before 链 | 注释中仍有个别旧数字但不影响 runtime |
 | Skill-first | ✅ 完成 | **live LLM E2E** | `skill-summary` active 且 2026-07-11 真实 serve 24/24 session 命中注入；`preflight-lite` 14 步 + framework maintenance flow；watcher 契约与脚本存在；`e2e/skill-summary-keyword-regression.md` 已升级为**中英文双语 + live LLM E2E**（SID 见明细） | 双语不一致（4/12 行 CN≠EN，F1-F4）+ live 捕获漂移（F6）+ `dispatch/investigation/裸API` 未触发 keyword（待修） |
 | Native Task / DAG | 🟡 主体完成 | runtime smoke | runtime smoke T2/T3/T4 记录 no-DAG、lineage、explore 调研 | `dispatch_subagent` 仍作为兼容 wrapper 存在 |
-| Enforcement | 🟡 主体完成 | runtime smoke + component | question recovery smoke；framework maintenance tests 13/13 PASS；rule-disposition active；tool-governance tests 30/30 PASS；safe-bash-core 23/23 PASS；`safe_shell cat .opencode/service/repo/classify.ts` direct smoke 已按只读豁免放行 | `isWriteAllowed` / `getAgentShellAllowlist` 等 per-agent caller 仍需收口 |
-| Tool Governance MVC | ✅ 收缩已闭合（D1/D2 完成，D3 为 runtime log smoke） | component + static/code + unit + runtime log smoke | `service/tool-governance/**` 接入 `tool-governance` before handler（active order 末位）；`codegraph.ts` 已移除 repo-op/GitHub write 主裁决（仅留证据适配器）；`controller` 新增 allow outcome 日志（`REPO-OP@repo-policy`）；30/30 unit PASS + handler 2/2 + codegraph 委让 5/5；`presentBlock()` / `presentAllow()` 的 runtime log 与 `audit.jsonl` 均含 `ruleId/layer/outcome`；D3 日志 smoke 可见 github read→`GOVERNANCE-ALLOW`、write→`GOVERNANCE-BLOCK` | 真正 Orchestrator -> build live LLM E2E 未在本轮复核中重跑 |
+| Enforcement | 🟡 主体完成 | runtime smoke + component + direct tool smoke | question recovery smoke；framework maintenance tests 13/13 PASS；rule-disposition active；相关治理/path/codegraph/safe_shell 套件 104/104 PASS；`safe_shell` 已通过 `VerifiedCommandPlan` + `execFile`/`spawn`（`shell:false`）执行 direct `pwd` smoke | `isWriteAllowed` / `getAgentShellAllowlist` 等 per-agent caller 仍需收口；safe_shell live allow-path、资源上限、中断、进程树终止 E2E 待补 |
+| Tool Governance MVC | 🟡 core 收缩已闭合，矩阵未完成 | component + static/code + unit + import smoke + live LLM E2E | `service/tool-governance/**` 接入 `tool-governance` before handler；`codegraph.ts` 已移除 repo-op/GitHub write 主裁决（仅留证据适配器）；before-dispatcher import smoke PASS；L3-012 session `ses_0a66bc378ffelPj4R46sNeG0zR` 见证 `safe_shell gh issue create --repo ...` 被 `[REPO-OP] ... layer=repo-policy outcome=deny` 阻断，且无 `WORKTREE_BOUNDARY` / `CODEGRAPH-ENFORCE` | L3-012 证据包为最小包；`gh api -X POST/PATCH/DELETE`、`gh issue comment`、`gh pr create`、release/workflow/secret 等 remote_write 变体仍需 companion cases；Orchestrator -> build allow-path live E2E 未补 |
 | Minimal State | 🟡 主体完成 | runtime smoke + component | JSONL writer + emitters；只读 hot-path 零 DB 写；deprecated 表停写 | `/children` HTML/non-JSON 故障注入未见独立证据 |
 | Legacy 退役 | ✅ 完成（归档闭环） | **live LLM E2E** + static/code + component | `skill-summary.ts` 已删除 9 个 inactive blueprint agent 映射；V5.1-V5.9 全量矩阵已归档（`plans/06` §7）；23 弱模型回归 23/23 PASS（2026-07-11 live GOV/GUARD 探针将 #5/#16/#21/#23 升级至 live LLM E2E，`e2e/weak-model-23-regression.md`）；`dispatch_subagent` 决策已固化（`temporary-audits/dispatch_subagent-decision.md`）；A2 核查 N/A（active 链角色无关） |
 
@@ -26,7 +26,7 @@
 
 ## 0.1 历史 Live 实施状态（2026-07-07 代码/E2E 复核）
 
-以下 0.1-0.6 均为 2026-07-06/07 历史快照，已被 2026-07-11 交叉审核 supersede；保留作演进记录：
+以下 0.1-0.6 均为 2026-07-06/07 历史快照，已被 2026-07-11 与 2026-07-13 交叉审核 supersede；保留作演进记录：
 
 1. **Orchestrator 唯一实质自定义 agent 的收敛已落地**：
    - `.opencode/agents/` 当前有 `Orchestrator.md` 与 3 行 `build.md` stub；只有 Orchestrator 承载实质自定义 prompt

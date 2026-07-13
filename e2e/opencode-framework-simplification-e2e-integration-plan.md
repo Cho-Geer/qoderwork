@@ -1,10 +1,11 @@
 根据测试计划 v2.0.0（`opencode-framework-simplification-e2e-integration-test-plan.md`），完整测试矩阵共 **59 个主用例（L1–L7）+ 3 个 P0 前置门 + 23 个弱模型场景（Appendix A）**。以下按层列出每个 case 及其断言。标注 ★ 的为计划 §6 强制开放（mandatory open）项。
 
-> **审核基线（2026-07-12）**
+> **审核基线（2026-07-12，2026-07-13 L3-012 addendum）**
 > - 审核依据：`e2e-evidence/_summary/CASE-STATUS-MATRIX.md`、`RESULT-SHEET.md`、`OPEN-GAPS.md`、`COVERAGE-LEDGER.md`，以及 `e2e-evidence/L1/L1-001A-evidence.md`、`L1-001B-evidence.md`、`L1-001C-evidence.md`、`L1-002-rerun-evidence.md`。
-> - 当前统计：原计划 **85 个测试目标**（P0×3 + 主矩阵 59 + Appendix A×23），另有 **3 个 L1 衍生 follow-up**（L1-001A/B/C），按 case-id 计共 **88**；其中 **已跑 27**、**未跑 61**。
-> - 已收口：`P0-A/B/C`、`L1-001`、`L1-002`、`L1-001B`、`L1-001C`。
-> - 已跑但仍未收口：`L1-001A`（🟡 11/12 对齐）、`L2-001`（🟡 无 DAG 但误路由到 `explore`）、`L3-012`（🟡/🔴 legacy heavy checklist 截断，未触达 REPO-OP deny）、`L5-006/007/008`（🔴 `/children` invalid session 返回 500 而非计划中的 404/fallback）。
+> - 当前统计：原计划 **85 个测试目标**（P0×3 + 主矩阵 59 + Appendix A×23），另有 **3 个 L1 衍生 follow-up**（L1-001A/B/C），按 case-id 计共 **88**；其中 **已跑 28**、**未跑 60**。
+> - 已收口：`P0-A/B/C`、`L1-001`、`L1-002`、`L1-001B`、`L1-001C`、`L3-012`（core case）。
+> - 已跑但仍未收口：`L1-001A`（🟡 11/12 对齐）、`L2-001`（🟡 无 DAG 但误路由到 `explore`）、`L5-006/007/008`（🔴 `/children` invalid session 返回 500 而非计划中的 404/fallback）。
+> - `L3-012` 2026-07-13 addendum：`e2e-evidence/L3/L3-012/messages-final.json` 见证真实 `Orchestrator` 会话调用固定 `safe_shell gh issue create --repo zzzz-invalid-owner-012345/zzzz-invalid-repo-012345 ...`，被 `[REPO-OP] ... layer=repo-policy outcome=deny tool=safe_shell agent=Orchestrator` 阻断，且未出现 `WORKTREE_BOUNDARY` / `CODEGRAPH-ENFORCE`。本项按 core PASS 收口，但证据包为最小包，且不外推覆盖全部 `gh` remote_write 变体。
 > - 已跑但未见 live witness：`L3-008/009/010/011`、`L4-001/002`、`L5-002`、`L7-003~007`。这些 case 目前只能保留 open，不可冒充 live-closed。
 > - 方法学约束已更新：后续所有 live run 必须轮询 `GET /question` 并在同轮回复 `POST /question/{QID}/reply`，否则澄清型 case 会卡在 question gate，无法形成有效判定。
 
@@ -70,6 +71,10 @@
 | L3-010 | `safe_shell git status` 放行 |
 | L3-011 | `safe_shell git add ...` 拒绝并重定向到 `safe_repo_*` |
 | L3-012 ★ | 真实 LLM 会话中 GitHub/gh 写被 `REPO-OP` 拒绝 |
+
+> **状态（2026-07-13）**
+> - `L3-012`: ✅ **PASS / core 已收口**。证据目录为 `e2e-evidence/L3/L3-012/`，session `ses_0a66bc378ffelPj4R46sNeG0zR`；`messages-final.json` 见证固定 `safe_shell gh issue create --repo ...` 调用被 `tool-governance/repo-policy` 以 `[REPO-OP] Direct gh remote_write operations are blocked. Use safe_repo_* first-class tools instead.` 阻断。
+> - 边界：本项只关闭 `gh issue create --repo` 代表路径；`gh api -X POST/PATCH/DELETE`、`gh issue comment`、`gh pr create`、release/workflow/secret 等变体仍需新增 companion cases。
 
 ## L4 — QoderWork Bridge 与干预（6 例）
 
@@ -160,14 +165,14 @@
 
 ## 强制开放项汇总（§6，最高优先级缺口）
 
-1. **L3-012** — 真实 LLM 触发的 REPO-OP 拒绝 gh 写
-2. **L4-005** — watcher R1–R7 evidence capsule
-3. **L5-002** — `safe_edit` 热路径全量 live 触碰集
-4. **L5-004** — 高风险 checklist 可选性在 live 任务验证
-5. **L5-007 / L5-008** — `/children` HTML 与非 JSON fallback
-6. **L7-003 ~ L7-007** — 真实 framework-maintenance 正向特权链
-7. **L7-014 / L7-015** — 预算耗尽与 complete 后拒绝
-8. **Appendix A #2/#10/#14/#18/#20/#22** — 多为 static/hook 支撑，需显式 live witness
+1. **L4-005** — watcher R1–R7 evidence capsule
+2. **L5-002** — `safe_edit` 热路径全量 live 触碰集
+3. **L5-004** — 高风险 checklist 可选性在 live 任务验证
+4. **L5-007 / L5-008** — `/children` HTML 与非 JSON fallback
+5. **L7-003 ~ L7-007** — 真实 framework-maintenance 正向特权链
+6. **L7-014 / L7-015** — 预算耗尽与 complete 后拒绝
+7. **Appendix A #2/#10/#14/#18/#20/#22** — 多为 static/hook 支撑，需显式 live witness
+8. **新增 companion gap** — `gh api -X POST/PATCH/DELETE`、`gh issue comment`、`gh pr create`、release/workflow/secret 等 remote_write 变体未由 L3-012 覆盖
 
 **统计**：主矩阵 59 例（L1×4 + L2×8 + L3×12 + L4×6 + L5×8 + L6×6 + L7×15）+ P0×3 + Appendix A×23 = 共 **85 个测试目标**。
 
