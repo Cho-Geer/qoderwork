@@ -8,9 +8,18 @@ license: Proprietary. LICENSE.txt has complete terms
 
 # Spreadsheet Creation, Editing, and Analysis
 
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
+
 You have access to multiple tools and workflows for working with `.xlsx` files — from reading and analysing data, through programmatic creation and editing, to formula recalculation and error checking.
 
 ## Tooling Primer
+
+> **步骤类型区分**：理解表结构、识别清洗规则、规划公式属于 `[ANALYSIS]`；实际写入文件、重算公式、重新打开工作簿核对结果属于 `[VERIFICATION]`。
+> **Verified-by 要求**：每次 `[VERIFICATION]` 后都要记录 `Verified-by: <命令/脚本> -> <输出文件路径 / 关键单元格值 / 打开校验结果>`。
+> **合理化检测**：如果你发现自己在想「脚本没报错，所以表格肯定对了」--停下来，这是跳步信号。必须重新打开文件并核对关键结果。
+> **认知说明**：公式设计只回答“理论上该怎么算”；重新打开工作簿并核对单元格值，才是运行态验证。
 
 | Library | Best for |
 |---------|----------|

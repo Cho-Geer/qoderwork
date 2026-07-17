@@ -7,6 +7,10 @@ description_zh: 引导用户为 QoderWork 创建有效的 Agent 技能。当用�
 
 # Creating Skills in QoderWork
 
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
+
 This skill guides you through creating effective Agent Skills for QoderWork. Skills are markdown files that teach the agent how to perform specific tasks: reviewing PRs using team standards, generating commit messages in a preferred format, querying database schemas, or any specialized workflow.
 
 ## Before You Begin: Gather Requirements
@@ -484,7 +488,7 @@ If you have access to the AskUserQuestion tool, use it for efficient structured 
 3. Ensure consistent terminology throughout
    - `Verified-by: 人工检查 + 确认无术语混用`
 4. Verify all file references are one level deep
-   - `Verified-by: grep -n '\[.*\](.*)' SKILL.md -> 所有链接指向同级文件`
+   - `Verified-by: grep -n '\[[^]]\+\](reference.md\|examples.md\|STANDARDS.md)' SKILL.md -> 本地引用均指向现有文件`
 5. Test that the skill can be discovered and applied
    - `Verified-by: qw_query({ key: "qoderwork.settings.skills" }) -> 确认新 skill 出现在列表中`
    - 如果 serve API 可用：`Verified-by: 创建 session + 发送触发消息 -> 确认 skill 被加载（SSE 事件中有 skill 相关日志）`

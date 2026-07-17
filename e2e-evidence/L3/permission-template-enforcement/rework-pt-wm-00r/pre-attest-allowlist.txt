@@ -1,0 +1,16 @@
+=== PRE_ATTEST_ALLOWLIST Verification ===
+Date: 2026-07-14
+Source: .opencode/plugin-handlers/before/skill-policy.ts:20-32
+
+Fixed allowlist (8 tools):
+1. read
+2. glob
+3. grep
+4. question
+5. skill
+6. config_read_attest
+7. skill_read_attest
+8. rule_read_attest
+
+Matches Blueprint §2.2.7: "only allow read/glob/grep/question/skill/config_read_attest/skill_read_attest/rule_read_attest"
+Matches implementation log claim: YES (仅8个工具)

@@ -18,7 +18,7 @@
 | legacy dispatch validator | ✅ 完成 | static/code | `dispatch-validate.ts` 与 `before/dispatch.ts` 文件头标 legacy；active before order 不含 `dispatch` |
 | `dispatch-sa-repair` | ✅ 完成 | static/code | `.opencode` 内无 `dispatch-sa-repair` 引用 |
 | Scout-equivalent | ✅ 完成 | runtime smoke | runtime smoke T4；无 active `scout` agent，使用 `explore` + research skills |
-| `dispatch_subagent` 退场 | 🟡 部分完成 | runtime smoke | 普通路径不再要求 wrapper，但工具仍存在并在 smoke 中用于兼容 dispatch |
+| `dispatch_subagent` 退场 | ✅ 普通路径已 retired | static/code | `dispatch_subagent.ts:56` 普通路径返回 `"dispatch_subagent is retired for ordinary paths. Use native Task tool instead."`；仅 `framework_maintenance`/`repo_maintenance` 等特权派发分支存活；Orchestrator 在 opencode.json 仍 `allow` |
 
 ---
 
@@ -33,9 +33,11 @@
 | `dispatch_policy.require_dag_entry` | false |
 | `dispatch_policy.auto_plan_enabled` | false |
 | `before/task.ts` | active，只处理 Task marker、QUEUE_ID、canonical prompt |
-| `dispatch_subagent` | ordinary path 退场中，framework maintenance compat path 仍使用 |
+| `dispatch_subagent` | ordinary path 已 retired（返回 retired 消息），仅 framework_maintenance/repo_maintenance 特权派发存活 |
 | framework maintenance | grant + CodeGraph + `framework_maintenance_plan` + `safe_framework_edit` + complete |
 | Scout | 当前没有 active `scout` agent 配置 |
+| `router.ts:235` auto_plan | 仍硬编码 dispatch `"Meta-Planner"`（legacy 名）；当前 `auto_plan_enabled=false` 不执行，属 legacy dispatch 收口遗留项 |
+| `agent_domain_map` | `project.config.json` 仍用 legacy PascalCase 名（Meta-Planner/Coder-BE 等），无 native agent 名（plan/build/general/explore），native agent domain 解析返回 null |
 
 ---
 
@@ -191,6 +193,8 @@ native Task(explore) + investigation-evidence + context7-first
 - [x] `dispatch-validate.ts` 和 `before/dispatch.ts` 已显式 legacy。
 - [x] `dispatch-sa-repair` caller 与 rule table 对齐。
 - [x] `Task.DAG.json` 不再是普通 dispatch 前置。
-- [ ] `dispatch_subagent` 只保留 framework maintenance compat 责任。（部分完成：普通路径不再要求 wrapper，但工具仍存在且可用于兼容 dispatch）
+- [x] `dispatch_subagent` 只保留 framework maintenance compat 责任。（2026-07-13 复核：普通路径已 retired 返回提示消息，仅特权派发分支存活）
+- [ ] `router.ts:235` auto_plan 不再硬编码 `"Meta-Planner"`，改用 native `"plan"` 或随 `dispatch_subagent` 退役一并清理。（2026-07-13 新增）
+- [ ] `agent_domain_map` 补充 native agent 名或显式标注 native agent 无固定 domain。（2026-07-13 新增）
 - [x] `explore + investigation-evidence + context7-first` 复杂调研 smoke 通过。
 - [x] framework maintenance native metadata grant binding 有 smoke 证据。

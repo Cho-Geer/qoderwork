@@ -1,0 +1,268 @@
+{
+  "testId": "ADV-PT-008",
+  "timestamp": "2026-07-15T00:16:36.680Z",
+  "prerequisites": [
+    "T-PT-048",
+    "T-PT-049",
+    "T-PT-050"
+  ],
+  "frameworkSkillReadHardGate": "(not set)",
+  "dryRun": true,
+  "serveUrl": "http://localhost:4097",
+  "mutations": [
+    {
+      "id": "mutate_delete_throw",
+      "description": "在 skill-policy.ts 的 hard_block 分支删除专用 throw (硬门 throw 不再抛出，错误被静默吞掉)",
+      "target": ".opencode/plugins/before/skill-policy.ts:hardBlock() — 删除 `throw new Error('skill-read-attest-required')`",
+      "kill_condition": "未认证调用非 allowlist 工具后，executor entry 仍 = 0，且 handler trace 中存在 'skill-read-attest-required' 字符串（throw 仍生效）"
+    },
+    {
+      "id": "mutate_catch_swallows",
+      "description": "把 skill-policy.ts 的 try/catch 改为 swallow 模式，catch 后 return { allowed: true }（异常被吞）",
+      "target": ".opencode/plugins/before/skill-policy.ts:evaluate() — catch 块 `return { allowed: true }`",
+      "kill_condition": "DB 错误/解析异常下，专用拒绝事件仍触发且 dispatch 不被吞（catch 不允许 return allow）"
+    },
+    {
+      "id": "mutate_unknown_tool_default_allow",
+      "description": "把未知工具的 default 从 deny 改为 allow（safe_edit/safe_shell/未列入的工具默认放行）",
+      "target": ".opencode/plugins/before/skill-policy.ts:isAllowlisted() — 删去 else 分支的 default deny",
+      "kill_condition": "未认证 session 调用未来未知工具 (e.g. 'future_tool_xyz') 时仍被拒绝，ruleId='skill-read-attest-required'"
+    },
+    {
+      "id": "mutate_remove_shell_from_deny_matrix",
+      "description": "从 deny 矩阵移除 safe_shell / safe_framework_edit / safe_repo_push / github_mcp write（这 4 个被默许）",
+      "target": ".opencode/plugins/before/skill-policy.ts:DENY_MATRIX — 删去上述 4 个 key",
+      "kill_condition": "未认证 session 调用 safe_shell 'echo bypass' / safe_framework_edit / safe_repo_push / github_mcp 写操作时仍被专用 rule 拒绝"
+    },
+    {
+      "id": "mutate_db_write_failure_trusted",
+      "description": "DB 写失败 (state_written=false) 后，state validator 仍信任旧状态为有效 allow",
+      "target": ".opencode/skills/skill-attest.ts:dbWriteSubState() — 写失败后保留旧 row 不失效",
+      "kill_condition": "DB write 注入 fault 后，未认证调用非 allowlist 工具仍被拒绝；旧有效状态在 DB 写失败后失效（fail-closed）"
+    }
+  ],
+  "toolMatrix": [
+    {
+      "category": "allowlist",
+      "tool": "read",
+      "expected_disposition": "allow",
+      "rationale": "固定 read allowlist"
+    },
+    {
+      "category": "allowlist",
+      "tool": "glob",
+      "expected_disposition": "allow",
+      "rationale": "固定 read allowlist"
+    },
+    {
+      "category": "allowlist",
+      "tool": "grep",
+      "expected_disposition": "allow",
+      "rationale": "固定 read allowlist"
+    },
+    {
+      "category": "allowlist",
+      "tool": "list",
+      "expected_disposition": "allow",
+      "rationale": "固定 read allowlist"
+    },
+    {
+      "category": "allowlist",
+      "tool": "question",
+      "expected_disposition": "allow",
+      "rationale": "固定 question allowlist"
+    },
+    {
+      "category": "allowlist",
+      "tool": "skill",
+      "expected_disposition": "allow",
+      "rationale": "attest 前加载 Skill 必需"
+    },
+    {
+      "category": "allowlist",
+      "tool": "skill_read_attest",
+      "expected_disposition": "allow",
+      "rationale": "attest 工具本身在 allowlist"
+    },
+    {
+      "category": "allowlist",
+      "tool": "skill_read_state",
+      "expected_disposition": "allow",
+      "rationale": "查询 state 在 allowlist"
+    },
+    {
+      "category": "deny-mandatory",
+      "tool": "safe_shell",
+      "expected_disposition": "deny-hard-block",
+      "rationale": "需 grant 才对 safe_shell 放行"
+    },
+    {
+      "category": "deny-mandatory",
+      "tool": "safe_framework_edit",
+      "expected_disposition": "deny-hard-block",
+      "rationale": "需 grant 才对 framework edit 放行"
+    },
+    {
+      "category": "deny-mandatory",
+      "tool": "safe_repo_push",
+      "expected_disposition": "deny-hard-block",
+      "rationale": "需 grant 才对 repo write 放行"
+    },
+    {
+      "category": "unknown",
+      "tool": "future_tool_xyz_2027",
+      "expected_disposition": "deny-attest-required",
+      "rationale": "未来未知工具默认拒绝"
+    },
+    {
+      "category": "mutation-specific",
+      "tool": "github_mcp_create_issue",
+      "expected_disposition": "deny-hard-block",
+      "rationale": "remote write 默认拒绝 (mutate_remove_shell_from_deny_matrix 移除后必须仍拒绝)",
+      "mutation_target": "mutate_remove_shell_from_deny_matrix"
+    },
+    {
+      "category": "mutation-specific",
+      "tool": "safe_edit",
+      "expected_disposition": "deny-hard-block",
+      "rationale": "T-PT-004 核心，未认证写工具必须被拒 (mutate_delete_throw 测试)",
+      "mutation_target": "mutate_delete_throw"
+    }
+  ],
+  "subcases": [
+    {
+      "tool": "read",
+      "expected": "allow",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "glob",
+      "expected": "allow",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "grep",
+      "expected": "allow",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "list",
+      "expected": "allow",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "question",
+      "expected": "allow",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "skill",
+      "expected": "allow",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "skill_read_attest",
+      "expected": "allow",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "skill_read_state",
+      "expected": "allow",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "safe_shell",
+      "expected": "deny-hard-block",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "safe_framework_edit",
+      "expected": "deny-hard-block",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "safe_repo_push",
+      "expected": "deny-hard-block",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "future_tool_xyz_2027",
+      "expected": "deny-attest-required",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "github_mcp_create_issue",
+      "expected": "deny-hard-block",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    },
+    {
+      "tool": "safe_edit",
+      "expected": "deny-hard-block",
+      "actual": "n/a-dry-run",
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active session + 真实 dispatcher trace。"
+    }
+  ],
+  "mutationScores": [
+    {
+      "mutationId": "mutate_delete_throw",
+      "survived": false,
+      "rationale": "DRY_RUN=true: mutation 未应用；需 reviewer 接受临时 mutation + 24h revert 才执行真 mutation"
+    },
+    {
+      "mutationId": "mutate_catch_swallows",
+      "survived": false,
+      "rationale": "DRY_RUN=true: mutation 未应用；需 reviewer 接受临时 mutation + 24h revert 才执行真 mutation"
+    },
+    {
+      "mutationId": "mutate_unknown_tool_default_allow",
+      "survived": false,
+      "rationale": "DRY_RUN=true: mutation 未应用；需 reviewer 接受临时 mutation + 24h revert 才执行真 mutation"
+    },
+    {
+      "mutationId": "mutate_remove_shell_from_deny_matrix",
+      "survived": false,
+      "rationale": "DRY_RUN=true: mutation 未应用；需 reviewer 接受临时 mutation + 24h revert 才执行真 mutation"
+    },
+    {
+      "mutationId": "mutate_db_write_failure_trusted",
+      "survived": false,
+      "rationale": "DRY_RUN=true: mutation 未应用；需 reviewer 接受临时 mutation + 24h revert 才执行真 mutation"
+    }
+  ],
+  "killConditionsFired": [
+    "DRY_RUN=true: 0 kill conditions fired (mutation not applied, no real execution)"
+  ],
+  "summary": {
+    "total": 14,
+    "pass": 0,
+    "fail": 0
+  },
+  "notes": "DRY_RUN=true: this evidence is a prepared run-plan, not an executed run. To execute, reviewer must: (1) start isolated serve with FRAMEWORK_SKILL_READ_HARD_GATE=1, (2) accept each mutation as a 24h-revertible diff, (3) record active dispatcher trace + executor counter for each tool call."
+}

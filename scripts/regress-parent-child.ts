@@ -7,6 +7,7 @@ import {
 } from '/home/zhaoge/workspace/opencode/work-one/.opencode/service/gate/session-context-service';
 import {
   submitDeliverablesWithCrossCheck, approveDeliverablesWithAudit,
+  type SubmitResult, type ApproveResult,
 } from '/home/zhaoge/workspace/opencode/work-one/.opencode/service/gate/mcp-deliverables';
 import { recordRead } from '/home/zhaoge/workspace/opencode/work-one/.opencode/service/file-guard/read-audit-write';
 
@@ -68,7 +69,7 @@ resetGates();
 
 // T1 POS submit gateA by correct child A1
 let cid = inject('compliance_gate_submit_deliverables', GATE_A, A1, A, 'build', {session_id:GATE_A, step:'submitA1'});
-let r = submitDeliverablesWithCrossCheck(GATE_A, evA as any, {session_id:GATE_A, step:'submitA1'} as any);
+let r: SubmitResult | ApproveResult = submitDeliverablesWithCrossCheck(GATE_A, evA as any, {session_id:GATE_A, step:'submitA1'} as any);
 clearCtx(cid);
 record('T1 POS submit gateA by child A1', r.status==='delivered', 'status='+r.status+' reason='+(r.reason||''));
 
@@ -129,13 +130,13 @@ record('T1b re-deliver gateA by child A1 (prep for T5)', r.status==='delivered',
 cid = inject('compliance_gate_approve_deliverables', GATE_A, A, A, 'Orchestrator', {session_id:GATE_A, decision:'approve'});
 r = approveDeliverablesWithAudit(GATE_A, 'approve', 'Parent A verified deliverables for gate A parent/child regression.', 'Regression verified: parent/child no-bleed confirmed for gate A.', 'Orchestrator', shaA, undefined, {session_id:GATE_A, decision:'approve'} as any);
 clearCtx(cid);
-record('T5 POS approve gateA by parent A (real SHA, full read)', r.status==='approved' || r.status==='completed', 'status='+r.status+' approved_by='+(r.approved_by||'')+' reason='+(r.reason||''));
+record('T5 POS approve gateA by parent A (real SHA, full read)', r.status==='approved' || r.status==='completed', 'status='+r.status+' approved_by='+((r as ApproveResult).approved_by||'')+' reason='+(r.reason||''));
 
 // T6 POS approve gateB by parent B (real SHA + full read)
 cid = inject('compliance_gate_approve_deliverables', GATE_B, B, B, 'Orchestrator', {session_id:GATE_B, decision:'approve'});
 r = approveDeliverablesWithAudit(GATE_B, 'approve', 'Parent B verified deliverables for gate B parent/child regression.', 'Regression verified: parent/child no-bleed confirmed for gate B.', 'Orchestrator', shaB, undefined, {session_id:GATE_B, decision:'approve'} as any);
 clearCtx(cid);
-record('T6 POS approve gateB by parent B (real SHA, full read)', r.status==='approved' || r.status==='completed', 'status='+r.status+' approved_by='+(r.approved_by||'')+' reason='+(r.reason||''));
+record('T6 POS approve gateB by parent B (real SHA, full read)', r.status==='approved' || r.status==='completed', 'status='+r.status+' approved_by='+((r as ApproveResult).approved_by||'')+' reason='+(r.reason||''));
 
 // Final DB state: no cross-bleed
 const db = getDb();

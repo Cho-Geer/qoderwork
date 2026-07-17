@@ -1,0 +1,1178 @@
+{
+  "testId": "ADV-PT-009",
+  "timestamp": "2026-07-15T00:16:36.707Z",
+  "prerequisites": [
+    "T-PT-048",
+    "T-PT-049",
+    "T-PT-050"
+  ],
+  "frameworkSkillReadHardGate": "(not set)",
+  "dryRun": true,
+  "serveUrl": "http://localhost:4097",
+  "mutations": [
+    {
+      "id": "mutate_session",
+      "category": "state_replay",
+      "description": "把 session-A 的合法 attestation state 复制到 session-B 复用",
+      "target": "DB: skill_read_state.sessions — UPDATE sessionID key 但保留 agent/task/required-list/file-hash",
+      "kill_condition": "session-B 引用 session-A 的 state 时被 state validator 拒绝（ORA-PT-11: sessionID mismatch 失效旧状态）"
+    },
+    {
+      "id": "mutate_agent",
+      "category": "state_replay",
+      "description": "保持 session 不变，改 agent label (e.g. Orchestrator → build) 复用 state",
+      "target": "DB: skill_read_state.sessions[sid].agent — UPDATE agent 但保留其他字段",
+      "kill_condition": "agent 改变后 state validator 拒绝（ORA-PT-11: agent mismatch 失效旧状态）"
+    },
+    {
+      "id": "mutate_canonical_scope",
+      "category": "state_replay",
+      "description": "改 task_scope_id (root session:<sid> → 别的 session; child task:<dag_task_id> → 别的 task)",
+      "target": "DB: skill_read_state.sessions[sid].task_scope_id — 替换为不同值",
+      "kill_condition": "canonical task_scope_id 改变后 state validator 拒绝（ORA-PT-11: canonical scope mismatch）"
+    },
+    {
+      "id": "mutate_required_list",
+      "category": "state_replay",
+      "description": "attest 通过后把 required_list 改短/加项/换顺序",
+      "target": "DB: skill_read_state.sessions[sid].required_list — 替换为不同 list",
+      "kill_condition": "required_list 改变后 state validator 拒绝（ORA-PT-11: required-set mismatch）"
+    },
+    {
+      "id": "mutate_file_hash",
+      "category": "state_replay",
+      "description": "改 Skill 文件 hash (e.g. 在 test skill 末尾加个换行)，复用旧 state",
+      "target": "DB: skill_read_state.sessions[sid].skill_file_hashes — 替换为陈旧值",
+      "kill_condition": "文件 hash 变化后 state validator 拒绝（ORA-PT-11: file-hash mismatch 失效旧状态）"
+    },
+    {
+      "id": "db_read_error",
+      "category": "fault_injection",
+      "description": "DB 读返回错误（SQLite readonly / db file missing / I/O error）",
+      "target": "fake DB adapter: dbReadSubState() 抛 SqliteError",
+      "kill_condition": "DB 读错误时 state validator 返回 fail-closed，未认证调用非 allowlist 工具被专用 rule 拒绝（无 partial success）"
+    },
+    {
+      "id": "db_write_error",
+      "category": "fault_injection",
+      "description": "DB 写返回 false / SqliteError（disk full / permission denied）",
+      "target": "fake DB adapter: dbWriteSubState() 返回 { state_written: false }",
+      "kill_condition": "DB 写失败时 state_written=false → 不返回 verified:true；后续调用被拒（fail-closed）"
+    },
+    {
+      "id": "corrupt_state",
+      "category": "fault_injection",
+      "description": "DB row 损坏（缺字段 / 类型错 / JSON 解析失败）",
+      "target": "fake DB adapter: 注入 schema-violating row",
+      "kill_condition": "损坏 state 被 parser 拒绝，旧有效状态不复活；未认证调用被拒（fail-closed）"
+    },
+    {
+      "id": "lock_conflict",
+      "category": "fault_injection",
+      "description": "DB 写时遇到锁冲突（另一个事务持有写锁）",
+      "target": "fake DB adapter: 模拟 SQLITE_BUSY",
+      "kill_condition": "锁冲突时回退到 fail-closed，不留 partial success；旧有效状态被新事务覆盖（先失效再写）"
+    },
+    {
+      "id": "interleave_attestation",
+      "category": "concurrency",
+      "description": "在 session-A attest 过程中 session-B 插队做 attest + 写工具调用",
+      "target": "fake scheduler: ABABAB 交错 attest + write attempt",
+      "kill_condition": "交错过程中 session-B 不得借用 session-A 的 state；任何跨边界借用都被拒"
+    },
+    {
+      "id": "parallel_attestation",
+      "category": "concurrency",
+      "description": "两个 session 同时做 attestation (同一 task scope)",
+      "target": "fake scheduler: A||B 并行 attest",
+      "kill_condition": "并行 attest 不会产生双写 / partial success；winner-take-all 后 loser 被拒（不会留下 stale state）"
+    },
+    {
+      "id": "repeated_attestation",
+      "category": "concurrency",
+      "description": "同一 session 重复 attest 20 次 (相同 / 不同 required list)",
+      "target": "fake scheduler: A 连续 attest 20 轮",
+      "kill_condition": "重复 attest 不会扩大权限；旧 attest 不被新覆盖为 verified:true（除非新满足所有 ORA-PT-11 条件）"
+    }
+  ],
+  "schedule": [
+    {
+      "round": 1,
+      "seed": 3405643777,
+      "operations": [
+        {
+          "mutationId": "mutate_session",
+          "targetSession": "session-B",
+          "order": 1
+        },
+        {
+          "mutationId": "mutate_agent",
+          "targetSession": "session-C",
+          "order": 2
+        },
+        {
+          "mutationId": "mutate_canonical_scope",
+          "targetSession": "session-A",
+          "order": 3
+        },
+        {
+          "mutationId": "mutate_required_list",
+          "targetSession": "session-B",
+          "order": 4
+        },
+        {
+          "mutationId": "mutate_file_hash",
+          "targetSession": "session-C",
+          "order": 5
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "all-deny"
+    },
+    {
+      "round": 2,
+      "seed": 3405643778,
+      "operations": [
+        {
+          "mutationId": "mutate_session",
+          "targetSession": "session-C",
+          "order": 1
+        },
+        {
+          "mutationId": "mutate_agent",
+          "targetSession": "session-A",
+          "order": 2
+        },
+        {
+          "mutationId": "mutate_canonical_scope",
+          "targetSession": "session-B",
+          "order": 3
+        },
+        {
+          "mutationId": "mutate_required_list",
+          "targetSession": "session-C",
+          "order": 4
+        },
+        {
+          "mutationId": "mutate_file_hash",
+          "targetSession": "session-A",
+          "order": 5
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "all-deny"
+    },
+    {
+      "round": 3,
+      "seed": 3405643779,
+      "operations": [
+        {
+          "mutationId": "mutate_session",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "mutate_agent",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "mutate_canonical_scope",
+          "targetSession": "session-C",
+          "order": 3
+        },
+        {
+          "mutationId": "mutate_required_list",
+          "targetSession": "session-A",
+          "order": 4
+        },
+        {
+          "mutationId": "mutate_file_hash",
+          "targetSession": "session-B",
+          "order": 5
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "all-deny"
+    },
+    {
+      "round": 4,
+      "seed": 3405643780,
+      "operations": [
+        {
+          "mutationId": "mutate_session",
+          "targetSession": "session-B",
+          "order": 1
+        },
+        {
+          "mutationId": "mutate_agent",
+          "targetSession": "session-C",
+          "order": 2
+        },
+        {
+          "mutationId": "mutate_canonical_scope",
+          "targetSession": "session-A",
+          "order": 3
+        },
+        {
+          "mutationId": "mutate_required_list",
+          "targetSession": "session-B",
+          "order": 4
+        },
+        {
+          "mutationId": "mutate_file_hash",
+          "targetSession": "session-C",
+          "order": 5
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "all-deny"
+    },
+    {
+      "round": 5,
+      "seed": 3405643781,
+      "operations": [
+        {
+          "mutationId": "mutate_session",
+          "targetSession": "session-C",
+          "order": 1
+        },
+        {
+          "mutationId": "mutate_agent",
+          "targetSession": "session-A",
+          "order": 2
+        },
+        {
+          "mutationId": "mutate_canonical_scope",
+          "targetSession": "session-B",
+          "order": 3
+        },
+        {
+          "mutationId": "mutate_required_list",
+          "targetSession": "session-C",
+          "order": 4
+        },
+        {
+          "mutationId": "mutate_file_hash",
+          "targetSession": "session-A",
+          "order": 5
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "all-deny"
+    },
+    {
+      "round": 6,
+      "seed": 3405643782,
+      "operations": [
+        {
+          "mutationId": "db_read_error",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "db_write_error",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "corrupt_state",
+          "targetSession": "session-C",
+          "order": 3
+        },
+        {
+          "mutationId": "lock_conflict",
+          "targetSession": "session-A",
+          "order": 4
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "all-deny"
+    },
+    {
+      "round": 7,
+      "seed": 3405643783,
+      "operations": [
+        {
+          "mutationId": "db_read_error",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "db_write_error",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "corrupt_state",
+          "targetSession": "session-C",
+          "order": 3
+        },
+        {
+          "mutationId": "lock_conflict",
+          "targetSession": "session-B",
+          "order": 4
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "all-deny"
+    },
+    {
+      "round": 8,
+      "seed": 3405643784,
+      "operations": [
+        {
+          "mutationId": "db_read_error",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "db_write_error",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "corrupt_state",
+          "targetSession": "session-C",
+          "order": 3
+        },
+        {
+          "mutationId": "lock_conflict",
+          "targetSession": "session-C",
+          "order": 4
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "all-deny"
+    },
+    {
+      "round": 9,
+      "seed": 3405643785,
+      "operations": [
+        {
+          "mutationId": "db_read_error",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "db_write_error",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "corrupt_state",
+          "targetSession": "session-C",
+          "order": 3
+        },
+        {
+          "mutationId": "lock_conflict",
+          "targetSession": "session-A",
+          "order": 4
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "all-deny"
+    },
+    {
+      "round": 10,
+      "seed": 3405643786,
+      "operations": [
+        {
+          "mutationId": "db_read_error",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "db_write_error",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "corrupt_state",
+          "targetSession": "session-C",
+          "order": 3
+        },
+        {
+          "mutationId": "lock_conflict",
+          "targetSession": "session-B",
+          "order": 4
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "all-deny"
+    },
+    {
+      "round": 11,
+      "seed": 3405643787,
+      "operations": [
+        {
+          "mutationId": "interleave_attestation",
+          "targetSession": "all",
+          "order": 1
+        },
+        {
+          "mutationId": "parallel_attestation",
+          "targetSession": "all",
+          "order": 2
+        },
+        {
+          "mutationId": "repeated_attestation",
+          "targetSession": "session-C",
+          "order": 3
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "winner-only"
+    },
+    {
+      "round": 12,
+      "seed": 3405643788,
+      "operations": [
+        {
+          "mutationId": "interleave_attestation",
+          "targetSession": "all",
+          "order": 1
+        },
+        {
+          "mutationId": "parallel_attestation",
+          "targetSession": "all",
+          "order": 2
+        },
+        {
+          "mutationId": "repeated_attestation",
+          "targetSession": "session-A",
+          "order": 3
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "winner-only"
+    },
+    {
+      "round": 13,
+      "seed": 3405643789,
+      "operations": [
+        {
+          "mutationId": "interleave_attestation",
+          "targetSession": "all",
+          "order": 1
+        },
+        {
+          "mutationId": "parallel_attestation",
+          "targetSession": "all",
+          "order": 2
+        },
+        {
+          "mutationId": "repeated_attestation",
+          "targetSession": "session-B",
+          "order": 3
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "winner-only"
+    },
+    {
+      "round": 14,
+      "seed": 3405643790,
+      "operations": [
+        {
+          "mutationId": "interleave_attestation",
+          "targetSession": "all",
+          "order": 1
+        },
+        {
+          "mutationId": "parallel_attestation",
+          "targetSession": "all",
+          "order": 2
+        },
+        {
+          "mutationId": "repeated_attestation",
+          "targetSession": "session-C",
+          "order": 3
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "winner-only"
+    },
+    {
+      "round": 15,
+      "seed": 3405643791,
+      "operations": [
+        {
+          "mutationId": "interleave_attestation",
+          "targetSession": "all",
+          "order": 1
+        },
+        {
+          "mutationId": "parallel_attestation",
+          "targetSession": "all",
+          "order": 2
+        },
+        {
+          "mutationId": "repeated_attestation",
+          "targetSession": "session-A",
+          "order": 3
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "winner-only"
+    },
+    {
+      "round": 16,
+      "seed": 3405643792,
+      "operations": [
+        {
+          "mutationId": "mutate_session",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "db_read_error",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "interleave_attestation",
+          "targetSession": "all",
+          "order": 3
+        },
+        {
+          "mutationId": "mutate_canonical_scope",
+          "targetSession": "session-C",
+          "order": 4
+        },
+        {
+          "mutationId": "corrupt_state",
+          "targetSession": "session-A",
+          "order": 5
+        },
+        {
+          "mutationId": "parallel_attestation",
+          "targetSession": "all",
+          "order": 6
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "no-amplification"
+    },
+    {
+      "round": 17,
+      "seed": 3405643793,
+      "operations": [
+        {
+          "mutationId": "mutate_session",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "db_read_error",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "interleave_attestation",
+          "targetSession": "all",
+          "order": 3
+        },
+        {
+          "mutationId": "mutate_canonical_scope",
+          "targetSession": "session-C",
+          "order": 4
+        },
+        {
+          "mutationId": "corrupt_state",
+          "targetSession": "session-A",
+          "order": 5
+        },
+        {
+          "mutationId": "parallel_attestation",
+          "targetSession": "all",
+          "order": 6
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "no-amplification"
+    },
+    {
+      "round": 18,
+      "seed": 3405643794,
+      "operations": [
+        {
+          "mutationId": "mutate_session",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "db_read_error",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "interleave_attestation",
+          "targetSession": "all",
+          "order": 3
+        },
+        {
+          "mutationId": "mutate_canonical_scope",
+          "targetSession": "session-C",
+          "order": 4
+        },
+        {
+          "mutationId": "corrupt_state",
+          "targetSession": "session-A",
+          "order": 5
+        },
+        {
+          "mutationId": "parallel_attestation",
+          "targetSession": "all",
+          "order": 6
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "no-amplification"
+    },
+    {
+      "round": 19,
+      "seed": 3405643795,
+      "operations": [
+        {
+          "mutationId": "mutate_session",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "db_read_error",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "interleave_attestation",
+          "targetSession": "all",
+          "order": 3
+        },
+        {
+          "mutationId": "mutate_canonical_scope",
+          "targetSession": "session-C",
+          "order": 4
+        },
+        {
+          "mutationId": "corrupt_state",
+          "targetSession": "session-A",
+          "order": 5
+        },
+        {
+          "mutationId": "parallel_attestation",
+          "targetSession": "all",
+          "order": 6
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "no-amplification"
+    },
+    {
+      "round": 20,
+      "seed": 3405643796,
+      "operations": [
+        {
+          "mutationId": "mutate_session",
+          "targetSession": "session-A",
+          "order": 1
+        },
+        {
+          "mutationId": "db_read_error",
+          "targetSession": "session-B",
+          "order": 2
+        },
+        {
+          "mutationId": "interleave_attestation",
+          "targetSession": "all",
+          "order": 3
+        },
+        {
+          "mutationId": "mutate_canonical_scope",
+          "targetSession": "session-C",
+          "order": 4
+        },
+        {
+          "mutationId": "corrupt_state",
+          "targetSession": "session-A",
+          "order": 5
+        },
+        {
+          "mutationId": "parallel_attestation",
+          "targetSession": "all",
+          "order": 6
+        }
+      ],
+      "assertions": [
+        "ORA-PT-11",
+        "ORA-PT-12"
+      ],
+      "expectedResults": "no-amplification"
+    }
+  ],
+  "roundResults": [
+    {
+      "round": 1,
+      "seed": 3405643777,
+      "operations": 5,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "all-deny",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 2,
+      "seed": 3405643778,
+      "operations": 5,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "all-deny",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 3,
+      "seed": 3405643779,
+      "operations": 5,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "all-deny",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 4,
+      "seed": 3405643780,
+      "operations": 5,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "all-deny",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 5,
+      "seed": 3405643781,
+      "operations": 5,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "all-deny",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 6,
+      "seed": 3405643782,
+      "operations": 4,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "all-deny",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 7,
+      "seed": 3405643783,
+      "operations": 4,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "all-deny",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 8,
+      "seed": 3405643784,
+      "operations": 4,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "all-deny",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 9,
+      "seed": 3405643785,
+      "operations": 4,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "all-deny",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 10,
+      "seed": 3405643786,
+      "operations": 4,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "all-deny",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 11,
+      "seed": 3405643787,
+      "operations": 3,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "winner-only",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 12,
+      "seed": 3405643788,
+      "operations": 3,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "winner-only",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 13,
+      "seed": 3405643789,
+      "operations": 3,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "winner-only",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 14,
+      "seed": 3405643790,
+      "operations": 3,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "winner-only",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 15,
+      "seed": 3405643791,
+      "operations": 3,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "winner-only",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 16,
+      "seed": 3405643792,
+      "operations": 6,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "no-amplification",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 17,
+      "seed": 3405643793,
+      "operations": 6,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "no-amplification",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 18,
+      "seed": 3405643794,
+      "operations": 6,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "no-amplification",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 19,
+      "seed": 3405643795,
+      "operations": 6,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "no-amplification",
+      "actual": "n/a-dry-run",
+      "pass": false
+    },
+    {
+      "round": 20,
+      "seed": 3405643796,
+      "operations": 6,
+      "assertions": [
+        {
+          "assertion": "ORA-PT-11",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        },
+        {
+          "assertion": "ORA-PT-12",
+          "pass": false,
+          "note": "DRY_RUN=true: 未真跑; production run 需 reviewer 授权 + 真实 session/DB"
+        }
+      ],
+      "expected": "no-amplification",
+      "actual": "n/a-dry-run",
+      "pass": false
+    }
+  ],
+  "summary": {
+    "totalRounds": 20,
+    "pass": 0,
+    "fail": 0
+  },
+  "notes": "DRY_RUN=true: this evidence is a prepared run-plan. To execute: reviewer must (1) start isolated serve with FRAMEWORK_SKILL_READ_HARD_GATE=1, (2) create seed DB state for 3 sessions, (3) inject each fault via fake adapter (contract-tested), (4) record DB before/after + reject events for each round."
+}

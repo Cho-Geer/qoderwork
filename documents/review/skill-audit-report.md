@@ -1,5 +1,9 @@
 # Skills 诊断、合并与自动优化报告
 
+> **2026-07-17 更新**：当前项目级审计范围为 `.agents/skills/`，共 23 个 active skill。静态健康检查已修复触发词、验证纪律、认知说明和失效本地引用；随后将 `docx`、`plugin-creator`、`serve-api` 收敛为短入口 + 一跳本地参考。全部 23 个 skill 的 description 已具备中英文触发覆盖，正文也统一要求按用户语言回复、仅按需双语、且不改写命令、路径、API 名称、标识符或引用原文。验证结果：所有 active `SKILL.md` 正文均不超过 600 行、无失效本地链接、无 `.bak` 或空目录。详情见 `logs/2026-07-17-技能健康检查修复.md`、`logs/2026-07-17-剩余技能长度优化.md` 与 `logs/2026-07-17-技能双语支持优化.md`。
+
+> **报告位置约定**：后续 `skill-diagnosis-optimization` 审计必须写入本文件，不再在仓库根目录创建 `skill-audit-report.md`。
+
 **日期**: 2026-07-04
 **执行范围**: 全部 user skills (~/.qoderworkcn/skills/)
 **Builtin skills**: 10 个（不修改，仅诊断）

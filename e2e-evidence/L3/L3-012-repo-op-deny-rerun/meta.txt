@@ -1,0 +1,11 @@
+[2026-07-14T13:56:28.325Z] case=L3-012-repo-op-deny (rerun, serve-api compliant v3)
+SID=ses_09f16bba2ffeLQPsaijgDl79Xc
+serve port: 4097
+real agent: Orchestrator
+wait result: timeout (60329ms)
+question replies: 0
+messages: 3
+tool calls: 1
+denied/error: 1
+children: 0
+result: ✓ 至少 1 个 repo op tool 被 deny/error (1 个)

@@ -1,13 +1,22 @@
 ---
 name: computer-use-guidance-windows
 version: 0.9.0
-description: "Operation guidance for automating the Windows desktop via Computer Use. Triggers: Windows automation, UIA accessibility tree, open apps, click, type, shortcut keys, scroll, drag, semantic UIA actions, Windows 桌面自动化, 系统设置, 终端操作. Not for: non-Windows platforms, pure CLI tasks without UI interaction, or headless server automation."
+description: "Operation guidance for automating the Windows desktop via Computer Use. Trigger: Windows automation, UIA accessibility tree, open apps, click, type, shortcut keys, scroll, drag, semantic UIA actions, Windows 桌面自动化, 系统设置, 终端操作. Not for: non-Windows platforms, pure CLI tasks without UI interaction, or headless server automation."
 description_zh: "Windows 平台 Computer Use 桌面自动化操作指南：通过读屏（UIA 无障碍树）配合点击 / 文本输入 / 快捷键 / 滚动 / 拖拽 / 语义动作等 UI 操作完成本机应用自动化，覆盖应用、窗口、文件、系统设置、终端、办公、开发工具等常见场景的操作范式与最佳实践。"
 ---
 
 # Computer Use Guidance (Windows)
 
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
+
 This skill provides Windows-specific operation guidance for desktop automation via the native C#/Win32 Computer Use MCP server. Read the **Lazy-load Bootstrap** and **Tool Reference** sections below before taking any action — the Windows interaction paradigm (UIA-tree-first, focus-stealing, SendInput-based) differs from macOS and any generic desktop automation guide.
+
+> **步骤类型区分**：读取 `list_installed_apps`、`qw_mcp_list`、`qw_mcp_get`、`get_window_state` 属于 `[ANALYSIS]`；实际 `launch_app`、`click`、`type_text`、`press_key`、`scroll`、`drag` 属于 `[VERIFICATION]`。
+> **Verified-by 要求**：每次 `[VERIFICATION]` 后都要记录 `Verified-by: <tool call> -> <window title / element_index / screenshot observation / returned status>`。
+> **合理化检测**：如果你发现自己在想「界面应该就是这个样子，不用先看当前窗口状态」--停下来，这是跳步信号。必须先观察再操作。
+> **认知说明**：UIA 树和截图属于当前界面分析；真正的鼠标键盘动作才是运行态验证。不要把“看到了”误当成“已经做了”。
 
 ---
 

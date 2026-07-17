@@ -1,0 +1,1 @@
+SESSION NOT FOUND in skill_read_state → verified: false (no attestation)

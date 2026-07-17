@@ -1,0 +1,74 @@
+{
+  "db": "/tmp/pt-harness-1784005640341/test.db",
+  "worktree": "/tmp/pt-harness-1784005640341/wt",
+  "required_skill_reads": [
+    "preflight-lite",
+    "codegraph-first"
+  ],
+  "tests": {
+    "T-PT-003": {
+      "agent": "build",
+      "seeded_reads": [
+        {
+          "skill": "preflight-lite",
+          "size": 1047,
+          "seed_verified": true
+        },
+        {
+          "skill": "codegraph-first",
+          "size": 1049,
+          "seed_verified": true
+        }
+      ],
+      "attest": {
+        "verified": true,
+        "session_id": "pt-t003-1784005640341",
+        "attested_at": "2026-07-14T05:07:20.427Z",
+        "files_verified": [
+          {
+            "file": "/tmp/pt-harness-1784005640341/wt/.opencode/skills/preflight-lite/skill.md",
+            "timestamp": "2026-07-14T05:07:20.362Z"
+          },
+          {
+            "file": "/tmp/pt-harness-1784005640341/wt/.opencode/skills/codegraph-first/skill.md",
+            "timestamp": "2026-07-14T05:07:20.426Z"
+          }
+        ],
+        "state_written": true
+      },
+      "oracle_ORA_PT_02": {
+        "expect_verified_true": true,
+        "files_verified_count": 2,
+        "required_count": 2,
+        "one_to_one": true
+      },
+      "PASS": true
+    },
+    "T-PT-004": {
+      "agent": "explore",
+      "seeded_reads": [
+        {
+          "skill": "preflight-lite",
+          "seed_verified": true
+        }
+      ],
+      "unread_intentional": "codegraph-first",
+      "attest": {
+        "verified": false,
+        "error": "Missing read audit records for 1 skill file(s)",
+        "unread_files": [
+          "/tmp/pt-harness-1784005640341/wt/.opencode/skills/codegraph-first/skill.md"
+        ],
+        "hint": "Verification failures:\n/tmp/pt-harness-1784005640341/wt/.opencode/skills/codegraph-first/skill.md: Agent \"@explore\" has NOT read \"/tmp/pt-harness-1784005640341/wt/.opencode/skills/codegraph-first/SKILL.md\" via the `read` tool within the last 5 minutes. You MUST use the `read` tool to open and review the file. Path: /tmp/pt-harness-1784005640341/wt/.opencode/skills/codegraph-first/SKILL.md\n\nACTION: You must read the COMPLETE required skill file content, not just the first page.\nThe read tool paginates large files. To read the full content:\n  1. Use read tool without --limit to get the default page\n  2. If the file is larger, use --offset and --limit to read remaining pages\n  3. Repeat until you have read the ENTIRE file (all lines)\nRequired skills: preflight-lite, codegraph-first\nAfter reading ALL files completely, re-run skill_read_attest."
+      },
+      "oracle_ORA_PT_02_attest_half": {
+        "expect_verified_false": true,
+        "unread_files_present": true,
+        "unread_files": [
+          "/tmp/pt-harness-1784005640341/wt/.opencode/skills/codegraph-first/skill.md"
+        ]
+      },
+      "PASS_attest_half": true
+    }
+  }
+}

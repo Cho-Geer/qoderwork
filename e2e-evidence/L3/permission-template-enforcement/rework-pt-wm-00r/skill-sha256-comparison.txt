@@ -1,0 +1,19 @@
+=== T-PT-001/002: Runtime Skill SHA-256 Comparison ===
+Date: 2026-07-14
+
+--- requirements-to-test-specification ---
+Source (.agents):  6c2eb6c21fc6729a1cca9d0b87c059cc034653b8a03f540cf0f04ff27b932c66
+Source (.trae):    6c2eb6c21fc6729a1cca9d0b87c059cc034653b8a03f540cf0f04ff27b932c66
+Source (.qoder):   6c2eb6c21fc6729a1cca9d0b87c059cc034653b8a03f540cf0f04ff27b932c66
+Runtime (.opencode): 6c2eb6c21fc6729a1cca9d0b87c059cc034653b8a03f540cf0f04ff27b932c66
+MATCH: YES (all identical)
+
+--- test-specification-execution ---
+Source (.agents):  d6fbddcca6b607a679b654fa3750fab5347e6ec84605d8a68018bcc50a7aa064
+Source (.trae):    d6fbddcca6b607a679b654fa3750fab5347e6ec84605d8a68018bcc50a7aa064
+Source (.qoder):   d6fbddcca6b607a679b654fa3750fab5347e6ec84605d8a68018bcc50a7aa064
+Runtime (.opencode): d6fbddcca6b607a679b654fa3750fab5347e6ec84605d8a68018bcc50a7aa064
+MATCH: YES (all identical)
+
+T-PT-001: PASS - Both skill names found in runtime, all SHA-256 match
+T-PT-002: PASS (N/A - no diff detected; negative case not applicable)

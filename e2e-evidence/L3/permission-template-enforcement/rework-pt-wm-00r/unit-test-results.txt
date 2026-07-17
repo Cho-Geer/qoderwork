@@ -1,0 +1,21 @@
+=== PT-WM-00R Unit Test Results ===
+Date: 2026-07-14
+Environment: FRAMEWORK_SKILL_READ_HARD_GATE=1
+Bun version: 1.3.14
+
+--- skill-attest.test.ts (6 tests) ---
+(pass) T-PT-039: Missing agent returns verified:false
+(pass) T-PT-039: Missing taskId returns verified:false when hard gate enabled
+(pass) T-PT-039: Hard gate enabled with empty required list returns verified:false
+(pass) T-PT-040: Any unread file returns verified:false and invalidates old state
+(pass) validateSkillAttestation returns valid only when all fields match
+(pass) T-PT-042: Hard gate disabled allows all tools (backward compatible)
+
+--- skill-policy.test.ts (5 tests) ---
+(pass) T-PT-041: Pre-attest allowlist tools (read/glob/grep/question/skill/attest) pass without attestation
+(pass) T-PT-041: Write tools (safe_edit/safe_shell/safe_framework_edit/dispatch_subagent) are blocked without attestation
+(pass) T-PT-042: Unknown/future tools are blocked by default (fail-closed)
+(pass) ADV-PT-008: Exceptions propagate out of handler (not caught internally)
+(pass) T-PT-046: When hard gate is disabled, handler allows all tools (backward compatible)
+
+TOTAL: 11 pass, 0 fail, 43 expect() calls

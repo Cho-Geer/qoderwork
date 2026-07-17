@@ -2,10 +2,13 @@
 // 12 task intents × (Chinese + English) prompts, capture the
 // SKILL-SUMMARY-INJECTED log, and assert CN==EN + actual==expected boost.
 //
+// ⚠️ 本脚本不适用 serve-api skill §1.1 (本脚本是 in-process handler test，
+//    直接 import work-one 源码调函数，不经过 serve API)
+//
 // Run: OPENCODE_ROOT=/home/zhaoge/workspace/opencode/work-one \
 //      /home/zhaoge/.bun/bin/bun run /home/zhaoge/workspace/qoderwork/scripts/_b1_live.ts
 
-import { captureUserMessage, handle } from "/home/zhaoge/workspace/opencode/work-one/.opencode/plugin-handlers/system/skill-summary.ts";
+import { captureUserMessage, handle } from "../../opencode/work-one/.opencode/plugin-handlers/system/skill-summary.ts";
 
 type Case = { id: number; lang: "CN" | "EN"; prompt: string; expected: string[] };
 

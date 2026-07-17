@@ -1,0 +1,36 @@
+=== PT-WM-00R Reviewer Live E2E Environment ===
+Date: 2026-07-14
+
+--- Process environment ---
+FRAMEWORK_SKILL_READ_HARD_GATE=1 (set before start-serve.ts)
+
+--- Pre-test git state ---
+722017fe56e45308b82f25195cfe3924ace4aee8
+
+--- Dirty files (first 20 lines) ---
+ M .opencode/agents/Orchestrator.md
+ M .opencode/lib/__tests__/permission-equivalence.test.ts
+ D .opencode/lib/__tests__/permission-isolation-core.test.ts
+ M .opencode/lib/__tests__/safe-bash-core.test.ts
+ M .opencode/lib/agent-identity.ts
+ M .opencode/lib/audit-log.ts
+ M .opencode/lib/gate-checks.ts
+ M .opencode/lib/index.ts
+ D .opencode/lib/permission-isolation-core.ts
+ D .opencode/lib/write-audit-lib.ts
+ M .opencode/plugin-handlers/before/__tests__/codegraph.test.ts
+ M .opencode/plugin-handlers/before/__tests__/path-validate.test.ts
+ M .opencode/plugin-handlers/before/__tests__/tool-governance-handler.test.ts
+ M .opencode/plugin-handlers/before/codegraph.ts
+ M .opencode/plugin-handlers/before/path-validate.ts
+ M .opencode/plugin-handlers/before/skill-policy.ts
+ M .opencode/plugin-handlers/before/tool-governance-handler.ts
+ M .opencode/plugins/before-dispatcher.ts
+ M .opencode/project.config.json
+ M .opencode/scripts/__tests__/framework-e2e.test.ts
+
+--- Serve status ---
+{}
+--- SSE daemon ---
+PID: 598626
+DB backup: .opencode/state/framework-state.db.bak-reviewer-20260714T083916

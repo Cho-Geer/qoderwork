@@ -1,0 +1,2 @@
+ls: cannot access '/home/zhaoge/workspace/opencode/work-one/.task_temp/pt004-test.txt': No such file or directory
+FILE_EXISTS=NO

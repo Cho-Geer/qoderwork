@@ -1,0 +1,3 @@
+Build session: ses_0a0201614ffeybdkStOHWAn2Iw
+TARGET=/home/zhaoge/workspace/opencode/work-one/.task_temp/pt004-test.txt
+TARGET_EXISTS_BEFORE=NO

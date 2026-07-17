@@ -6,6 +6,10 @@ version: 2.2.0
 
 # Pre-Flight Enforcement
 
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
+
 ## 目的
 
 解决 agent 读了 skill 但不遵循规定流程的问题。通过在执行前强制输出 pre-flight checklist、在执行后强制输出 audit 报告，创建可追溯的执行承诺，确保 skill 规定的步骤顺序被严格遵守。
@@ -170,7 +174,7 @@ Phase 2: Post-Execution Audit
    ```
    **如果问题 2 的回答是「无」且问题 3 的风险不可接受，则不得跳过 VERIFICATION 步骤。**
 8. **证据行要求**（v2.2 新增）: 每个 `[VERIFICATION]` 步骤完成后，必须输出一行 `Verified-by:` 证据行，写明具体的运行态证据来源（session ID、日志行号、curl 返回、命令输出）。如果写不出证据行，说明该步骤未实际执行，必须补做。
-9. **合理化模式检测**（v2.2 新增）: 在执行过程中和 audit 输出前，扫描自己的推理和输出中是否包含以下模式：
+9. **合理化检测 / 模式检测**（v2.2 新增）: 在执行过程中和 audit 输出前，扫描自己的推理和输出中是否包含以下模式：
    - 「无需实际触发」/「无需验证」/「源码已足够」/「显而易见」/「可以推断」/「无需实际执行」
    - 「代码已经清楚表明」/「从代码可以看出」
    - 任何为跳过已声明步骤提供理由的表述

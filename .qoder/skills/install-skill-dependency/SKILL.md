@@ -7,6 +7,10 @@ description_zh: 诊断并修复已安装技能所需的缺失依赖、二进制�
 
 # Install Skill Dependencies
 
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
+
 Scan installed skills, detect missing dependencies, and install them with user authorization.
 
 ## Workflow
@@ -97,6 +101,7 @@ After receiving authorization:
 ### Step 6: Verify and Report `[VERIFICATION]`
 
 > **本步骤是 `[VERIFICATION]`**--必须实际重新运行 which/version 命令验证每个依赖，记录 `Verified-by: 实际命令输出`。「刚装完肯定有了」不是验证。
+> **合理化检测**：如果你发现自己在想「安装命令没报错，所以依赖一定可用了」--停下来，这是跳步信号。必须重新检查可执行路径和版本输出。
 
 After all installations complete:
 1. Re-run the dependency scan from Step 2

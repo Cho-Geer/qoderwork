@@ -1,0 +1,12 @@
+=== required_skill_reads in project.config.json ===
+Date: 2026-07-14
+
+"required_skill_reads": [
+  "preflight-lite",
+  "codegraph-first",
+  "requirements-to-test-specification",
+  "test-specification-execution"
+]
+
+Count: 4 skills
+Matches implementation log claim: YES

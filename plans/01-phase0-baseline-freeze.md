@@ -13,7 +13,7 @@
 | 检查项 | 状态 | 证据 |
 |---|---|---|
 | CodeGraph 索引 | ✅ up to date | `codegraph sync && codegraph status` |
-| live 数字 | ✅ 已重采样 | `.opencode` TS 372 / 75,563 lines；CodeGraph 419 files |
+| live 数字 | ✅ 已重采样 | `.opencode` TS 388 / 77,728 lines（2026-07-13）；CodeGraph 429 files |
 | DB schema / 表 | ✅ v37 / 49 business / 50 total | 只读 SQLite 查询 |
 | active handler order | ✅ before 11 / after 7 / system 2 | `.opencode/project.config.json` |
 | active agent 边界 | ✅ 5 agent + 1 custom prompt | `opencode.json.agent` + `.opencode/agents` |
@@ -26,7 +26,7 @@
 | 项 | 当前事实 |
 |---|---|
 | CodeGraph | up to date，419 files / 377 TS / 30 JS / 12 YAML |
-| active `.opencode` TS | 372 files / 75,563 lines |
+| active `.opencode` TS | 388 files / 77,728 lines（2026-07-13 重采样） |
 | active agent | `Orchestrator`, `build`, `general`, `plan`, `explore` |
 | active prompt | 只有 `.opencode/agents/Orchestrator.md` |
 | legacy role profile | 9 个 `.opencode/legacy/agent-profiles/*.md` |
@@ -34,12 +34,14 @@
 | before order | gate-call-context, guidance-bridge, task, permission-safety, behavioral-path-guard, scope, path-validate, codegraph, skill-policy, dispatch-signal, tool-governance |
 | after order | gate-call-context, unified-audit, skill-audit, quality-contract, dispatch-trace, db-health, guidance-recovery |
 | system order | anti-bypass, skill-summary |
-| custom tool | 37 |
+| custom tool | 39（2026-07-13） |
 | Skill | 18 |
 | MCP server | 12 |
 | DB | schema v37，49 business tables / 50 total |
 | framework maintenance | `dispatch_privilege_grants` + `framework_maintenance_plans` + `safe_framework_edit` |
 | gate session propagation | `gate_call_context` + before/after `gate-call-context` |
+| agent identity 映射 | `agent-identity.ts` `DISPLAY_NAMES` 残留 `plan: "Meta-Planner"`（P1-B 旧重命名），导致 plan 权限走 legacy fallback（2026-07-13 发现，P0 待修复） |
+| legacy permission fallback | `legacy-agent-permissions.ts`（905 行，9 个 legacy agent），`getAgentPermission` 已 `@deprecated`，待 per-agent caller 迁移后退役 |
 
 ---
 
@@ -110,6 +112,7 @@ PY
 | Scout 是 active agent | 当前 `opencode.json.agent` 没有 `scout` |
 | TodoWrite 可同步 DB checklist | TodoWrite 只做工作记忆和 soft-governance |
 | MCP role filter 已生效 | 当前无 active caller，能力声明必须删除到 future/legacy 区域 |
+| plan agent 权限走 `LEGACY_AGENT_PERMISSIONS` fallback | **2026-07-13 发现**：`agent-identity.ts` `plan: "Meta-Planner"` 映射导致 plan 权限错误走 legacy；修复后 plan 权限走 opencode.json，`legacy-agent-permissions.ts` 待 per-agent 迁移后退役 |
 
 ---
 

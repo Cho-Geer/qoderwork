@@ -1,0 +1,48 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "env": {
+        "DEFAULT_MINIMUM_TOKENS": "10000"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"]
+    },
+    "docker": {
+      "command": "uvx",
+      "args": ["mcp-server-docker"]
+    },
+    "pandoc": {
+      "command": "uvx",
+      "args": ["mcp-pandoc"]
+    },
+    "excel": {
+      "command": "npx",
+      "args": ["--yes", "@negokaz/excel-mcp-server"],
+      "env": {
+        "EXCEL_MCP_PAGING_CELLS_LIMIT": "1000000"
+      }
+    },
+    "codegraph": {
+      "command": "/home/zhaoge/.local/bin/codegraph",
+      "args": ["serve", "--mcp", "--path", "."],
+      "cwd": "/home/zhaoge/workspace/qoderwork",
+      "startupTimeoutMs": 30000,
+      "toolTimeoutMs": 30000
+    },
+    "notify-server": {
+      "command": "/home/zhaoge/.bun/bin/bun",
+      "args": ["./.opencode/scripts/mcp-tools/notify-server.ts"],
+      "cwd": "/home/zhaoge/workspace/opencode/work-one",
+      "startupTimeoutMs": 30000,
+      "toolTimeoutMs": 30000
+    }
+  }
+}

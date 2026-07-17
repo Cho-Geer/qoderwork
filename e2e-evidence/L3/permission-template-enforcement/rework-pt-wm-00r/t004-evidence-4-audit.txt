@@ -1,0 +1,2 @@
+{"timestamp":"2026-07-14T09:10:02.611Z","channel":"audit","sessionID":"ses_0a01c8414ffeWd13w8MSLhQTvC","tool":"dispatch_subagent","event":"governance_allow","ruleId":"all-policies-passed","layer":"allow","outcome":"allow","agent":"build"}
+{"timestamp":"2026-07-14T09:10:10.253Z","channel":"audit","sessionID":"ses_0a01c8414ffeWd13w8MSLhQTvC","tool":"safe_shell","event":"governance_block","ruleId":"SHELL-COMPOSITION-DENY","layer":"tool-final-guard","outcome":"deny","agent":"build"}

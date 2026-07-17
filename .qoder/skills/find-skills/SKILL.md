@@ -7,7 +7,16 @@ description_zh: 从官方市场、社区源以及企业技能市场（若通过 
 
 # Find Skills
 
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
+
 This is a unified skill discovery & installation orchestration skill. It searches **two mandatory sources** — the **official QoderWork marketplace** (skills) and the **skills.sh community skill library** — plus an **optional enterprise source** (Enterprise Skill Market MCP, if available) — and merges results into a single search-and-install flow, with mandatory user confirmation before any installation.
+
+> **步骤类型区分**：检索 marketplace / skills.sh / enterprise source 属于 `[VERIFICATION]`；整理关键词、归并结果、判断重叠属于 `[ANALYSIS]`。
+> **Verified-by 要求**：每次 `[VERIFICATION]` 后都要记录 `Verified-by: <query/install command> -> <结果数 / AskUserQuestion 选项 / 安装日志>`。
+> **合理化检测**：如果你发现自己在想「我大概知道没有合适 skill，不用真的搜了」--停下来，这是跳步信号。必须先完成所有强制搜索源。
+> **认知说明**：关键词推断和源码分析式猜测只回答“应该搜什么”；实际查询结果才回答“市场里现在有什么”。运行态验证是搜索命令本身，分析不能替代搜索。
 
 > **CORE PRINCIPLE**: Every invocation of this skill MUST search both the official marketplace AND skills.sh community. Additionally, if any Enterprise Skill Market MCP is available and exposes a `searchSkills` (or similar skill search) tool, it MUST also be searched. These are independent channels with different coverage — the marketplace offers curated quality skills, skills.sh covers niche domains and newer tools, and the enterprise source provides organization-specific curated skills. Searching only one mandatory source is an incomplete search. Do not present results to the user until all applicable sources have been queried.
 

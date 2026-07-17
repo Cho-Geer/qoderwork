@@ -1,0 +1,149 @@
+{
+  "testId": "T-PT-039",
+  "timestamp": "2026-07-15T00:16:36.432Z",
+  "prerequisites": [
+    "T-PT-048",
+    "T-PT-049"
+  ],
+  "frameworkSkillReadHardGate": "(not set)",
+  "dryRun": true,
+  "serveUrl": "http://localhost:4097",
+  "subcases": [
+    {
+      "id": "SC-T039-01-happy",
+      "title": "Happy path: 完整 shared identity + DB write 成功",
+      "preconditions": "临时 worktree config + 独立 DB + 真实 Skill 文件 + FRAMEWORK_SKILL_READ_HARD_GATE=1",
+      "inject": "(none — 正常 attest 调用)",
+      "oracle": "ORA-PT-11: 共享 identity (sessionID/agent/scope/callerLabel) 完整 → verified:true",
+      "expected_verified": true,
+      "expected_state_written": true,
+      "expected_old_state_invalid": false
+    },
+    {
+      "id": "SC-T039-02-empty-list",
+      "title": "Empty required list: required=[] → deny",
+      "preconditions": "正常 session + DB；attest.required 列表显式置空",
+      "inject": "在 attestSkillRead() 调用前把 required 改 []",
+      "oracle": "ORA-PT-13: required list 非空校验未通过 → verified:false, state_written:false",
+      "expected_verified": false,
+      "expected_state_written": false,
+      "expected_old_state_invalid": true
+    },
+    {
+      "id": "SC-T039-03-missing-identity",
+      "title": "Missing identity: session/agent/scope 任一缺失 → deny",
+      "preconditions": "正常 session + DB；分别删 sessionID / agent / canonicalTaskScope",
+      "inject": "分三轮,每轮缺一个 identity 字段,跑 attestSkillRead()",
+      "oracle": "ORA-PT-13: canonical identity 校验失败 → verified:false, state_written:false, 旧状态失效",
+      "expected_verified": false,
+      "expected_state_written": false,
+      "expected_old_state_invalid": true
+    },
+    {
+      "id": "SC-T039-04-child-hint-mismatch",
+      "title": "Child hint mismatch: root session 标识 vs child session 标识不一致 → deny",
+      "preconditions": "父 session 创建 child session,parentSessionID 不匹配 childSessionID 上报的 hint",
+      "inject": "在 dispatch_subagent 生成的 child session 上,篡改 childSessionHint.parentSessionID",
+      "oracle": "ORA-PT-11: identity 一致性校验失败 → verified:false, state_written:false",
+      "expected_verified": false,
+      "expected_state_written": false,
+      "expected_old_state_invalid": true
+    },
+    {
+      "id": "SC-T039-05-db-write-fail",
+      "title": "DB write 失败: state_written=false → deny + 旧状态失效",
+      "preconditions": "DB 写故障注入 (DB write throws / connection drop) + 之前存在有效 old state",
+      "inject": "在 dbWriteSubState() 注入 throw,验证 fail-closed 行为",
+      "oracle": "ORA-PT-11/13: 原子写失败 → verified:false, 旧 row 标记失效 (fail-closed)",
+      "expected_verified": false,
+      "expected_state_written": false,
+      "expected_old_state_invalid": true
+    },
+    {
+      "id": "SC-T039-06-stale-state",
+      "title": "Stale state: 之前写过的 old state 在新一次写失败后不可用",
+      "preconditions": "先成功 attest 一次 (建立有效 old state) → 第二次注入 DB write fail",
+      "inject": "先 happy path 写一次,再触发 SC-T039-05 故障,验证后续 attest 全部 false",
+      "oracle": "ORA-PT-13: 写失败后旧有效 state 不可用, 后续请求 fail-closed",
+      "expected_verified": false,
+      "expected_state_written": false,
+      "expected_old_state_invalid": true
+    }
+  ],
+  "results": [
+    {
+      "subcaseId": "SC-T039-01-happy",
+      "expected_verified": true,
+      "actual_verified": null,
+      "expected_state_written": true,
+      "actual_state_written": null,
+      "expected_old_state_invalid": false,
+      "actual_old_state_invalid": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active reviewer-isolated serve + DB fault inject。"
+    },
+    {
+      "subcaseId": "SC-T039-02-empty-list",
+      "expected_verified": false,
+      "actual_verified": null,
+      "expected_state_written": false,
+      "actual_state_written": null,
+      "expected_old_state_invalid": true,
+      "actual_old_state_invalid": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active reviewer-isolated serve + DB fault inject。"
+    },
+    {
+      "subcaseId": "SC-T039-03-missing-identity",
+      "expected_verified": false,
+      "actual_verified": null,
+      "expected_state_written": false,
+      "actual_state_written": null,
+      "expected_old_state_invalid": true,
+      "actual_old_state_invalid": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active reviewer-isolated serve + DB fault inject。"
+    },
+    {
+      "subcaseId": "SC-T039-04-child-hint-mismatch",
+      "expected_verified": false,
+      "actual_verified": null,
+      "expected_state_written": false,
+      "actual_state_written": null,
+      "expected_old_state_invalid": true,
+      "actual_old_state_invalid": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active reviewer-isolated serve + DB fault inject。"
+    },
+    {
+      "subcaseId": "SC-T039-05-db-write-fail",
+      "expected_verified": false,
+      "actual_verified": null,
+      "expected_state_written": false,
+      "actual_state_written": null,
+      "expected_old_state_invalid": true,
+      "actual_old_state_invalid": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active reviewer-isolated serve + DB fault inject。"
+    },
+    {
+      "subcaseId": "SC-T039-06-stale-state",
+      "expected_verified": false,
+      "actual_verified": null,
+      "expected_state_written": false,
+      "actual_state_written": null,
+      "expected_old_state_invalid": true,
+      "actual_old_state_invalid": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active reviewer-isolated serve + DB fault inject。"
+    }
+  ],
+  "oracle": "ORA-PT-11/13: 仅共享 identity 完整验证且原子写成功 → verified:true, state_written:true;其他路径 → false 且无可用旧状态",
+  "summary": {
+    "total": 6,
+    "pass": 0,
+    "fail": 0,
+    "dryRun": 6
+  },
+  "notes": "DRY_RUN=true: this evidence is a prepared run-plan, not an executed run. To execute, reviewer must: (1) start isolated serve with FRAMEWORK_SKILL_READ_HARD_GATE=1, (2) ensure T-PT-048/049 prerequisites PASS, (3) for each subcase: inject the precondition, call attestSkillRead(), assert verified/state_written/old_state_invalid against oracle, (4) record state before/after + session map + file hash."
+}

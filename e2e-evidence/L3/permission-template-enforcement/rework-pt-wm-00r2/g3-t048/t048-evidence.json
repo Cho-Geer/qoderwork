@@ -1,0 +1,156 @@
+{
+  "testId": "T-PT-048",
+  "timestamp": "2026-07-15T00:16:36.551Z",
+  "prerequisites": [],
+  "frameworkSkillReadHardGate": "(not set)",
+  "dryRun": true,
+  "serveUrl": "http://localhost:4097",
+  "fixtures": [
+    {
+      "id": "SC-T048-01-root",
+      "title": "Root identity fixture: 完整 sessionID/agent/scope/required/skill_hash",
+      "category": "root",
+      "identity": {
+        "sessionID": "ses_root_a1b2c3d4",
+        "agent": "build",
+        "canonicalTaskScope": "root session:ses_root_a1b2c3d4",
+        "callerLabel": "user-task-001",
+        "required": [
+          "skill-attest",
+          "codegraph-first"
+        ],
+        "skillFileHashes": {
+          "skill-attest": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+          "codegraph-first": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "timestamp": "2026-07-14T10:00:00.000Z"
+      },
+      "expected_static_valid": true,
+      "expected_state_validator": "accept",
+      "expected_rule_id": "(n/a — accepted)"
+    },
+    {
+      "id": "SC-T048-02-child",
+      "title": "Child identity fixture: 含 parentSessionID + canonicalTaskScope 派生",
+      "category": "child",
+      "identity": {
+        "sessionID": "ses_child_e5f6g7h8",
+        "agent": "general",
+        "canonicalTaskScope": "child task:dag_task_9i0j1k2l",
+        "callerLabel": "subtask-code-review",
+        "parentSessionID": "ses_root_a1b2c3d4",
+        "required": [
+          "skill-attest"
+        ],
+        "skillFileHashes": {
+          "skill-attest": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+        },
+        "timestamp": "2026-07-14T10:01:00.000Z"
+      },
+      "expected_static_valid": true,
+      "expected_state_validator": "accept",
+      "expected_rule_id": "(n/a — accepted)"
+    },
+    {
+      "id": "SC-T048-03-hint-mismatch",
+      "title": "Hint mismatch: child hint.parentSessionID 与 root session 不匹配 → reject",
+      "category": "hint-mismatch",
+      "identity": {
+        "sessionID": "ses_child_e5f6g7h8",
+        "agent": "general",
+        "canonicalTaskScope": "child task:dag_task_9i0j1k2l",
+        "callerLabel": "subtask-code-review",
+        "parentSessionID": "ses_root_NOTEXIST_xxxx",
+        "required": [
+          "skill-attest"
+        ],
+        "skillFileHashes": {
+          "skill-attest": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+        },
+        "timestamp": "2026-07-14T10:02:00.000Z"
+      },
+      "expected_static_valid": true,
+      "expected_state_validator": "reject",
+      "expected_rule_id": "skill-read-attest-required",
+      "rejection_reason": "parentSessionID 不指向任何活跃 root session"
+    },
+    {
+      "id": "SC-T048-04-agent-mismatch",
+      "title": "Agent mismatch: agent 字段与授权 manifest 不匹配 → reject",
+      "category": "agent-mismatch",
+      "identity": {
+        "sessionID": "ses_root_a1b2c3d4",
+        "agent": "explore",
+        "canonicalTaskScope": "root session:ses_root_a1b2c3d4",
+        "callerLabel": "user-task-002",
+        "required": [
+          "skill-attest"
+        ],
+        "skillFileHashes": {
+          "skill-attest": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+        },
+        "timestamp": "2026-07-14T10:03:00.000Z"
+      },
+      "expected_static_valid": true,
+      "expected_state_validator": "reject",
+      "expected_rule_id": "skill-read-attest-required",
+      "rejection_reason": "agent='explore' 未在授权 manifest 列表"
+    }
+  ],
+  "results": [
+    {
+      "fixtureId": "SC-T048-01-root",
+      "category": "root",
+      "expected_static_valid": true,
+      "actual_static_valid": true,
+      "expected_state_validator": "accept",
+      "expected_rule_id": "(n/a — accepted)",
+      "pass": true,
+      "staticShapeReasons": [],
+      "note": "DRY_RUN=true: 静态形状已验证 (true); state validator 实际行为需 reviewer 启动隔离 serve + 真实 attestSkillRead() 调用 (T-PT-049 阶段)"
+    },
+    {
+      "fixtureId": "SC-T048-02-child",
+      "category": "child",
+      "expected_static_valid": true,
+      "actual_static_valid": true,
+      "expected_state_validator": "accept",
+      "expected_rule_id": "(n/a — accepted)",
+      "pass": true,
+      "staticShapeReasons": [],
+      "note": "DRY_RUN=true: 静态形状已验证 (true); state validator 实际行为需 reviewer 启动隔离 serve + 真实 attestSkillRead() 调用 (T-PT-049 阶段)"
+    },
+    {
+      "fixtureId": "SC-T048-03-hint-mismatch",
+      "category": "hint-mismatch",
+      "expected_static_valid": true,
+      "actual_static_valid": true,
+      "expected_state_validator": "reject",
+      "expected_rule_id": "skill-read-attest-required",
+      "rejection_reason": "parentSessionID 不指向任何活跃 root session",
+      "pass": true,
+      "staticShapeReasons": [],
+      "note": "DRY_RUN=true: 静态形状已验证 (true); state validator 实际行为需 reviewer 启动隔离 serve + 真实 attestSkillRead() 调用 (T-PT-049 阶段)"
+    },
+    {
+      "fixtureId": "SC-T048-04-agent-mismatch",
+      "category": "agent-mismatch",
+      "expected_static_valid": true,
+      "actual_static_valid": true,
+      "expected_state_validator": "reject",
+      "expected_rule_id": "skill-read-attest-required",
+      "rejection_reason": "agent='explore' 未在授权 manifest 列表",
+      "pass": true,
+      "staticShapeReasons": [],
+      "note": "DRY_RUN=true: 静态形状已验证 (true); state validator 实际行为需 reviewer 启动隔离 serve + 真实 attestSkillRead() 调用 (T-PT-049 阶段)"
+    }
+  ],
+  "oracle": "ORA-PT-13: fixture 与现役 skill-attest.ts 真实契约一致; 4 类 fixture 全部静态可验证; mismatch fixture 必被 state validator 拒绝",
+  "summary": {
+    "total": 4,
+    "pass": 4,
+    "fail": 0,
+    "dryRun": 4
+  },
+  "notes": "DRY_RUN=true: this evidence is a prepared run-plan, not an executed run. To execute, reviewer must: (1) start isolated serve with FRAMEWORK_SKILL_READ_HARD_GATE=1, (2) 对每个 fixture 在独立 session 中调 attestSkillRead(), (3) 对 root/child fixture 验证 verified:true; 对 mismatch fixture 验证 verified:false + ruleId='skill-read-attest-required', (4) 记录 DB before/after + session map + file hash."
+}

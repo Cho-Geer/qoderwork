@@ -1,6 +1,6 @@
 ---
 name: opencode-framework-dev
-description: "OpenCode framework current-code audit and maintenance / OpenCode 框架现状审计与维护。Use for qoderwork/work-one claim verification, active hook debugging, dispatch_privilege/safe_framework_edit, question guidance recovery, session/DB drift, serve API E2E, CodeGraph enforcement, scripts-to-service refactors, and blueprint/plan sync. Triggers: work-one, guidance-bridge, anti-bypass, session_map, 框架审计. Not for: generic app bugs, broad skill cleanup, or unverified recap."
+description: "OpenCode framework current-code audit and maintenance / OpenCode 框架现状审计与维护。Use for qoderwork/work-one claim verification, active hook debugging, dispatch_privilege/safe_framework_edit, question guidance recovery, session/DB drift, serve API E2E, CodeGraph enforcement, scripts-to-service refactors, and blueprint/plan sync. Trigger: work-one, guidance-bridge, anti-bypass, session_map, 框架审计. Not for: generic app bugs, broad skill cleanup, or unverified recap."
 version: 2.1.0
 agent_created: true
 last_verified: 2026-07-07
@@ -8,12 +8,21 @@ last_verified: 2026-07-07
 
 # OpenCode Framework Dev Suite
 
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
+
 This skill is for evidence-backed OpenCode framework work from
 `/home/zhaoge/workspace/qoderwork` against the live framework checkout at
 `/home/zhaoge/workspace/opencode/work-one`.
 
 Core rule: treat old docs, old logs, and this skill's `reference.md` as
 hypotheses until the current code/config/DB/logs confirm them.
+
+> **步骤类型区分**：读取代码、配置、文档、CodeGraph 输出属于 `[ANALYSIS]`；读取 live DB、运行 serve API、执行脚本、重放 E2E 属于 `[VERIFICATION]`。
+> **Verified-by 要求**：每次 `[VERIFICATION]` 后都要记录 `Verified-by: <命令/接口> -> <行号/表查询结果/session id/artifact path>`。
+> **合理化检测**：如果你发现自己在想「这份旧文档以前审核过，所以这次应该还是对的」--停下来，这是跳步信号。必须回到当前代码、DB 和日志重新确认。
+> **认知说明**：源码分析回答“框架现在看起来怎么实现”；运行态验证回答“当前 session / DB / serve 实际怎么工作”。旧结论必须服从新证据。
 
 ## 0. Current Truth Snapshot
 
@@ -310,7 +319,7 @@ Common stale claims to catch:
 
 `reference.md` contains command templates and historical examples. Use it as a
 snippet library, not as current truth. When a template mentions old agent lists,
-ACP bridge, `wsl.exe`, or old plugin counts, adapt it to the current snapshot in
-this `SKILL.md` before execution.
+historical bridge wording, `wsl.exe`, or old plugin counts, adapt it to the
+current snapshot in this `SKILL.md` before execution.
 
 If you discover a repeated mismatch in `reference.md`, update the reference too.

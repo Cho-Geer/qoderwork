@@ -2,10 +2,14 @@
 name: debug-environment-toolkit
 version: 3.0.0
 agent_created: true
-description: "Debugging toolkit covering 4 areas: log-first debugging, VM error recovery, WSL bash-c escaping patterns, and beginner investigation coaching. Triggers: debug, investigate, troubleshoot, root cause, 调试, 根因分析, log-first debugging, startup failure, secure workspace error, WSL bash -c, cp-to-tmp, bun script pattern, 调查, 排查, 定位问题, 复现, 断点, 临时日志, 小白. Not for: feature implementation, code review, or non-debugging tasks."
+description: "Debugging toolkit covering 4 areas: log-first debugging, VM error recovery, WSL bash-c escaping patterns, and beginner investigation coaching. Trigger: debug, investigate, troubleshoot, root cause, 调试, 根因分析, log-first debugging, startup failure, secure workspace error, WSL bash -c, cp-to-tmp, bun script pattern, 调查, 排查, 定位问题, 复现, 断点, 临时日志, 小白. Not for: feature implementation, code review, or non-debugging tasks."
 ---
 
 # Debug & Environment Toolkit
+
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
 
 Four complementary methodologies: (1) locate bugs via runtime logs, (2) recover secure workspace startup errors, (3) avoid WSL escaping hell when running scripts, (4) coach beginners through systematic investigation.
 

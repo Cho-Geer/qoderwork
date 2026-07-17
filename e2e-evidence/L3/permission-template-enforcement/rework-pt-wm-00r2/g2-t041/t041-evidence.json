@@ -1,0 +1,168 @@
+{
+  "testId": "T-PT-041",
+  "timestamp": "2026-07-15T00:16:36.492Z",
+  "prerequisites": [
+    "T-PT-048",
+    "T-PT-049",
+    "T-PT-039"
+  ],
+  "frameworkSkillReadHardGate": "(not set)",
+  "dryRun": true,
+  "serveUrl": "http://localhost:4097",
+  "subcases": [
+    {
+      "id": "SC-T041-01-before-order",
+      "title": "active before dispatcher order: skill-policy 在 safe-edit gate 之前先执行",
+      "category": "order",
+      "preconditions": "active runtime + 未认证 session + 在 skill-policy 之前没有其他 plugin 放行 safe_edit",
+      "inject": "在 handler chain trace 中观察 before 顺序: skill-policy → safe-edit-gate → executor",
+      "oracle": "ORA-PT-12: skill-policy 在所有写工具 gate 之前 (handler order 锁定)",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "expected_target_state_unchanged": true
+    },
+    {
+      "id": "SC-T041-02-db-state-missing",
+      "title": "DB state missing: 未 attest → 触发专用 rule (hard_block)",
+      "category": "db-state",
+      "preconditions": "DB 干净,没有任何 state row;session 未调过 attestSkillRead",
+      "inject": "清空 skill_attest_state 表,验证 state missing 分支",
+      "oracle": "ORA-PT-12: 专用 rule (skill-read-attest-required) 抛出,executor entry=0",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "expected_target_state_unchanged": true
+    },
+    {
+      "id": "SC-T041-03-db-state-invalid",
+      "title": "DB state invalid: attest:false (identity 不匹配) → 触发专用 rule",
+      "category": "db-state",
+      "preconditions": "DB 存在 stale row (旧 session);当前 session identity 不匹配",
+      "inject": "保留旧 row,换 session 调用写工具,验证 state invalid 分支",
+      "oracle": "ORA-PT-12: 专用 rule 抛出 (state_written=false 走 fail-closed),executor entry=0",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "expected_target_state_unchanged": true
+    },
+    {
+      "id": "SC-T041-04-safe-edit-deny",
+      "title": "safe_edit 被 dispatcher 拒绝 (executor counter=0)",
+      "category": "tool-dispatch",
+      "preconditions": "未认证 session + DB state invalid",
+      "inject": "调用 safe_edit 'echo bypass',观察 executor 边界计数器",
+      "oracle": "ORA-PT-12: executor boundary counter=0,目标文件未变",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "expected_target_state_unchanged": true,
+      "target_tool": "safe_edit"
+    },
+    {
+      "id": "SC-T041-05-safe-framework-edit-deny",
+      "title": "safe_framework_edit 被 dispatcher 拒绝 (executor counter=0)",
+      "category": "tool-dispatch",
+      "preconditions": "未认证 session + DB state invalid",
+      "inject": "调用 safe_framework_edit 'update .opencode/plugin',观察 executor 边界计数器",
+      "oracle": "ORA-PT-12: executor boundary counter=0,framework 文件未变",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "expected_target_state_unchanged": true,
+      "target_tool": "safe_framework_edit"
+    },
+    {
+      "id": "SC-T041-06-dispatch-subagent-deny",
+      "title": "dispatch_subagent 被 dispatcher 拒绝 (executor counter=0)",
+      "category": "tool-dispatch",
+      "preconditions": "未认证 session + DB state invalid",
+      "inject": "调用 dispatch_subagent 'spawn child agent',观察 executor 边界计数器 + 子 session 创建计数",
+      "oracle": "ORA-PT-12: executor boundary counter=0,子 session 未创建,root session 状态不变",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "expected_target_state_unchanged": true,
+      "target_tool": "dispatch_subagent"
+    }
+  ],
+  "results": [
+    {
+      "subcaseId": "SC-T041-01-before-order",
+      "category": "order",
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "expected_target_state_unchanged": true,
+      "actual_target_state_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active dispatcher trace + executor boundary counter。"
+    },
+    {
+      "subcaseId": "SC-T041-02-db-state-missing",
+      "category": "db-state",
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "expected_target_state_unchanged": true,
+      "actual_target_state_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active dispatcher trace + executor boundary counter。"
+    },
+    {
+      "subcaseId": "SC-T041-03-db-state-invalid",
+      "category": "db-state",
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "expected_target_state_unchanged": true,
+      "actual_target_state_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active dispatcher trace + executor boundary counter。"
+    },
+    {
+      "subcaseId": "SC-T041-04-safe-edit-deny",
+      "category": "tool-dispatch",
+      "target_tool": "safe_edit",
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "expected_target_state_unchanged": true,
+      "actual_target_state_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active dispatcher trace + executor boundary counter。"
+    },
+    {
+      "subcaseId": "SC-T041-05-safe-framework-edit-deny",
+      "category": "tool-dispatch",
+      "target_tool": "safe_framework_edit",
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "expected_target_state_unchanged": true,
+      "actual_target_state_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active dispatcher trace + executor boundary counter。"
+    },
+    {
+      "subcaseId": "SC-T041-06-dispatch-subagent-deny",
+      "category": "tool-dispatch",
+      "target_tool": "dispatch_subagent",
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "expected_target_state_unchanged": true,
+      "actual_target_state_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + active dispatcher trace + executor boundary counter。"
+    }
+  ],
+  "oracle": "ORA-PT-12: 专用 rule (skill-read-attest-required) 抛出并到达 dispatcher;三个写工具 executor entry 均为 0",
+  "summary": {
+    "total": 6,
+    "pass": 0,
+    "fail": 0,
+    "dryRun": 6
+  },
+  "notes": "DRY_RUN=true: this evidence is a prepared run-plan, not an executed run. To execute, reviewer must: (1) start isolated serve with FRAMEWORK_SKILL_READ_HARD_GATE=1, (2) T-PT-039 happy baseline 已 PASS, (3) for each subcase: 注入 DB state, 跑 before dispatcher, 捕获 rule_id + executor counter + target state diff, (4) 三个 tool-dispatch 例必须各自独立 session + 独立 target file 校验."
+}

@@ -1,0 +1,304 @@
+{
+  "testId": "T-PT-042",
+  "timestamp": "2026-07-15T01:29:56.093Z",
+  "prerequisites": [
+    "T-PT-048",
+    "T-PT-049",
+    "T-PT-041"
+  ],
+  "frameworkSkillReadHardGate": "(not set)",
+  "dryRun": true,
+  "serveUrl": "http://localhost:4097",
+  "toolMatrix": [
+    {
+      "category": "allowlist",
+      "tool": "read",
+      "expected_disposition": "allow",
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "expected_executor_entry_count": 1,
+      "rationale": "固定 read allowlist (test-spec §3.2 T-PT-042 硬性要求)",
+      "sample_args": "{ filePath: '/tmp/some-skill.md' }"
+    },
+    {
+      "category": "allowlist",
+      "tool": "glob",
+      "expected_disposition": "allow",
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "expected_executor_entry_count": 1,
+      "rationale": "固定 read allowlist",
+      "sample_args": "{ pattern: '**/*.md' }"
+    },
+    {
+      "category": "allowlist",
+      "tool": "grep",
+      "expected_disposition": "allow",
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "expected_executor_entry_count": 1,
+      "rationale": "固定 read allowlist",
+      "sample_args": "{ pattern: 'attest', include: '*.ts' }"
+    },
+    {
+      "category": "allowlist",
+      "tool": "config_read_attest",
+      "expected_disposition": "allow",
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "expected_executor_entry_count": 1,
+      "rationale": "固定 pre-attest allowlist (skill-policy.ts PRE_ATTEST_ALLOWLIST);配置读取 attest 自身在 allowlist",
+      "sample_args": "{ sessionID: '...', agent: '...', configPath: '...' }"
+    },
+    {
+      "category": "allowlist",
+      "tool": "question",
+      "expected_disposition": "allow",
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "expected_executor_entry_count": 1,
+      "rationale": "固定 question allowlist (interactive 不需要 skill 认证)",
+      "sample_args": "{ questions: [{ header: 'Test', question: 'Continue?', options: [...] }] }"
+    },
+    {
+      "category": "allowlist",
+      "tool": "skill",
+      "expected_disposition": "allow",
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "expected_executor_entry_count": 1,
+      "rationale": "加载 Skill 必需 (bootstrapping attest 之前需要先 read skill 列表)",
+      "sample_args": "{ name: 'skill-attest' }"
+    },
+    {
+      "category": "allowlist",
+      "tool": "skill_read_attest",
+      "expected_disposition": "allow",
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "expected_executor_entry_count": 1,
+      "rationale": "attest 工具本身在 allowlist (recordRead + verifyRead 链)",
+      "sample_args": "{ skill: 'skill-attest', sessionID: '...', agent: '...', scope: '...' }"
+    },
+    {
+      "category": "allowlist",
+      "tool": "rule_read_attest",
+      "expected_disposition": "allow",
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "expected_executor_entry_count": 1,
+      "rationale": "固定 pre-attest allowlist (skill-policy.ts PRE_ATTEST_ALLOWLIST);rule 读取 attest 自身在 allowlist",
+      "sample_args": "{ sessionID: '...', agent: '...', ruleId: '...' }"
+    },
+    {
+      "category": "denylist",
+      "tool": "safe_shell",
+      "expected_disposition": "deny-hard-block",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "rationale": "需 grant 才对 safe_shell 放行;未认证 → 专用 rule 拒绝",
+      "sample_args": "{ command: 'echo bypass' }",
+      "bypass_attempt": "尝试 'echo' (只读 shell) — 必须仍被拒,不能靠 '只读' 绕过"
+    },
+    {
+      "category": "denylist",
+      "tool": "safe_edit",
+      "expected_disposition": "deny-hard-block",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "rationale": "未认证写工具必须被拒 (T-PT-004 核心,00R2 已证明)",
+      "sample_args": "{ filePath: '...', oldString: '...', newString: '...' }",
+      "bypass_attempt": "尝试写 allowed path — 必须仍被拒"
+    },
+    {
+      "category": "denylist",
+      "tool": "safe_framework_edit",
+      "expected_disposition": "deny-hard-block",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "rationale": "需 grant 才对 framework edit 放行;framework 修改是高级权限",
+      "sample_args": "{ filePath: '.opencode/plugins/before/x.ts', ... }",
+      "bypass_attempt": "尝试改只读 plugin — 必须仍被拒"
+    },
+    {
+      "category": "denylist",
+      "tool": "safe_repo_push",
+      "expected_disposition": "deny-hard-block",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "rationale": "需 grant 才对 repo write 放行;git push 是远程写",
+      "sample_args": "{ remote: 'origin', branch: 'main' }",
+      "bypass_attempt": "尝试 push 到 fork — 必须仍被拒"
+    },
+    {
+      "category": "denylist",
+      "tool": "safe_quantum_compute_v9_xyz",
+      "expected_disposition": "deny-attest-required",
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_executor_entry_count": 0,
+      "rationale": "未枚举工具默认拒绝 (default-deny);不能靠'未列入 allowlist' 绕过",
+      "sample_args": "{ op: 'teleport' }",
+      "bypass_attempt": "尝试新工具名 — 必须被 default-deny 拒绝,不能因为未在 deny 矩阵就放行"
+    }
+  ],
+  "results": [
+    {
+      "tool": "read",
+      "category": "allowlist",
+      "expected_disposition": "allow",
+      "actual_disposition": null,
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 1,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "glob",
+      "category": "allowlist",
+      "expected_disposition": "allow",
+      "actual_disposition": null,
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 1,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "grep",
+      "category": "allowlist",
+      "expected_disposition": "allow",
+      "actual_disposition": null,
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 1,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "config_read_attest",
+      "category": "allowlist",
+      "expected_disposition": "allow",
+      "actual_disposition": null,
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 1,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "question",
+      "category": "allowlist",
+      "expected_disposition": "allow",
+      "actual_disposition": null,
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 1,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "skill",
+      "category": "allowlist",
+      "expected_disposition": "allow",
+      "actual_disposition": null,
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 1,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "skill_read_attest",
+      "category": "allowlist",
+      "expected_disposition": "allow",
+      "actual_disposition": null,
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 1,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "rule_read_attest",
+      "category": "allowlist",
+      "expected_disposition": "allow",
+      "actual_disposition": null,
+      "expected_rule_id": "(none — allowlist 直接通过)",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 1,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "safe_shell",
+      "category": "denylist",
+      "expected_disposition": "deny-hard-block",
+      "actual_disposition": null,
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "safe_edit",
+      "category": "denylist",
+      "expected_disposition": "deny-hard-block",
+      "actual_disposition": null,
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "safe_framework_edit",
+      "category": "denylist",
+      "expected_disposition": "deny-hard-block",
+      "actual_disposition": null,
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "safe_repo_push",
+      "category": "denylist",
+      "expected_disposition": "deny-hard-block",
+      "actual_disposition": null,
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    },
+    {
+      "tool": "safe_quantum_compute_v9_xyz",
+      "category": "denylist",
+      "expected_disposition": "deny-attest-required",
+      "actual_disposition": null,
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "expected_executor_entry_count": 0,
+      "actual_executor_entry_count": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + unauthenticated session + 真实 dispatcher 调用。"
+    }
+  ],
+  "oracle": "ORA-PT-12: 精确 allowlist 通过;其他全部默认拒绝;不能靠'只读 shell'或未枚举工具绕过",
+  "summary": {
+    "total": 13,
+    "pass": 0,
+    "fail": 0,
+    "allowlistCount": 8,
+    "denylistCount": 5,
+    "dryRun": 13
+  },
+  "notes": "DRY_RUN=true: this evidence is a prepared run-plan, not an executed run. To execute, reviewer must: (1) start isolated serve with FRAMEWORK_SKILL_READ_HARD_GATE=1, (2) T-PT-041 dispatcher order 已锁定, (3) for each entry: unauthenticated session + 真实 dispatcher 调用 + 捕获 rule_id + executor counter, (4) 5 个 denylist 例必须验证 bypass_attempt 不可行 (e.g. 'echo' 仍被拒)."
+}

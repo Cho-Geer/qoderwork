@@ -1,0 +1,10 @@
+type=message.part.updated tool= err=
+type=message.part.updated tool= err=
+type=message.part.updated tool=read err=
+type=message.part.updated tool= err=
+type=message.part.updated tool= err=
+type=message.part.updated tool= err=
+type=message.part.updated tool=dispatch_subagent err=
+type=message.part.updated tool=dispatch_subagent err=
+type=message.part.updated tool=dispatch_subagent err=[skill-read-attest-required] Missing required identity fields for skill attestation validation. Tool "dispatch_subagent" (write) is blocked until you complete skill read attestation. Allowed tools bef
+type=message.part.updated tool= err=

@@ -1,0 +1,184 @@
+{
+  "testId": "T-PT-040",
+  "timestamp": "2026-07-15T00:16:36.464Z",
+  "prerequisites": [
+    "T-PT-048",
+    "T-PT-039"
+  ],
+  "frameworkSkillReadHardGate": "(not set)",
+  "dryRun": true,
+  "serveUrl": "http://localhost:4097",
+  "subcases": [
+    {
+      "id": "SC-T040-01-caller-label",
+      "title": "baseline: caller task label 单独变化 → 旧状态有效,权限不扩大不缩小",
+      "dimension": "caller-label",
+      "preconditions": "先成功 attest 一次 (建立有效 old state) + 改 caller task label (审计字段,非授权字段)",
+      "inject": "保持 sessionID/agent/scope/required/Skill 内容不变,只改 caller task label",
+      "oracle": "ORA-PT-11/13: caller label 是审计维度,变化不触发旧状态失效,verified 仍为 true,权限集合不变",
+      "expected_old_state_valid": true,
+      "expected_new_state_valid": true,
+      "expected_permission_unchanged": true
+    },
+    {
+      "id": "SC-T040-02-session-id",
+      "title": "cross-dim: sessionID 变化 → 旧状态失效",
+      "dimension": "sessionID",
+      "preconditions": "先成功 attest 一次 + 改 sessionID (例如新建 session 后复用同一 agent)",
+      "inject": "换 sessionID,其他维度保持",
+      "oracle": "ORA-PT-11: sessionID 是身份维度,变化 → 旧状态失效,verified:false",
+      "expected_old_state_valid": false,
+      "expected_new_state_valid": false,
+      "expected_permission_unchanged": false
+    },
+    {
+      "id": "SC-T040-03-agent",
+      "title": "cross-dim: agent 变化 → 旧状态失效",
+      "dimension": "agent",
+      "preconditions": "先成功 attest 一次 (agent=build) + 切到 agent=general",
+      "inject": "换 agent,其他维度保持",
+      "oracle": "ORA-PT-11: agent 是身份维度,变化 → 旧状态失效,verified:false",
+      "expected_old_state_valid": false,
+      "expected_new_state_valid": false,
+      "expected_permission_unchanged": false
+    },
+    {
+      "id": "SC-T040-04-scope",
+      "title": "cross-dim: canonicalTaskScope 变化 → 旧状态失效",
+      "dimension": "canonicalTaskScope",
+      "preconditions": "先成功 attest 一次 (scope=A) + 改 scope (scope=B)",
+      "inject": "换 canonicalTaskScope,其他维度保持",
+      "oracle": "ORA-PT-11: scope 是授权维度,变化 → 旧状态失效 (scope 改变等于权限范围改变)",
+      "expected_old_state_valid": false,
+      "expected_new_state_valid": false,
+      "expected_permission_unchanged": false
+    },
+    {
+      "id": "SC-T040-05-required",
+      "title": "cross-dim: required list 变化 → 旧状态失效",
+      "dimension": "required",
+      "preconditions": "先成功 attest 一次 (required=[a,b]) + 改 required (required=[a,b,c])",
+      "inject": "往 required list 加一个新项,其他维度保持",
+      "oracle": "ORA-PT-13: required 列表是授权维度,变化 → 旧状态失效 (覆盖的 Skill 集合变了)",
+      "expected_old_state_valid": false,
+      "expected_new_state_valid": false,
+      "expected_permission_unchanged": false
+    },
+    {
+      "id": "SC-T040-06-skill-content",
+      "title": "cross-dim: Skill 文件内容变化 → 旧状态失效",
+      "dimension": "skill-content",
+      "preconditions": "先成功 attest 一次 + 修改 Skill 文件 (例如改一句 description)",
+      "inject": "touch Skill 文件,触发 file hash 变化,其他维度保持",
+      "oracle": "ORA-PT-13: Skill 内容是身份维度,文件 hash 变化 → 旧状态失效 (基于内容哈希的 attestation 失效)",
+      "expected_old_state_valid": false,
+      "expected_new_state_valid": false,
+      "expected_permission_unchanged": false
+    },
+    {
+      "id": "SC-T040-07-fail-auth-overwrite",
+      "title": "fail-auth overwrite: 失败认证清除/覆盖之前 allow 状态",
+      "dimension": "fail-auth",
+      "preconditions": "先成功 attest 一次 (allow 状态) + 触发一次失败认证 (DB 写失败注入)",
+      "inject": "在已有 allow 状态的基础上注入 DB 写失败,验证旧 allow 状态被清除",
+      "oracle": "ORA-PT-13: 失败认证 → 旧 allow 状态清除,后续请求全部 verified:false (fail-closed)",
+      "expected_old_state_valid": false,
+      "expected_new_state_valid": false,
+      "expected_permission_unchanged": false
+    }
+  ],
+  "results": [
+    {
+      "subcaseId": "SC-T040-01-caller-label",
+      "dimension": "caller-label",
+      "expected_old_state_valid": true,
+      "actual_old_state_valid": null,
+      "expected_new_state_valid": true,
+      "actual_new_state_valid": null,
+      "expected_permission_unchanged": true,
+      "actual_permission_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + 每例独立 DB/session + 最小 state diff 落盘。"
+    },
+    {
+      "subcaseId": "SC-T040-02-session-id",
+      "dimension": "sessionID",
+      "expected_old_state_valid": false,
+      "actual_old_state_valid": null,
+      "expected_new_state_valid": false,
+      "actual_new_state_valid": null,
+      "expected_permission_unchanged": false,
+      "actual_permission_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + 每例独立 DB/session + 最小 state diff 落盘。"
+    },
+    {
+      "subcaseId": "SC-T040-03-agent",
+      "dimension": "agent",
+      "expected_old_state_valid": false,
+      "actual_old_state_valid": null,
+      "expected_new_state_valid": false,
+      "actual_new_state_valid": null,
+      "expected_permission_unchanged": false,
+      "actual_permission_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + 每例独立 DB/session + 最小 state diff 落盘。"
+    },
+    {
+      "subcaseId": "SC-T040-04-scope",
+      "dimension": "canonicalTaskScope",
+      "expected_old_state_valid": false,
+      "actual_old_state_valid": null,
+      "expected_new_state_valid": false,
+      "actual_new_state_valid": null,
+      "expected_permission_unchanged": false,
+      "actual_permission_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + 每例独立 DB/session + 最小 state diff 落盘。"
+    },
+    {
+      "subcaseId": "SC-T040-05-required",
+      "dimension": "required",
+      "expected_old_state_valid": false,
+      "actual_old_state_valid": null,
+      "expected_new_state_valid": false,
+      "actual_new_state_valid": null,
+      "expected_permission_unchanged": false,
+      "actual_permission_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + 每例独立 DB/session + 最小 state diff 落盘。"
+    },
+    {
+      "subcaseId": "SC-T040-06-skill-content",
+      "dimension": "skill-content",
+      "expected_old_state_valid": false,
+      "actual_old_state_valid": null,
+      "expected_new_state_valid": false,
+      "actual_new_state_valid": null,
+      "expected_permission_unchanged": false,
+      "actual_permission_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + 每例独立 DB/session + 最小 state diff 落盘。"
+    },
+    {
+      "subcaseId": "SC-T040-07-fail-auth-overwrite",
+      "dimension": "fail-auth",
+      "expected_old_state_valid": false,
+      "actual_old_state_valid": null,
+      "expected_new_state_valid": false,
+      "actual_new_state_valid": null,
+      "expected_permission_unchanged": false,
+      "actual_permission_unchanged": null,
+      "pass": false,
+      "note": "DRY_RUN=true: 未真验证。生产真跑需 reviewer 授权 + 每例独立 DB/session + 最小 state diff 落盘。"
+    }
+  ],
+  "oracle": "ORA-PT-11/13: caller label 是审计维度(单独变化不失效);其他 5 个身份/授权维度变化 → 旧状态失效;失败认证 → 清除旧 allow 状态",
+  "summary": {
+    "total": 7,
+    "pass": 0,
+    "fail": 0,
+    "dryRun": 7
+  },
+  "notes": "DRY_RUN=true: this evidence is a prepared run-plan, not an executed run. To execute, reviewer must: (1) start isolated serve with FRAMEWORK_SKILL_READ_HARD_GATE=1, (2) T-PT-039 happy baseline 已 PASS, (3) for each subcase: 独立 DB/session, baseline 写一次, 注入维度变化, 跑 state validator, 对比 expected vs actual, 保存最小 state diff."
+}

@@ -6,6 +6,10 @@ version: 1.1.0
 
 # Blueprint 创建流程
 
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
+
 创建框架级变更 blueprint 的标准化流程。Blueprint 是经过多轮迭代收敛后的完整实施方案文档，用于指导框架级改动的实施。
 
 ## 前置条件
@@ -23,7 +27,10 @@ version: 1.1.0
 
 根因分析必须基于实测验证。通过日志分析、ACP session 测试、代码审查等手段确认因果链后，才能进入方案设计。
 
-> **步骤类型区分**：「日志分析」和「ACP session 测试」是 `[VERIFICATION]`（产出运行态证据）；「代码审查」是 `[ANALYSIS]`（仅产生理解）。根因结论必须基于至少一项 `[VERIFICATION]` 证据，不能仅凭代码审查。
+> **步骤类型区分**：「日志分析」和「serve API / session 测试」是 `[VERIFICATION]`（产出运行态证据）；「代码审查」是 `[ANALYSIS]`（仅产生理解）。根因结论必须基于至少一项 `[VERIFICATION]` 证据，不能仅凭代码审查。
+> **Verified-by 要求**：每次 `[VERIFICATION]` 后都要记录 `Verified-by: <命令/接口> -> <关键返回/日志/产物路径>`。
+> **合理化检测**：如果你发现自己在想「代码看起来就是这样，所以根因已经确定了」--停下来，这是跳步信号。必须补足运行态验证。
+> **认知说明**：代码审查回答“实现意图是什么”；运行态验证回答“实际发生了什么”。两者不一致时，以证据为准。
 
 **反面案例**：假设"agent 不读取 skill 是因为 skill 内容没有注入 system prompt"，但实测发现 agent 确实没有调用 `read_skill()`，根因是"没有硬约束强制 agent 读取"而非"注入缺失"。
 

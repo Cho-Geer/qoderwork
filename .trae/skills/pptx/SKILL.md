@@ -7,6 +7,10 @@ description_zh: "当 .pptx 文件以任何方式涉及时使用此技能——�
 
 # PPTX Pro 2.0 — Fast Path
 
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
+
 ## Core principle
 
 Generate a polished, professional `.pptx` in 6–10 minutes by following a single five-step fast path:
@@ -18,6 +22,11 @@ Generate a polished, professional `.pptx` in 6–10 minutes by following a singl
 5. **Deliver** — output the `.pptx` to the workspace outputs folder with a one-paragraph QA note.
 
 This skill uses Python + python-pptx as the unified engine for all PPTX operations. Quality bars stay the same; the delivery path is faster and more predictable.
+
+> **步骤类型区分**：收集素材、判断版式需求属于 `[ANALYSIS]`；运行生成脚本、打开结果核对、修复溢出后重跑属于 `[VERIFICATION]`。
+> **Verified-by 要求**：每次 `[VERIFICATION]` 后都要记录 `Verified-by: <命令> -> <生成文件路径 / 页数 / QA 结论>`。
+> **合理化检测**：如果你发现自己在想「脚本运行成功了，所以 PPT 一定没问题」--停下来，这是跳步信号。必须打开结果并做最小 QA。
+> **认知说明**：版式规划和源码分析只回答“应该怎么排”；生成并打开 `.pptx` 才是运行态验证，才能证明页面真的可用。
 
 ## When to use
 

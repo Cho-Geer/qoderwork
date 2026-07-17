@@ -1,11 +1,15 @@
 ---
 name: skill-diagnosis-optimization
-description: "Skill 体系诊断与自动优化。五阶段流程：诊断（评分+重叠检测+总量评估）→ 合并同类项（控制在 15 个以内）→ ACP 引用清理（替换为 serve API curl 命令）→ 自动修复（空描述/过长/过短/缺触发词/缺双语/.bak 残留）→ 报告（保存到 skill-audit-report.md + 飞书通知）。Trigger: skill 诊断, skill 审计, skill 优化, skill 合并, ACP 清理, skill health check, 技能健康检查, 技能合并. Not for: 创建单个 skill（用 skill-creator）, 编辑单个 skill 内容, 查询 skill 列表（直接用 qw_query）."
+description: "Skill 体系诊断与自动优化。五阶段流程：诊断（评分+重叠检测+总量评估）→ 合并同类项（控制在 15 个以内）→ ACP 引用清理（替换为 serve API curl 命令）→ 自动修复（空描述/过长/过短/缺触发词/缺双语/.bak 残留）→ 报告（保存到 documents/review/skill-audit-report.md + 飞书通知）。Trigger: skill 诊断, skill 审计, skill 优化, skill 合并, ACP 清理, skill health check, 技能健康检查, 技能合并. Not for: 创建单个 skill（用 skill-creator）, 编辑单个 skill 内容, 查询 skill 列表（直接用 qw_query）."
 version: 1.0.0
 agent_created: true
 ---
 
 # Skill 诊断与优化
+
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
 
 对 QoderWork 项目已安装 skill 体系进行系统性诊断、合并、ACP 引用清理与自动修复，输出审计报告并通知飞书。
 
@@ -23,7 +27,7 @@ agent_created: true
 |------|--------|------|
 | `USER_SKILLS_DIR` | `~/.workbuddy/skills/` | 用户级 skill 目录 |
 | `PROJECT_SKILLS_DIR` | `/home/zhaoge/workspace/qoderwork/.workbuddy/skills/` | 项目级 skill 目录 |
-| `REPORT_PATH` | `/home/zhaoge/workspace/qoderwork/skill-audit-report.md` | 报告输出路径 |
+| `REPORT_PATH` | `/home/zhaoge/workspace/qoderwork/documents/review/skill-audit-report.md` | 报告输出路径 |
 | `MAX_SKILLS` | `15` | skill 总数最佳区间上限 |
 | `MIN_SKILLS` | `10` | skill 总数最佳区间下限 |
 | `DESC_MIN_CHARS` | `150` | description 最短长度 |
@@ -76,6 +80,7 @@ mcp__qw-builtin__qw_query({ key: "qoderwork.settings.skills" })
 | **触发词** | 检查 description 是否含 "Trigger:"、"Use when"、"When to use"、"触发词"、"适用于" | 有 → ✅；无 → ❌ |
 | **负面边界** | 检查 description 是否含 "Not for"、"Do NOT use"、"不适用于"、"不适用" | 有 → ✅；无 → ❌ |
 | **双语覆盖** | 检查 description 是否同时含中文和英文 | 双语 → ✅；单语 → ⚠️ |
+| **输出语言契约** | 检查正文是否含 `## Language / 语言`，并要求跟随用户语言、仅按需双语、保留命令/API/路径/标识符原样 | 有 → ✅；无或不完整 → ❌ |
 | **正文结构** | 检查正文是否有编号步骤（`1.` `2.`）或分节（`##`） | 有 → ✅；无 → ❌ |
 | **空描述/空目录** | description 为空或目录下无 SKILL.md | 空 → ❌ 严重 |
 | **.bak 残留** | 目录下存在 `*.bak` 文件 | 有 → ❌ |
@@ -222,6 +227,7 @@ ACP bridge|ACP 模式|ACP stdio|mcp__acp-bridge|
 | **缺少触发词** (Step 16) | 根据正文内容提取关键词，追加到 description 的 "Trigger:" 部分 |
 | **缺少负面边界** (Step 17) | 根据 skill 用途推断不适用场景，追加 "Not for:" 部分 |
 | **缺少双语** (Step 18) | 根据现有 description 语言补充对应语言描述。中文 description 补充英文摘要，英文 description 补充中文摘要 |
+| **缺少输出语言契约** (Step 18b) | 在一级标题后添加 `## Language / 语言`：跟随用户语言；仅在用户要求时双语输出；代码、命令、路径、API 名称、标识符和引用原文保持不变 |
 | **空目录** (Step 19) | 删除该目录（无 SKILL.md 的空目录无用） |
 | **.bak 残留文件** (Step 20) | 删除所有 `*.bak` 文件 |
 | **正文 >600 行** (Step 21) | 将详细内容抽取到 `reference.md`，正文保留核心步骤和流程指引。在正文末尾添加 "详细参考见 [reference.md](./reference.md)" |
@@ -229,7 +235,7 @@ ACP bridge|ACP 模式|ACP stdio|mcp__acp-bridge|
 ### 修复顺序
 
 1. 先删除空目录和 .bak 文件（Step 19-20）
-2. 再修复 description 问题（Step 13-18）
+2. 再修复 description 与输出语言问题（Step 13-18b）
 3. 最后处理正文过长（Step 21）
 4. 最后处理认知缺陷防护（Step 21b）
 
@@ -268,11 +274,11 @@ ACP bridge|ACP 模式|ACP stdio|mcp__acp-bridge|
 
 ### 1.2 各 skill 评分
 
-| # | Skill 名称 | 描述长度 | 触发词 | 负面边界 | 双语 | 正文结构 | .bak | 总评 |
-|---|-----------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 | skill-a | ✅ 320 | ✅ | ✅ | ✅ | ✅ | ✅ | 健康 |
-| 2 | skill-b | ⚠️ 120 | ❌ | ❌ | ⚠️ | ✅ | ✅ | 需修复 |
-| 3 | skill-c | ❌ 580 | ✅ | ✅ | ❌ | ✅ | ❌ | 需修复 |
+| # | Skill 名称 | 描述长度 | 触发词 | 负面边界 | 双语 | 语言契约 | 正文结构 | .bak | 总评 |
+|---|-----------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | skill-a | ✅ 320 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 健康 |
+| 2 | skill-b | ⚠️ 120 | ❌ | ❌ | ⚠️ | ❌ | ✅ | ✅ | 需修复 |
+| 3 | skill-c | ❌ 580 | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | 需修复 |
 
 ### 1.3 重叠检测
 - 检测到 X 组重叠：
@@ -330,11 +336,11 @@ ACP bridge|ACP 模式|ACP stdio|mcp__acp-bridge|
 
 ### Step 23: 保存报告
 
-将报告保存到 `REPORT_PATH`（默认 `/home/zhaoge/workspace/qoderwork/skill-audit-report.md`），覆盖写入。
+将报告保存到 `REPORT_PATH`（默认 `/home/zhaoge/workspace/qoderwork/documents/review/skill-audit-report.md`），覆盖写入。
 
 ```bash
 # 使用 Write 工具直接写入
-Write({ file_path: "/home/zhaoge/workspace/qoderwork/skill-audit-report.md", content: <报告内容> })
+Write({ file_path: "/home/zhaoge/workspace/qoderwork/documents/review/skill-audit-report.md", content: <报告内容> })
 ```
 
 ### Step 24: 飞书通知
@@ -349,7 +355,7 @@ ACP 残留: X → 0
 修复问题: X 项
 合并: X 组 → Y 个新 skill
 
-详细报告: /home/zhaoge/workspace/qoderwork/skill-audit-report.md
+详细报告: /home/zhaoge/workspace/qoderwork/documents/review/skill-audit-report.md
 ```
 
 **发送方式**：使用飞书 Connector（`mcp__feishu__send_message` 或对应 MCP 工具）。如果飞书 Connector 未连接，在报告中记录"飞书通知失败，Connector 未连接"，不阻塞流程。
@@ -390,6 +396,8 @@ ACP 残留: X → 0
   - `Verified-by: 实际 grep/wc 输出证明每个 description 的字符数`
 - [ ] 所有 skill 的 description 含触发词和负面边界
   - `Verified-by: 实际 grep 输出证明 Trigger/Not for 关键词存在`
+- [ ] 所有 skill 含完整的 `## Language / 语言` 输出语言契约
+  - `Verified-by: 实际 grep 输出证明每个 active SKILL.md 都含语言契约`
 - [ ] skill 总数 ≤ 15（或已无可合并组）
   - `Verified-by: 实际 ls/qw_query 输出的 skill 计数`
 - [ ] 所有 SKILL.md 中无 ACP bridge 引用（`acp_notify` 除外）

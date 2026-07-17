@@ -47,6 +47,7 @@
 4. 失败时先修 Skill，再修 Hook，再修 QoderWork watcher。
 5. 只有 Orchestrator 保留自定义身份。
 6. 旧角色名称只用于 legacy profile、日志、审计查询、QoderWork 显示。
+7. **active runtime 代码不得残留旧角色身份绑定**：`agent-identity.ts` `DISPLAY_NAMES` 的 `plan: "Meta-Planner"` 是 P1-B 阶段旧重命名遗留，使 plan agent 隐式绑定 Meta-Planner 身份（权限解析层），必须删除（P0）。`legacy-agent-permissions.ts` 是 deprecated fallback，待 per-agent caller 迁移至行为型后退役，不得盲删。
 
 ---
 
@@ -193,6 +194,19 @@ find .opencode/legacy/agent-profiles -maxdepth 1 -type f -name '*.md' | wc -l
 - 主链路 live LLM E2E PASS。
 - 边界矩阵 full matrix PASS。
 
+### V5.10 Agent identity stale 映射清理（2026-07-13 新增）
+
+覆盖：
+- `agent-identity.ts` `DISPLAY_NAMES` 的 `plan: "Meta-Planner"` 删除。
+- 删除后 5 active agent（Orchestrator/build/general/plan/explore）`getAgentPermission` 全部走 opencode.json，不走 `LEGACY_AGENT_PERMISSIONS` fallback。
+- plan 的 `safe_shell` 从 legacy `{"*":"allow"}` 恢复为配置 `deny`。
+- `safe-bash-core.test.ts` / `permission-equivalence.test.ts` 仍 PASS（`@Meta-Planner` 等测试走合法 legacy fallback，不依赖 plan->Meta-Planner 映射）。
+
+通过标准：
+- `bun -e` 实测 5 active agent 全部命中 opencode.json permission block。
+- plan 的 `safe_shell`/`safe_edit`/`safe_delete` 生效值与 opencode.json 配置一致。
+- 现有测试零回归。
+
 ---
 
 ## 4. 弱模型回归集
@@ -228,6 +242,7 @@ find .opencode/legacy/agent-profiles -maxdepth 1 -type f -name '*.md' | wc -l
 ## 5. Phase 5 完成门槛
 
 - [x] V5.1-V5.9 全部有日志和命令记录。（见 §7 归档，2026-07-11）
+- [ ] V5.10 agent identity stale 映射清理通过。（2026-07-13 新增，P0；`plan: "Meta-Planner"` 删除 + 5 active agent 权限走 opencode.json 实测）
 - [x] 23 个弱模型回归场景全部有结果。（`e2e/weak-model-23-regression.md`，23/23，零 FAIL）
 - [x] 旧 9 角色没有 active prompt 依赖。
 - [x] final-validation-report 改成 PASS/PENDING/FAIL，并附证据等级。

@@ -13,5 +13,6 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["*.ts", "lib/*.ts"]
+  "include": [".", "lib/**/*.ts", "test-serve/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

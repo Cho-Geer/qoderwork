@@ -1,0 +1,2 @@
+ls: cannot access '/tmp/pt046-test-write.txt': No such file or directory
+TARGET does not exist (expected)

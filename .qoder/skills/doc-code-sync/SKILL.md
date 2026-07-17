@@ -1,10 +1,14 @@
 ---
 name: doc-code-sync
-description: "Maintain the documents/INDEX.md index file for the qoderwork project. Scans all .md documents, compares against current index, rewrites with updated summaries, line counts, and reading recommendations. Triggers: document index sync, INDEX.md update, 文档索引同步, session startup doc sync, 文档更新后同步索引. Not for: creating new documents, editing document content, or non-qoderwork projects."
+description: "Maintain the documents/INDEX.md index file for the qoderwork project. Scans all .md documents, compares against current index, rewrites with updated summaries, line counts, and reading recommendations. Trigger: document index sync, INDEX.md update, 文档索引同步, session startup doc sync, 文档更新后同步索引. Not for: creating new documents, editing document content, or non-qoderwork projects."
 agent_created: true
 ---
 
 # Doc Code Sync (文档代码同步)
+
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
 
 ## Overview
 
@@ -70,6 +74,7 @@ Read `documents/INDEX.md` in full. Parse out:
 ### Step 3: Compare & Detect Changes `[VERIFICATION]`
 
 > **本步骤是 `[VERIFICATION]`**--必须实际运行文件计数/行数对比命令，记录 `Verified-by: 实际 wc -l / find 输出`。「文档看起来和代码一致」不是验证。
+> **合理化检测**：如果你发现自己在想「这次只改了一点点，INDEX 大概率不用更新」--停下来，这是跳步信号。必须实际比较文件列表和行数。
 
 A document needs re-summarizing if **any** of these are true:
 1. **New file** — exists in `documents/` but not in INDEX.md table

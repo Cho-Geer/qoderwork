@@ -1,6 +1,11 @@
 // _b2_children_proxy.ts — minimal fault-injection proxy for B2 (/children fallback test)
 // Forwards all requests to UPSTREAM except /session/{sid}/children, which it faults
 // per B2_MODE (404 | html | nonjson). Used by session-tree.ts to exercise DB fallback.
+//
+// ⚠️ 本脚本不适用 serve-api skill §1.1 (本脚本是 fault-injection HTTP proxy，
+//    用于测试 session-tree.ts 在 upstream 异常时的 fallback 行为)
+//
+// Usage: B2_MODE=404 B2_PORT=5097 bun run _b2_children_proxy.ts
 
 const UPSTREAM = process.env.B2_UPSTREAM || "http://127.0.0.1:4096";
 const MODE = (process.env.B2_MODE || "404").toLowerCase();

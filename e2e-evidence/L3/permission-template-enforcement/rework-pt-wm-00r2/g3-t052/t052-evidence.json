@@ -1,0 +1,311 @@
+{
+  "testId": "T-PT-052",
+  "timestamp": "2026-07-15T00:16:36.652Z",
+  "prerequisites": [
+    "T-PT-048",
+    "T-PT-049",
+    "T-PT-050"
+  ],
+  "frameworkSkillReadHardGate": "(not set)",
+  "dryRun": true,
+  "serveUrl": "http://localhost:4097",
+  "mutationFixtures": [
+    {
+      "id": "mut-attest-fail-allow",
+      "description": "attestSkillRead 改为始终 allow (return verified:true unconditionally)",
+      "target_file": ".opencode/skills/skill-attest.ts",
+      "target_function": "attestSkillRead()",
+      "mutation_kind": "always-allow",
+      "preconditions": "T-PT-048/049/050 PASS + 隔离 worktree + 24h revert timer",
+      "inject_steps": [
+        "1. 在 worktree 中替换 attestSkillRead 主体为 `return { verified: true, state_written: true }`",
+        "2. 重启 serve (HMR 不算, 必须 cold restart)",
+        "3. 创建 unauth session + 调 safe_edit",
+        "4. 验证 dispatcher 行为: 期望仍 reject (因 dispatch chain 上还有 skill-policy 在前)"
+      ],
+      "expected_outcome_after_mutation_applied": "still-reject",
+      "expected_rule_id_if_reject": "skill-read-attest-required",
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-3"
+      ]
+    },
+    {
+      "id": "mut-skip-file-hash-check",
+      "description": "state validator 跳过 file hash 检查 (return true 不比对 hash)",
+      "target_file": ".opencode/skills/skill-attest.ts",
+      "target_function": "validateFileHashes()",
+      "mutation_kind": "skip-check",
+      "preconditions": "T-PT-048/049/050 PASS + 隔离 worktree",
+      "inject_steps": [
+        "1. 替换 validateFileHashes 为 `return true`",
+        "2. 重启 serve",
+        "3. 创建 session + attest with WRONG file hash",
+        "4. 验证 validator 仍按其他维度 (sessionID/agent/scope/required) 校验, 最终 verified:false (因其他维度也已 mismatch)"
+      ],
+      "expected_outcome_after_mutation_applied": "still-reject",
+      "expected_rule_id_if_reject": "skill-read-attest-required",
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-2"
+      ]
+    },
+    {
+      "id": "mut-skip-agent-check",
+      "description": "state validator 跳过 agent 检查",
+      "target_file": ".opencode/skills/skill-attest.ts",
+      "target_function": "validateAgent()",
+      "mutation_kind": "skip-check",
+      "preconditions": "T-PT-048/049/050 PASS + 隔离 worktree",
+      "inject_steps": [
+        "1. 替换 validateAgent 为 `return true`",
+        "2. 重启 serve",
+        "3. 创建 session with agent=explore (不在 allowed list) + 调 write tool",
+        "4. 验证仍 reject (其他维度校验触发)"
+      ],
+      "expected_outcome_after_mutation_applied": "still-reject",
+      "expected_rule_id_if_reject": "skill-read-attest-required",
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-2"
+      ]
+    },
+    {
+      "id": "mut-skip-scope-check",
+      "description": "state validator 跳过 canonicalTaskScope 检查",
+      "target_file": ".opencode/skills/skill-attest.ts",
+      "target_function": "validateCanonicalTaskScope()",
+      "mutation_kind": "skip-check",
+      "preconditions": "T-PT-048/049/050 PASS + 隔离 worktree",
+      "inject_steps": [
+        "1. 替换 validateCanonicalTaskScope 为 `return true`",
+        "2. 重启 serve",
+        "3. 复用旧 root session 的 state 但改 canonicalTaskScope",
+        "4. 验证仍 reject (因 file_hash 必变 → 触发 file hash mismatch)"
+      ],
+      "expected_outcome_after_mutation_applied": "still-reject",
+      "expected_rule_id_if_reject": "skill-read-attest-required",
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-2"
+      ]
+    },
+    {
+      "id": "mut-trust-stale-state",
+      "description": "state validator 信任 stale state (不检查 sessionID)",
+      "target_file": ".opencode/skills/skill-attest.ts",
+      "target_function": "validateSessionID()",
+      "mutation_kind": "trust-stale",
+      "preconditions": "T-PT-048/049/050 PASS + 隔离 worktree",
+      "inject_steps": [
+        "1. 替换 validateSessionID 为 `return true`",
+        "2. 重启 serve",
+        "3. 复用 session-A 的 state 给 session-B 用 (sessionID 不匹配)",
+        "4. 验证仍 reject (因其他维度 mismatch)"
+      ],
+      "expected_outcome_after_mutation_applied": "still-reject",
+      "expected_rule_id_if_reject": "skill-read-attest-required",
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-3"
+      ]
+    },
+    {
+      "id": "mut-silent-catch-error",
+      "description": "state validator 静默吞 DB 错误 (catch → return verified:true)",
+      "target_file": ".opencode/skills/skill-attest.ts",
+      "target_function": "validateStateFromDB() — catch block",
+      "mutation_kind": "silent-catch",
+      "preconditions": "T-PT-048/049/050 PASS + 隔离 worktree + DB fault inject",
+      "inject_steps": [
+        "1. 替换 catch block 为 `return { verified: true, state_written: false }`",
+        "2. 重启 serve + 注入 DB 读错误",
+        "3. 验证 dispatcher 仍 reject (因 state_written=false 走 fail-closed)"
+      ],
+      "expected_outcome_after_mutation_applied": "fail-closed",
+      "expected_rule_id_if_reject": "skill-read-attest-required",
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-4"
+      ]
+    },
+    {
+      "id": "mut-write-without-tx",
+      "description": "DB 写缺事务包裹 (no BEGIN/COMMIT)",
+      "target_file": ".opencode/skills/skill-attest.ts",
+      "target_function": "dbWriteSubState()",
+      "mutation_kind": "no-tx",
+      "preconditions": "T-PT-048/049/050 PASS + 隔离 worktree + crash 注入",
+      "inject_steps": [
+        "1. 替换 dbWriteSubState 去掉 BEGIN/COMMIT 包裹",
+        "2. 重启 serve + 注入 crash between write 1 and write 2",
+        "3. 验证写只部分成功 → state_written=false → 仍 reject"
+      ],
+      "expected_outcome_after_mutation_applied": "fail-closed",
+      "expected_rule_id_if_reject": "skill-read-attest-required",
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-4"
+      ]
+    },
+    {
+      "id": "mut-allow-unknown-tool",
+      "description": "未知工具默认 allow (删去 else deny 分支)",
+      "target_file": ".opencode/plugins/before/skill-policy.ts",
+      "target_function": "isAllowlisted()",
+      "mutation_kind": "default-allow",
+      "preconditions": "T-PT-048/049/050 PASS + 隔离 worktree",
+      "inject_steps": [
+        "1. 替换 isAllowlisted 的 else 分支为 `return true`",
+        "2. 重启 serve",
+        "3. 创建 unauth session + 调未在矩阵中的工具 'future_tool_xyz'",
+        "4. 验证 dispatcher 仍 reject (因 skill-policy 在 executor 之前 hard_block)"
+      ],
+      "expected_outcome_after_mutation_applied": "still-reject",
+      "expected_rule_id_if_reject": "skill-read-attest-required",
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-3"
+      ]
+    }
+  ],
+  "mutationResults": [
+    {
+      "mutationId": "mut-attest-fail-allow",
+      "mutationKind": "always-allow",
+      "expectedOutcome": "still-reject",
+      "actualOutcome": "n/a-dry-run",
+      "expectedRuleId": "skill-read-attest-required",
+      "actualRuleId": null,
+      "survived": false,
+      "pass": false,
+      "note": "DRY_RUN=true: mutation 未应用. Production run 需 reviewer 接受 24h-revert 临时 mutation + cold restart + 实测 dispatcher 行为. Expected outcome after mutation: still-reject."
+    },
+    {
+      "mutationId": "mut-skip-file-hash-check",
+      "mutationKind": "skip-check",
+      "expectedOutcome": "still-reject",
+      "actualOutcome": "n/a-dry-run",
+      "expectedRuleId": "skill-read-attest-required",
+      "actualRuleId": null,
+      "survived": false,
+      "pass": false,
+      "note": "DRY_RUN=true: mutation 未应用. Production run 需 reviewer 接受 24h-revert 临时 mutation + cold restart + 实测 dispatcher 行为. Expected outcome after mutation: still-reject."
+    },
+    {
+      "mutationId": "mut-skip-agent-check",
+      "mutationKind": "skip-check",
+      "expectedOutcome": "still-reject",
+      "actualOutcome": "n/a-dry-run",
+      "expectedRuleId": "skill-read-attest-required",
+      "actualRuleId": null,
+      "survived": false,
+      "pass": false,
+      "note": "DRY_RUN=true: mutation 未应用. Production run 需 reviewer 接受 24h-revert 临时 mutation + cold restart + 实测 dispatcher 行为. Expected outcome after mutation: still-reject."
+    },
+    {
+      "mutationId": "mut-skip-scope-check",
+      "mutationKind": "skip-check",
+      "expectedOutcome": "still-reject",
+      "actualOutcome": "n/a-dry-run",
+      "expectedRuleId": "skill-read-attest-required",
+      "actualRuleId": null,
+      "survived": false,
+      "pass": false,
+      "note": "DRY_RUN=true: mutation 未应用. Production run 需 reviewer 接受 24h-revert 临时 mutation + cold restart + 实测 dispatcher 行为. Expected outcome after mutation: still-reject."
+    },
+    {
+      "mutationId": "mut-trust-stale-state",
+      "mutationKind": "trust-stale",
+      "expectedOutcome": "still-reject",
+      "actualOutcome": "n/a-dry-run",
+      "expectedRuleId": "skill-read-attest-required",
+      "actualRuleId": null,
+      "survived": false,
+      "pass": false,
+      "note": "DRY_RUN=true: mutation 未应用. Production run 需 reviewer 接受 24h-revert 临时 mutation + cold restart + 实测 dispatcher 行为. Expected outcome after mutation: still-reject."
+    },
+    {
+      "mutationId": "mut-silent-catch-error",
+      "mutationKind": "silent-catch",
+      "expectedOutcome": "fail-closed",
+      "actualOutcome": "n/a-dry-run",
+      "expectedRuleId": "skill-read-attest-required",
+      "actualRuleId": null,
+      "survived": false,
+      "pass": false,
+      "note": "DRY_RUN=true: mutation 未应用. Production run 需 reviewer 接受 24h-revert 临时 mutation + cold restart + 实测 dispatcher 行为. Expected outcome after mutation: fail-closed."
+    },
+    {
+      "mutationId": "mut-write-without-tx",
+      "mutationKind": "no-tx",
+      "expectedOutcome": "fail-closed",
+      "actualOutcome": "n/a-dry-run",
+      "expectedRuleId": "skill-read-attest-required",
+      "actualRuleId": null,
+      "survived": false,
+      "pass": false,
+      "note": "DRY_RUN=true: mutation 未应用. Production run 需 reviewer 接受 24h-revert 临时 mutation + cold restart + 实测 dispatcher 行为. Expected outcome after mutation: fail-closed."
+    },
+    {
+      "mutationId": "mut-allow-unknown-tool",
+      "mutationKind": "default-allow",
+      "expectedOutcome": "still-reject",
+      "actualOutcome": "n/a-dry-run",
+      "expectedRuleId": "skill-read-attest-required",
+      "actualRuleId": null,
+      "survived": false,
+      "pass": false,
+      "note": "DRY_RUN=true: mutation 未应用. Production run 需 reviewer 接受 24h-revert 临时 mutation + cold restart + 实测 dispatcher 行为. Expected outcome after mutation: still-reject."
+    }
+  ],
+  "oracles": [
+    {
+      "id": "oracle-1",
+      "oracle_ref": "ORA-PT-02",
+      "description": "全部 8 mutation 在隔离 serve 中被 kill (无 mutant 存活)",
+      "expected": "8/8 mutation killed, 0 survived",
+      "pass": null,
+      "note": "DRY_RUN: 需 reviewer 接受 24h-revert 临时 mutation + cold restart + 实测每个 mutation 后 dispatcher 行为"
+    },
+    {
+      "id": "oracle-2",
+      "oracle_ref": "ORA-PT-11",
+      "description": "身份类 mutation (1, 2, 3, 4) kill 后 verified:false",
+      "expected": "mut-attest-fail-allow / skip-file-hash / skip-agent / skip-scope 都触发 verified:false",
+      "pass": null,
+      "note": "DRY_RUN: 需 reviewer 实测 4 个身份 mutation"
+    },
+    {
+      "id": "oracle-3",
+      "oracle_ref": "ORA-PT-12",
+      "description": "skill-policy 类 mutation (5, 8) kill 后 dispatcher 仍拒",
+      "expected": "mut-trust-stale-state / mut-allow-unknown-tool 都触发 dispatcher 拒 (ruleId='skill-read-attest-required')",
+      "pass": null,
+      "note": "DRY_RUN: 需 reviewer 实测 2 个 policy mutation"
+    },
+    {
+      "id": "oracle-4",
+      "oracle_ref": "ORA-PT-13",
+      "description": "DB lifecycle 类 mutation (6, 7) kill 后 fail-closed",
+      "expected": "mut-silent-catch-error / mut-write-without-tx 都触发 state_written=false → fail-closed",
+      "pass": null,
+      "note": "DRY_RUN: 需 reviewer 实测 2 个 DB mutation + fault inject"
+    }
+  ],
+  "oracleSummary": {
+    "total": 4,
+    "pass": 0,
+    "fail": 0,
+    "pending": 4,
+    "survivedMutants": 0
+  },
+  "summary": {
+    "total": 8,
+    "pass": 0,
+    "fail": 0,
+    "survived": 0,
+    "dryRun": 8
+  },
+  "notes": "DRY_RUN=true: this evidence is a prepared run-plan, not an executed run. To execute, reviewer must: (1) start isolated worktree + serve with FRAMEWORK_SKILL_READ_HARD_GATE=1, (2) 对每个 mutation 创建 24h-revert 临时 diff, (3) cold restart serve, (4) 实测 dispatcher 行为是否符合 expected_outcome, (5) 4 oracle 注入场景完整记录. **重要**: mutation 测试必须 cold restart serve (HMR 不算), 否则 cache 命中导致结果不可信."
+}

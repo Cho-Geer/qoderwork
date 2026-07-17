@@ -14,7 +14,7 @@
 | Phase 0 基线冻结 | ✅ 已完成 | static/code | CodeGraph up to date；DB schema v37；active order before 11 / after 7 / system 2 | `work-one/.opencode/docs/state-tiering.md` 已重写为 v37 7-tier（2026-07-11，Phase 0 尾项已闭合） |
 | Phase 1 Skill-first | 🟡 主体完成 | live LLM E2E + static/code | `preflight-lite` 14 步 + framework maintenance flow；`skill-summary` active；`e2e/skill-summary-keyword-regression.md` 已存在并回填 24 条真实 serve 结果 | 中英文关键词仍有 4 处 CN≠EN 不一致（F1-F4）+ live 捕获漂移（F6） |
 | Phase 2 Native Agent / DAG | 🟡 主体完成 | runtime smoke + static/code | active agent 5 个；无 active `scout`；runtime smoke T2/T3/T4 记录 native/no-DAG/lineage/explore | `dispatch_subagent` 仍保留兼容 wrapper，普通路径退场未物理完成 |
-| Phase 3 Enforcement | 🟡 主体完成 | runtime smoke + component | rule-disposition active；dispatcher map 与 order 对齐；`tool-governance` 已接入 before 链；`codegraph.ts` repo-op 主裁决已移入治理域；question recovery smoke 已跑；`safe_shell` protected-path read 只读豁免已修复 | `isWriteAllowed` / `getAgentShellAllowlist` 等 per-agent caller 仍需收口 |
+| Phase 3 Enforcement | 🟡 主体完成 | runtime smoke + component | rule-disposition active；dispatcher map 与 order 对齐；`tool-governance` 已接入 before 链；`codegraph.ts` repo-op 主裁决已移入治理域；question recovery smoke 已跑；`safe_shell` protected-path read 只读豁免已修复 | `isWriteAllowed` / `getAgentShellAllowlist` 等 per-agent caller 仍需收口；**`plan: "Meta-Planner"` 映射使 plan 权限走 legacy fallback（2026-07-13 发现，P0）** |
 | Phase 4 Minimal State | 🟡 主体完成 | runtime smoke + component | JSONL writer + audit/quality/skill/guidance emitters；Critical matrix 组件测试通过；只读 hot-path 零 DB 写 | `/children` HTML/non-JSON 故障注入未见独立证据；磁盘仍有惰性 DB 副本 |
 | Phase 5 Legacy 退役 | ✅ 已完成 | live LLM E2E + static/code + component | active prompt 只有 `Orchestrator.md`；`skill-summary` 已清 9 个 inactive blueprint agent 映射；V5.1-V5.9 全量矩阵已归档 | `final-validation-report` 仍以 static 证据为主，属于后续文档补强项 |
 | Tool Governance MVC | 🟡 Phase 0-4 已落地，Phase 5 部分完成 | component + direct tool smoke + static/code | `service/tool-governance/**` 已创建并接入 `tool-governance` before handler；tool-governance 测试 30/30 PASS；`path-validate` 已进入 active before 链并有 10/10 测试；block/allow JSONL 均含 `outcome`；protected-path read direct smoke 已通过 | 真正 Orchestrator -> build live LLM E2E 待补 |
@@ -28,8 +28,8 @@
 | 项 | 当前值 | 采样口径 |
 |---|---:|---|
 | CodeGraph | 419 files / 377 TS / 30 JS / 12 YAML | `codegraph status` |
-| `.opencode` TS 文件 | 372 | `rg --files .opencode -g '*.ts'` |
-| `.opencode` TS 行数 | 75,563 | `rg --files .opencode -g '*.ts' -0 \| xargs -0 wc -l` |
+| `.opencode` TS 文件 | 388 | `rg --files .opencode -g '*.ts'`（2026-07-13 重采样，原 372） |
+| `.opencode` TS 行数 | 77,728 | `rg --files .opencode -g '*.ts' -0 \| xargs -0 wc -l`（原 75,563） |
 | active agent | 5 | `opencode.json.agent`: Orchestrator/build/general/plan/explore |
 | active custom agent prompt | 1 | `.opencode/agents/Orchestrator.md` |
 | legacy role profile | 9 | `.opencode/legacy/agent-profiles/*.md` |
@@ -38,7 +38,7 @@
 | active after chain | 7 | gate-call-context + 6 个审计 handler |
 | active system chain | 2 | anti-bypass, skill-summary |
 | plugin-handler 源文件 | 44 | 排除 `__tests__` |
-| custom tool | 37 | `.opencode/tools/*.ts` |
+| custom tool | 39 | `.opencode/tools/*.ts`（2026-07-13，原 37） |
 | Skill | 18 | `.opencode/skills/*/SKILL.md` |
 | MCP server | 12 | `opencode.json.mcp` |
 | DB schema | v37 | `.opencode/state/framework-state.db` |

@@ -3,14 +3,142 @@
 本文件是 QoderWork 协助用户开发和维护 OpenCode 多 Agent 框架（work-one 项目）的专属指引。随着协作深入持续更新。
 
 
+## 0. Trae Solo Project Rule（输出 / 证据 / 派遣）
+
+当本文件被 Trae Solo 作为 project rule 使用时，优先遵守以下规则。本节目标是：精简、强约束、重证据、重标记。
+
+### 0.1 基本执行规则
+
+1. **Think step by step**：先理解需求，再拆分关键步骤，再执行，再 self-check。
+2. **每次回答或执行任务都必须生成唯一字符串 ID**，用于追踪本次任务。
+3. **不得把未验证内容表述为已验证事实**。必须显式标记：
+   - `[VERIFIED]`
+   - `[UNVERIFIED]`
+   - `[BLOCKED]`
+   - `[RISK]`
+4. **验证层级必须与结论层级匹配**。不得用低层级验证冒充高层级结论：
+   - `unit`
+   - `integration`
+   - `E2E`
+   - `manual verification`
+5. **仅当集成测试确实依赖真实容器化依赖**（如 DB、Redis、MQ、对象存储、多服务运行时）时，优先使用 `TestContainers`；不得对所有任务强制使用。
+6. **回复风格默认要求**：除非用户明确要求自由表达或长篇论述，否则回复必须：
+   - 结构化
+   - 列表化
+   - 简洁明了
+   - 先结论后展开
+   - 避免冗长大段文字和重复表述
+
+### 0.2 默认输出结构（强约束）
+
+除非任务极小，否则默认按以下结构输出；简单问题可以压缩 `PLAN / EVIDENCE / RESULT`，但不得省略 `ID / TASK / CHECK / FINAL`。
+
+```md
+### ID
+- [ID] <unique-string>
+
+### TASK
+- [REQ] 当前需求
+- [SCOPE] 处理范围
+- [GOAL] 目标结果
+- [MODE] SINGLE / SUBAGENT / MULTI-AGENT
+
+### PLAN
+- [S1][TODO/DOING/DONE/BLOCKED] 子任务1
+- [S2][TODO/DOING/DONE/BLOCKED] 子任务2
+
+### EVIDENCE
+- [E1][VERIFIED/UNVERIFIED] 证据1
+- [E2][VERIFIED/UNVERIFIED] 证据2
+
+### RESULT
+- [R1] 关键结果1
+- [R2] 关键结果2
+
+### CHECK
+- [TEST] PASS / FAIL / NOT-RUN / N/A
+- [DOC] UPDATED / NOT-NEEDED / PENDING
+- [RISK] NONE / OPEN: <summary>
+
+### FINAL
+- 最终结论
+```
+
+### 0.3 代码与文档规则
+
+1. 生成代码时优先保证：
+   - `correctness`
+   - `readability`
+   - `maintainability`
+   - `traceability`
+2. 注释按需添加即可，优先：
+   - file-level comment
+   - class/module-level comment
+   - function/method-level comment
+   - 关键非显然逻辑的 inline comment
+3. 禁止机械逐行注释；`JSON` 文档除外。
+4. 发生 `code / config / script / API / architecture` 变更时，必须检查并更新**受影响文档**，保持文档与代码一致；不得无差别重写全部文档。
+5. 当任务包含多个明确子任务，且发生实际 `code/config/script` 变更时，必须生成一个**中文命名**的 `.md` 记录文档，至少包含：
+   - `[ID]`
+   - `timestamp`
+   - 执行内容
+   - modified file paths
+   - created file paths
+   - implementation summary
+   - configuration notes
+   - cautions / 注意事项
+
+### 0.4 Subagent Dispatch Policy
+
+1. 默认模式是 `[MODE] SINGLE`。
+2. 仅当任务满足以下任一条件时，才使用 `[MODE] SUBAGENT`：
+   - 有清晰边界的子任务
+   - 明确的专业能力需求
+   - 可独立验收的交付物
+3. 仅当任务同时满足以下条件时，才使用 `[MODE] MULTI-AGENT`：
+   - 子任务低耦合
+   - 职责边界可清晰分离
+   - 结果可独立验收
+   - 并行执行能显著提升速度或质量
+4. 以下情况禁止派遣子 agent：
+   - 任务很小
+   - 强顺序依赖任务
+   - 高频共享同一批文件
+   - 需要单一路径连续实现
+   - 需要统一最终裁决、统一口径的单一结论
+5. 派遣子 agent 时，必须显式定义：
+   - subtask goal
+   - scope boundary
+   - expected deliverable
+   - required evidence
+   - completion condition
+6. 尽量避免职责重叠；优先按角色拆分：
+   - `Fullstack Engineer`：实现
+   - `Testing Expert`：验证与证据
+   - `Audit Expert`：独立审查与风险检查
+
+### 0.5 任务完成后的强制自检
+
+任务结束后，必须逐项自检：
+
+- requirement satisfied or not
+- missing sub-tasks or not
+- docs synced or not
+- verification done or not
+- open risks clearly marked or not
+
+禁止把“代码看起来合理”“单测是绿的”“没有报错”直接表述为任务已完整完成。
+
+
 ## Session Startup
 
 每次新会话开始时，如果当前工作台是 /home/zhaoge/workspace/qoderwork/，执行以下步骤：
 
-1. **检查上轮遗漏日志**：用 `git diff --stat` 或 `git log --oneline -5`（在 work-one 目录）查看最近的代码变更，对比 `logs/` 目录下已有日志。如果发现未记录的代码修改，先补写日志再继续当前任务
-2. 读取 `documents/INDEX.md`，了解可用文档清单和摘要
-3. 根据当前任务主题，按需读取相关文档（不要一次性全部加载）
-4. 如果任务涉及框架架构、Plugin、Tool、Session 等概念，优先参考 documents/ 下的专题文档
+1. **读取并遵守 `RULES.md`**：首先读取 `/home/zhaoge/workspace/qoderwork/RULES.md`，将其中的输出结构、验证标记、派遣规则等作为本会话的强制约束
+2. **检查上轮遗漏日志**：用 `git diff --stat` 或 `git log --oneline -5`（在 work-one 目录）查看最近的代码变更，对比 `logs/` 目录下已有日志。如果发现未记录的代码修改，先补写日志再继续当前任务
+3. 读取 `documents/INDEX.md`，了解可用文档清单和摘要
+4. 根据当前任务主题，按需读取相关文档（不要一次性全部加载）
+5. 如果任务涉及框架架构、Plugin、Tool、Session 等概念，优先参考 documents/ 下的专题文档
 
 文档路径：`/home/zhaoge/workspace/qoderwork/documents/`
 

@@ -1,8 +1,8 @@
 # Blueprint: 工具治理链重构（MVC + 统一日志 + 高扩展）
 
-**版本**: v2.9.0
+**版本**: v3.0.0
 **日期**: 2026-07-13
-**状态**: 部分实施（Phase 0-6 core 已有组件 + import + L3-012 live E2E 证据；Phase 7 子进程执行器去 shell 化已完成组件/工具边界接线；v2.9.0 新增弱模型安全实施协议：弱模型只负责窄任务实施，最终完成判定必须由强审查模型/人工完成）
+**状态**: 部分实施（Phase 0-7 core 已有组件 + import + L3-012 live E2E 证据；v3.0.0 新增 Phase 8 即时 Bug 修复 + Phase 9 Option A 收口：审核发现 codegraph 豁免遗漏、Zod v4 兼容、before-chain 顺序偏差、Orchestrator node -e 绕过、write API 正则绕过五个问题，Phase 8/9 为必须实施项）
 **优先级**: P0
 
 ---
@@ -25,8 +25,10 @@
 | active before 链单一裁决收口 | ✅ core L3-012 已闭合 | live LLM E2E + component | `tool-governance` 已位于 `path-validate` / `codegraph` 之前；L3-012 session `ses_0a66bc378ffelPj4R46sNeG0zR` 见证固定 `safe_shell gh issue create --repo ...` 首个业务阻断为 `[REPO-OP] ... layer=repo-policy outcome=deny`，未出现 `WORKTREE_BOUNDARY` / `CODEGRAPH-ENFORCE` |
 | L3-012 live Orchestrator E2E | ✅ PASS（core） | live serve API + messages snapshot | `e2e-evidence/L3/L3-012/messages-final.json` 见证真实 `Orchestrator` 调用固定命令并被 `repo-policy` deny；证据包为最小包，缺 prompt/question/monitor 完整留痕；不覆盖全部 `gh` remote_write 变体 |
 | Phase 7 safe_shell 去 shell 化 | 🟡 组件/工具边界已实施 | static/code + component + direct tool smoke | `shell-guard.ts` 已移除 `execSync(command)` 路径，`safe_shell.ts` 变为 async 薄适配器并消费 `__verified_command_plan`；`command-executor.ts` 使用 `execFile`/`spawn` 且 `shell:false`；104/104 相关测试 PASS；direct tool smoke `pwd` 成功 |
+| Phase 8 即时 Bug 修复 | ✅ 已实施（代码已修，2026-07-13 复核） | static/code 复核 | (1) `codegraph.ts:73-88` `isExemptPath()` 豁免列表已扩展（`.gitignore`/`package.json`/`tsconfig.json` 等，含 `// Phase 8` 注释）；(2) `safe_shell.ts:29` 已改为双参数 `tool.schema.record(tool.schema.string(), tool.schema.string())`；(3) `before-dispatcher.ts:67-70` DEFAULT_ORDER 已是 `permission-safety, tool-governance, behavioral-path-guard, scope`，与 `project.config.json` 一致。**注：§5.1/§5.2/§7 对应 checkbox 仍为 `[ ]`，需批量勾选；步骤 8.4 测试用例待确认** |
+| Phase 9 Option A 收口 | ✅ 已实施（代码已修，2026-07-13 复核） | static/code 复核 | (1) `opencode.json` Orchestrator `safe_shell` 已 `node -e *: deny`/`node *.ts *: deny`/`node *.js *: deny`（无 allow）；(2) `shell-guard.ts` `isOrchestrator` 计数=0、`allow-write` 计数=0（豁免和后门已删）；(3) `tool-scope-match.ts:224` writeApis 正则已含 bracket notation 模式；`shell-config.ts:320-323` WRITE_PATTERNS 已加 `// Phase 9` 注释；`write-bypass-prevention.test.ts` 已存在。**注：§5.2/§7 对应 checkbox 仍为 `[ ]`，需批量勾选** |
 
-**当前结论**: 本 blueprint 仍**不能宣称完成**。Phase 6 的 core blocker（dispatcher import 与 L3-012 首裁决）已关闭，Phase 7 的核心代码路径也已从 `execSync(command)` 迁移到 `VerifiedCommandPlan` + `execFile`/`spawn`（`shell:false`）。剩余收口项是：纳入 untracked 新文件、补齐 L3-012 完整证据包或明确保留最小证据边界、扩展 `gh` remote_write 变体 E2E、补 Phase 7 allow-path live E2E（含资源上限、中断、进程树终止）并完成正式回归/提交。
+**当前结论**: Phase 8（3 个即时 Bug）和 Phase 9（3 个安全绕过）的**代码修复已于 2026-07-13 复核确认完成**（blueprint 状态从 🔴 未实施 更正为 ✅ 已实施），但 §5.1/§5.2/§7 对应 checkbox 仍为 `[ ]`，需批量勾选并补跑验证命令确认。Phase 6 的 core blocker 已关闭，Phase 7 核心代码路径已迁移到 `VerifiedCommandPlan` + `execFile`/`spawn`（`shell:false`）。剩余收口项是：勾选 Phase 8/9 checkbox 并补测试证据、纳入 untracked 新文件、补齐 L3-012 完整证据包或明确保留最小证据边界、扩展 `gh` remote_write 变体 E2E、补 Phase 7 allow-path live E2E（含资源上限、中断、进程树终止）并完成正式回归/提交。
 
 ### 0.1 弱模型安全实施协议（2026-07-13）
 
@@ -263,6 +265,8 @@ export interface VerifiedCommandPlan {
 | Phase 5: 回归与 live E2E | 🟡 core live 已收口，矩阵未完成 | 2026-07-13 相关组件套件 104/104 PASS；L3-012 live Orchestrator E2E PASS（session `ses_0a66bc378ffelPj4R46sNeG0zR`） | L3-012 证据包为最小包；L3-008/009/010/011 和 `gh` remote_write 变体仍需 live witness |
 | Phase 6: active before 链收口 + shell parser 单源化 | 🟡 core 已落地，文件跟踪未收口 | `service/tool-governance/shell-targets.ts` 已存在；`path-validate.ts`、`tool-scope-paths.ts`、`tool-scope-match.ts`、`codegraph.ts` 已复用；`tool-governance` 已前置于 `path-validate` / `codegraph`；import smoke + L3-012 PASS | `shell-targets.ts` / test 等新增文件仍需纳入 git 跟踪；需要补 full evidence rerun 或保留最小证据边界说明 |
 | Phase 7: 子进程执行器去 shell 化 | 🟡 组件/工具边界已实施 | `shell-plan.ts` 生成 `VerifiedCommandPlan`；`command-executor.ts` 使用 async `execFile`/`spawn` 且 `shell:false`；`safe_shell.ts` 消费 `__verified_command_plan`；safe-bash execution tests PASS；direct `pwd` smoke PASS | 仍需 live allow-path E2E，覆盖资源上限、中断、进程树终止、输出截断和真实 before-hook plan 注入 |
+| Phase 8: 即时 Bug 修复 | ✅ 已实施（2026-07-13 复核） | (1) `codegraph.ts:73-88` 豁免列表已扩展含 `// Phase 8` 注释；(2) `safe_shell.ts:29` 已双参数 `record(string, string)`；(3) `before-dispatcher.ts:67-70` DEFAULT_ORDER 已 `permission-safety, tool-governance, behavioral-path-guard, scope` | §5.1/§5.2 checkbox 待勾选；步骤 8.4 测试用例待确认 |
+| Phase 9: Option A 收口 | ✅ 已实施（2026-07-13 复核） | (1) `opencode.json` Orchestrator `node -e/*: deny`（无 allow）；(2) `shell-guard.ts` `isOrchestrator`=0、`allow-write`=0；(3) `tool-scope-match.ts:224` + `shell-config.ts:320-323` 正则已加固；`write-bypass-prevention.test.ts` 已存在 | §5.2/§7 checkbox 待勾选 |
 
 ### 4.1 文件变更列表
 
@@ -299,6 +303,17 @@ export interface VerifiedCommandPlan {
 | 29 | `.opencode/service/tool-governance/command-executor.ts` | 新建 | 仅用异步 `execFile`/`spawn` 执行已验证计划，落实超时、取消、输出上限和进程树终止 |
 | 30 | `.opencode/service/tool-governance/__tests__/command-plan.test.ts` | 新建 | 覆盖复合命令拒绝、选项注入、路径与环境边界 |
 | 31 | `.opencode/service/tool-governance/__tests__/command-executor.test.ts` | 新建 | 覆盖 shell=false、输出上限、超时、取消、进程树终止和日志字段 |
+| 32 | `.opencode/plugin-handlers/before/codegraph.ts` | 修改 | Phase 8：`isExemptPath()` 豁免列表追加非源码配置文件模式 |
+| 33 | `.opencode/tools/safe_shell.ts` | 修改 | Phase 8：`tool.schema.record()` 修复为双参数 Zod v4 API |
+| 34 | `.opencode/plugins/before-dispatcher.ts` | 修改 | Phase 8：`DEFAULT_ORDER` 中 `tool-governance` 移到 `permission-safety` 之后 |
+| 35 | `.opencode/project.config.json` | 修改 | Phase 8：`plugin_execution_order.before` 同步 before-chain 顺序 |
+| 36 | `opencode.json` | 修改 | Phase 9：Orchestrator `safe_shell` 删除 `node -e`/`node *.ts`/`node *.js` allow，追加 deny |
+| 37 | `.opencode/agents/Orchestrator.md` | 修改 | Phase 9：修正 safe_shell 描述为只读命令列表 |
+| 38 | `.opencode/service/file-guard/shell-guard.ts` | 修改 | Phase 9：删除 Orchestrator 目录豁免（第 311-329 行）和 `// safe_bash: allow-write` 后门 |
+| 39 | `.opencode/service/dispatch/tool-scope-match.ts` | 修改 | Phase 9：writeApis 正则追加 bracket notation + 字符串拼接检测 |
+| 40 | `.opencode/service/file-guard/shell-config.ts` | 修改 | Phase 9：`WRITE_PATTERNS` 追加 bracket notation 模式 |
+| 41 | `.opencode/service/tool-governance/__tests__/write-bypass-prevention.test.ts` | 新建 | Phase 9：混淆绕过回归测试 |
+| 42 | `.opencode/plugin-handlers/before/__tests__/codegraph.test.ts` | 修改 | Phase 8：追加非源码文件豁免测试用例 |
 
 ### 4.2 实施步骤
 
@@ -1023,6 +1038,267 @@ Phase 7 已在 Phase 6 core 通过后进入实施。当前已有 `VerifiedComman
 
 依次执行 command-plan 单元测试、command-executor 资源与中断测试、safe_shell 组件测试、before dispatcher import/order smoke、TypeScript 编译、框架回归、runtime smoke、live Orchestrator E2E。任一层失败即停止后续验证并保持 blueprint 未完成。
 
+#### Phase 8: 即时 Bug 修复（codegraph 豁免 + Zod v4 兼容 + before-chain 顺序修正）（1 天）
+
+本阶段修复审核发现的三个阻断性 Bug。这些 Bug 导致框架自身无法完成基础操作（如 `safe_edit .gitignore` 被 codegraph 阻断、Orchestrator session 启动即崩溃）。必须在提交前完成。
+
+**步骤 8.1：扩展 codegraph.ts 的 isExemptPath() 豁免列表**
+
+文件：`.opencode/plugin-handlers/before/codegraph.ts`
+
+当前 `isExemptPath()` 函数第 73-76 行的 fallback 豁免列表：
+
+```typescript
+  const exempt = [
+    /^\.task_temp\//, /^docs\//, /^\.opencode\/agents\/.*\.md$/,
+    /^\.understand-anything\//, /^\.codegraph\//,
+  ];
+```
+
+改为：
+
+```typescript
+  const exempt = [
+    /^\.task_temp\//, /^docs\//, /^\.opencode\/agents\/.*\.md$/,
+    /^\.understand-anything\//, /^\.codegraph\//,
+    // Phase 8: 非源码配置文件豁免 --codegraph 只校验源码文件
+    /^\.gitignore$/, /^\.gitattributes$/,
+    /^\.env\.example$/, /^\.env\.template$/,
+    /^package\.json$/, /^package-lock\.json$/, /^bun\.lock$/, /^bun\.lockb$/,
+    /^README\.md$/, /^LICENSE$/, /^CHANGELOG\.md$/,
+    /^tsconfig\.json$/, /^\.editorconfig$/,
+    /^\.opencode\/project\.config\.json$/,
+  ];
+```
+
+**步骤 8.2：修复 safe_shell.ts Zod v4 record() API**
+
+文件：`.opencode/tools/safe_shell.ts`
+
+第 29 行当前代码：
+
+```typescript
+      env: tool.schema.record(tool.schema.string()),
+```
+
+改为：
+
+```typescript
+      env: tool.schema.record(tool.schema.string(), tool.schema.string()),
+```
+
+原因：Zod v4 中 `z.record(keyType, valueType)` 需要两个参数。单参数调用把第一个参数当作 keyType，导致 `valueType` 为 `undefined`，运行时访问 `valueType._zod` 崩溃（`TypeError: undefined is not an object (evaluating 'r._zod')`）。
+
+**步骤 8.3：修正 before-chain 执行顺序**
+
+文件 1：`.opencode/plugins/before-dispatcher.ts`
+
+当前 `DEFAULT_ORDER`（第 63-75 行）中 `tool-governance` 位于 `scope` 之后。将 `tool-governance` 移到 `permission-safety` 之后、`behavioral-path-guard` 之前，改为：
+
+```typescript
+const DEFAULT_ORDER = [
+  "gate-call-context",
+  "guidance-bridge",
+  "task",
+  "permission-safety",
+  "tool-governance",
+  "behavioral-path-guard",
+  "scope",
+  "path-validate",
+  "codegraph",
+  "skill-policy",
+  "dispatch-signal",
+];
+```
+
+文件 2：`.opencode/project.config.json`
+
+将 `plugin_execution_order.before` 数组同步修改为与上述完全一致的顺序。
+
+**步骤 8.4：补充测试并验证**
+
+文件：`.opencode/plugin-handlers/before/__tests__/codegraph.test.ts`
+
+在 `describe` 块末尾追加以下测试用例：
+
+```typescript
+    test("safe_edit .gitignore => exempt from CODEGRAPH-ENFORCE", async () => {
+      const input = { tool: "safe_edit", args: { filePath: ".gitignore" }, sessionID: "test-sid" };
+      const output = { args: { filePath: ".gitignore" } };
+      await expect(codegraph.handle(input, output)).resolves.toBeUndefined();
+    });
+
+    test("safe_edit package.json => exempt from CODEGRAPH-ENFORCE", async () => {
+      const input = { tool: "safe_edit", args: { filePath: "package.json" }, sessionID: "test-sid" };
+      const output = { args: { filePath: "package.json" } };
+      await expect(codegraph.handle(input, output)).resolves.toBeUndefined();
+    });
+
+    test("safe_edit tsconfig.json => exempt from CODEGRAPH-ENFORCE", async () => {
+      const input = { tool: "safe_edit", args: { filePath: "tsconfig.json" }, sessionID: "test-sid" };
+      const output = { args: { filePath: "tsconfig.json" } };
+      await expect(codegraph.handle(input, output)).resolves.toBeUndefined();
+    });
+```
+
+验证命令（按顺序执行，任一失败即停止）：
+
+```bash
+cd /home/zhaoge/workspace/opencode/work-one
+bun test .opencode/plugin-handlers/before/__tests__/codegraph.test.ts
+bun -e 'await import("./.opencode/plugins/before-dispatcher.ts")'
+```
+
+#### Phase 9: Option A 收口 -- safe_shell 文件写禁止 + 正则加固（2 天）
+
+本阶段完成 Option A：`safe_shell` 不再具备文件写能力，所有文件修改统一走 `safe_edit`/`safe_delete`/`safe_framework_edit`。同时加固 write API 检测正则，封堵字符串拼接绕过。
+
+审核发现框架已在 `scope-validate.ts:104-123` 实施 `BACKUP-BYPASS` 阻断（Option A 的上游部分），但仍存在三个绕过面：Orchestrator 保留 `node -e` 权限、`shell-guard.ts` 存在死代码豁免、write API 正则可被混淆绕过。本阶段封堵全部三个绕过面。
+
+**步骤 9.1：删除 Orchestrator 的 node -e 和任意脚本执行权限**
+
+文件：`opencode.json`
+
+在 Orchestrator 的 `permission.safe_shell` 对象中：
+- 删除 `"node -e *": "allow"` 条目
+- 删除 `"node *.ts *": "allow"` 条目
+- 删除 `"node *.js *": "allow"` 条目
+- 追加 `"node -e *": "deny"` 条目
+- 追加 `"node *.ts *": "deny"` 条目
+- 追加 `"node *.js *": "deny"` 条目
+
+保留的 allow 条目（全部为只读命令）：`echo *`、`cat *`、`ls *`、`head *`、`tail *`、`wc *`、`find *`、`grep *`、`which *`、`sha256sum *`。
+
+文件：`.opencode/agents/Orchestrator.md`
+
+第 106 行当前文本：
+
+```
+- `safe_shell`/`safe_diff`/`safe_hash`: allow for read-only orchestration tasks
+```
+
+改为：
+
+```
+- `safe_shell`/`safe_diff`/`safe_hash`: allow for read-only commands only (echo/cat/ls/head/tail/wc/find/grep/which/sha256sum)
+```
+
+**步骤 9.2：删除 shell-guard.ts 的 Orchestrator 目录豁免和 allow-write 后门**
+
+文件：`.opencode/service/file-guard/shell-guard.ts`
+
+删除第 311-329 行的 Orchestrator path-aware eval constraints 代码块。该代码块从 `const isOrchestrator = normalize(agent) === "orchestrator";` 开始，到对应的 `}` 结束（包含 `if (isOrchestrator) { ... }` 整个分支）。
+
+删除后，eval scan 的逻辑统一为：检测到 write pattern 即阻断，不区分 agent 和目录。非 Orchestrator 的阻断逻辑（第 331-343 行）保持不变。
+
+同时，在 `_scriptContainsFileWrite` 函数中（约第 114 行），删除对 `// safe_bash: allow-write` 注释的检测和放行逻辑。使脚本内容扫描无条件阻断 file-write，不提供 opt-in 后门。
+
+**步骤 9.3：加固 write API 检测正则**
+
+文件 1：`.opencode/service/dispatch/tool-scope-match.ts`
+
+第 223-225 行当前 writeApis 正则：
+
+```typescript
+      const writeApis =
+        /writeFile|appendFile|fs\.write|fs\.append|fs\.rm|fs\.unlink|fs\.rename|fs\.mkdir|createWriteStream|child_process|exec\(|spawn\(|open\(/;
+```
+
+改为：
+
+```typescript
+      const writeApis =
+        /writeFile|appendFile|fs\.write|fs\.append|fs\.rm|fs\.unlink|fs\.rename|fs\.mkdir|createWriteStream|child_process|exec\(|spawn\(|open\(|\[\s*['"]write['"]?\s*\+\s*['"]?File|\[\s*['"]writeFile['"]\s*\]|\[\s*['"]appendFile['"]\s*\]/;
+```
+
+文件 2：`.opencode/service/file-guard/shell-config.ts`
+
+第 312-319 行 `WRITE_PATTERNS` 数组追加三个模式：
+
+```typescript
+export const WRITE_PATTERNS: RegExp[] = [
+  /.writeFileSync\s*\(/,
+  /.writeFile\s*\(/,
+  /.appendFileSync\s*\(/,
+  /.createWriteStream\s*\(/,
+  /.renameSync\s*\(/,
+  /.copyFileSync\s*\(/,
+  /.mkdirSync\s*\(/,
+  // Phase 9: bracket notation + string concatenation bypass
+  /\[\s*['"]write['"]?\s*\+\s*['"]?File/i,
+  /\[\s*['"]writeFile['"]\s*\]/i,
+  /\[\s*['"]appendFile['"]\s*\]/i,
+];
+```
+
+**步骤 9.4：补充混淆绕过回归测试**
+
+新建文件：`.opencode/service/tool-governance/__tests__/write-bypass-prevention.test.ts`
+
+```typescript
+import { describe, test, expect } from "bun:test";
+
+describe("write API obfuscation bypass prevention", () => {
+  // Phase 9 加固后的正则
+  const writeApis =
+    /writeFile|appendFile|fs\.write|fs\.append|fs\.rm|fs\.unlink|fs\.rename|fs\.mkdir|createWriteStream|child_process|exec\(|spawn\(|open\(|\[\s*['"]write['"]?\s*\+\s*['"]?File|\[\s*['"]writeFile['"]\s*\]|\[\s*['"]appendFile['"]\s*\]/;
+
+  test("string concatenation writeFileSync is detected", () => {
+    const cmd = `require('fs')['write'+'FileSync']('src/pwn.ts','x')`;
+    expect(writeApis.test(cmd)).toBe(true);
+  });
+
+  test("bracket notation writeFile is detected", () => {
+    const cmd = `require('fs')['writeFile']('src/pwn.ts','x')`;
+    expect(writeApis.test(cmd)).toBe(true);
+  });
+
+  test("bracket notation appendFile is detected", () => {
+    const cmd = `require('fs')['appendFile']('src/pwn.ts','x')`;
+    expect(writeApis.test(cmd)).toBe(true);
+  });
+
+  test("plain writeFileSync is still detected", () => {
+    const cmd = `require('fs').writeFileSync('src/pwn.ts','x')`;
+    expect(writeApis.test(cmd)).toBe(true);
+  });
+
+  test("read-only require('fs').readFileSync is NOT detected", () => {
+    const cmd = `require('fs').readFileSync('src/foo.ts','utf8')`;
+    expect(writeApis.test(cmd)).toBe(false);
+  });
+});
+```
+
+**步骤 9.5：验证**
+
+验证命令（按顺序执行，任一失败即停止）：
+
+```bash
+cd /home/zhaoge/workspace/opencode/work-one
+bun test .opencode/service/tool-governance/__tests__/write-bypass-prevention.test.ts
+bun test .opencode/plugin-handlers/before/__tests__/codegraph.test.ts
+bun test .opencode/service/tool-governance/__tests__/*.test.ts
+bun test .opencode/plugin-handlers/before/__tests__/tool-governance-handler.test.ts
+bun -e 'await import("./.opencode/plugins/before-dispatcher.ts")'
+```
+
+验证 Orchestrator 权限变更：
+
+```bash
+# 确认 node -e 已被 deny
+grep -A5 '"node -e' opencode.json | grep -c "deny"
+# 应输出 1
+```
+
+验证 shell-guard 豁免已删除：
+
+```bash
+# 确认 isOrchestrator 在 eval scan 中不再出现
+grep -c "isOrchestrator" .opencode/service/file-guard/shell-guard.ts
+# 应输出 0
+```
+
 ---
 
 ## 五、验证计划
@@ -1049,6 +1325,11 @@ Phase 7 已在 Phase 6 core 通过后进入实施。当前已有 `VerifiedComman
 - [x] `command-executor.ts` 固定使用 `shell:false`，且 `safe_shell` 调用链不再存在字符串命令执行分支
 - [x] `execFile` 路径对 timeout、AbortSignal、maxBuffer 和非零退出返回稳定执行元信息（组件/代码证据；live 资源类 E2E 待补）
 - [x] `spawn` 路径对 stdout/stderr 逐块计数，超限或取消后终止子进程树（组件/代码证据；live 资源类 E2E 待补）
+- [x] `codegraph.ts` `isExemptPath()` 对 `.gitignore`/`package.json`/`tsconfig.json` 等非源码文件返回 `true`（Phase 8 步骤 8.4）
+- [x] `safe_shell.ts` `tool.schema.record(tool.schema.string(), tool.schema.string())` 在 Zod v4 下不崩溃（Phase 8 步骤 8.2）
+- [x] `require('fs')['write'+'FileSync'](...)` 被加固后的 writeApis 正则检测为写操作（Phase 9 步骤 9.4）
+- [x] `require('fs')['writeFile'](...)` 被加固后的 WRITE_PATTERNS 检测为写操作（Phase 9 步骤 9.4）
+- [x] `require('fs').readFileSync(...)` 不被误检测为写操作（Phase 9 步骤 9.4）
 
 ### 5.2 集成测试
 
@@ -1064,6 +1345,10 @@ Phase 7 已在 Phase 6 core 通过后进入实施。当前已有 `VerifiedComman
 - [x] `safeBashTool()` async 改造后的主要调用方已 `await`，direct tool smoke 通过（仍需正式 TypeScript 全量编译兜底）
 - [x] `safe_shell` 执行链不含 `exec`、`execSync`、`execFileSync`、`shell:true`、`sh -c`、`bash -c`（仓库其他质量/诊断工具仍有独立 `execSync`，不属于 `safe_shell` 执行链）
 - [ ] 现有复合命令均已迁移到一等工具或固定 hash 的受审脚本
+- [x] `before-dispatcher.ts` 的 `DEFAULT_ORDER` 中 `tool-governance` 位于 `permission-safety` 之后、`behavioral-path-guard` 之前，且与 `project.config.json` 完全一致（Phase 8 步骤 8.3）
+- [x] Orchestrator 的 `safe_shell` 权限中 `node -e *`/`node *.ts *`/`node *.js *` 为 `deny`（Phase 9 步骤 9.1）
+- [x] `shell-guard.ts` 中不存在 `isOrchestrator` 变量（`grep -c "isOrchestrator" shell-guard.ts` 输出 0）（Phase 9 步骤 9.2）
+- [x] `shell-guard.ts` 中不存在 `allow-write` 字符串（`grep -c "allow-write" shell-guard.ts` 输出 0）（Phase 9 步骤 9.2）
 
 ### 5.3 端到端测试
 
@@ -1077,6 +1362,9 @@ Phase 7 已在 Phase 6 core 通过后进入实施。当前已有 `VerifiedComman
 - [ ] `safe_hash` 在 `safe_shell` 不可用场景下仍可完成只读 hash
 - [ ] live Orchestrator 请求含 `;`、管道、重定向或 `$()` 时稳定返回 `SHELL-COMPOSITION-DENY`，且没有子进程启动记录
 - [ ] live Orchestrator 执行长输出命令达到上限时子进程树被终止，session 可继续使用
+- [ ] live Orchestrator 调 `safe_edit .gitignore` 成功，不被 `CODEGRAPH-ENFORCE` 阻断（Phase 8）
+- [ ] live Orchestrator 调 `node -e "require('fs')['write'+'FileSync']('src/x.ts','y')"` 被阻断（Phase 9）
+- [ ] live Orchestrator session 可正常启动且不报 `TypeError: undefined is not an object (evaluating 'r._zod')`（Phase 8）
 
 ### 5.4 子系统合规验证
 
@@ -1087,6 +1375,10 @@ Phase 7 已在 Phase 6 core 通过后进入实施。当前已有 `VerifiedComman
 - [ ] Log Central Management：确认治理域所有日志统一走 `log-manager`
 - [ ] TypeScript + Bun Runtime：确认新增 policy 文件均保持小而专一，≤ 400 行
 - [ ] TypeScript + Bun Runtime：在当前 Bun 版本实测 `execFile`/`spawn` 的 AbortSignal、超时、signal exit 和 POSIX 进程组终止
+- [ ] Hardened Enforcement：`codegraph.ts` `isExemptPath()` 覆盖非源码配置文件（Phase 8）
+- [ ] Hardened Enforcement：Orchestrator 不具备 `node -e` 任意代码执行权限（Phase 9）
+- [ ] Hardened Enforcement：write API 正则覆盖 bracket notation + 字符串拼接混淆（Phase 9）
+- [ ] Hardened Enforcement：`shell-guard.ts` 不存在 agent 专属目录豁免和 `allow-write` 后门（Phase 9）
 
 ### 5.5 弱模型交付审查门
 
@@ -1096,6 +1388,7 @@ Phase 7 已在 Phase 6 core 通过后进入实施。当前已有 `VerifiedComman
 - [ ] 每个弱模型任务卡均附带固定验证命令输出；失败输出未被覆盖或删除。
 - [ ] reviewer 已重跑任务卡验证命令，且结果与弱模型报告一致。
 - [ ] reviewer 已执行安全负向搜索，确认未新增 `exec`、`execSync`、`execFileSync`、`shell:true`、`bash -c`、`sh -c`、`allowShellFallback`、`rawCommand`、`shellCommand`。
+- [ ] reviewer 已执行 Phase 9 安全负向搜索：`grep -rn "isOrchestrator" .opencode/service/file-guard/shell-guard.ts` 输出 0 行；`grep -rn "allow-write" .opencode/service/file-guard/shell-guard.ts` 输出 0 行；`grep -rn "node -e.*allow" opencode.json` 输出 0 行。
 - [ ] 所有 live E2E 判定均有 session id、`messages-final.json`、`result.md` 和阻断/放行层证据。
 - [ ] blueprint checkbox / 状态只由 reviewer 更新，未由弱模型实施者直接修改。
 
@@ -1121,14 +1414,22 @@ Phase 7 已在 Phase 6 core 通过后进入实施。当前已有 `VerifiedComman
 | 弱模型过度自信标完成 | 未验证路径被误标 PASS，后续安全边界失真 | 弱模型不得修改 checkbox / 状态；所有完成判定必须经 reviewer 重跑验证和证据复核 |
 | 弱模型扩大任务范围 | 一次修改过多文件，review 无法确认因果 | 只允许领取 §4.3 单张任务卡；每卡最多 3 个源码文件和 2 个测试/文档文件 |
 | 弱模型为兼容旧命令引入 shell fallback | 重新打开命令注入风险 | 全局禁止 `exec` / `execSync` / `shell:true` / `bash -c` / `allowShellFallback`；reviewer 必须做负向搜索 |
+| codegraph 豁免列表缺少非源码文件 | `safe_edit .gitignore`/`package.json` 等被 `CODEGRAPH-ENFORCE` 阻断，agent 无法修改配置文件 | Phase 8 步骤 8.1 扩展 `isExemptPath()` 豁免列表 |
+| Zod v4 `record()` API 变更 | `safe_shell.ts` 的 `__verified_command_plan.env` schema 导致 `TypeError: undefined is not an object (evaluating 'r._zod')`，Orchestrator session 启动即崩溃 | Phase 8 步骤 8.2 修复为双参数 `tool.schema.record(tool.schema.string(), tool.schema.string())` |
+| before-chain 顺序与规定不一致 | `scope` 先于 `tool-governance` 执行，治理域不是首个运行时业务裁决层 | Phase 8 步骤 8.3 将 `tool-governance` 移到 `permission-safety` 之后 |
+| Orchestrator 保留 `node -e` 权限 | 通过 `require('fs')['write'+'FileSync'](...)` 混淆绕过 write API 正则，在无备份/无 TOCTOU 保护下写文件 | Phase 9 步骤 9.1 删除 `node -e`/`node *.ts`/`node *.js` 权限 |
+| write API 正则可被字符串拼接绕过 | `tool-scope-match.ts` 和 `shell-config.ts` 的正则不匹配 bracket notation + 字符串拼接 | Phase 9 步骤 9.3 加固正则，追加 bracket notation 模式 |
+| `shell-guard.ts` Orchestrator 目录豁免是死代码 | `scope` 上游已阻断 safe_shell 文件写，豁免只在正则绕过时形成攻击面，同时误导开发者认为 Orchestrator 可写文件 | Phase 9 步骤 9.2 删除豁免代码和 `// safe_bash: allow-write` 后门 |
 
 ### 6.2 回滚方案
 
 1. 每个 Phase 使用独立 commit；验证未全部通过时不得开始下一 Phase。
 2. Phase 6 失败时只回滚 Phase 6 commit，恢复其开始前已验证的 active before 链；Phase 0-5 保持不动。
 3. Phase 7 失败时只回滚 Phase 7 commit，恢复 `shell-guard.ts` 的既有执行实现，同时保留失败证据；回滚后立即禁止外部不可信输入进入 `safe_shell`，直到 Phase 7 修复完成。
-4. 回滚后执行该 Phase 开始前的完整基线测试、dispatcher import smoke 和 runtime smoke；任一失败则继续保持服务停用，不得宣称回滚成功。
-5. 不新增治理模式开关，不保留 legacy/hybrid/unified 并行裁决路径，不删除失败回归测试。
+4. Phase 8 失败时只回滚 Phase 8 commit，恢复 `isExemptPath()` 原豁免列表、`safe_shell.ts` 原 `record()` 调用、`before-dispatcher.ts` 原 `DEFAULT_ORDER`；Phase 0-7 保持不动。回滚后 `.gitignore` 等非源码文件仍无法被 `safe_edit` 修改，需人工介入。
+5. Phase 9 失败时只回滚 Phase 9 commit，恢复 Orchestrator `node -e` 权限、`shell-guard.ts` 目录豁免、原始 write API 正则；Phase 0-8 保持不动。回滚后 `safe_shell` 文件写绕过面重新暴露，需在日志中加强监控。
+6. 回滚后执行该 Phase 开始前的完整基线测试、dispatcher import smoke 和 runtime smoke；任一失败则继续保持服务停用，不得宣称回滚成功。
+7. 不新增治理模式开关，不保留 legacy/hybrid/unified 并行裁决路径，不删除失败回归测试。
 
 ---
 
@@ -1158,6 +1459,18 @@ Phase 7 已在 Phase 6 core 通过后进入实施。当前已有 `VerifiedComman
 - [ ] buffered/stream 两条执行路径的超时、取消、输出超限和进程树终止测试全部通过（代码/组件已有基础覆盖；仍缺 live 资源类 E2E）
 - [ ] 当前 Bun runtime smoke 与 live Orchestrator E2E 均证明去 shell 化后普通读命令可用、复合命令不可执行（direct tool smoke 已证明 `pwd` allow-path；live Orchestrator allow-path 待补）
 - [ ] 弱模型实施协议已执行：所有任务卡均由弱模型提交 diff + 证据，强审查模型 / 人工 reviewer 完成复核后才更新状态
+- [x] `safe_edit .gitignore` 不被 `CODEGRAPH-ENFORCE` 阻断（Phase 8 步骤 8.1）
+- [x] `safe_edit package.json` 不被 `CODEGRAPH-ENFORCE` 阻断（Phase 8 步骤 8.1）
+- [x] `safe_shell.ts` 的 `tool.schema.record()` 使用双参数 Zod v4 API，Orchestrator session 可正常启动（Phase 8 步骤 8.2）
+- [x] `before-dispatcher.ts` 的 `DEFAULT_ORDER` 中 `tool-governance` 位于 `permission-safety` 之后、`behavioral-path-guard` 之前（Phase 8 步骤 8.3）
+- [x] `project.config.json` 的 `plugin_execution_order.before` 与 `DEFAULT_ORDER` 完全一致（Phase 8 步骤 8.3）
+- [x] Orchestrator 的 `safe_shell` 权限中 `node -e`/`node *.ts`/`node *.js` 为 `deny`（Phase 9 步骤 9.1）
+- [x] `shell-guard.ts` 中不存在 `isOrchestrator` 变量和目录豁免逻辑（Phase 9 步骤 9.2）
+- [x] `shell-guard.ts` 中不存在 `// safe_bash: allow-write` 后门（Phase 9 步骤 9.2）
+- [x] `require('fs')['write'+'FileSync'](...)` 被 write API 正则检测为写操作（Phase 9 步骤 9.3）
+- [x] `require('fs')['writeFile'](...)` 被 write API 正则检测为写操作（Phase 9 步骤 9.3）
+- [x] `require('fs').readFileSync(...)` 不被 write API 正则误检测为写操作（Phase 9 步骤 9.3）
+- [x] `write-bypass-prevention.test.ts` 全部通过（Phase 9 步骤 9.4）
 
 ---
 

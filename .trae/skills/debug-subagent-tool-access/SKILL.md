@@ -6,6 +6,10 @@ version: 1.0.0
 
 # Debug Sub-Agent Tool Access
 
+## Language / 语言
+
+Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
+
 ## 适用场景
 
 子 agent（如 Coder-BE、Knowledge-Curator、Coder-FE 等）无法调用特定工具时，使用此技能系统性排查和修复。典型症状：

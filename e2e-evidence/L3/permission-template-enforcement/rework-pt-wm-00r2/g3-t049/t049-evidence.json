@@ -1,0 +1,208 @@
+{
+  "testId": "T-PT-049",
+  "timestamp": "2026-07-15T00:16:36.575Z",
+  "prerequisites": [
+    "T-PT-048"
+  ],
+  "frameworkSkillReadHardGate": "(not set)",
+  "dryRun": true,
+  "serveUrl": "http://localhost:4097",
+  "subcases": [
+    {
+      "id": "SC-T049-01-root-lifecycle",
+      "title": "Root lifecycle: 完整 attest → write tool → verified:true",
+      "category": "root-lifecycle",
+      "preconditions": "T-PT-048 PASS + 独立 DB + active reviewer-isolated serve + 真实 root session",
+      "steps": [
+        "1. POST /session 创建 root session (agent=build)",
+        "2. POST /session/{rootSid}/prompt_async 调 attestSkillRead({sessionID, agent:'build', canonicalTaskScope:'root session:<sid>', required:['skill-attest','codegraph-first'], skillFileHashes:...})",
+        "3. 等待 session.idle",
+        "4. POST /session/{rootSid}/prompt_async 调 safe_edit 'echo dry-run'",
+        "5. 验证 dispatcher 返回 verified:true 且 executor entry=1"
+      ],
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-3",
+        "oracle-5"
+      ],
+      "expected_verified": true,
+      "expected_rule_id": "(none — allowed)",
+      "expected_handler_order": [
+        "skill-policy",
+        "safe-edit-gate",
+        "executor"
+      ]
+    },
+    {
+      "id": "SC-T049-02-child-lifecycle",
+      "title": "Child lifecycle: spawn child → attest → write tool → verified:true",
+      "category": "child-lifecycle",
+      "preconditions": "T-PT-048 PASS + root session 已建立 (SC-T049-01) + 独立 DB",
+      "steps": [
+        "1. 在 root session 调 dispatch_subagent (agent=general, task='code review')",
+        "2. 获取返回的 child sessionID",
+        "3. POST /session/{childSid}/prompt_async 调 attestSkillRead({sessionID:childSid, agent:'general', canonicalTaskScope:'child task:<dag_id>', parentSessionID:rootSid, required:['skill-attest'], skillFileHashes:...})",
+        "4. 等待 child session.idle",
+        "5. POST /session/{childSid}/prompt_async 调 safe_edit 'echo dry-run'",
+        "6. 验证 child session 走 skill-policy → safe-edit-gate → executor 都通过"
+      ],
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-3",
+        "oracle-5"
+      ],
+      "expected_verified": true,
+      "expected_rule_id": "(none — allowed)",
+      "expected_handler_order": [
+        "skill-policy",
+        "safe-edit-gate",
+        "executor"
+      ]
+    },
+    {
+      "id": "SC-T049-03-writer-trace",
+      "title": "Writer trace: 写工具 executor trace 显示 skill-policy 在前 + 专用 ruleId 命中",
+      "category": "writer-trace",
+      "preconditions": "T-PT-048 PASS + 已建立未认证 session (调过任意工具但未 attest)",
+      "steps": [
+        "1. 创建新 session 不调 attest",
+        "2. POST /session/{sid}/prompt_async 调 safe_edit 'echo bypass'",
+        "3. 抓取 dispatcher 的 handler chain trace (handler order + 每次 reject 事件的 ruleId)",
+        "4. 验证 trace 显示 'skill-policy' 在 'safe-edit-gate' 之前",
+        "5. 验证 reject 事件的 ruleId === 'skill-read-attest-required'"
+      ],
+      "oracle_ids": [
+        "oracle-2",
+        "oracle-4"
+      ],
+      "expected_verified": false,
+      "expected_rule_id": "skill-read-attest-required",
+      "expected_handler_order": [
+        "skill-policy",
+        "(rejected — no entry to safe-edit-gate or executor)"
+      ]
+    },
+    {
+      "id": "SC-T049-04-validator-trace",
+      "title": "Validator trace: state validator 4 维身份校验逐一执行",
+      "category": "validator-trace",
+      "preconditions": "T-PT-048 PASS + DB 已有 root identity 的有效 state row",
+      "steps": [
+        "1. 复用 SC-T049-01 的 root session",
+        "2. 触发 5 次 state validator 调用, 每次故意改一个维度 (sessionID / agent / canonicalTaskScope / required / file_hash)",
+        "3. 抓取 validator 的 log trace",
+        "4. 验证 trace 显示 4 维检查: sessionID ✓ → agent ✓ → canonicalTaskScope ✓ → required ✓ → file_hash ✓ (每个 mismatch 都标红)"
+      ],
+      "oracle_ids": [
+        "oracle-1",
+        "oracle-2",
+        "oracle-3",
+        "oracle-4",
+        "oracle-5"
+      ],
+      "expected_verified": false,
+      "expected_rule_id": "skill-read-attest-required"
+    }
+  ],
+  "subcaseResults": [
+    {
+      "subcaseId": "SC-T049-01-root-lifecycle",
+      "category": "root-lifecycle",
+      "expected_verified": true,
+      "actual_verified": null,
+      "expected_rule_id": "(none — allowed)",
+      "actual_rule_id": null,
+      "pass": false,
+      "steps_executed": 0,
+      "note": "DRY_RUN=true: 5 steps planned, 0 executed. Production run 需 reviewer 授权 + active isolated serve + 真实 attestSkillRead() / safe_edit() / dispatch_subagent() 调用。"
+    },
+    {
+      "subcaseId": "SC-T049-02-child-lifecycle",
+      "category": "child-lifecycle",
+      "expected_verified": true,
+      "actual_verified": null,
+      "expected_rule_id": "(none — allowed)",
+      "actual_rule_id": null,
+      "pass": false,
+      "steps_executed": 0,
+      "note": "DRY_RUN=true: 6 steps planned, 0 executed. Production run 需 reviewer 授权 + active isolated serve + 真实 attestSkillRead() / safe_edit() / dispatch_subagent() 调用。"
+    },
+    {
+      "subcaseId": "SC-T049-03-writer-trace",
+      "category": "writer-trace",
+      "expected_verified": false,
+      "actual_verified": null,
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "pass": false,
+      "steps_executed": 0,
+      "note": "DRY_RUN=true: 5 steps planned, 0 executed. Production run 需 reviewer 授权 + active isolated serve + 真实 attestSkillRead() / safe_edit() / dispatch_subagent() 调用。"
+    },
+    {
+      "subcaseId": "SC-T049-04-validator-trace",
+      "category": "validator-trace",
+      "expected_verified": false,
+      "actual_verified": null,
+      "expected_rule_id": "skill-read-attest-required",
+      "actual_rule_id": null,
+      "pass": false,
+      "steps_executed": 0,
+      "note": "DRY_RUN=true: 4 steps planned, 0 executed. Production run 需 reviewer 授权 + active isolated serve + 真实 attestSkillRead() / safe_edit() / dispatch_subagent() 调用。"
+    }
+  ],
+  "oracles": [
+    {
+      "id": "oracle-1",
+      "oracle_ref": "ORA-PT-11",
+      "description": "canonical identity 完整 (sessionID/agent/scope/required/file_hash) → verified:true",
+      "expected": "verified:true, state_written:true",
+      "pass": null,
+      "note": "DRY_RUN: 需 reviewer 启动 serve + 真实 attestSkillRead() 调用验证"
+    },
+    {
+      "id": "oracle-2",
+      "oracle_ref": "ORA-PT-11",
+      "description": "sessionID mismatch → verified:false",
+      "expected": "verified:false, ruleId='skill-read-attest-required'",
+      "pass": null,
+      "note": "DRY_RUN: 需 reviewer 启动 serve + 篡改 sessionID 验证"
+    },
+    {
+      "id": "oracle-3",
+      "oracle_ref": "ORA-PT-13",
+      "description": "required list 非空 + 全部 Skill 存在 → verified:true",
+      "expected": "verified:true",
+      "pass": null,
+      "note": "DRY_RUN: 需 reviewer 启动 serve + 注入正常 required list 验证"
+    },
+    {
+      "id": "oracle-4",
+      "oracle_ref": "ORA-PT-13",
+      "description": "file hash 与 Skill 实际 hash 不一致 → verified:false",
+      "expected": "verified:false, ruleId='skill-read-attest-required'",
+      "pass": null,
+      "note": "DRY_RUN: 需 reviewer 篡改 file hash 验证"
+    },
+    {
+      "id": "oracle-5",
+      "oracle_ref": "ORA-PT-11/13",
+      "description": "state_written:true 才能在后续 reader 中被查到 (持久化 round-trip)",
+      "expected": "reader 返回与 writer 一致的 state row",
+      "pass": null,
+      "note": "DRY_RUN: 需 reviewer 验证 DB 写后查询一致"
+    }
+  ],
+  "oracleSummary": {
+    "total": 5,
+    "pass": 0,
+    "fail": 0,
+    "pending": 5
+  },
+  "summary": {
+    "total": 4,
+    "pass": 0,
+    "fail": 0,
+    "dryRun": 4
+  },
+  "notes": "DRY_RUN=true: this evidence is a prepared run-plan, not an executed run. To execute, reviewer must: (1) start isolated serve with FRAMEWORK_SKILL_READ_HARD_GATE=1, (2) T-PT-048 PASS, (3) for each subcase: 独立 session, 跑 steps 列表, 抓取 handler trace + DB before/after, (4) 对 5 个 oracle 逐个执行注入场景, 验证 verified/ruleId 行为."
+}

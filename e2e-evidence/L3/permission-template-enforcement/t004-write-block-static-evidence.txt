@@ -1,0 +1,41 @@
+=== disposition (rule-disposition.ts) ===
+38:  "checklist-incomplete":           "audit_only",  // quality-contract
+44:  "recommended-skill-missing":      "warn_continue",  // skill-policy
+61:  "config-attest-required":         "audit_only",  // session/config-attest
+
+=== phase0-enforce retirement marker (RETIRED-ROLLBACK) ===
+// ────────────────────────────────────────────────────────────────────
+// RETIRED-ROLLBACK — NOT in active execution_order; kept for rollback only
+// Kept as delegate dependency or for rollback only.
+// Do NOT call directly from dispatcher. See project.config.json
+// plugin_execution_order for the active handler chain.
+// ────────────────────────────────────────────────────────────────────
+// plugin-handlers/before/phase0-enforce.ts — Phase 0 (initial_read) hard constraint
+
+=== checklist-validate retirement marker (LEGACY) ===
+// ────────────────────────────────────────────────────────────────────
+// LEGACY HANDLER — NOT in active execution_order
+// Kept as delegate dependency or for rollback only.
+// Do NOT call directly from dispatcher. See project.config.json
+// plugin_execution_order for the active handler chain.
+// ────────────────────────────────────────────────────────────────────
+// service/gate/checklist-validate.ts — Checklist validation logic (extracted)
+// Source: checklist-before.ts plugin (423L → service extraction)
+// Retained for legacy checklist compat + delegate callers only.
+// NOTE: old "Phase 0 (initial_read) hard constraint" narrative removed —
+// active checklist gating is now rule-disposition driven (see rule-disposition.ts).
+
+
+=== active before-chain ===
+['gate-call-context', 'guidance-bridge', 'task', 'permission-safety', 'tool-governance', 'behavioral-path-guard', 'scope', 'path-validate', 'codegraph', 'skill-policy', 'dispatch-signal']
+
+=== skill-policy write-tool handling (WARN-only, no throw) ===
+6:import { writeLog } from "../../lib/log-manager";
+20:const WRITE_TOOLS = new Set([
+63:    if (WRITE_TOOLS.has(toolName)) {
+68:        writeLog(SRC, "WARN", {
+81:        writeLog(SRC, "WARN", {
+94:    writeLog(SRC, "ERROR", {
+
+=== write tools in checklist_passthrough_tools ===
+['safe_shell', 'safe_edit', 'safe_mkdir']
