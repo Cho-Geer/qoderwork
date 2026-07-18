@@ -26,7 +26,7 @@ QoderWork 是一个本地 AI Agent 协作工作区，位于 WSL Ubuntu-24.04 的
 
 QoderWork 的所有操作最终指向 work-one。修改代码前，应先在 QoderWork 完成规划、验证与日志记录，再到 work-one 落地代码变更。
 
-### 1.3 实际运行态（2026-07-17 校准）
+### 1.3 实际运行态（2026-07-18 校准）
 
 - **运行语言**：中文为文档与协作主语言；代码标识符、命令、API 名称、路径保留英文原样。
 - **运行时**：Bun 1.3.14（`/home/zhaoge/.bun/bin/bun`）。
@@ -106,9 +106,7 @@ qoderwork/
 ├── temporary-audits/         # 临时审计记录
 ├── AGENTS.md                 # 本文件
 ├── MEMORY.md                 # 长期记忆
-├── RULES.md                  # 输出与验证约束
-└── serve-api-before-chain-verification.md
-└── tool-governance-before-chain-verification.md
+└── RULES.md                  # 输出与验证约束
 ```
 
 ### 3.1 主要模块说明
@@ -227,6 +225,8 @@ bun run test-serve/isolated-serve.ts create --commit <sha> --port <port> --test-
 bun run test-serve/isolated-serve.ts start --run-dir <run-dir>
 bun run test-serve/isolated-serve.ts bootstrap --run-dir <run-dir> --child-agent <agent> --allowed-paths <abs-paths>
 bun run test-serve/isolated-serve.ts execute --run-dir <run-dir> --mode plan --runner <script>
+bun run test-serve/isolated-serve.ts verify --run-dir <run-dir> --phase runtime
+bun run test-serve/isolated-serve.ts p0-1b --primary-worktree <dir> --commit <sha> --port <port> --test-id <id>
 bun run test-serve/isolated-serve.ts stop --run-dir <run-dir>
 bun run test-serve/isolated-serve.ts cleanup --run-dir <run-dir>
 
@@ -236,7 +236,7 @@ bun run clean-sessions.ts
 
 ### 6.2 测试运行说明
 
-- `bun test scripts/test-serve/__tests__` 在 qoderwork 根目录下运行，会执行 `scripts/test-serve/__tests__/*.test.ts` 组件测试。2026-07-17 实测：93 个测试中 92 个 PASS，1 个（`p01b-runtime.test.ts`）因未设置 `P0_1B_PORT` 环境变量而快速失败，该失败属于预期配置缺失而非代码回归。从 `scripts/` 目录运行同一命令会因 `p01b-orchestrator.test.ts` 中相对模块路径不匹配而出现额外失败。
+- `bun test scripts/test-serve/__tests__` 在 qoderwork 根目录下运行，会执行 component + integration + 需显式端口的 runtime 混合测试集。2026-07-18 实测：显式枚举 11 个非 runtime 文件为 92/92 PASS；不设 port 运行整个目录为 92/93 PASS，唯一失败是 `p01b-runtime.test.ts` 的 `P0_1B_PORT` 显式前置拒绝；使用 reviewer 提供的 port 4001 单独复跑 runtime 为 1/1 PASS。从 `scripts/` 目录运行同一命令会因 `p01b-orchestrator.test.ts` 中相对模块路径不匹配而出现额外失败。
 - `tsc --noEmit` 要求 `strict: true`，类型债务会阻断合并。
 - 完整 runtime smoke 和 live LLM E2E 必须通过 `test-serve` 运行单元执行，禁止直接启动裸 `opencode serve` 或固定端口 `4097`。
 
@@ -361,7 +361,8 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 每次完成涉及代码/配置/脚本/API/架构的变更后，必须在 `logs/` 创建对应日志文件：
 
 - 命名：`YYYY-MM-DD-<简短主题>.md`
-- 内容控制在 20 行以内，记录：为什么、改了什么、决策。
+- 内容控制在 20 行以内，记录：为什么、改了什么、决策、更新了什么文档。
+- 更新了什么文档：用列表展示本次任务更新/新建/删除的所有文档。
 - 不记流水账：git diff 能看到的内容不重复写。
 
 ### 11.2 文档索引
@@ -442,6 +443,6 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 
 ---
 
-**最后更新**：2026-07-17
+**最后更新**：2026-07-18
 **维护者**：QoderWork Agent 协作链
 **变更方式**：本文件被完整覆盖时，旧版本内容不再生效；所有更新必须基于当前工作区实际状态。

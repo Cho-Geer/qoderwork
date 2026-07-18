@@ -1,4 +1,18 @@
 {
     "kimi.showThinkingExpanded": true,
-    "kimi.yoloMode": true
+    "kimi.yoloMode": true,
+    "window.autoDetectColorScheme": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "gitlens.ai.model": "vscode",
+    "gitlens.ai.vscode.model": "copilot:gpt-4.1",
+    "workbench.editor.useModal": "some",
+    "remote.autoForwardPortsSource": "hybrid",
+    "js/ts.updateImportsOnFileMove.enabled": "always",
+    "chat.viewSessions.orientation": "stacked",
+    "workbench.editor.alwaysShowEditorActions": true,
+    "workbench.editor.navigationScope": "editorGroup",
+    "workbench.editor.editorActionsLocation": "titleBar",
+    "window.customTitleBarVisibility": "never",
+    "workbench.navigationControl.enabled": true,
+    "workbench.editor.showTabs": "multiple"
 }

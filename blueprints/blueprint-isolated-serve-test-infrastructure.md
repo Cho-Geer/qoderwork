@@ -1,14 +1,14 @@
 # Blueprint: 隔离 Serve 测试基建与测试专用 Skill
 
-**版本**: v1.3.1
-**日期**: 2026-07-17
-**状态**: 部分实施（P0-1A cleanup 集成已实现并有历史 PASS；P0-1B runtime smoke 已通过全新 CLI-only run，`start` 自行返回 `READY` 并保存完整 manifest/双 DB/SSE/log/artifact/cleanup report；TSI-05 run-mode、双 run 与 live LLM E2E 仍未执行。）
+**版本**: v1.3.2
+**日期**: 2026-07-18
+**状态**: 部分实施（P0-1A cleanup 集成已完成；P0-1B runtime smoke 已通过 CLI-only run，并于 2026-07-18 以全新 runtime-test run 独立复验；TSI-05 run-mode、双 run 与 live LLM E2E 仍未执行。）
 **优先级**: P0
 **唯一实施路径**: 本文定义的 `test-serve` 运行单元；不得继续扩展 `_b_pt_wm_00r2_live.ts` 的临时隔离实现。
 
 ---
 
-## 实施审计状态（2026-07-17）
+## 实施审计状态（2026-07-18）
 
 本节是当前代码的实测状态，不改变后续任务卡的 checkbox。只有 reviewer 在修复后重跑对应证据，才可勾选任务卡。
 
@@ -16,8 +16,8 @@
 |---|---|---|---|
 | TSI-01 run context / manifest | 🟡 部分实施 | component | overlay 在 reservation 前校验；run manifest 原子写入、端口 reservation、失败 `BLOCKED` 与 create 阶段 release 成功/失败分支均有回归覆盖。非法跳转、重复 run ID 等完整验收仍未逐项执行。 |
 | TSI-02 worktree / 双 DB / overlay | 🟡 部分实施 | integration + component | P0-1A 已用真实临时 repo/detached worktree 覆盖 cleanup 与 evidence 保留；历史执行 1/1 + 规定回归 14/14 PASS。双 run 隔离仍缺失。 |
-| TSI-03 serve / SSE / cleanup | ✅ runtime smoke PASS | runtime-smoke | P0-1B run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d` 在 port 4001 通过 `create → start → bootstrap → execute(plan) → stop → cleanup`；`start` 自行返回 `READY`，serve/SSE log、`events.jsonl`、plan artifact 与 cleanup report 完整可读。 |
-| TSI-04 grant / session bootstrap | ✅ 组件闭环；runtime PASS | component + runtime-smoke | 组件覆盖不变；P0-1B run 的 isolated SDK DB 有 root/child（`ses_08f449b87ffeWTsmG54UdzwXQc`/`ses_08f449a8fffeyOypd63XAZ5JKn`），framework DB grant `bdb6420b-9a57-4e26-8a4e-f0a523932a6b` 为 `bound`。 |
+| TSI-03 serve / SSE / cleanup | ✅ runtime smoke PASS | runtime-smoke | CLI-only smoke run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d` 与复验 run `2026-07-18T02-17-01-468Z-p0-1b-runtime-test-cf6b83f9` 均八阶段全 `ok`；`start` 自行返回 `READY`，serve/SSE log、`events.jsonl`、plan artifact 与 cleanup report 完整可读。 |
+| TSI-04 grant / session bootstrap | ✅ 组件闭环；runtime PASS | component + runtime-smoke | 复验 run 的 isolated SDK DB 有 root/child（`ses_08cfc50a2ffe6foGKvEqrR2tJ5`/`ses_08cfc4fa4ffeOrs5jiSzOMAUac`）且 parent 链正确，framework DB grant `27e8746a-1e48-48df-9280-c00a94ff80bd` 为 `bound`并绑定该 child。 |
 | TSI-05 runner 迁移 | 🟡 部分实施 | static/code | `execute --mode plan --runner ...` 已确保只写 `NOT-RUN` artifact；2026-07-17 审计：14 个 `_b_pt_wm_00r2_*` 文件均经 `readRunManifest`/`clientContextFromManifest`/`--run-dir` 读取 manifest，runner 与 `serve-api-client.ts` 中 `4097`/`sse-events`/主 work-one 路径零命中，静态迁移契约已满足；run-mode 真跑验收（`GET /session`、root/child、isolated DB 查询）仍 NOT-RUN。 |
 | TSI-06 专用 skill | 🟡 部分实施 | static/code | `.agents`、`.qoder`、`.workbuddy` 三份 skill/reference SHA-256 一致；尚无通过该 skill 的完整 run evidence。 |
 | TSI-07 文档 / 运行日志归档 | ✅ 同步完成 | docs + runtime-smoke | 实施步骤、INDEX、skill reference 与日志已同步；P0-1B runtime smoke artifact 已保留并写入 closure log `logs/2026-07-17-P0-1B可靠运行闭环.md`。 |
@@ -25,8 +25,9 @@
 
 ### 已执行证据
 
-- 当前从 qoderwork 根目录运行的 component 记录：`bun test scripts/test-serve/__tests__` 为 **92 pass / 1 fail**；唯一失败为 `p01b-runtime.test.ts` 因未设置 `P0_1B_PORT` 而快速失败，属预期配置缺失。历史无沙箱阻断记录 `37 pass / 0 fail` 仍保留。
+- 2026-07-18 显式枚举 11 个非 runtime 测试文件为 **92 pass / 0 fail**；不设 port 运行整个目录为 **92 pass / 1 fail / 93 tests**，唯一失败为 `p01b-runtime.test.ts` 的 `P0_1B_PORT` 显式前置拒绝。
 - 2026-07-17 P0-1B runtime smoke PASS：run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d`，port 4001，manifest `status: "CLEANED"`，`bootstrapComplete: true`，root/child session、bound grant、isolated 双 DB、serve/SSE log、`events.jsonl`、plan artifact 与 cleanup report 完整。
+- 2026-07-18 `P0_1B_PORT=4001 bun test scripts/test-serve/__tests__/p01b-runtime.test.ts` 独立复跑为 **1 pass / 0 fail / 23 expect()**；run `2026-07-18T02-17-01-468Z-p0-1b-runtime-test-cf6b83f9` 保存了新的 manifest、双 DB、SSE/log、stage results 与 cleanup report。
 - 静态检查（当前版本）：Bun parse 与 `git diff --check` 通过。
 - P0-1B runtime smoke 历史 supporting run：`2026-07-17T07-50-49-372Z-p0-1b-runtime-smoke-2-646d5ab1` 有 root/child、bound grant、isolated 双 DB、plan artifact 与 cleanup report；因手工写 `READY` 且缺 SSE event，仅作为 supporting evidence 保留。
 - live LLM E2E：**NOT-RUN**。
@@ -36,7 +37,7 @@
 
 1. ~~为当前组件闭环版本执行一次完整 `create → start → bootstrap → execute(plan) → stop → cleanup` runtime smoke，并保存 run manifest、DB、SSE/log、PID 与 cleanup artifact。~~（2026-07-17 已完成：run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d`，port 4001，CLEANED。）
 2. 完成双 run 隔离、SSE 写入归属和真实 serve 接管 reservation 的确定性集成证据。
-3. ~~迁移所有 G2/G3/G4 runner 与 `serve-api-client.ts` 的固定端口/SSE/主路径假设~~（2026-07-17 审计：静态迁移已完成、遗留常量零命中）；剩余为迁移后 runner 在 run mode 下的真跑验收，随第 1 项 runtime smoke 一并执行。
+3. ~~迁移所有 G2/G3/G4 runner 与 `serve-api-client.ts` 的固定端口/SSE/主路径假设~~（2026-07-18 复审：静态迁移已完成、遗留常量零命中）；迁移后 runner 的 run-mode 真跑验收是独立待办，不得用 P0-1B `execute(plan)` 代替。
 4. 仅在 reviewer 显式提供 H2 后，执行所需 live LLM E2E。
 
 ---
@@ -56,9 +57,9 @@
 
 ## 一、问题背景与已验证根因
 
-### 1.1 当前缺口
+### 1.1 实施前缺口（历史基线）
 
-现有 `scripts/_b_pt_wm_00r2_live.ts` 只能启动一个表面隔离的 4097 serve，不能作为真跑测试的基础设施：
+以下是 Blueprint 立项时 `scripts/_b_pt_wm_00r2_live.ts` 的历史缺口；当前运行入口已改为 `test-serve`，本表不再代表当前实现：
 
 | 缺口 | 当前代码证据 | 后果 |
 |---|---|---|
@@ -69,12 +70,13 @@
 | SSE 自动 `session_map` 写主库 | `sse-daemon.ts` 硬编码主 framework DB | 隔离测试污染主状态，且 evidence 与测试 DB 不一致 |
 | 权限/证据散落 | runner 各自处理 port、SSE、DRY_RUN、H2、artifact | 同一测试前置不一致，弱模型容易误报 |
 
-### 1.2 已验证事实
+### 1.2 当前已验证事实
 
 - `FRAMEWORK_SKILL_READ_HARD_GATE=1` 是 `skill-policy.ts` 的 serve 进程环境开关；未设置时 enforcement 会直接跳过。
 - `FRAMEWORK_DB_PATH` 是 framework DB 的权威覆盖变量。
 - `OPENCODE_DB` 被 session plugin 用于原生 SDK session DB；未设定时使用 `$HOME/.local/share/opencode/opencode.db`。
-- `sse-daemon.ts` 已能从环境读取 `SERVE_URL`、`EVENT_FILE`、`ARCHIVE_DIR`，但尚未正确读取 framework DB 路径。
+- `sse-daemon.ts` 已从环境读取 `SERVE_URL`、`EVENT_FILE`、`ARCHIVE_DIR`、`FRAMEWORK_DB_PATH` 与 `SSE_READY_FILE`，并在 SSE body 可读后原子写 ready marker。
+- P0-1B 的四项 start gate、root/child SSE + DB barrier、生产 grant service 与两阶段只读 verifier 均已有 component 覆盖和 runtime-smoke 证据。
 - T-PT-051 的 `H2_AUTHORIZED` 是**测试 runner 授权闸门**，不是 serve 的 runtime enforcement。
 
 ### 1.3 根因结论
@@ -134,7 +136,7 @@ ${XDG_STATE_HOME:-$HOME/.local/state}/qoderwork/test-runs/<run_id>/
 
 1. 以 `detached: true`、文件型 stdout/stderr、`QODERWORK_TEST_RUN_ID=<run_id>` 启动 serve；写入 `pids/serve.pid` 和 manifest 后 `unref()`。
 2. 以同一运行环境启动 SSE daemon；写入 `pids/sse.pid`。
-3. 在 30 秒内轮询 `GET /session`。成功后更新 manifest 为 `READY`；超时则保存日志并执行 `stop`。
+3. 在同一 30 秒 deadline 内轮询 health、serve PID identity、SSE PID identity 和 SSE ready marker；四项全真才更新 manifest 为 `READY`，超时则受控 stop 并写 `BLOCKED`。
 4. `test-serve status` 必须验证：PID 存活、命令行匹配预期二进制、环境中的 `QODERWORK_TEST_RUN_ID` 匹配、health endpoint 成功。仅 PID 存在不算 READY。
 5. `test-serve stop` 只终止 manifest 中且 `QODERWORK_TEST_RUN_ID` 匹配的 PID；先 SSE 后 serve，SIGTERM 等待 10 秒，再 SIGKILL。PID 被复用或环境不匹配时拒绝杀进程并标 `BLOCKED`。
 6. `test-serve cleanup` 只有在 stop 成功后才能移除 `manifest.paths.worktreeDir`；`manifest.paths.rootDir` 是持久 runtime evidence bundle，必须保留其中的 manifest、双 DB、logs、events、artifacts 与 `cleanup-report.json`。失败时额外保留仍存在的 worktree，并写 `BLOCKED` cleanup report。删除历史 evidence 不属于 cleanup 命令职责。
@@ -143,11 +145,11 @@ ${XDG_STATE_HOME:-$HOME/.local/state}/qoderwork/test-runs/<run_id>/
 
 `test-serve bootstrap` 只在 `READY` 状态运行，顺序固定：
 
-1. `POST /session` 创建 root session，并立即记录 session ID/agent。
-2. 按测试所需的生产服务 API 调用 isolated worktree 的 `createGrant()`；禁止 direct SQL 插入 grant。
-3. 按测试场景创建 child session，并由生产 `bindGrant()` 绑定；查询 isolated framework DB 确认绑定字段。
-4. 把 root/child、grant ID、`allowed_paths`、grant 状态写回 manifest。
-5. 任何路径超出 manifest `allowed_paths`、grant 未绑定或 grant 已消费时，bootstrap 失败并停止。
+1. `POST /session` 创建 root session，等待该 root 的 `session.created` 与 `session_map` barrier。
+2. 通过 isolated worktree 的生产 `createGrant()` 创建 grant；禁止 direct SQL 插入 grant。
+3. 创建 child session，等待 child event、`session_map` 与 SDK DB parent 链 barrier。
+4. 由生产 `bindGrant()` 绑定，只读查询 isolated framework DB 确认 `bound` 与 child ID 一致。
+5. oracle 通过后才把 root/child、grant ID、`allowed_paths` 写回 manifest 并设 `bootstrapComplete=true`；任一失败受控 stop 并进入 `BLOCKED`。
 
 `H2_AUTHORIZED=true` 只由 `test-serve execute --mode live` 检查；`create`、`start`、`status`、`stop`、`cleanup` 不读取它。`execute` 同时要求 `H2_AUTHORIZED=true`、`DRY_RUN=false` 和 manifest `READY + bootstrap_complete`，缺任一项只写 plan-only evidence 并返回 `NOT-RUN`，绝不发 live prompt。
 
@@ -334,12 +336,12 @@ ${XDG_STATE_HOME:-$HOME/.local/state}/qoderwork/test-runs/<run_id>/
 
 ### 5.3 runtime smoke
 
-- [ ] 用真实 `opencode serve` 在 isolated worktree 启动；health endpoint 在 30 秒内成功。
-- [ ] 创建 root session 后，isolated `OPENCODE_DB` 存在对应 session 记录。
+- [x] 用真实 `opencode serve` 在 isolated worktree 启动；health + serve/SSE identity + ready marker 在 30 秒内全真。
+- [x] 创建 root/child session 后，isolated `OPENCODE_DB` 存在对应记录且 child parent 链正确。
 - [ ] `FRAMEWORK_SKILL_READ_HARD_GATE=1` 下，未 attest 的非 allowlist tool 被 `skill-read-attest-required` 拒绝。
-- [ ] 通过生产 `createGrant/bindGrant` 创建 root/child 正向链路，DB oracle 与 manifest 一致。
+- [x] 通过生产 `createGrant/bindGrant` 创建 root/child 正向链路，DB oracle 与 manifest 一致。
 
-2026-07-17 复审：上述 root/child 与 bound grant 已在 run `2026-07-17T07-50-49-372Z-p0-1b-runtime-smoke-2-646d5ab1` 中观察到，但 `READY` 被手工写入且缺 SSE event，故本节 checkbox 全部保持未勾选。当前受管沙箱禁止 local bind，本轮测试复跑被环境阻断，不能替代无沙箱 reviewer 重跑。
+2026-07-18 复审：P0-1B 已由两个全新合规 run 证明隔离生命周期、SSE/DB barrier、bound grant 与 cleanup evidence。本 smoke 未发送 live prompt，因此 skill-read hard-gate 行为项仍不勾选，由权限模板 live E2E 单独验收。
 
 ### 5.4 live LLM E2E
 

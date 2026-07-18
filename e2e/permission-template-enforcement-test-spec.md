@@ -1,8 +1,8 @@
 # 测试式样书：权限模板驱动的行为型 Enforcement
 
-**版本**：1.5.2\
-**日期**：2026-07-17\
-**状态**：DESIGNED（2026-07-14 G1 live 复核后仍为 `REWORK`；P0-1B runtime smoke 已通过，`BLOCK-PT-02/03` 仍未解除）\
+**版本**：1.5.3\
+**日期**：2026-07-18\
+**状态**：DESIGNED（2026-07-14 G1 live 复核后仍为 `REWORK`；P0-1B runtime smoke 已通过并完成独立复验，`BLOCK-PT-02/03` 仍未解除）\
 **执行入口**：`test-specification-execution`\
 **需求来源**：[权限模板驱动的行为型 Enforcement Blueprint](../blueprints/blueprint-permission-template-driven-enforcement.md) v1.6.1（以下简称 Blueprint）
 
@@ -13,7 +13,7 @@
 | 范围     | Blueprint 的 P1 #3、P1 #5、Phase 0R Skill 读取硬门返工，以及先行的 Phase 0 弱模型交付 gate。覆盖 permission template 解析、治理决策、execution final guard、repo read/write、legacy 退役、DB-canonical attestation 与真实运行证据。                                                                                                                                                                                                                                                                                                                    |
 | 需求来源   | Blueprint §1–§2.2.8、§3.2–§3.6、§4、§6；当前实码调用链：`permission-policy.ts`、`shell-policy.ts`、`shell-guard.ts`、`repo-policy.ts`、`skill-attest.ts`、`skill-policy.ts`、`before-dispatcher.ts` 与 authoritative `project.config.json.plugin_execution_order.before`。                                                                                                                                                                                                                                                     |
 | 明确不在范围 | 不实施任何代码或配置改动；不改变 native OpenCode 权限语义；不把 ask-and-block 扩展为一次性授权；不关闭 Blueprint checkbox 或 P1 状态。                                                                                                                                                                                                                                                                                                                                                                                                            |
-| 当前环境事实 | 两份测试 Skill 已被 runtime 发现且 SHA 一致。00R2 已修复共享 canonical identity 与 authoritative config 顺序，并经真实 before-dispatcher 临时 DB/worktree 集成复跑 6/6、相关回归 52/52。G1 live session 又证明未认证 `dispatch_subagent` 命中专用硬门、全部 tool call error 且目标不变；但 LLM 未调用 `skill_read_attest`，所以 `attest:false` 子断言与 T-PT-047 合规子断言均失败。该证据不是完整 root/child live E2E，未覆盖真实 executor counter、fault、20 轮 concurrency 或 mutation；整体裁决仍为 REWORK。后续真跑入口**必须**使用 `test-serve` run manifest / run ID 契约；G2/G3/G4 与 `serve-api-client.ts` 的 manifest-only 静态迁移已完成。2026-07-17 P0-1B runtime smoke 已通过全新 CLI-only run（run ID `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d`，port 4001）：`start` 自行返回 `READY`，保存完整 manifest、双 DB、serve/SSE log、`events.jsonl`、plan artifact 与 cleanup report。但合规 live serve/session 正向路径、重放/fault/concurrency/mutation 仍未执行，不能作为本式样书 live LLM E2E PASS。任何固定 4097 或固定 `/tmp/sse-events.jsonl` 调用均不得作为有效真跑证据。 |
+| 当前环境事实 | 两份测试 Skill 已被 runtime 发现且 SHA 一致。00R2 已修复共享 canonical identity 与 authoritative config 顺序，并经真实 before-dispatcher 临时 DB/worktree 集成复跑 6/6、相关回归 52/52。G1 live session 又证明未认证 `dispatch_subagent` 命中专用硬门、全部 tool call error 且目标不变；但 LLM 未调用 `skill_read_attest`，所以 `attest:false` 子断言与 T-PT-047 合规子断言均失败。该证据不是完整 root/child live E2E，未覆盖真实 executor counter、fault、20 轮 concurrency 或 mutation；整体裁决仍为 REWORK。后续真跑入口**必须**使用 `test-serve` run manifest / run ID 契约；G2/G3/G4 与 `serve-api-client.ts` 的 manifest-only 静态迁移已完成。P0-1B 已在 2026-07-17 CLI-only smoke run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d` 通过，并在 2026-07-18 runtime-test run `2026-07-18T02-17-01-468Z-p0-1b-runtime-test-cf6b83f9` 独立复验：八阶段全 `ok`，root/child parent 链、bound grant、双 DB、SSE/log、plan artifact 与 cleanup report 完整。但合规 live serve/session 正向路径、重放/fault/concurrency/mutation 仍未执行，不能作为本式样书 live LLM E2E PASS。任何固定 4097 或固定 `/tmp/sse-events.jsonl` 调用均不得作为有效真跑证据。 |
 | 测试隔离   | 单元/集成使用临时目录、临时 project config、副本 SQLite 状态和本地假 repo；禁止真实 remote write、真实 GitHub 变更和共享 framework-state 写入。live 用独立 session、只读成功命令或预期阻断命令。                                                                                                                                                                                                                                                                                                                                                                   |
 
 ### 开放项
@@ -39,9 +39,9 @@
 - `rework-pt-wm-00r2/integration-evidence.md` 是真实 before-dispatcher、临时 DB/worktree 的 integration supporting evidence：T-PT-004-b/c、T-PT-050 与相关 source/component tests 已复跑；它不含 serve API/session、真实 executor counter、目标状态、fault/concurrency/mutation，因此不得替代对应 live 或完整 integration oracle。
 - 00R2 live/runtime runner 只能从 `test-serve` manifest 读取 endpoint、SSE 文件、DB、session 与 grant；任何缺少新 run ID / 新 manifest / 新 artifact 的结果均 `INVALID`。
 
-### 当前 `test-serve` 基建状态（2026-07-17）
+### 当前 `test-serve` 基建状态（2026-07-18）
 
-`scripts/test-serve/__tests__` 从 qoderwork 根目录运行（`bun test scripts/test-serve/__tests__`）当前为 **92/93 PASS**；唯一失败为 `p01b-runtime.test.ts` 因未设置 `P0_1B_PORT` 而 0.35ms 快速失败，属预期配置缺失而非代码回归。P0-1B runtime smoke run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d` 已在 port 4001 通过完整 `create → start → bootstrap → execute(plan) → stop → cleanup`，`start` 自行返回 `READY`，manifest `status: "CLEANED"`，证据完整。上述结果不改变 `BLOCK-PT-02/03` 状态。
+显式枚举 11 个非 runtime 文件的回归命令为 **92/92 PASS**。从 qoderwork 根目录不设 port 运行整个 `scripts/test-serve/__tests__` 目录为 **92/93 PASS**；唯一失败为 `p01b-runtime.test.ts` 的 `P0_1B_PORT` 显式前置拒绝。使用 reviewer 提供的 `P0_1B_PORT=4001` 单独复跑该文件为 **1 pass / 0 fail / 23 expect()**，对应新 run `2026-07-18T02-17-01-468Z-p0-1b-runtime-test-cf6b83f9` 已完成 `create → start → bootstrap → execute(plan) → verify(runtime) → stop → cleanup → verify(cleanup)`，manifest `CLEANED`且证据完整。上述结果不改变 `BLOCK-PT-02/03` 状态。
 - `L3/L3-012/` 是历史 core repo-policy PASS：`safe_shell gh issue create` 被 `[REPO-OP]` / `repo-policy` 拒绝。空的 `L3/L3-012-repo-op-deny/` 仅是未见证尝试；`L3/L3-012-repo-op-deny-rerun/execution.json` 虽有 session/tool 证据，却只命中 `skill-read-attest-required`，未达到 `remote_repo_write` grant。三份 artifact 不可互相替代；rerun 不得作为 grant PASS 证据。
 
 ## 2. 原子需求账本
