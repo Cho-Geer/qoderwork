@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { Database } from "bun:sqlite";
 import type { P01bVerificationPhase, P01bVerificationResult, RunManifest } from "./types";
 import { readRunManifest } from "./run-context";
+import { findSessionEvent, sdkSessionExists, sessionMapExists, grantBoundTo } from "./oracle";
 
 export function verifyP01b(
   runDir: string,
@@ -59,26 +60,18 @@ function checkRuntimeChecks(
       && content.serveUrl === `http://127.0.0.1:${manifest.port}`
       && content.eventFile === manifest.paths.eventFilePath;
   });
-  check("rootInSdkDb", () => querySdkDb(manifest, manifest.rootSessionId));
-  check("childInSdkDb", () => querySdkDb(manifest, manifest.childSessionId));
-  check("rootEventPresent", () =>
-    findEventInJsonl(manifest.paths.eventFilePath, manifest.rootSessionId),
-  );
-  check("childEventPresent", () =>
-    findEventInJsonl(manifest.paths.eventFilePath, manifest.childSessionId),
-  );
-  check("rootSessionMapPresent", () =>
-    querySessionMap(manifest.paths.frameworkDbPath, manifest.rootSessionId),
-  );
-  check("childSessionMapPresent", () =>
-    querySessionMap(manifest.paths.frameworkDbPath, manifest.childSessionId),
-  );
+  check("rootInSdkDb", () => sdkSessionExists(manifest.paths.opencodeDbPath, manifest.rootSessionId ?? ""));
+  check("childInSdkDb", () => sdkSessionExists(manifest.paths.opencodeDbPath, manifest.childSessionId ?? ""));
+  check("rootEventPresent", () => findSessionEvent(manifest.paths.eventFilePath, manifest.rootSessionId ?? ""));
+  check("childEventPresent", () => findSessionEvent(manifest.paths.eventFilePath, manifest.childSessionId ?? ""));
+  check("rootSessionMapPresent", () => sessionMapExists(manifest.paths.frameworkDbPath, manifest.rootSessionId ?? ""));
+  check("childSessionMapPresent", () => sessionMapExists(manifest.paths.frameworkDbPath, manifest.childSessionId ?? ""));
   check("childParentMatchesRoot", () => {
     if (!manifest.childSessionId || !manifest.rootSessionId) return false;
     return querySdkDbParent(manifest.paths.opencodeDbPath, manifest.childSessionId, manifest.rootSessionId);
   });
   check("grantBound", () =>
-    queryGrantBound(manifest.paths.frameworkDbPath, manifest.grantId, manifest.childSessionId),
+    grantBoundTo(manifest.paths.frameworkDbPath, manifest.grantId ?? "", manifest.childSessionId ?? ""),
   );
   check("planArtifactNotRun", () => {
     const planPath = join(manifest.paths.artifactsDir, "plan-result.json");
@@ -121,36 +114,6 @@ function checkCleanupChecks(
   });
 }
 
-function querySdkDb(manifest: RunManifest, sessionId: string | null): boolean {
-  if (!sessionId) return false;
-  let db: InstanceType<typeof Database> | null = null;
-  try {
-    if (!existsSync(manifest.paths.opencodeDbPath)) return false;
-    db = new Database(manifest.paths.opencodeDbPath, { readonly: true });
-    const row = db.query("SELECT id FROM session WHERE id = ?").get(sessionId);
-    return row != null;
-  } catch {
-    return false;
-  } finally {
-    db?.close();
-  }
-}
-
-function querySessionMap(frameworkDbPath: string, sessionId: string | null): boolean {
-  if (!sessionId) return false;
-  let db: InstanceType<typeof Database> | null = null;
-  try {
-    if (!existsSync(frameworkDbPath)) return false;
-    db = new Database(frameworkDbPath, { readonly: true });
-    const row = db.query("SELECT session_id FROM session_map WHERE session_id = ?").get(sessionId);
-    return row != null;
-  } catch {
-    return false;
-  } finally {
-    db?.close();
-  }
-}
-
 function querySdkDbParent(opencodeDbPath: string, childId: string, parentId: string): boolean {
   let db: InstanceType<typeof Database> | null = null;
   try {
@@ -162,42 +125,5 @@ function querySdkDbParent(opencodeDbPath: string, childId: string, parentId: str
     return false;
   } finally {
     db?.close();
-  }
-}
-
-function queryGrantBound(frameworkDbPath: string, grantId: string | null, childSessionId: string | null): boolean {
-  if (!grantId || !childSessionId) return false;
-  let db: InstanceType<typeof Database> | null = null;
-  try {
-    if (!existsSync(frameworkDbPath)) return false;
-    db = new Database(frameworkDbPath, { readonly: true });
-    const row = db.query(
-      "SELECT status, child_session_id FROM dispatch_privilege_grants WHERE id = ? LIMIT 1",
-    ).get(grantId) as { status: string; child_session_id: string } | undefined;
-    return row?.status === "bound" && row?.child_session_id === childSessionId;
-  } catch {
-    return false;
-  } finally {
-    db?.close();
-  }
-}
-
-function findEventInJsonl(eventFilePath: string, sessionId: string | null): boolean {
-  if (!sessionId) return false;
-  try {
-    if (!existsSync(eventFilePath)) return false;
-    const content = readFileSync(eventFilePath, "utf8");
-    for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        const evt = JSON.parse(line);
-        const type = evt.type || evt.event || "";
-        const sid = evt.sessionID || evt.properties?.sessionID || "";
-        if (type === "session.created" && sid === sessionId) return true;
-      } catch { /* malformed line */ }
-    }
-    return false;
-  } catch {
-    return false;
   }
 }

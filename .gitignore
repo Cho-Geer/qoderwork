@@ -4,7 +4,7 @@
 .opencode/state/
 
 # Local dependencies and secrets
-scripts/node_modules/
+/node_modules/
 scripts/.env
 
 # Tool-specific local state

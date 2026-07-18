@@ -1,7 +1,7 @@
 ---
 name: blueprint-creation
 description: "创建框架级变更 blueprint（完整实施方案）的标准化流程。当需要设计框架级改动、架构变更、或输出完整实施方案时使用。覆盖：问题背景 + 根因分析 → 方案设计（多选项对比）→ 实施清单（文件变更表）→ 验证计划（单元/集成/E2E）→ 风险与回滚方案。触发词：blueprint、实施方案、框架变更、架构改动、完整实施计划、文件变更清单、验证计划。不适用于日常 bug 修复、小型配置变更、或非框架级别的改动。"
-version: 1.1.0
+version: 1.1.1
 ---
 
 # Blueprint 创建流程
@@ -17,7 +17,7 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 开始创建 blueprint 前，必须具备以下信息：
 
 1. **明确的问题描述**：知道要解决什么问题，不是模糊的"优化"或"改进"
-2. **根因已验证**：通过实测（日志分析、ACP session 测试、代码审查）确认了因果链，而非基于推测
+2. **根因已验证**：通过实测（日志分析、serve API session 测试、代码审查）确认了因果链，而非基于推测
 3. **现有机制已调查**：了解框架中是否已有类似功能可以复用或扩展
 4. **约束条件已明确**：知道运行时约束（如上下文窗口大小、性能开销）和架构约束（如必须兼容现有 checklist 系统）
 
@@ -25,7 +25,7 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 
 ### 实测优先于推测
 
-根因分析必须基于实测验证。通过日志分析、ACP session 测试、代码审查等手段确认因果链后，才能进入方案设计。
+根因分析必须基于实测验证。通过日志分析、serve API session 测试、代码审查等手段确认因果链后，才能进入方案设计。
 
 > **步骤类型区分**：「日志分析」和「serve API / session 测试」是 `[VERIFICATION]`（产出运行态证据）；「代码审查」是 `[ANALYSIS]`（仅产生理解）。根因结论必须基于至少一项 `[VERIFICATION]` 证据，不能仅凭代码审查。
 > **Verified-by 要求**：每次 `[VERIFICATION]` 后都要记录 `Verified-by: <命令/接口> -> <关键返回/日志/产物路径>`。
@@ -63,7 +63,7 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 1. **问题描述**：一段话说明问题现象和影响
 2. **直接原因**：导致问题的直接技术原因
 3. **根本原因**：为什么直接原因会发生（架构/设计层面的缺陷）
-4. **实测验证**：通过什么手段验证了因果链（ACP session 测试、日志分析、代码审查等）
+4. **实测验证**：通过什么手段验证了因果链（serve API session 测试、日志分析、代码审查等）
 5. **结论**：一句话总结根因
 
 **格式示例**：
@@ -154,7 +154,7 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 | 9 | Log Central Management | ✅/⚠️/❌ | 日志通道是否统一（所有 hook 统一走 writeLog → .task_temp/_logs/） |
 | 10 | DB-canonical Management | ✅/⚠️/❌ | DB schema 变更是否符合规范（零迁移优先） |
 | 11 | Templatization & Parameterization | ✅/⚠️/❌ | 配置是否参数化、避免硬编码 |
-| 12 | TypeScript + Bun Runtime | ✅/⚠️/❌ | 文件行数（≤400行目标）、外部依赖（禁止 npm）、bun 兼容性 |
+| 12 | TypeScript + Bun Runtime | ✅/⚠️/❌ | 文件行数（≤400行，历史目标待重新校准）、外部依赖（禁止新增 npm 依赖，现有依赖冻结）、bun 兼容性 |
 
 **实际案例**：某 dispatch 系统 blueprint 在完成后审计发现三个缺陷——`dbDequeueWithLease()` 的 UPDATE 缺少 `AND status = 'pending'` 守卫导致 TOCTOU 并发漏洞（子系统 4）；`consumeDispatchMarker()` 在 before-hook 路径上使用 `process.stderr.write` 违反日志集中管理（子系统 9）；新增代码导致 router.ts 超过 400 行目标（子系统 12）。这些缺陷在设计阶段通过合规审计即可发现。
 ```

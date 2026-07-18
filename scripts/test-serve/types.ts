@@ -173,3 +173,30 @@ export interface ExecuteInput {
   runnerScript?: string;
   runnerArgs: string[];
 }
+export type P02Phase =
+  | "reservations"
+  | "coexistence"
+  | "attribution"
+  | "after-stop-a"
+  | "cleanup";
+
+export interface P02VerifyInput {
+  runDirA: string;
+  runDirB: string;
+  mainFrameworkDbPath: string;
+  sentinelMarkerPath: string;
+  reservationPidA?: number | null;
+  reservationPidB?: number | null;
+  /** 可选只读依赖注入；缺省时读取真实文件/进程。测试显式注入以摆脱宿主伪 PID。 */
+  readers?: {
+    /** 返回占用某端口的 PID；不可得（UNAVAILABLE）时返回 null。 */
+    portOwnerReader?: (port: number) => number | null;
+  };
+}
+
+export interface P02VerificationResult {
+  ok: boolean;
+  phase: P02Phase;
+  checks: Record<string, boolean>;
+  failedChecks: string[];
+}

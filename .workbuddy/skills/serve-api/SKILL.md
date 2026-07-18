@@ -1,6 +1,6 @@
 ---
 name: serve-api
-description: "Operate and verify OpenCode through the local serve API and SSE daemon. Use for session lifecycle, messages, session trees, questions, SSE events, child-agent monitoring, intervention, and runtime evidence. Trigger: serve API, curl, SSE daemon, session 操作, question 回复, 直连 OpenCode, session 验证, session tree, 子 agent 监控, 主动干预. Not for: ACP bridge development, direct hand-written grants or databases, isolated test-run orchestration, or anti-bypass-only testing."
+description: "Operate and verify OpenCode via local serve API and SSE daemon. Use for session lifecycle, messages, questions, SSE events, child-agent monitoring, runtime evidence. Trigger: serve API, curl, SSE daemon, session 操作, question 回复, 直连 OpenCode, session 验证, 子 agent 监控, 主动干预. Not for: ACP bridge development, hand-written grants/DBs, isolated test orchestration, anti-bypass-only testing."
 ---
 
 # Serve API Runtime Verification

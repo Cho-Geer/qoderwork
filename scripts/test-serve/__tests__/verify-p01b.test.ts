@@ -137,6 +137,19 @@ describe("verifyP01b", () => {
     expect(result.failedChecks).toContain("childEventPresent");
   });
 
+  test("runtime: child parent_id mismatch fails childParentMatchesRoot", () => {
+    const manifest = makeMinimalManifest();
+    seedRuntimeData(manifest);
+    // 用可写 DB 把 child 的 parent_id 改成错误值，验证负向 oracle
+    const sdkDb = new Database(manifest.paths.opencodeDbPath);
+    sdkDb.run("UPDATE session SET parent_id = ? WHERE id = ?", ["unexpected-parent", manifest.childSessionId!]);
+    sdkDb.close();
+    const result = verifyP01b(tempRoot, "runtime");
+    expect(result.ok).toBe(false);
+    expect(result.checks.childParentMatchesRoot).toBe(false);
+    expect(result.failedChecks).toEqual(["childParentMatchesRoot"]);
+  });
+
   test("cleanup: missing artifact fails", () => {
     const manifest = makeMinimalManifest({ status: "CLEANED" });
     seedCleanupData(manifest);

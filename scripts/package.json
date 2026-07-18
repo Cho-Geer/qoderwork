@@ -1,8 +1,0 @@
-{
-  "name": "qoderwork-scripts",
-  "private": true,
-  "devDependencies": {
-    "bun-types": "^1.3.14",
-    "typescript": "^7.0.2"
-  }
-}

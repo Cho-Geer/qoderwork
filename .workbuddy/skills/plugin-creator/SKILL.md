@@ -1,6 +1,6 @@
 ---
 name: plugin-creator
-description: "Create, customize, and install QoderWork or QoderWork CN expert plugins. Use for role-oriented plugin packages, plugin skills or commands, plugin manifests, connector planning, and existing-plugin customization. Trigger: create plugin, 创建插件, customize plugin, edit plugin, plugin skills, plugin commands, expert plugin. Not for: a standalone skill, raw MCP-server setup, or general QoderWork settings."
+description: "Create, customize, and install QoderWork or QoderWork CN expert plugins. Use for role-oriented plugin packages, plugin skills or commands, plugin manifests, connector planning, existing-plugin customization. Trigger: create plugin, 创建插件, customize plugin, edit plugin, plugin skills, plugin commands, expert plugin. Not for: standalone skill, raw MCP-server setup, general QoderWork settings."
 ---
 
 # QoderWork Plugin Creator

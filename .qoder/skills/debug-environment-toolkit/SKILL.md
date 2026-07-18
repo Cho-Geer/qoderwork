@@ -2,7 +2,7 @@
 name: debug-environment-toolkit
 version: 3.0.0
 agent_created: true
-description: "Debugging toolkit covering 4 areas: log-first debugging, VM error recovery, WSL bash-c escaping patterns, and beginner investigation coaching. Trigger: debug, investigate, troubleshoot, root cause, 调试, 根因分析, log-first debugging, startup failure, secure workspace error, WSL bash -c, cp-to-tmp, bun script pattern, 调查, 排查, 定位问题, 复现, 断点, 临时日志, 小白. Not for: feature implementation, code review, or non-debugging tasks."
+description: "Debugging toolkit covering 4 areas: log-first debugging, VM error recovery, WSL bash-c escaping patterns, and beginner investigation coaching. Trigger: debug, troubleshoot, root cause, 调试, 根因分析, log-first debugging, startup failure, secure workspace error, WSL bash -c, 排查, 定位问题, 复现, 临时日志, 小白. Not for: feature implementation, code review, or non-debugging tasks."
 ---
 
 # Debug & Environment Toolkit
@@ -71,6 +71,8 @@ print(f"[DEBUG-TMP] process_item: item={item!r}, len(queue)={len(queue)}", file=
 ```
 
 #### Step 3: Run and Observe `[VERIFICATION]`
+
+> **注意**：源码分析回答「代码意图是什么」，运行态验证回答「运行态实际是什么」。两者可能不一致——Step 1-2 的假设必须通过本步骤的实际运行来证实或证伪。
 
 Execute the code to reproduce the issue. Capture the log output. This is non-negotiable — you must actually run the code.
 

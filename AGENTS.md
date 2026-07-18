@@ -53,8 +53,9 @@ QoderWork 的所有操作最终指向 work-one。修改代码前，应先在 Qod
 
 | 文件 | 说明 |
 |------|------|
-| `scripts/package.json` | 测试脚本包依赖：`bun-types`、`typescript`；`private: true` |
-| `scripts/tsconfig.json` | TypeScript 配置：`strict: true`、`noEmit: true`、`allowImportingTsExtensions: true` |
+| `package.json` | 工作区统一开发依赖：`bun-types`、`typescript`；根目录唯一 package manifest |
+| `tsconfig.json` | 工作区统一 TypeScript 配置；覆盖 `scripts/**/*.ts` 与 `.agents/skills/*/scripts/**/*.ts`，排除客户端镜像与 `.opencode` |
+| `bun.lock` | 工作区唯一依赖锁定文件；由根目录 `bun install` 生成 |
 | `.gitignore` | 忽略运行时状态、本地依赖、secret、工具本地状态 |
 | `.vscode/extensions.json` | 推荐安装 `moonshot-ai.kimi-code` |
 | `documents/INDEX.md` | 文档总索引，列出全部专题文档与阅读建议 |
@@ -64,14 +65,15 @@ QoderWork 的所有操作最终指向 work-one。修改代码前，应先在 Qod
 
 ### 2.3 TypeScript 配置
 
-`scripts/tsconfig.json` 核心设置：
+`tsconfig.json` 核心设置：
 
 - `target: "ESNext"`
 - `module: "ESNext"`，`moduleResolution: "bundler"`
 - `strict: true`
 - `noEmit: true`（仅类型检查，不输出）
 - `allowImportingTsExtensions: true`（允许 `.ts` 扩展名导入）
-- 包含 `.`、`lib/**/*.ts`、`test-serve/**/*.ts`
+- 包含 `scripts/**/*.ts` 与 `.agents/skills/*/scripts/**/*.ts`
+- 排除 `.qoder/`、`.trae/`、`.workbuddy/` 镜像和 `.opencode/`，避免重复编译独立运行时
 
 
 ## 3. 目录结构与代码组织
@@ -205,11 +207,9 @@ qoderwork/
 ### 6.1 常用命令
 
 ```bash
-# 进入脚本目录
-cd /home/zhaoge/workspace/qoderwork/scripts
-
-# 类型检查（noEmit，strict 模式）
-bunx tsc --noEmit
+# 工作区统一类型检查（noEmit，strict 模式）
+cd /home/zhaoge/workspace/qoderwork
+bun run typecheck
 
 # 运行隔离 serve 测试运行单元（从 qoderwork 根目录运行组件测试，见下方说明）
 cd /home/zhaoge/workspace/qoderwork

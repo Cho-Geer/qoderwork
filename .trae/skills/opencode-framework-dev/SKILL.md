@@ -1,6 +1,6 @@
 ---
 name: opencode-framework-dev
-description: "OpenCode framework current-code audit and maintenance / OpenCode 框架现状审计与维护。Use for qoderwork/work-one claim verification, active hook debugging, dispatch_privilege/safe_framework_edit, question guidance recovery, session/DB drift, serve API E2E, CodeGraph enforcement, scripts-to-service refactors, and blueprint/plan sync. Trigger: work-one, guidance-bridge, anti-bypass, session_map, 框架审计. Not for: generic app bugs, broad skill cleanup, or unverified recap."
+description: "OpenCode framework audit and maintenance / OpenCode 框架现状审计与维护。Use for work-one claim verification, hook debugging, dispatch_privilege/safe_framework_edit, question guidance recovery, session/DB drift, serve API E2E, CodeGraph enforcement, blueprint/plan sync. Trigger: work-one, guidance-bridge, anti-bypass, session_map, 框架审计. Not for: generic app bugs, broad skill cleanup, or unverified recap."
 version: 2.1.0
 agent_created: true
 last_verified: 2026-07-07

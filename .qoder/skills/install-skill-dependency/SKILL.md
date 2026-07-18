@@ -1,7 +1,7 @@
 ---
 name: install-skill-dependency
 version: 1.0.0
-description: "Diagnose and fix missing dependencies, binaries, or runtime environments required by installed skills. Use when a skill fails due to missing resources, unresolved binaries, unavailable runtime dependencies, or when the user wants to proactively install all skill dependencies. 触发词：skill dependency、missing binary、runtime environment、install dependencies、依赖安装、运行时缺失。不适用于 skill 创建、skill 搜索、或 QoderWork 应用本身的安装。"
+description: "Diagnose and fix missing dependencies, binaries, or runtime environments required by installed skills. Use when a skill fails due to missing resources, unresolved binaries, unavailable runtimes, or to proactively install skill dependencies. 触发词：skill dependency、missing binary、runtime environment、install dependencies、依赖安装、运行时缺失。不适用于 skill 创建、skill 搜索、QoderWork 应用安装。"
 description_zh: 诊断并修复已安装技能所需的缺失依赖、二进制文件或运行时环境。当技能因缺少资源、二进制文件未找到、运行时依赖不可用而失败时，或当用户希望主动安装所有技能依赖项时使用。
 ---
 
