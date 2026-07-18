@@ -2,7 +2,7 @@
 
 **版本**: v1.3.1
 **日期**: 2026-07-17
-**状态**: 部分实施（P0-1A cleanup 集成已实现并有历史 PASS；TSI-04 与端口/create-failure 子集有组件证据。P0-1B 仅有手工写 `READY` 后取得的 runtime supporting evidence且缺 SSE event，不关闭合规 runtime smoke；TSI-05 run-mode、双 run 与 live LLM E2E 仍未执行。）
+**状态**: 部分实施（P0-1A cleanup 集成已实现并有历史 PASS；P0-1B runtime smoke 已通过全新 CLI-only run，`start` 自行返回 `READY` 并保存完整 manifest/双 DB/SSE/log/artifact/cleanup report；TSI-05 run-mode、双 run 与 live LLM E2E 仍未执行。）
 **优先级**: P0
 **唯一实施路径**: 本文定义的 `test-serve` 运行单元；不得继续扩展 `_b_pt_wm_00r2_live.ts` 的临时隔离实现。
 
@@ -16,25 +16,25 @@
 |---|---|---|---|
 | TSI-01 run context / manifest | 🟡 部分实施 | component | overlay 在 reservation 前校验；run manifest 原子写入、端口 reservation、失败 `BLOCKED` 与 create 阶段 release 成功/失败分支均有回归覆盖。非法跳转、重复 run ID 等完整验收仍未逐项执行。 |
 | TSI-02 worktree / 双 DB / overlay | 🟡 部分实施 | integration + component | P0-1A 已用真实临时 repo/detached worktree 覆盖 cleanup 与 evidence 保留；历史执行 1/1 + 规定回归 14/14 PASS。双 run 隔离仍缺失。 |
-| TSI-03 serve / SSE / cleanup | 🟡 部分实施 | runtime supporting | 第二个 P0-1B run 的 health、serve log、cleanup report 可读，但 `start` 超时后手工写入 `READY`，且缺 `events.jsonl`/SSE connected；必须用全新 CLI-only run 重跑，当前不得关闭 runtime smoke。 |
-| TSI-04 grant / session bootstrap | ✅ 组件闭环；runtime supporting | component + runtime observation | 组件覆盖不变；第二个 P0-1B run 的 isolated SDK DB 有 root/child，framework DB grant 为 `bound`。由于其前置 `READY` 不合规，该证据只升级为 supporting observation，不是完整 lifecycle PASS。 |
+| TSI-03 serve / SSE / cleanup | ✅ runtime smoke PASS | runtime-smoke | P0-1B run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d` 在 port 4001 通过 `create → start → bootstrap → execute(plan) → stop → cleanup`；`start` 自行返回 `READY`，serve/SSE log、`events.jsonl`、plan artifact 与 cleanup report 完整可读。 |
+| TSI-04 grant / session bootstrap | ✅ 组件闭环；runtime PASS | component + runtime-smoke | 组件覆盖不变；P0-1B run 的 isolated SDK DB 有 root/child（`ses_08f449b87ffeWTsmG54UdzwXQc`/`ses_08f449a8fffeyOypd63XAZ5JKn`），framework DB grant `bdb6420b-9a57-4e26-8a4e-f0a523932a6b` 为 `bound`。 |
 | TSI-05 runner 迁移 | 🟡 部分实施 | static/code | `execute --mode plan --runner ...` 已确保只写 `NOT-RUN` artifact；2026-07-17 审计：14 个 `_b_pt_wm_00r2_*` 文件均经 `readRunManifest`/`clientContextFromManifest`/`--run-dir` 读取 manifest，runner 与 `serve-api-client.ts` 中 `4097`/`sse-events`/主 work-one 路径零命中，静态迁移契约已满足；run-mode 真跑验收（`GET /session`、root/child、isolated DB 查询）仍 NOT-RUN。 |
 | TSI-06 专用 skill | 🟡 部分实施 | static/code | `.agents`、`.qoder`、`.workbuddy` 三份 skill/reference SHA-256 一致；尚无通过该 skill 的完整 run evidence。 |
-| TSI-07 文档 / 运行日志归档 | 🟡 部分实施 | docs + runtime supporting | 实施步骤、INDEX 与日志已同步；P0-1B artifact 已保留，但因手工状态修改与 SSE 缺口只能作为 supporting evidence，不能写成 runtime PASS。 |
-| TSI-08 旧 launcher 删除 | ⏳ 未到条件 | static/code | `_b_pt_wm_00r2_live.ts` 仍是 shim；TSI-03/04/05 未闭合，尚不得删除。 |
+| TSI-07 文档 / 运行日志归档 | ✅ 同步完成 | docs + runtime-smoke | 实施步骤、INDEX、skill reference 与日志已同步；P0-1B runtime smoke artifact 已保留并写入 closure log `logs/2026-07-17-P0-1B可靠运行闭环.md`。 |
+| TSI-08 旧 launcher 删除 | ⏳ 未到条件 | static/code | `_b_pt_wm_00r2_live.ts` 仍是 shim；TSI-03/04 已闭合，TSI-05 run-mode 真跑与 live E2E 仍未完成，尚不得删除。 |
 
 ### 已执行证据
 
-- 最近一次无沙箱阻断的 component 记录：`scripts/test-serve/__tests__` **37 pass / 0 fail**；其中 create/run-context/process 定向集为 **16 pass / 0 fail**。
-- 2026-07-17 本轮受管沙箱复跑：P0-1A **0/1**、规定回归 **8/14**、全量 **29/38**；失败集中在 port reserver/Bun.serve `listen`，裁决为 `[BLOCKED][ENV]`，不覆盖历史 PASS，也不判定代码回归。
+- 当前从 qoderwork 根目录运行的 component 记录：`bun test scripts/test-serve/__tests__` 为 **92 pass / 1 fail**；唯一失败为 `p01b-runtime.test.ts` 因未设置 `P0_1B_PORT` 而快速失败，属预期配置缺失。历史无沙箱阻断记录 `37 pass / 0 fail` 仍保留。
+- 2026-07-17 P0-1B runtime smoke PASS：run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d`，port 4001，manifest `status: "CLEANED"`，`bootstrapComplete: true`，root/child session、bound grant、isolated 双 DB、serve/SSE log、`events.jsonl`、plan artifact 与 cleanup report 完整。
 - 静态检查（当前版本）：Bun parse 与 `git diff --check` 通过。
-- P0-1B runtime supporting run：`2026-07-17T07-50-49-372Z-p0-1b-runtime-smoke-2-646d5ab1` 有 root/child、bound grant、isolated 双 DB、plan artifact 与 cleanup report；因手工写 `READY` 且缺 SSE event，合规 runtime smoke 为 **BLOCKED**。
+- P0-1B runtime smoke 历史 supporting run：`2026-07-17T07-50-49-372Z-p0-1b-runtime-smoke-2-646d5ab1` 有 root/child、bound grant、isolated 双 DB、plan artifact 与 cleanup report；因手工写 `READY` 且缺 SSE event，仅作为 supporting evidence 保留。
 - live LLM E2E：**NOT-RUN**。
-- 类型检查边界：完整 TypeScript 类型检查 **NOT-RUN**；不得写作 PASS。
+- 类型检查边界：`bunx tsc --noEmit` 已运行；报错均为 work-one 既有类型债务与历史脚本问题，`scripts/test-serve/*` 本次改动未引入新错误。
 
 ### 剩余 P0 顺序
 
-1. 为当前组件闭环版本执行一次完整 `create → start → bootstrap → execute(plan) → stop → cleanup` runtime smoke，并保存 run manifest、DB、SSE/log、PID 与 cleanup artifact。
+1. ~~为当前组件闭环版本执行一次完整 `create → start → bootstrap → execute(plan) → stop → cleanup` runtime smoke，并保存 run manifest、DB、SSE/log、PID 与 cleanup artifact。~~（2026-07-17 已完成：run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d`，port 4001，CLEANED。）
 2. 完成双 run 隔离、SSE 写入归属和真实 serve 接管 reservation 的确定性集成证据。
 3. ~~迁移所有 G2/G3/G4 runner 与 `serve-api-client.ts` 的固定端口/SSE/主路径假设~~（2026-07-17 审计：静态迁移已完成、遗留常量零命中）；剩余为迁移后 runner 在 run mode 下的真跑验收，随第 1 项 runtime smoke 一并执行。
 4. 仅在 reviewer 显式提供 H2 后，执行所需 live LLM E2E。

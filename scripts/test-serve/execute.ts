@@ -8,7 +8,9 @@ export async function executeRun(input: ExecuteInput): Promise<{
   artifactPath: string;
 }> {
   const manifest = readRunManifest(input.runDir);
-  const artifactPath = `${manifest.paths.artifactsDir}/execute-${Date.now()}.json`;
+  const artifactPath = input.mode === "plan"
+    ? `${manifest.paths.artifactsDir}/plan-result.json`
+    : `${manifest.paths.artifactsDir}/execute-${Date.now()}.json`;
   if (input.mode === "plan") {
     await Bun.write(
       artifactPath,

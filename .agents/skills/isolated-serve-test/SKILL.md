@@ -135,3 +135,33 @@ test-serve cleanup --run-dir <run-dir>
 - `cleanup`: `Verified-by: worktree removed, evidence bundle retained`
 
 如果写不出 `Verified-by:`，该步骤视为未实际完成。
+
+## 8. P0-1B runtime smoke 专用流程
+
+P0-1B 用于验证 `create → start → bootstrap → execute(plan) → verify-runtime → stop → cleanup → verify-cleanup` 全生命周期。弱模型**只能**使用单一 `p0-1b` 子命令执行，禁止分步调用 `create`/`start`/`bootstrap` 等手动拼接生命周期。
+
+**唯一命令**：
+
+```bash
+COMMIT=$(git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD)
+: "${P0_1B_PORT:?reviewer must provide P0_1B_PORT}"
+
+/home/zhaoge/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-1b \
+  --primary-worktree /home/zhaoge/workspace/opencode/work-one \
+  --commit "$COMMIT" --port "$P0_1B_PORT" --test-id P0-1B-RUNTIME-SMOKE
+```
+
+**PASS 唯一标准**（必须同时满足）：
+- 命令 exit 0
+- 最终 JSON `ok:true`
+- 最终 JSON `status:"PASS"`
+- `checks.runtime` 全部 true
+- `checks.cleanup` 全部 true
+
+**禁止**：
+- 失败时修改 manifest 或手写 `READY`
+- 同 run ID 重试 `p0-1b`
+- 用 `curl`/SQL/直接读日志推断 PASS
+- 缺少 `P0_1B_PORT` 时自行扫描、猜测或复用历史端口
+
+失败时只记录结构化 `firstFailure` 与 `evidencePaths`，等待 reviewer 提供新端口后创建全新 run。

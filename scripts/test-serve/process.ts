@@ -232,13 +232,19 @@ function resolveOpencodeBin(): string {
 
 async function waitForHealth(port: number, timeoutMs: number): Promise<boolean> {
   const startedAt = Date.now();
-  while (Date.now() - startedAt < timeoutMs) {
+  do {
+    const proc = Bun.spawn(["curl", "-fsS", "--max-time", "2", `http://127.0.0.1:${port}/session`], {
+      stdout: "ignore",
+      stderr: "ignore",
+    });
     try {
-      const response = await fetch(`http://127.0.0.1:${port}/session`);
-      if (response.ok) return true;
+      const exitCode = await proc.exited;
+      if (exitCode === 0) return true;
     } catch {}
-    await sleep(500);
-  }
+    if (Date.now() - startedAt < timeoutMs) {
+      await sleep(500);
+    }
+  } while (Date.now() - startedAt < timeoutMs);
   return false;
 }
 

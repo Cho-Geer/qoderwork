@@ -42,3 +42,22 @@ bootstrap 成功后必须满足：
 - `manifest.grantId` 非空
 - isolated framework DB 中 grant 状态为 `bound`
 - `manifest.bootstrapComplete === true`
+
+## P0-1B runtime smoke
+
+```bash
+test-serve p0-1b --primary-worktree <dir> --commit <sha> --port <port> --test-id <id>
+```
+
+PASS 条件（必须同时满足）：
+- 命令 exit 0
+- 最终 JSON `ok:true`
+- 最终 JSON `status:"PASS"`
+- `checks.runtime` 全部 true
+- `checks.cleanup` 全部 true
+
+失败处理：
+- 不得修改 manifest 或手写 `READY`
+- 不得同 run ID 重试
+- 不得用 `curl`/SQL/直接读日志推断结果
+- 等待 reviewer 提供新端口后创建全新 run

@@ -72,13 +72,13 @@ export interface P01bStageResultsFile {
 export type ExecuteResult = { outcome: "EXECUTED" | "NOT-RUN"; artifactPath: string };
 
 export interface P01bDependencies {
-  createRunContext: (input: CreateRunInput) => Promise<RunManifest>;
-  startRunProcesses: (runDir: string) => Promise<StartRunResult>;
-  bootstrapRun: (input: BootstrapInput) => Promise<RunManifest>;
-  executeRun: (input: ExecuteInput) => Promise<ExecuteResult>;
-  verifyP01b: (runDir: string, phase: P01bVerificationPhase) => P01bVerificationResult;
-  stopRunProcesses: (runDir: string) => Promise<RunManifest>;
-  cleanupRun: (runDir: string) => Promise<CleanupResult>;
+  createRunContext?: (input: CreateRunInput) => Promise<RunManifest>;
+  startRunProcesses?: (runDir: string) => Promise<StartRunResult>;
+  bootstrapRun?: (input: BootstrapInput) => Promise<RunManifest>;
+  executeRun?: (input: ExecuteInput) => Promise<ExecuteResult>;
+  verifyP01b?: (runDir: string, phase: P01bVerificationPhase) => P01bVerificationResult;
+  stopRunProcesses?: (runDir: string) => Promise<RunManifest>;
+  cleanupRun?: (runDir: string) => Promise<CleanupResult>;
   /** 默认使用 /proc 检查 PID 存活。测试可注入以控制 controlled stop 决策。 */
   validateRunProcess?: (pid: number | null, runId: string, commandFragment: string) => boolean;
   /** 默认原子写 ${artifactsDir}/p0-1b-stage-results.json。测试可注入以记录调用。 */
@@ -109,13 +109,20 @@ export type P01bResult =
 
 export async function runP01b(
   input: P01bInput,
-  dependencies: P01bDependencies,
+  dependencies: P01bDependencies = {},
 ): Promise<P01bResult> {
   validateInput(input);
 
   const nowFn = dependencies.now ?? (() => new Date().toISOString());
   const writeFn = dependencies.writeStageResults ?? defaultWriteStageResults;
   const validateFn = dependencies.validateRunProcess ?? defaultValidateRunProcess;
+  const createRunContextFn = dependencies.createRunContext ?? createRunContext;
+  const startRunProcessesFn = dependencies.startRunProcesses ?? startRunProcesses;
+  const bootstrapRunFn = dependencies.bootstrapRun ?? bootstrapRun;
+  const executeRunFn = dependencies.executeRun ?? executeRun;
+  const verifyP01bFn = dependencies.verifyP01b ?? verifyP01b;
+  const stopRunProcessesFn = dependencies.stopRunProcesses ?? stopRunProcesses;
+  const cleanupRunFn = dependencies.cleanupRun ?? cleanupRun;
 
   const results: P01bStageResultsFile = { runId: null, stages: [] };
   let artifactsDir: string | null = null;
@@ -134,7 +141,7 @@ export async function runP01b(
     try {
       switch (stage) {
         case "create": {
-          const manifest = await dependencies.createRunContext({
+          const manifest = await createRunContextFn({
             primaryWorktree: input.primaryWorktree,
             commit: input.commit,
             port: input.port,
@@ -148,7 +155,7 @@ export async function runP01b(
         }
         case "start": {
           if (!runDir) throw new Error("internal: start before create");
-          const result = await dependencies.startRunProcesses(runDir);
+          const result = await startRunProcessesFn(runDir);
           currentManifest = result.manifest;
           break;
         }
@@ -156,7 +163,7 @@ export async function runP01b(
           if (!runDir || !currentManifest) {
             throw new Error("internal: bootstrap without runDir/manifest");
           }
-          const manifest = await dependencies.bootstrapRun({
+          const manifest = await bootstrapRunFn({
             runDir,
             rootAgent: "build",
             childAgent: "general",
@@ -168,7 +175,7 @@ export async function runP01b(
         }
         case "execute-plan": {
           if (!runDir) throw new Error("internal: execute-plan before create");
-          const r = await dependencies.executeRun({
+          const r = await executeRunFn({
             runDir,
             mode: "plan",
             runnerArgs: [],
@@ -178,7 +185,7 @@ export async function runP01b(
         }
         case "verify-runtime": {
           if (!runDir) throw new Error("internal: verify-runtime before create");
-          const r = dependencies.verifyP01b(runDir, "runtime");
+          const r = verifyP01bFn(runDir, "runtime");
           if (!r.ok) {
             throw new Error(`runtime verifier failed: ${r.failedChecks.join(", ")}`);
           }
@@ -187,13 +194,13 @@ export async function runP01b(
         }
         case "stop": {
           if (!runDir) throw new Error("internal: stop before create");
-          const manifest = await dependencies.stopRunProcesses(runDir);
+          const manifest = await stopRunProcessesFn(runDir);
           currentManifest = manifest;
           break;
         }
         case "cleanup": {
           if (!runDir) throw new Error("internal: cleanup before create");
-          const r = await dependencies.cleanupRun(runDir);
+          const r = await cleanupRunFn(runDir);
           if (!r.ok) {
             throw new Error(`cleanup failed: ${r.stderr || "<no stderr>"}`);
           }
@@ -202,7 +209,7 @@ export async function runP01b(
         }
         case "verify-cleanup": {
           if (!runDir) throw new Error("internal: verify-cleanup before create");
-          const r = dependencies.verifyP01b(runDir, "cleanup");
+          const r = verifyP01bFn(runDir, "cleanup");
           if (!r.ok) {
             throw new Error(`cleanup verifier failed: ${r.failedChecks.join(", ")}`);
           }
@@ -250,7 +257,7 @@ export async function runP01b(
       && canVerifyRunProcesses(currentManifest, validateFn)
     ) {
       try {
-        await dependencies.stopRunProcesses(runDir);
+        await stopRunProcessesFn(runDir);
       } catch {
         // swallow; manifest not modified
       }

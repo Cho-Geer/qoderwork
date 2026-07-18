@@ -118,6 +118,15 @@ function autoWriteSessionMap(evt: any) {
     const db = new Database(FRAMEWORK_DB_PATH);
     db.run("PRAGMA busy_timeout=5000");
     try {
+      db.run(
+        `CREATE TABLE IF NOT EXISTS session_map (
+          session_id TEXT PRIMARY KEY,
+          agent TEXT,
+          created_at INTEGER,
+          updated_at INTEGER
+        )`
+      );
+
       // Check if entry already exists
       const existing = db.query("SELECT agent FROM session_map WHERE session_id = ?").get(sessionID) as any;
       if (existing) return;
@@ -175,9 +184,17 @@ function appendEvent(evt: any) {
 async function connectSSE(): Promise<void> {
   log(`Connecting to ${SERVE_URL}/event ...`);
 
-  const resp = await fetch(`${SERVE_URL}/event`, {
-    headers: { Accept: "text/event-stream" },
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5_000);
+  let resp: Response;
+  try {
+    resp = await fetch(`${SERVE_URL}/event`, {
+      headers: { Accept: "text/event-stream" },
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!resp.ok) {
     throw new Error(`SSE connect failed: ${resp.status}`);
