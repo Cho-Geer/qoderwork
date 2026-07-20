@@ -4,7 +4,7 @@
 **ID**: `ISO-SERVE-P0-2-PLANSET-20260719`
 **Status**: `IN-PROGRESS`
 **Only implementation path**: PHASE-03 DONE（audit-5 Accept；D1/D2 已关闭——D1 failure-boundary 反例、D2 非 ESRCH 信号 fail-closed，D3 `validate-plan.ts` PLAN_SET exit 0，D4 索引已同步；2026-07-19 第四轮复审签核）。
-**Evidence ceiling**: component suite 为 186 pass / 0 fail；PHASE-05 runtime test 1 pass / 0 fail / 50 expect()（端口 4001/4002，2026-07-20）；`validate-plan.ts` PLAN_SET exit 0；PHASE-06 CLI smoke `BLOCKED`（audit-1 INVALID：Freeze Gate 未完成 + 代码修改违反 plan Forbidden；PHASE-06 实施夹带循环依赖 TDZ 修复，需先完成 PHASE-06a）；PHASE-06a circular dependency fix `NOT-RUN`（待 Freeze Gate + human approval）。
+**Evidence ceiling**: component suite 为 199 pass / 0 fail（2026-07-20 复验：oracle/verify-p02/p02-orchestrator/verify-p01b 四文件）；PHASE-04 声明的"43 pass / 0 fail"无法复现——`isolated-serve.ts` 的 `p0-2` 路由与 `runTestServeCli` 导出在 PHASE-06a 回滚中丢失，`p02-cli.test.ts` 因 `SyntaxError: Export named 'runTestServeCli' not found` 失败；PHASE-05 声明的 runtime 证据（端口 4001/4002，2026-07-20）在 `/home/zhaoge/.local/state/qoderwork/test-runs/` 不存在；PHASE-06a `NOT-RUN`（Starting state 修正：原声明 TDZ 前提——`p0-2` 路由存在——本身不成立，因 PHASE-04 路由已丢失）。
 
 **Provenance level**（AGENTS.md §15 规则 P-01 声明）:
 - PHASE-01~04: `component-only`（历史 phase，pre-change receipt 不可重建，接受 component 级证据上限；审计报告必须标注「证据上限：component」，禁止签署 v2.1 正式 ACCEPT）
@@ -80,7 +80,9 @@
 | P0-2 CLI | VERIFIED | `isolated-serve.ts --help` | 不存在 `p0-2` command |
 | P0-2 PHASE-02 component | VERIFIED | `bun test verify-p02.test.ts` | 145 pass / 0 fail；coexistence/after-stop-a/cleanup 均 singleton 测试，含 P02-L-* 矩阵 |
 | root typecheck | VERIFIED | `bun run typecheck` | exit 1，范围外既有错误（PHASE-02 不阻断） |
-| P0-2 runtime evidence (PHASE-05) | VERIFIED | `P0_2_PORT_A=4001 P0_2_PORT_B=4002 bun test p02-runtime.test.ts` | 1 pass / 0 fail / 50 expect()；16 stages 全 ok；五组 checks 全真；A/B artifacts 可读 |
+| P0-2 runtime evidence (PHASE-05) | `NOT-FOUND`（2026-07-20 修正） | `find /home/zhaoge/.local/state/qoderwork/test-runs/ -name '*p0-2*'` | 无结果；原声明的 2026-07-20 runtime run 目录不存在；artifacts 丢失 |
+
+> **2026-07-20 基线修正说明**：交叉审核发现 PHASE-04 声明 DONE 与代码现状不符（`isolated-serve.ts` 无 `p0-2` 路由），PHASE-05 声明 runtime 证据在文件系统不存在。本次修正将 PHASE-04 回退为 `PARTIAL`、PHASE-05 回退为 `NOT-RUN`、PHASE-06a Starting state 修正为"p0-2 路由未实现"。PHASE-01~03 代码幸存且 component 测试可复验（199 pass / 0 fail）。
 
 ## 4. End-to-end traceability
 
@@ -116,8 +118,9 @@
 | 2 | PHASE-02 | `02-phase-verifier-lifecycle.md` | PHASE-01 | DONE |
 | 3 | PHASE-03 | `03-phase-sentinel-orchestrator.md` | PHASE-02 | DONE（audit-5 Accept；D1–D4 全部关闭） |
 | 4 | PHASE-04 | `04-phase-cli.md` | PHASE-03 | DONE（2026-07-19 实施：CLI 路由 + 6 P02-C 用例 + P0-1B 回归 37 pass，共 43 pass / 0 fail） |
-| 5 | PHASE-05 | `05-phase-runtime-test.md` | PHASE-04 | DONE（2026-07-20：runtime test 1 pass / 0 fail / 50 expect()；端口 4001/4002；审计 audit-2 ACCEPT，F-001 CLOSED） |
-| 5.5 | PHASE-06a | `06a-phase-circular-dependency-fix.md` | PHASE-05 | BLOCKED（2026-07-20：PHASE-06 audit-1 INVALID 发现 CLI 因循环依赖/TDZ 不可用；需 Freeze Gate + human approval 后实施 cleanupRun 提取） |
+| 4 | PHASE-04 | `04-phase-cli.md` | PHASE-03 | `PARTIAL`（2026-07-20 修正：原声明"43 pass / 0 fail"无法复现；`isolated-serve.ts` 的 `p0-2` 路由 + `runTestServeCli` 导出在 PHASE-06a 回滚中丢失；`p02-cli.test.ts` / `p02-cli-harness.ts` 文件存在但依赖的导出符号缺失；需重新实施 CLI 路由） |
+| 5 | PHASE-05 | `05-phase-runtime-test.md` | PHASE-04 | `NOT-RUN`（2026-07-20 修正：原声明 runtime 证据丢失；`p02-runtime.test.ts` 文件存在但 runtime artifacts 不在持久 state root；需 Freeze Gate + reviewer 端口重跑） |
+| 5.5 | PHASE-06a | `06a-phase-circular-dependency-fix.md` | PHASE-05 | `NOT-RUN`（2026-07-20 修正：Starting state 错误——原声明"CLI 因循环依赖/TDZ 不可用"的前提是 `p0-2` 路由存在，但 PHASE-04 路由已丢失；实际循环依赖链 `p02-orchestrator → isolated-serve → p01b-orchestrator → isolated-serve` 存在但未激活；需 Freeze Gate + human approval 后实施 cleanupRun 提取） |
 | 6 | PHASE-06 | `06-phase-cli-smoke.md` | PHASE-06a | BLOCKED（audit-1 INVALID：Freeze Gate 未完成 + 代码修改违反 plan Forbidden；修复后重新走 Freeze Gate） |
 | 7 | PHASE-07 | `07-phase-regression.md` | PHASE-06 | BLOCKED |
 | 8 | PHASE-08 | `08-phase-document-closure.md` | PHASE-07 | BLOCKED |

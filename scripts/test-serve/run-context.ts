@@ -131,6 +131,7 @@ export async function createRunContext(input: CreateRunInput, hooks?: CreateRunH
     primaryWorktree,
     commit: input.commit,
     port: input.port,
+    rootDir: paths.rootDir,
     paths,
     env: buildRunEnvironment(paths, input.port),
     sourceOverlay: overlay,
