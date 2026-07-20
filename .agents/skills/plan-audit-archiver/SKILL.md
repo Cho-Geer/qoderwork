@@ -222,8 +222,14 @@ the receipt is immutable after hashing and is registered as `EV-NNN`.
 The receipt must bind `audit_id`, `generation`, `requirement_id`, `polarity`,
 `oracle_id`, `fixture_id`, full command/cwd, verdict-state SHA-256, exit code,
 observed result, evidence level, artifact hashes, and completion time. Do not
-hand-author a receipt to simulate execution. Use the test execution skill or a
-trusted runner and preserve its raw output.
+hand-author a receipt to simulate execution. Use the receipt generator
+(`scripts/generate-evidence-receipt.ts`) to execute the command, capture real
+stdout/stderr/exitCode, and produce an immutable receipt + artifact with
+correct sha256. The generator derives `observed` from `exit_code` (0→PASS,
+non-zero→FAIL) and does not accept manual `PASS`/`FAIL` override, preventing
+simulated execution. For adversarial/mutation/property/fuzz/live-path
+execution, use `test-specification-execution` as the trusted runner and
+preserve its raw output.
 
 The requirement cannot be `PASS` when:
 
