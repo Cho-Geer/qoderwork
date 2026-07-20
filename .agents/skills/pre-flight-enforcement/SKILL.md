@@ -1,7 +1,6 @@
 ---
 name: pre-flight-enforcement
-description: "强制在执行 skill 引导任务前输出 pre-flight checklist，声明适用 skill 和步骤顺序；执行后输出 audit 报告。v2.2 新增步骤类型标注（ANALYSIS/VERIFICATION/OBSERVATION）、ANALYSIS→VERIFICATION 间隙自检、Audit 合理化模式检测。Enforce pre-flight checklist before skill-guided tasks, output audit report after. Trigger: pre-flight, 执行前检查, skill 遵循, audit, 合规审计, checklist. Not for: 纯对话, 简单查询, 无需特定 skill 的通用任务."
-version: 2.2.0
+description: "Enforce pre-flight checklist before skill-guided tasks, output audit report after / 强制在执行 skill 引导任务前输出 pre-flight checklist，声明适用 skill 和步骤顺序；执行后输出 audit 报告。v2.3 新增文本产物写入完整性闸门。Trigger: pre-flight, 执行前检查, skill 遵循, audit, 合规审计, checklist. Not for: 纯对话, 简单查询, 无需特定 skill 的通用任务."
 ---
 
 # Pre-Flight Enforcement
@@ -40,6 +39,7 @@ Phase 0: Pre-Flight Check
   → 区分约束 skill + 执行 skill → 声明步骤顺序 → 承诺
 
 Phase 1: 执行
+  → 加载执行 skill（v2.4 新增）：若执行 skill 非 pre-flight-enforcement，先调用 Skill 工具加载其完整指令
   → 按执行 skill 的流程操作 → 约束 skill 确保不跳步
 
 Phase 2: Post-Execution Audit
@@ -133,18 +133,31 @@ Phase 2: Post-Execution Audit
 
 **执行计划**:
 - [ ] Skill 选择校验: 确认选定的执行 skill 是最佳匹配
+- [ ] [SKILL-LOAD] 加载执行 skill: 若执行 skill 非 pre-flight-enforcement，必须调用 Skill 工具加载其完整指令。Skill 选择校验中的"选择"不等于"加载"；只列名不加载视为未准备好执行，必须先补加载再继续
 - [ ] [ANALYSIS] 步骤 1: [分析/阅读/理解类操作]
 - [ ] [VERIFICATION] 步骤 2: [验证/触发/测试类操作 — 必须产生运行态证据]
 - [ ] [OBSERVATION] 步骤 3: [观察/检查/确认类操作]
+- [ ] [VERIFICATION] 文本产物写入完整性检查（如适用）：每个新建/覆盖的非空文本文件写后依次执行 `test -s <path>`、`wc -l <path>` 和内容断言；前一文件通过前不得写入下一文件。
 ...
 
 **步骤类型规则**:
+- `[SKILL-LOAD]`: 调用 Skill 工具加载外部执行 skill 的完整指令。**仅在执行 skill 非 pre-flight-enforcement 时使用；加载成功后方可继续后续步骤。**
 - `[ANALYSIS]`: 源码分析、文档阅读、代码理解。**仅产生理解，不产生运行态证据。**
 - `[VERIFICATION]`: 真实触发、API 调用、命令执行。**必须产生可引用的运行态证据。**
 - `[OBSERVATION]`: 检查日志、查看结果、确认输出。**基于 VERIFICATION 的证据做判断。**
 
 **承诺**: 严格按上述顺序执行，不跳步、不调序。如需偏差，在 audit 中说明原因。
 ```
+
+### 文本产物写入完整性闸门（v2.3 新增）
+
+当执行计划包含新建或覆盖非空文本文件时，必须把该文件的写入和验证声明为成对的 `[VERIFICATION]` 步骤，并遵守以下低自由度流程：
+
+1. 一次只写一个目标文件；在完成该文件验证前，不得发起另一个文本写入。
+2. 写入后立即依次执行 `test -s <path>`、`wc -l <path>`，以及一个内容断言（`head -n 1 <path>` 或 `rg -n '<required heading>' <path>`）。
+3. 每个文件的验证证据必须写为：`Verified-by: test -s <path> && wc -l <path> && <content assertion> → <output>`。
+4. 工具回执“成功”不构成写入完成证据。任一检查失败时，停止后续文本写入，标记 `[BLOCKED]`，恢复当前文件后重新执行全部检查。
+5. 不适用于纯读取、删除、移动、二进制产物或允许为空的显式占位文件；其余不确定情形一律按适用处理。
 
 ---
 
@@ -153,10 +166,16 @@ Phase 2: Post-Execution Audit
 1. **顺序锁定**: pre-flight 输出后，必须按声明的步骤顺序执行，不得调换
 2. **不跳步**: 每个声明的步骤都必须执行，即使看似冗余
 3. **偏差记录**: 如果执行中遇到无法完成的步骤，记录原因并继续后续步骤，在 audit 中说明
+3a. **阻断升级**（v2.5 新增）:
+   - **触发**: 失败步骤需 checklist 声明范围外的修改（代码、环境、配置）才能继续。
+   - **禁止**: 自行开辟范围外修复工作流。
+   - **必须**: ① 停止执行 → ② 报告（失败项 / 原因 / 涉及文件）→ ③ 等用户指示 → ④ 批准后将修复纳入 checklist 再继续。
+   - **违反后果**: 等同跳步，audit 标 `✗`，总体评估不得为「完全遵循」。
 4. **多 skill 场景**: 如果任务涉及多个 skill，在 pre-flight 中全部列出，按逻辑顺序整合步骤
 5. **Skill 角色明确**（v2.0 新增）: 约束 skill 和执行 skill 必须在 pre-flight 中明确区分
 6. **Skill 选择校验**（v2.0 新增）: 执行计划第一步必须是"Skill 选择校验"
-7. **ANALYSIS→VERIFICATION 间隙自检**（v2.2 新增）: 完成所有 `[ANALYSIS]` 步骤后、开始 `[VERIFICATION]` 步骤前，必须回答以下三个问题并输出：
+7. **Skill 工具调用**（v2.4 新增）: pre-flight checklist 输出后、开始执行任何 `[ANALYSIS]` 或 `[VERIFICATION]` 步骤前，若执行 skill 非 pre-flight-enforcement，必须先调用 `Skill` 工具加载该 skill 的完整指令。Phase -1 中的"选择"与 Phase 0 中的"列出"均不构成"加载"；不加载 = 未准备好执行，必须先补加载再继续
+8. **ANALYSIS→VERIFICATION 间隙自检**（v2.2 新增）: 完成所有 `[ANALYSIS]` 步骤后、开始 `[VERIFICATION]` 步骤前，必须回答以下三个问题并输出：
    ```
    ## ANALYSIS→VERIFICATION 间隙自检
 
@@ -173,13 +192,14 @@ Phase 2: Post-Execution Audit
    **判定**: [必须验证 / 可跳过（需在 audit 说明理由）]
    ```
    **如果问题 2 的回答是「无」且问题 3 的风险不可接受，则不得跳过 VERIFICATION 步骤。**
-8. **证据行要求**（v2.2 新增）: 每个 `[VERIFICATION]` 步骤完成后，必须输出一行 `Verified-by:` 证据行，写明具体的运行态证据来源（session ID、日志行号、curl 返回、命令输出）。如果写不出证据行，说明该步骤未实际执行，必须补做。
-9. **合理化检测 / 模式检测**（v2.2 新增）: 在执行过程中和 audit 输出前，扫描自己的推理和输出中是否包含以下模式：
+9. **证据行要求**（v2.2 新增）: 每个 `[VERIFICATION]` 步骤完成后，必须输出一行 `Verified-by:` 证据行，写明具体的运行态证据来源（session ID、日志行号、curl 返回、命令输出）。如果写不出证据行，说明该步骤未实际执行，必须补做。
+10. **合理化检测 / 模式检测**（v2.2 新增）: 在执行过程中和 audit 输出前，扫描自己的推理和输出中是否包含以下模式：
    - 「无需实际触发」/「无需验证」/「源码已足够」/「显而易见」/「可以推断」/「无需实际执行」
    - 「代码已经清楚表明」/「从代码可以看出」
    - 任何为跳过已声明步骤提供理由的表述
    
    **检测到上述模式时，必须暂停当前流程，重新检查是否跳过了 `[VERIFICATION]` 步骤。如果确认跳过，必须先补做再继续。**
+11. **文本产物写入完整性**（v2.3 新增）: 执行中只要新建或覆盖非空文本文件，必须触发"文本产物写入完整性闸门"；不得并行发起文本写入，也不得以工具回执替代 `test -s`、`wc -l` 与内容断言。
 
 ---
 
@@ -197,9 +217,12 @@ Phase 2: Post-Execution Audit
 
 **遵循情况**:
 - [x/✗] Skill 选择校验: [校验结果简述]
+- [x/✗] [SKILL-LOAD] 加载执行 skill: [是否已调用 Skill 工具加载外部执行 skill，加载结果简述]
 - [x/✗] [ANALYSIS] 步骤 1: [实际执行结果简述]
 - [x/✗] [VERIFICATION] 步骤 2: [实际执行结果简述]
   - 证据行: `Verified-by: [session ID / 日志行 / curl 返回 / 命令输出]`
+- [x/✗] [VERIFICATION] 文本产物写入完整性检查（如适用）: [写入目标、非空/行数/内容断言结果]
+  - 证据行: `Verified-by: test -s <path> && wc -l <path> && <content assertion> → <output>`
 - [x/✗] [OBSERVATION] 步骤 3: [实际执行结果简述]
 ...
 
@@ -332,6 +355,7 @@ Phase 2: Post-Execution Audit
 
 **执行计划**:
 - [x] Skill 选择校验: 三 skill 组合使用
+- [x] [SKILL-LOAD] 加载执行 skill: 已调用 Skill 工具加载 opencode-blueprint-audit 和 blueprint-creation 的完整指令
 - [ ] [ANALYSIS] 步骤 1: 提取 blueprint 中的可验证声明
 - [ ] [VERIFICATION] 步骤 2: 用 WSL 命令逐项核实声明
 - [ ] [ANALYSIS] 步骤 3: 对比 blueprint-creation 标准模板
@@ -378,6 +402,7 @@ Phase 2: Post-Execution Audit
 
 **遵循情况**:
 - [x] Skill 选择校验: 三 skill 组合为最优方案
+- [x] [SKILL-LOAD] 加载执行 skill: 已调用 Skill 工具加载 opencode-blueprint-audit 和 blueprint-creation 的完整指令
 - [x] [ANALYSIS] 步骤 1: 提取了 12 个可验证声明
 - [x] [VERIFICATION] 步骤 2: 逐项核实发现 4 个差异
   - 证据行: `Verified-by: wc -l src/file.ts → 125 行（blueprint 声明 150 行）`
@@ -429,17 +454,18 @@ Phase 2: Post-Execution Audit
 
 ---
 
-## v1.0 → v2.0 → v2.2 变更记录
+## v1.0 → v2.0 → v2.2 → v2.3 → v2.4 → v2.5 变更记录
 
-| 变更项 | v1.0 | v2.0 | v2.2 |
-|--------|------|------|------|
-| Skill 发现与选择 | 无（假设 skill 已选好） | 新增 Phase -1 | 同 v2.0 |
-| Skill 角色区分 | 无（单一"适用 skill"） | 区分约束 skill + 执行 skill + 标准来源 skill | 同 v2.0 |
-| Skill 不匹配处理 | 无 | 新增用户意图校验流程 | 同 v2.0 |
-| Pre-Flight 模板 | "适用 skill: [名称]" | "约束 skill + 执行 skill" + "Skill 选择校验"检查项 | **新增步骤类型标注 `[ANALYSIS]/[VERIFICATION]/[OBSERVATION]` + 步骤类型规则说明** |
-| Audit 模板 | 仅遵循情况 | 新增 Skill 选择评估 + 改进建议 | **新增证据行检查 + ANALYSIS→VERIFICATION 间隙自检 + 合理化模式检测** |
-| 执行约束 | 4 条 | 6 条（新增 Skill 角色明确 + Skill 选择校验） | **9 条（新增 ANALYSIS→VERIFICATION 间隙自检、证据行要求、合理化模式检测）** |
-| 示例 | 1 个（单一 skill） | 3 个（单一、组合、不匹配） | **示例 1/2 升级为 v2.2 模板，新增间隙自检展示** |
+| 变更项 | v1.0 | v2.0 | v2.2 | v2.3 | v2.4 | v2.5 |
+|--------|------|------|------|------|------|------|
+| Skill 发现与选择 | 无（假设 skill 已选好） | 新增 Phase -1 | 同 v2.0 | 同 v2.2 | 同 v2.3 | 同 v2.4 |
+| Skill 角色区分 | 无（单一“适用 skill”） | 区分约束 skill + 执行 skill + 标准来源 skill | 同 v2.0 | 同 v2.2 | 同 v2.3 | 同 v2.4 |
+| Skill 不匹配处理 | 无 | 新增用户意图校验流程 | 同 v2.0 | 同 v2.2 | 同 v2.3 | 同 v2.4 |
+| Pre-Flight 模板 | “适用 skill: [名称]” | “约束 skill + 执行 skill” + “Skill 选择校验”检查项 | **新增步骤类型标注 `[ANALYSIS]/[VERIFICATION]/[OBSERVATION]` + 步骤类型规则说明** | **新增文本产物写入完整性检查** | **新增 `[SKILL-LOAD]` 步骤 + 步骤类型规则** | 同 v2.4 |
+| Audit 模板 | 仅遵循情况 | 新增 Skill 选择评估 + 改进建议 | **新增证据行检查 + ANALYSIS→VERIFICATION 间隙自检 + 合理化模式检测** | **新增写后非空、行数与内容断言证据行** | **新增 `[SKILL-LOAD]` 遵循情况检查** | 同 v2.4 |
+| 执行约束 | 4 条 | 6 条（新增 Skill 角色明确 + Skill 选择校验） | **9 条（新增 ANALYSIS→VERIFICATION 间隙自检、证据行要求、合理化模式检测）** | **10 条（新增串行写入和写后完整性闸门）** | **11 条（新增 Skill 工具调用，原 7-10 顺延为 8-11）** | **12 条（新增 #3a 阻断升级：禁止自行开辟范围外修复工作流）** |
+| 四阶段流程 | 4 阶段 | 同 v1.0 | 同 v2.0 | 同 v2.2 | **Phase 1 新增加载执行 skill 子步骤** | 同 v2.4 |
+| 示例 | 1 个（单一 skill） | 3 个（单一、组合、不匹配） | **示例 1/2 升级为 v2.2 模板，新增间隙自检展示** | 模板自动适用于文本写入任务 | **场景 2 新增 `[SKILL-LOAD]` 步骤** | 同 v2.4 |
 
 ---
 

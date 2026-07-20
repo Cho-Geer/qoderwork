@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "REPLACE_AUDIT_ID",
+  "generation": 1,
+  "id": "EV-001",
+  "command": "cd /REPLACE/CWD && REPLACE_COMMAND",
+  "observed": "PASS",
+  "requirement_id": "REQ-001",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-GOOD-001",
+  "evidence_level": "component",
+  "repository_state_sha256": "REPLACE_VERDICT_STATE_SHA256",
+  "exit_code": 0,
+  "cwd": "/REPLACE/CWD",
+  "artifacts": [
+    {
+      "path": "audits/REPLACE_PLAN_NAME/evidence/req-001-positive-output.txt",
+      "sha256": "REPLACE_64_HEX_SHA256"
+    }
+  ],
+  "completed_at": "REPLACE_ISO8601_TIMESTAMP"
+}

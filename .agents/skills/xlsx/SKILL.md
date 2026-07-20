@@ -1,8 +1,7 @@
 ---
 name: xlsx
 version: 1.0.1
-description: "Open, read, edit, fix, create, or convert spreadsheet files (.xlsx, .xlsm, .csv, .tsv). Covers formulas, formatting, charting, data cleaning, and tabular format conversion. Triggers: spreadsheet, .xlsx, .csv, Excel, 电子表格, 表格, 添加列, 公式, 图表, 数据清洗. 不适用于 Word 文档（使用 docx skill）、HTML 报告、standalone Python script、或 Google Sheets API integration。"
-description_zh: "当电子表格文件是主要输入或输出时使用此技能。包括：打开、读取、编辑或修复现有的 .xlsx、.xlsm、.csv 或 .tsv 文件（如添加列、计算公式、格式化、图表、清洗数据）；从零或其他数据源创建新电子表格；在表格文件格式之间转换。当用户提及电子表格文件名或路径时触发——即使是随意提及（如\"下载文件夹里的 xlsx\"）——并希望对其进行操作或生成电子表格。也适用于将混乱的表格数据文件（格式错误的行、错位的表头、垃圾数据）清理重组为规范的电子表格。交付物必须是电子表格文件。当主要交付物是 Word 文档、HTML 报告、独立 Python 脚本、数据库管道或 Google Sheets API 集成时，即使涉及表格数据也不要触发。"
+description: "Open, read, edit, fix, create, or convert spreadsheet files (.xlsx, .xlsm, .csv, .tsv) / 打开、读取、编辑、修复、创建或转换电子表格文件，覆盖公式、格式、图表、数据清洗与表格格式转换。Triggers: spreadsheet, .xlsx, .csv, Excel, 电子表格, 表格, 添加列, 公式, 图表, 数据清洗. 不适用于 Word 文档（使用 docx skill）、HTML 报告、standalone Python script、或 Google Sheets API integration。"
 license: Proprietary. LICENSE.txt has complete terms
 ---
 

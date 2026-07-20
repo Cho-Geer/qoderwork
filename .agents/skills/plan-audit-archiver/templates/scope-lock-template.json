@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "lock_id": "REPLACE_LOCK_ID",
+  "created_at": "REPLACE_ISO8601_TIMESTAMP",
+  "plan_sources": [
+    {
+      "path": "plans/REPLACE_PLAN_PATH.md",
+      "sha256": "REPLACE_64_HEX_SHA256"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "REPLACE_ISO8601_TIMESTAMP",
+    "in_scope": [
+      "REQ-001"
+    ],
+    "out_of_scope": [
+      "REPLACE_EXPLICIT_NON_GOAL"
+    ],
+    "assumptions": [
+      {
+        "statement": "REPLACE_ASSUMPTION",
+        "disproof": "REPLACE_CHEAPEST_DISPROOF"
+      }
+    ],
+    "exit_criteria": [
+      "REPLACE_DETERMINISTIC_EXIT_CRITERION"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-001",
+      "kind": "BEHAVIORAL",
+      "source": "plans/REPLACE_PLAN_PATH.md#REPLACE_EXACT_ANCHOR",
+      "behavior": "REPLACE_ONE_OBSERVABLE_BEHAVIOR",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "REPLACE_IMPLEMENTATION_INDEPENDENT_ORACLE"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "source": "plans/REPLACE_PLAN_PATH.md#REPLACE_EXACT_ANCHOR",
+      "kind": "BEHAVIORAL",
+      "behavior": "REPLACE_ONE_OBSERVABLE_BEHAVIOR",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "REPLACE_IMPLEMENTATION_INDEPENDENT_ORACLE"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "REPLACE_EXACT_ALLOWED_PATH"
+    ],
+    "forbidden_paths": [
+      "REPLACE_EXACT_FORBIDDEN_PATH"
+    ]
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "REPLACE_HUMAN_REVIEWER",
+    "approved_at": "REPLACE_ISO8601_TIMESTAMP",
+    "evidence": "REPLACE_APPROVAL_EVIDENCE"
+  }
+}

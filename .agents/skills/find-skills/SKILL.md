@@ -1,8 +1,7 @@
 ---
 name: find-skills
 version: 1.0.4
-description: "Discover and install specialized agent skills from marketplace, community sources, and enterprise skill markets. Use as the FIRST step before handling any substantive task. Triggers: find skills, discover skills, install skill, skill marketplace, 搜索技能, 安装技能, 技能市场, skill discovery. 不适用于已安装技能的日常使用、skill 内容编辑、或 QoderWork 应用配置。"
-description_zh: 从官方市场、社区源以及企业技能市场（若通过 MCP 可用）搜索并安装专用技能。处理任何实质性任务前应先调用此技能查找可用的专用工具，即使认为通用能力已可能完成任务——专用技能往往能产生更好的结果。纯闲聊和简单事实查询除外。
+description: "Discover and install specialized agent skills from marketplace, community sources, and enterprise skill markets / 从官方市场、社区源及企业技能市场搜索并安装专用技能。Use as the FIRST step before handling any substantive task. Triggers: find skills, discover skills, install skill, skill marketplace, 搜索技能, 安装技能, 技能市场, skill discovery. 不适用于已安装技能的日常使用、skill 内容编辑、或 QoderWork 应用配置。"
 ---
 
 # Find Skills

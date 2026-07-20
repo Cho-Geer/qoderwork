@@ -26,7 +26,7 @@ QoderWork 是一个本地 AI Agent 协作工作区，位于 WSL Ubuntu-24.04 的
 
 QoderWork 的所有操作最终指向 work-one。修改代码前，应先在 QoderWork 完成规划、验证与日志记录，再到 work-one 落地代码变更。
 
-### 1.3 实际运行态（2026-07-18 校准）
+### 1.3 实际运行态（以 work-one 实测为准）
 
 - **运行语言**：中文为文档与协作主语言；代码标识符、命令、API 名称、路径保留英文原样。
 - **运行时**：Bun 1.3.14（`/home/zhaoge/.bun/bin/bun`）。
@@ -92,8 +92,9 @@ qoderwork/
 ├── e2e/                      # E2E 测试规格书
 ├── e2e-evidence/             # E2E 执行证据（按 L1-L7 分层）
 ├── handoff/                  # 跨 Agent 任务交接
+├── audits/                   # plans 实施进度审计归档（按 plan 名分子目录）
 ├── issues/                   # Bug 报告与跟踪
-├── logs/                     # 每次协作的详细变更日志（强制）
+├── logs/                     # 每次协作的详细变更日志（强制），含 INDEX.md 与 archive/ 归档
 ├── plans/                    # 分阶段实施计划
 ├── scripts/                  # TypeScript 脚本与测试基础设施
 │   ├── lib/                  # 通用库（serve-api-client、sse-watcher 等）
@@ -117,11 +118,28 @@ qoderwork/
 - **`scripts/lib/`**：通用客户端库。`serve-api-client.ts` 封装 serve API 身份保留、question 轮询、idle 等待等协议细节；`sse-watcher.ts` 处理 SSE 事件。
 - **`documents/`**：框架认知地图、子系统报告、DB 设计、SSE 事件参考、工具权限矩阵等深度文档。
 - **`e2e/`**：E2E 测试规格书，按 ID 命名并记录前置条件、步骤、预期与证据边界。
-- **`logs/`**：变更日志，每次代码修改后必须新增 `YYYY-MM-DD-<主题>.md`。
+- **`logs/`**：变更日志，每次代码修改后必须新增 `YYYY-MM-DD-<主题>.md`。`logs/INDEX.md` 由 logs-governance skill 维护，旧日志按月归档到 `logs/archive/YYYY-MM/`。
+- **`audits/`**：plans 实施进度审计归档，按 plan 名分子目录（`audits/<plan-name>/<YYYY-MM-DD>-audit.md` + `LATEST.md`），由 plan-audit-archiver skill 维护。与 `temporary-audits/`（一次性临时调查）区分。
 - **`blueprints/`**：框架级变更的完整实施方案，包含问题背景、根因、方案对比、实施清单、验证计划与风险。
 
 
 ## 4. 开发约定与输出规范
+
+### 4.0 阻断响应（元规则，优先于本节所有其他规则）
+
+执行任何任务时，遇到阻断（代码报错、环境异常、前置条件不满足、流程步骤无法完成），**禁止自行决定绕过、跳过或"先做后补"**。唯一合法响应：
+
+1. **停下来**：立即停止当前执行流。
+2. **报告**：向用户输出阻断事实（什么阻断了、在哪一步、错误信息）。
+3. **等待**：等用户给出指示后再继续。
+
+禁止的行为：
+- 自行判定"这个阻断不属于当前流程"然后绕过
+- 自行判定"修复是必要的"然后未经审批动手
+- 以"技术合理性"替代"流程授权"
+- 先执行、后补流程步骤
+
+违反本条等同于任务失败，不接受事后补救作为完成。
 
 ### 4.1 默认输出结构（强制）
 
@@ -236,21 +254,22 @@ bun run clean-sessions.ts
 
 ### 6.2 测试运行说明
 
-- `bun test scripts/test-serve/__tests__` 在 qoderwork 根目录下运行，会执行 component + integration + 需显式端口的 runtime 混合测试集。2026-07-18 实测：显式枚举 11 个非 runtime 文件为 92/92 PASS；不设 port 运行整个目录为 92/93 PASS，唯一失败是 `p01b-runtime.test.ts` 的 `P0_1B_PORT` 显式前置拒绝；使用 reviewer 提供的 port 4001 单独复跑 runtime 为 1/1 PASS。从 `scripts/` 目录运行同一命令会因 `p01b-orchestrator.test.ts` 中相对模块路径不匹配而出现额外失败。
-- `tsc --noEmit` 要求 `strict: true`，类型债务会阻断合并。
+- `bun test scripts/test-serve/__tests__` 必须在 qoderwork 根目录下运行，执行 component + integration + 需显式端口的 runtime 混合测试集。runtime 测试必须显式提供 `P0_1B_PORT`，否则被前置拒绝。从 `scripts/` 目录运行同一命令会因 `p01b-orchestrator.test.ts` 相对模块路径不匹配而失败，禁止从该目录运行。
+- `tsc --noEmit` 要求 `strict: true`，类型债务必须阻断合并。
 - 完整 runtime smoke 和 live LLM E2E 必须通过 `test-serve` 运行单元执行，禁止直接启动裸 `opencode serve` 或固定端口 `4097`。
+- 历史测试基线快照见 `logs/` 对应日期日志（如 `logs/2026-07-18-test-baseline.md`），不在本文件记录具体 PASS 数字。
 
 
 ## 7. 代码风格指南
 
 ### 7.1 一般原则
 
-- 优先保证 `correctness`、`readability`、`maintainability`、`traceability`。
+- 必须优先保证 `correctness`、`readability`、`maintainability`、`traceability`。
 - 注释按需添加，禁止机械逐行注释。
-- JSON 文档可以逐字段注释。
-- 修改代码后同步更新受影响文档，不得无差别重写全部文档。
-- 不要修改无关文件、不要进行机会主义重构。
-- 新代码应与周围代码保持风格一致。
+- JSON 文档允许逐字段注释。
+- 修改代码后必须同步更新受影响文档，不得无差别重写全部文档。
+- 禁止修改无关文件、禁止机会主义重构。
+- 新代码必须与周围代码保持风格一致。
 
 ### 7.2 注释优先级
 
@@ -261,18 +280,18 @@ bun run clean-sessions.ts
 
 ### 7.3 TypeScript 规范
 
-- 使用 `node:` 前缀导入 Node.js 内置模块。
-- 优先使用 `ESNext` 模块与 `bundler` 模块解析。
+- 必须使用 `node:` 前缀导入 Node.js 内置模块。
+- 必须使用 `ESNext` 模块与 `bundler` 模块解析。
 - 文件扩展名：脚本使用 `.ts`；可执行 CLI 使用 `#!/usr/bin/env bun` shebang。
-- 类型定义优先放在 `types.ts` 中；跨模块共享的类型导出供 runner 使用。
-- 错误处理优先 `fail-closed`（默认失败），禁止静默 `catch {}`。
+- 类型定义必须优先放在 `types.ts` 中；跨模块共享的类型必须导出供 runner 使用。
+- 错误处理必须 `fail-closed`（默认失败），禁止静默 `catch {}`。
 
 ### 7.4 命名与文件组织
 
-- 脚本文件名：有意义的小写短横线命名，如 `clean-sessions.ts`、`live-llm-dispatch-e2e.ts`。
-- 测试文件：`*.test.ts`，与实现文件放在同一目录的 `__tests__/` 下。
-- 常量与配置提取到 `types.ts` 或 `run-context.ts` 等集中位置。
-- 避免在 runner 中硬编码端口、路径、SSE 文件位置；应通过 `readRunManifest` 从 manifest 读取。
+- 脚本文件名：必须使用有意义的小写短横线命名，如 `clean-sessions.ts`、`live-llm-dispatch-e2e.ts`。
+- 测试文件：`*.test.ts`，必须与实现文件放在同一目录的 `__tests__/` 下。
+- 常量与配置必须提取到 `types.ts` 或 `run-context.ts` 等集中位置。
+- 禁止在 runner 中硬编码端口、路径、SSE 文件位置；必须通过 `readRunManifest` 从 manifest 读取。
 
 
 ## 8. 测试策略
@@ -365,9 +384,19 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 - 更新了什么文档：用列表展示本次任务更新/新建/删除的所有文档。
 - 不记流水账：git diff 能看到的内容不重复写。
 
+#### 文本产物写入完整性闸门（强制）
+
+适用于新建或覆盖 `logs/`、`plans/`、`documents/`、`blueprints/`、`audits/`、`.agents/skills/` 下的非空文本文件：
+
+1. 同一任务内的文本写入必须串行执行；前一个目标文件通过完整性验证前，不得发起下一个文本写入。
+2. 每次写入后必须立即执行并记录：`test -s <path>`、`wc -l <path>`，以及至少一个内容断言（`head -n 1 <path>` 或 `rg -n '<required heading>' <path>`）。
+3. 工具回执“成功”不构成完成证据；全部校验通过后，才可报告 `DOC: UPDATED` 或任务完成。
+4. 任一校验失败时必须 fail-closed：停止后续文本写入，标记 `[BLOCKED]`，以串行方式恢复目标文件并重新验证。
+5. 禁止将空文件、仅文件名存在、或未通过内容断言的文件列为已完成交付。
+
 ### 11.2 文档索引
 
-新增或修改文档后，应同步更新 `documents/INDEX.md`，确保索引、摘要、行数与阅读建议准确。
+新增或修改文档后，必须同步更新 `documents/INDEX.md`，确保索引、摘要、行数与阅读建议准确。
 
 ### 11.3 Memory 管理
 
@@ -375,6 +404,14 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 - 发现新环境事实、用户纠正、完成重要任务后提炼结论时写入。
 - 不写临时状态、显而易见信息或可直接从代码读取的内容。
 - 使用前缀标签：`work-one 规则:`、`work-one 架构:`、`work-one 约定:`。
+
+### 11.4 日志索引与归档
+
+`logs/` 文件数量增长后，使用 logs-governance skill 维护索引与归档：
+
+- **`logs/INDEX.md`**：日志总索引，分"当前活跃日志（近 14 天）"、"按主题聚类"、"历史归档"三段。session 启动或新增日志后同步。
+- **`logs/archive/YYYY-MM/`**：按月归档旧日志（默认超 30 天且无引用）。归档遵循 fail-closed：被 `documents/INDEX.md`、`plans/`、`audits/` 引用的日志不归档；引用检查不确定时不归档。
+- **`audits/<plan-name>/`**：plans 实施进度审计归档，每次审计生成 `<YYYY-MM-DD>-audit.md` 并更新 `LATEST.md` 指针。
 
 
 ## 12. 子 Agent 派遣政策
@@ -441,8 +478,75 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 | Bun 路径 | `/home/zhaoge/.bun/bin/bun` |
 | CodeGraph CLI | `/home/zhaoge/.local/bin/codegraph` |
 
+
+## 15. 审计与实施 provenance 流程约定
+
+本节规则适用于 QoderWork 工作区内所有 plan 的所有 phase 实施与审计，无例外。规则采用四要素结构：约束主体 + 触发条件 + 违反判定 + 违反后果。强约束关键词遵循 RFC 2119 语义：必须（MUST）、禁止（MUST NOT）、当且仅当（IF AND ONLY IF）、不得（MUST NOT）。
+
+### 规则 P-01：Provenance 级别声明（前置条件）
+
+- **约束主体**：每个 plan 的索引文件（`00-plan-index.md` 或等价文件）
+- **触发条件**：plan 创建时
+- **规则**：plan 索引必须声明 `provenance_level`，取值限定为 `v2.1-required` 或 `component-only`，二者必居其一。未声明的 plan，实施禁止开始。
+- **违反判定**：plan 索引中无 `provenance_level` 字段，或取值不在 `{v2.1-required, component-only}` 集合内
+- **违反后果**：实施者必须暂停，补声明后方可继续
+
+### 规则 P-02：Pre-Implementation Freeze Gate（实施前冻结）
+
+- **约束主体**：实施者（任何开始 phase 实施的 agent）
+- **触发条件**：`provenance_level = v2.1-required` 的 plan 的任何 phase，在实施代码写入之前
+- **规则**：实施者必须按以下顺序完成 Freeze Gate，且禁止跳步：
+  1. 审计者填写 `scope-lock.json`（覆盖本 phase 的 REQ/Check Registry/oracle）
+  2. Human reviewer 批准 `scope-lock.json`（agent 不得自批准）
+  3. 运行 `capture-state.ts` 捕获 pre-change receipt，输出到 `audits/<plan-name>/evidence/pre-change-<PHASE-N>.json`
+  4. 验证 receipt 存在且非空（`test -s` + 内容断言）
+- **违反判定**：实施已开始但 `evidence/pre-change-<PHASE-N>.json` 不存在或为空
+- **违反后果**：审计必须判定为 `INVALID`（不是 BLOCKED），因为实施流程违规导致审计合同无效
+
+### 规则 P-03：工具链强制（审计执行）
+
+- **约束主体**：审计者（使用 plan-audit-archiver skill 的 agent）
+- **触发条件**：`provenance_level = v2.1-required` 的 plan 的审计执行
+- **规则**：
+  1. 每个 `[VERIFICATION]` 步骤必须调用 `capture-state.ts` 生成 immutable receipt（EV-NNN），receipt 必须绑定 `audit_id`/`requirement_id`/`polarity`/`oracle_id`/`fixture_id`/`command`/`exit_code`/`observed_result`/`artifact_hashes`
+  2. `Verified-by:` 文字证据行仅作为 receipt 的人类可读摘要，禁止替代 receipt
+  3. 审计报告签署前必须运行 `validate-audit.ts`，`exit 0` 是签署 `ACCEPT` 或 `REWORK` 的必要条件
+- **违反判定**：审计报告声明 v2.1 ACCEPT 但无对应 EV-NNN receipt；或 `validate-audit.ts` 未运行；或 `validate-audit.ts` exit 非 0
+- **违反后果**：审计报告不可签署；已签署的判定为 `INVALID`
+
+### 规则 P-04：BLOCKED 继承（审计连续性）
+
+- **约束主体**：审计者
+- **触发条件**：前序审计报告中存在 `BLOCKED` 项
+- **规则**：后续审计必须对每个前序 `BLOCKED` 项显式处理，处理方式限定为三种之一：
+  - `CLOSED`：已解决，附 receipt 证据
+  - `INHERITED`：继承，附继承理由与计划解决时机
+  - `REOPENED`：重新打开，附新证据
+- **违反判定**：后续审计报告中未出现对前序 `BLOCKED` 项的显式处理记录
+- **违反后果**：审计报告判定为 `INVALID`（静默绕过 = 审计合同无效）
+
+### 规则 P-05：降级声明（标准一致性）
+
+- **约束主体**：审计者
+- **触发条件**：审计者选择的证据标准低于 plan 声明的 `provenance_level`（如 plan 声明 `v2.1-required` 但审计者用 component 级证据签署）
+- **规则**：审计者必须在审计报告 §1 开头显式声明降级，声明内容必须包含以下 4 项，缺一不可：
+  1. 降级理由（具体、可验证）
+  2. 降级后的证据上限
+  3. 降级不影响的结论范围
+  4. 降级影响的结论范围（如有）
+- **违反判定**：审计报告用低于 plan 声明标准的证据签署 ACCEPT，但 §1 无降级声明，或降级声明缺少上述 4 项中的任一项
+- **违反后果**：审计报告判定为 `INVALID`
+
+### 规则 P-06：component-only plan 的证据标注
+
+- **约束主体**：审计者
+- **触发条件**：`provenance_level = component-only` 的 plan 的审计
+- **规则**：审计报告必须在 §1 显式标注「证据上限：component」，且禁止签署 v2.1 正式 ACCEPT
+- **违反判定**：component-only plan 的审计报告签署 v2.1 ACCEPT，或未标注证据上限
+- **违反后果**：审计报告判定为 `INVALID`
+
 ---
 
-**最后更新**：2026-07-18
+**最后更新**：2026-07-19
 **维护者**：QoderWork Agent 协作链
 **变更方式**：本文件被完整覆盖时，旧版本内容不再生效；所有更新必须基于当前工作区实际状态。

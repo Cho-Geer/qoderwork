@@ -1,6 +1,6 @@
 ---
 name: skill-diagnosis-optimization
-description: "Skill 体系诊断与自动优化。五阶段流程：诊断（评分+重叠检测+总量评估）→ 合并同类项（控制在 15 个以内）→ ACP 引用清理（替换为 serve API curl 命令）→ 自动修复（空描述/过长/过短/缺触发词/缺双语/.bak 残留）→ 报告（保存到 documents/review/skill-audit-report.md + 飞书通知）。Trigger: skill 诊断, skill 审计, skill 优化, skill 合并, ACP 清理, skill health check, 技能健康检查, 技能合并. Not for: 创建单个 skill（用 skill-creator）, 编辑单个 skill 内容, 查询 skill 列表（直接用 qw_query）."
+description: "Skill system diagnosis and auto-optimization / Skill 体系诊断与自动优化。五阶段流程：诊断（评分+重叠检测+总量评估）→ 合并同类项（控制在 15 个以内）→ ACP 引用清理（替换为 serve API curl 命令）→ 自动修复（空描述/过长/过短/缺触发词/缺双语/.bak 残留）→ 报告（保存到 documents/review/skill-audit-report.md + 飞书通知）。Trigger: skill 诊断, skill 审计, skill 优化, skill 合并, ACP 清理, skill health check, 技能健康检查, 技能合并. Not for: 创建单个 skill（用 skill-creator）, 编辑单个 skill 内容, 查询 skill 列表（直接用 qw_query）."
 version: 1.0.0
 agent_created: true
 ---
@@ -31,9 +31,9 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 | `MAX_SKILLS` | `15` | skill 总数最佳区间上限 |
 | `MIN_SKILLS` | `10` | skill 总数最佳区间下限 |
 | `DESC_MIN_CHARS` | `150` | description 最短长度 |
-| `DESC_MAX_CHARS` | `500` | description 最长长度 |
+| `DESC_MAX_CHARS` | `600` | description 最长长度 |
 | `DESC_BEST_MIN` | `200` | description 最佳区间下限 |
-| `DESC_BEST_MAX` | `400` | description 最佳区间上限 |
+| `DESC_BEST_MAX` | `500` | description 最佳区间上限 |
 | `BODY_MAX_LINES` | `600` | SKILL.md 正文行数上限 |
 
 ## 五阶段流程
@@ -76,7 +76,7 @@ mcp__qw-builtin__qw_query({ key: "qoderwork.settings.skills" })
 
 | 维度 | 检查方法 | 评分 |
 |------|---------|------|
-| **description 长度** | `description.length` | <150 chars → ❌ 过短；>500 chars → ❌ 过长；200-400 → ✅ 最佳；150-200 或 400-500 → ⚠️ 可接受 |
+| **description 长度** | `description.length` | <150 chars → ❌ 过短；>600 chars → ❌ 过长；200-500 → ✅ 最佳；150-200 或 500-600 → ⚠️ 可接受 |
 | **触发词** | 检查 description 是否含 "Trigger:"、"Use when"、"When to use"、"触发词"、"适用于" | 有 → ✅；无 → ❌ |
 | **负面边界** | 检查 description 是否含 "Not for"、"Do NOT use"、"不适用于"、"不适用" | 有 → ✅；无 → ❌ |
 | **双语覆盖** | 检查 description 是否同时含中文和英文 | 双语 → ✅；单语 → ⚠️ |
@@ -142,7 +142,7 @@ mcp__qw-builtin__qw_query({ key: "qoderwork.settings.skills" })
 
 1. **创建新 SKILL.md**：
    - `name`: 综合性名称（如 `opencode-framework-dev`）
-   - `description`: 合并所有原 skill 的核心触发词，控制在 200-400 chars
+   - `description`: 合并所有原 skill 的核心触发词，控制在 200-500 chars
    - 正文：按章节组织，每个原 skill 内容作为一节（`## 原 skill A`、`## 原 skill B`）
    - 保留所有原 skill 的完整知识
 
@@ -152,7 +152,7 @@ mcp__qw-builtin__qw_query({ key: "qoderwork.settings.skills" })
 
 3. **验证新 skill**：
    - 确认新 SKILL.md 的 frontmatter 可正确解析
-   - 确认 description 长度在 200-400 chars
+   - 确认 description 长度在 200-500 chars
    - 确认正文行数未超过 `BODY_MAX_LINES`（600）
 
 ### Step 8: 迭代
@@ -222,7 +222,7 @@ ACP bridge|ACP 模式|ACP stdio|mcp__acp-bridge|
 | 问题 | 修复方法 |
 |------|---------|
 | **空描述** (Step 13) | 根据 SKILL.md 正文内容生成完整 description，含四要素：WHAT（做什么）+ WHEN（何时用）+ TRIGGERS（触发词）+ NEGATIVE（不适用场景） |
-| **description >500 chars** (Step 14) | 压缩到 200-400 chars，优先保留：触发词 > 负面边界 > WHAT > WHEN |
+| **description >600 chars** (Step 14) | 压缩到 200-500 chars，优先保留：触发词 > 负面边界 > WHAT > WHEN |
 | **description <150 chars** (Step 15) | 扩展 description，补充 WHEN 场景和触发词。从正文中提取关键操作作为触发词 |
 | **缺少触发词** (Step 16) | 根据正文内容提取关键词，追加到 description 的 "Trigger:" 部分 |
 | **缺少负面边界** (Step 17) | 根据 skill 用途推断不适用场景，追加 "Not for:" 部分 |

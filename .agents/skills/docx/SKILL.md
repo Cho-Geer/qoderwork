@@ -1,6 +1,6 @@
 ---
 name: docx
-description: "Create, read, edit, and validate Word (.docx) files. Use for Markdown-to-Word conversion, template filling, Chinese typography, docx-js generation, OOXML patching, tracked changes, and comments. Trigger: Word document, .docx, Word report, Markdown to Word, md 转 docx, 模板套用, Word 修订, Word 批注, OOXML. Not for: PDF, spreadsheet, Google Docs, or unrelated coding work."
+description: "Create, read, edit, and validate Word (.docx) files / 创建、读取、编辑与校验 Word（.docx）文件。Use for Markdown-to-Word conversion, template filling, Chinese typography, docx-js generation, OOXML patching, tracked changes, and comments. Trigger: Word document, .docx, Word report, Markdown to Word, md 转 docx, 模板套用, Word 修订, Word 批注, OOXML. Not for: PDF, spreadsheet, Google Docs, or unrelated coding work."
 ---
 
 # DOCX Operations

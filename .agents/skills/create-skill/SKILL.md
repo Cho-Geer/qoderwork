@@ -1,8 +1,7 @@
 ---
 name: create-skill
 version: 1.0.0
-description: "Guides users through creating effective Agent Skills for QoderWork. Use when the user wants to create, write, or author a new skill, or asks about skill structure, best practices, or SKILL.md format. 触发词：create skill、创建技能、new skill、SKILL.md 格式、skill structure、skill best practices。不适用于安装已有技能、搜索技能市场、或修改已安装技能的描述。"
-description_zh: 引导用户为 QoderWork 创建有效的 Agent 技能。当用户想要创建、编写或制作新技能，或询问技能结构、最佳实践或 SKILL.md 格式时使用。
+description: "Guides users through creating effective Agent Skills for QoderWork / 引导用户为 QoderWork 创建有效的 Agent 技能。Use when the user wants to create, write, or author a new skill, or asks about skill structure, best practices, or SKILL.md format. 触发词：create skill、创建技能、new skill、SKILL.md 格式、skill structure、skill best practices。不适用于安装已有技能、搜索技能市场、或修改已安装技能的描述。"
 ---
 
 # Creating Skills in QoderWork

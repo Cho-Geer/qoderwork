@@ -1,9 +1,15 @@
 ---
-name: docx
+name: docx-legacy-guide
 version: 2.0.0
-description: "Create, read, edit, and manipulate Word (.docx) documents end-to-end. Covers Markdown-to-Word conversion, template filling, Chinese (CJK) typography, docx-js generation, and OOXML patching including tracked changes and comments. Triggers: Word doc, word document, .docx, 报告, 备忘录, 信函, 合同, 会议纪要, Markdown 转 Word, md 转 docx, 套模板生成 Word, 中文 Word 报告, tracked changes, 修订标记, Word 批注, OOXML. 不适用于 PDFs, spreadsheets, Google Docs, or general coding tasks."
-description_zh: "全功能 Word(.docx) 技能：端到端创建、读取、编辑和操作 Word 文档。覆盖 Markdown/结构化文本转 Word、模板套用（{{token}} 或 reference-doc 两种）、正确的中文排版默认值、用 docx-js 从零定制文档、以及 OOXML 底层修补（含修订标记、批注）。触发词：'Word 文档'、'.docx'、'报告/备忘录/信函/合同/会议纪要'、'Markdown 转 Word'、'md 转 docx'、'套模板生成 Word'、'中文 Word 报告'、'修订标记'、'Word 批注'、'OOXML'，以及插入/替换图片、查找替换、把内容转为精美 Word 文档等请求。不适用于 PDF、电子表格、Google Docs 或与文档生成无关的编程任务。"
+description: "Legacy complete guide for docx skill (historical reference) / docx 技能历史完整指南（遗留参考文档）。本文档为历史遗留，保留供参考。Triggers: legacy guide, docx 参考. Not for: 新代码应参考 docx/SKILL.md."
 license: Proprietary
+---
+
+> **⚠️ 遗留文档声明**（2026-07-19）
+>
+> 本文档为历史遗留完整指南，不再作为主参考。新代码与规范以 `docx/SKILL.md` 为准。
+> 文档内涉及的 `description_zh` 字段已被验证为 OpenCode SDK 零消费的死字段（见 2026-07-19 双语统一变更），**请勿在新 skill 中使用 `description_zh`**。新 skill 的双语应采用 description 首句 `英文 / 中文` 分隔格式（形态B）。
+
 ---
 
 # docx-pro: Complete Word document skill

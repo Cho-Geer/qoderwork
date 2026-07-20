@@ -1,6 +1,6 @@
 ---
 name: debug-subagent-tool-access
-description: "诊断修复子 agent 工具访问被阻断问题。六层排查：opencode.json 权限→before-hook 插件→enforcement 豁免→anti-bypass 列表→agent prompt→mode 确认。Diagnose and fix sub-agent tool access blocked issues. 6-layer troubleshooting. Trigger: sub-agent tool access, 工具被阻断, tool deny, before-hook 拦截, permission denied for agent, agent 权限. Not for: 运行时 enforcement chain 阻断 (use opencode-framework-debug)."
+description: "Diagnose and fix sub-agent tool access blocked issues / 诊断修复子 agent 工具访问被阻断问题。六层排查：opencode.json 权限→before-hook 插件→enforcement 豁免→anti-bypass 列表→agent prompt→mode 确认。Trigger: sub-agent tool access, 工具被阻断, tool deny, before-hook 拦截, permission denied for agent, agent 权限. Not for: 运行时 enforcement chain 阻断 (use opencode-framework-debug)."
 version: 1.0.0
 ---
 

@@ -1,8 +1,7 @@
 ---
 name: pptx
 version: 2.0.0
-description: "Create, read, edit, modify, combine, or split PowerPoint (.pptx) presentations. Covers slide decks, pitch decks, templates, layouts, speaker notes, and comments. Triggers: deck, slides, presentation, .pptx, 幻灯片, 演示文稿, PPT, 提取 PPT 文本, 编辑 PPT. 不适用于 Word 文档（使用 docx skill）或电子表格（使用 xlsx skill）。"
-description_zh: "当 .pptx 文件以任何方式涉及时使用此技能——无论是作为输入、输出还是两者兼有。包括：创建幻灯片、演示文稿或路演材料；读取、解析或提取任何 .pptx 文件中的文本（即使提取的内容将用于其他地方，如邮件或摘要）；编辑、修改或更新现有演示文稿；合并或拆分幻灯片文件；使用模板、布局、演讲者备注或批注。当用户提及\"幻灯片\"、\"演示文稿\"、\"PPT\"或引用 .pptx 文件名时触发，无论他们计划如何使用内容。只要需要打开、创建或操作 .pptx 文件，就使用此技能。"
+description: "Create, read, edit, modify, combine, or split PowerPoint (.pptx) presentations / 创建、读取、编辑、修改、合并或拆分 PowerPoint（.pptx）演示文稿，覆盖幻灯片、路演材料、模板、布局、演讲者备注与批注。Triggers: deck, slides, presentation, .pptx, 幻灯片, 演示文稿, PPT, 提取 PPT 文本, 编辑 PPT. 不适用于 Word 文档（使用 docx skill）或电子表格（使用 xlsx skill）。"
 ---
 
 # PPTX Pro 2.0 — Fast Path

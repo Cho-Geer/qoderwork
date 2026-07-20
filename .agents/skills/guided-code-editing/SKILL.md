@@ -1,6 +1,6 @@
 ---
 name: guided-code-editing
-description: "Guide the user through manual code edits from a blueprint, plan, or priority todo list. Explain what file to change, who calls it, why the change matters, and how to verify it step by step. Trigger: guide me, 指导我修改, walk me through, manual edit, blueprint task, plan task. Not for: tasks where the agent should directly edit code or own the implementation end to end."
+description: "Guide the user through manual code edits from a blueprint, plan, or priority todo list / 指导用户根据蓝图、计划或优先级待办列表手动编辑代码。Explain what file to change, who calls it, why the change matters, and how to verify it step by step. Trigger: guide me, 指导我修改, walk me through, manual edit, blueprint task, plan task. Not for: tasks where the agent should directly edit code or own the implementation end to end."
 ---
 
 # Guided Code Editing

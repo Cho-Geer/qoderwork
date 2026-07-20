@@ -1,6 +1,6 @@
 ---
 name: requirements-to-test-specification
-description: "Transforms requirements documents, PRDs, acceptance criteria, and change requests into a rigorous, traceable test specification. Use when designing test cases from requirements, creating test specs/plans, or defining acceptance tests before implementation. Trigger: 需求文档、PRD、测试式样书、测试规格、测试用例设计、验收测试、需求转测试. Not for: executing tests, proving the product works, ad-hoc bug triage."
+description: "Transforms requirements documents, PRDs, acceptance criteria, and change requests into a rigorous, traceable test specification / 将需求文档、PRD、验收标准与变更请求转化为严谨可追溯的测试规格。Use when designing test cases from requirements, creating test specs/plans, or defining acceptance tests before implementation. Trigger: 需求文档、PRD、测试式样书、测试规格、测试用例设计、验收测试、需求转测试. Not for: executing tests, proving the product works, ad-hoc bug triage."
 version: 1.0.0
 ---
 

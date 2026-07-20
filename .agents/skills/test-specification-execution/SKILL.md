@@ -1,6 +1,6 @@
 ---
 name: test-specification-execution
-description: "Executes a rigorous test specification against a codebase and produces evidence-backed test results. Use when running a test spec, validating AI-written code, or performing adversarial, fault-injection, mutation, property, or fuzz testing. Trigger: 执行测试式样书、执行测试计划、测试验证、AI代码验证、对抗测试、故障注入、变异测试、属性测试、fuzz. Not for: writing the specification itself or accepting behavior without executable evidence."
+description: "Executes a rigorous test specification against a codebase and produces evidence-backed test results / 对代码库执行严谨的测试规格并产出有证据支撑的测试结果。Use when running a test spec, validating AI-written code, or performing adversarial, fault-injection, mutation, property, or fuzz testing. Trigger: 执行测试式样书、执行测试计划、测试验证、AI代码验证、对抗测试、故障注入、变异测试、属性测试、fuzz. Not for: writing the specification itself or accepting behavior without executable evidence."
 version: 1.0.0
 ---
 

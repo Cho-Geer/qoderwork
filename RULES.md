@@ -1,3 +1,11 @@
+# RULES.md — 输出格式契约
+
+> **定位**：本文件约束每次回答的输出结构（ID/TASK/PLAN/EVIDENCE/RESULT/CHECK/FINAL）与验证标记。
+> **加载机制**：OpenCode SDK 不自动加载本文件（二进制零识别），依赖 AGENTS.md §5 第1条强制读取。
+> **与 AGENTS.md 的关系**：代码风格详见 AGENTS.md §7，验证层级详见 AGENTS.md §4.3。本文件不重复这些内容，仅保留输出格式契约与简略提醒。
+
+---
+
 1. Think step by step: 先理解需求，再拆分关键步骤，再执行，再 self-check。
 
 2. Every response/task must start with a unique string ID.
@@ -61,6 +69,7 @@ Add comments only when necessary:
 - key inline comments for non-obvious logic
 Do not add mechanical line-by-line comments.
 JSON documents excluded.
+> 完整代码风格规范详见 AGENTS.md §7。
 
 9. Do not present unverified claims as verified facts.
 Use explicit markers:
@@ -76,3 +85,4 @@ Use explicit markers:
 - manual verification
 
 Use TestContainers only when real containerized dependencies are required.
+> 完整验证层级定义（含 component/runtime-smoke/live-LLM-E2E）详见 AGENTS.md §4.3。

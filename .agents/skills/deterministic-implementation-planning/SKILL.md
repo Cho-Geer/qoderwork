@@ -1,6 +1,6 @@
 ---
 name: deterministic-implementation-planning
-description: "Transforms approved blueprints, requirements, test specs, and audit reports into a deterministic, phase-by-phase implementation plan weak models can execute and verify. Use when converting upstream documents into copy-pasteable steps. Trigger: 根据蓝图制定实施方案、详细实施步骤、弱模型实施、phase by phase. Not for: unresolved architecture choices, implementing code, or claiming runtime PASS without execution evidence."
+description: "Transforms approved blueprints, requirements, test specs, and audit reports into a deterministic, phase-by-phase implementation plan weak models can execute and verify / 将已批准的蓝图、需求、测试规格与审计报告转化为弱模型可执行可验证的确定性分阶段实施计划。Use when converting upstream documents into copy-pasteable steps. Trigger: 根据蓝图制定实施方案、详细实施步骤、弱模型实施、phase by phase. Not for: unresolved architecture choices, implementing code, or claiming runtime PASS without execution evidence."
 ---
 
 # Deterministic Implementation Planning

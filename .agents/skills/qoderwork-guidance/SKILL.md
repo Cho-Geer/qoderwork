@@ -1,8 +1,7 @@
 ---
 name: qoderwork-guidance
 version: 1.0.4
-description: "Manage QoderWork application capabilities through the built-in Connector. Trigger: QoderWork tasks, task status, stuck/running tasks, historical sessions, continuing old session, AskUser handling, app settings, connectors, MCP servers, skills, scheduled tasks, IM channels, QoderWork 应用配置, 任务状态, 连接器, 定时任务. Not for: code debugging, file format tasks, non-QoderWork questions."
-description_zh: 指导 AI 通过内置 Connector 管理 QoderWork 应用能力。当用户提到 QoderWork 本身、最新/最近/当前任务、做了什么、是否完成、任务状态/进度、卡住/运行中的任务、历史会话、继续旧会话、AskUser 任务处理、应用设置、连接器、MCP 服务器、技能、定时任务、IM 频道或应用配置时使用。
+description: "Manage QoderWork application capabilities through the built-in Connector / 通过内置 Connector 管理 QoderWork 应用能力。Trigger: QoderWork tasks, task status, stuck/running tasks, historical sessions, continuing old session, AskUser handling, app settings, connectors, MCP servers, skills, scheduled tasks, IM channels, QoderWork 应用配置, 任务状态, 连接器, 定时任务. Not for: code debugging, file format tasks, non-QoderWork questions."
 ---
 
 # QoderWork Connector Guidance

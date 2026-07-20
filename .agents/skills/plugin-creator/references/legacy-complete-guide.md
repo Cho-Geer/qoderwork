@@ -1,8 +1,14 @@
 ---
-name: plugin-creator
+name: plugin-creator-legacy-guide
 version: 1.7.1
-description: "Create, customize, or modify QoderWork / QoderWork CN expert plugins. Use when the user wants to create a new plugin, customize an existing plugin, or edit a plugin's skills/commands. 触发词：create plugin、创建插件、customize plugin、edit plugin、plugin skills、plugin commands、expert plugin。不适用于 skill 独立创建（使用 create-skill）、MCP server 配置、或 QoderWork 应用设置。"
-description_zh: 创建、定制或修改 QoderWork / QoderWork CN 专家套件。当用户想要创建新套件、定制已有套件或编辑套件内的技能/指令时使用。
+description: "Legacy complete guide for plugin-creator skill (historical reference) / plugin-creator 技能历史完整指南（遗留参考文档）。本文档为历史遗留，保留供参考。Triggers: legacy guide, plugin-creator 参考. Not for: 新代码应参考 plugin-creator/SKILL.md."
+---
+
+> **⚠️ 遗留文档声明**（2026-07-19）
+>
+> 本文档为历史遗留完整指南，不再作为主参考。新代码与规范以 `plugin-creator/SKILL.md` 为准。
+> 文档内涉及的 `description_zh` 字段已被验证为 OpenCode SDK 零消费的死字段（见 2026-07-19 双语统一变更），**请勿在新 skill 中使用 `description_zh`**。新 skill 的双语应采用 description 首句 `英文 / 中文` 分隔格式（形态B）。
+
 ---
 
 # QoderWork / QoderWork CN Plugin Creator

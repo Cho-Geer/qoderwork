@@ -1,8 +1,7 @@
 ---
 name: computer-use-guidance-windows
 version: 0.9.0
-description: "Operation guidance for automating the Windows desktop via Computer Use. Trigger: Windows automation, UIA accessibility tree, open apps, click, type, shortcut keys, scroll, drag, semantic UIA actions, Windows 桌面自动化, 系统设置, 终端操作. Not for: non-Windows platforms, pure CLI tasks without UI interaction, or headless server automation."
-description_zh: "Windows 平台 Computer Use 桌面自动化操作指南：通过读屏（UIA 无障碍树）配合点击 / 文本输入 / 快捷键 / 滚动 / 拖拽 / 语义动作等 UI 操作完成本机应用自动化，覆盖应用、窗口、文件、系统设置、终端、办公、开发工具等常见场景的操作范式与最佳实践。"
+description: "Operation guidance for automating the Windows desktop via Computer Use / Windows 平台 Computer Use 桌面自动化操作指南，通过读屏（UIA 无障碍树）配合点击/文本输入/快捷键/滚动/拖拽/语义动作等 UI 操作完成本机应用自动化。Trigger: Windows automation, UIA accessibility tree, open apps, click, type, shortcut keys, scroll, drag, semantic UIA actions, Windows 桌面自动化, 系统设置, 终端操作. Not for: non-Windows platforms, pure CLI tasks without UI interaction, or headless server automation."
 ---
 
 # Computer Use Guidance (Windows)

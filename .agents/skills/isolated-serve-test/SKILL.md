@@ -1,6 +1,6 @@
 ---
 name: isolated-serve-test
-description: "隔离 serve 测试运行单元编排 skill。负责创建/启动/bootstrap/执行/停止/清理 `test-serve` run，并输出 manifest 与 artifact 证据。Trigger: isolated serve, test-serve, run manifest, PT-WM-00R2, live runner, bootstrap grant, run-dir. Not for: 通用 serve API 调试、直接启动 `opencode serve`、手写 grant/DB、跳过 oracle 的结果裁决."
+description: "Orchestrate isolated serve test run units / 隔离 serve 测试运行单元编排 skill。负责创建/启动/bootstrap/执行/停止/清理 `test-serve` run，并输出 manifest 与 artifact 证据。Trigger: isolated serve, test-serve, run manifest, PT-WM-00R2, live runner, bootstrap grant, run-dir. Not for: 通用 serve API 调试、直接启动 `opencode serve`、手写 grant/DB、跳过 oracle 的结果裁决."
 version: 1.0.0
 ---
 

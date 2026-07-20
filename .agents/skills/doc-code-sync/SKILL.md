@@ -1,6 +1,6 @@
 ---
 name: doc-code-sync
-description: "Maintain the documents/INDEX.md index file for the qoderwork project. Scans all .md documents, compares against current index, rewrites with updated summaries, line counts, and reading recommendations. Trigger: document index sync, INDEX.md update, 文档索引同步, session startup doc sync, 文档更新后同步索引. Not for: creating new documents, editing document content, or non-qoderwork projects."
+description: "Maintain the documents/INDEX.md index file for the qoderwork project / 维护 qoderwork 项目的 documents/INDEX.md 索引文件。Scans all .md documents, compares against current index, rewrites with updated summaries, line counts, and reading recommendations. Trigger: document index sync, INDEX.md update, 文档索引同步, session startup doc sync, 文档更新后同步索引. Not for: creating new documents, editing document content, or non-qoderwork projects."
 agent_created: true
 ---
 

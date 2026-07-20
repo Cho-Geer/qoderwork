@@ -1,8 +1,7 @@
 ---
 name: pdf
 version: 1.0.1
-description: "Read, extract, merge, split, rotate, watermark, create, fill forms, encrypt/decrypt, extract images, and OCR scanned PDFs. Triggers: .pdf file, PDF 文件, merge PDF, split PDF, fill PDF form, PDF OCR, extract text from PDF, create PDF. 不适用于 Word 文档（使用 docx skill）、演示文稿（使用 pptx skill）、或电子表格（使用 xlsx skill）。"
-description_zh: 当用户需要对 PDF 文件执行任何操作时使用此技能。包括：读取或提取 PDF 中的文本/表格、合并多个 PDF、拆分 PDF、旋转页面、添加水印、创建新 PDF、填写 PDF 表单、加密/解密 PDF、提取图片，以及对扫描版 PDF 进行 OCR 使其可搜索。只要用户提及 .pdf 文件或要求生成 PDF，就使用此技能。
+description: "Read, extract, merge, split, rotate, watermark, create, fill forms, encrypt/decrypt, extract images, and OCR scanned PDFs / 读取、提取、合并、拆分、旋转、加水印、创建、填表、加密解密 PDF 及 OCR 扫描件。Triggers: .pdf file, PDF 文件, merge PDF, split PDF, fill PDF form, PDF OCR, extract text from PDF, create PDF. 不适用于 Word 文档（使用 docx skill）、演示文稿（使用 pptx skill）、或电子表格（使用 xlsx skill）。"
 license: Proprietary. LICENSE.txt has complete terms
 ---
 

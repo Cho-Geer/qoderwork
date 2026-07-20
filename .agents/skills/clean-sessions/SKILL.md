@@ -1,6 +1,6 @@
 ---
 name: clean-sessions
-description: "清理 opencode serve 的残留 session（原生持久化 store + framework-state.db 的 session_map），避免污染后续测试 run。重点处理 session 持久化带来的清理陷阱：DELETE 异步生效(~3s)、serve 重启不清 session、abort 只改 status 不移除、两层模型(原生 store + session_map)。Trigger: clean sessions, 清理 session, 清理残留, delete session, purge sessions, session 清理, 残留 session, ses_* 清理, 清空 session. Not for: session 创建/监控/干预(用 serve-api)、框架运行时 .ts 修改."
+description: "Clean residual opencode serve sessions / 清理 opencode serve 的残留 session（原生持久化 store + framework-state.db 的 session_map），避免污染后续测试 run。重点处理 session 持久化带来的清理陷阱：DELETE 异步生效(~3s)、serve 重启不清 session、abort 只改 status 不移除、两层模型(原生 store + session_map)。Trigger: clean sessions, 清理 session, 清理残留, delete session, purge sessions, session 清理, 残留 session, ses_* 清理, 清空 session. Not for: session 创建/监控/干预(用 serve-api)、框架运行时 .ts 修改."
 ---
 
 # clean-sessions

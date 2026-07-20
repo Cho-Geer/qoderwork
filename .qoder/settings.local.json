@@ -10,7 +10,9 @@
       "Bash(wsl:*)",
       "Bash(ls -la /tmp/sse-events.jsonl 2>&1; ps aux | grep sse-daemon | grep -v grep)",
       "Read(//tmp/**)",
-      "Bash(ls -la /home/zhaoge/.qoder-cn/plugins/ 2>&1 | head -50)"
+      "Bash(ls -la /home/zhaoge/.qoder-cn/plugins/ 2>&1 | head -50)",
+      "Bash(ls -d ~/.qoder-cn/skills/ .qoder/skills/ .agents/skills/ 2>&1; echo \"---\"; ls ~/.qoder-cn/skills/ 2>&1 | head -20; echo \"---\"; ls .qoder/skills/ 2>&1 | head -20; echo \"---\"; ls .agents/skills/ 2>&1 | head -20)",
+      "Bash(bun test scripts/test-serve/__tests__/verify-p02.test.ts scripts/test-serve/__tests__/p02-orchestrator.test.ts 2>&1 | tail -20)"
     ]
   }
 }
