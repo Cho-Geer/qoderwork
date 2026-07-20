@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P02-PHASE-05-AUDIT-2",
+  "generation": 1,
+  "id": "EV-006",
+  "command": "cd /home/zhaoge/workspace/qoderwork && XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork P0_2_PORT_A=4001 P0_2_PORT_B=4002 /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/p02-runtime.test.ts",
+  "observed": "PASS",
+  "requirement_id": "REQ-003",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-003",
+  "fixture_id": "FIXTURE-GOOD-003",
+  "evidence_level": "runtime-smoke",
+  "repository_state_sha256": "ff35fc68c5b03f5c86b61e9a7c74623880d341f004d0cf2c4df2b4e0224e64cf",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/ev-001-runtime-positive-output.txt",
+      "sha256": "d85978d67d5e15670c4f2976f94564ec635c3906e242e1cfabed4c515e2588c1"
+    }
+  ],
+  "completed_at": "2026-07-20T02:10:00Z"
+}

@@ -4,6 +4,6 @@
 
 **改了什么**:
 - `blueprints/blueprint-tool-governance-mvc-refactor.md` — 更新为 v2.3，确认 repo-op 主裁决已从 `codegraph.ts` / `shell-guard.ts` 收敛到 `repo-policy`，记录 29/29、handler 2/2、safe-bash 23/23，并新增 protected-path read 边界。
-- `blueprints/blueprint-opencode-framework-simplification-roadmap.md`、`plans/00-overview.md`、`plans/01-phase0-baseline-freeze.md`、`plans/04-phase3-enforcement-slimming.md`、`plans/06-phase5-legacy-retirement.md` — 同步 CodeGraph 417 / TS 371 / 75,410 lines、D3 证据等级、safe-bash 23/23。
+- `blueprints/blueprint-opencode-framework-simplification-roadmap.md`、`plans/opencode-framework-simplification-roadmap/00-overview.md`、`plans/opencode-framework-simplification-roadmap/01-phase0-baseline-freeze.md`、`plans/opencode-framework-simplification-roadmap/04-phase3-enforcement-slimming.md`、`plans/opencode-framework-simplification-roadmap/06-phase5-legacy-retirement.md` — 同步 CodeGraph 417 / TS 371 / 75,410 lines、D3 证据等级、safe-bash 23/23。
 
 **决策**: D3 由 `scripts/_d3_live.ts` 直接导入生产 handler，证据等级记为 deterministic live-integration/runtime log smoke，不写成真正 Orchestrator -> build live LLM E2E；`plans/02`、`03`、`05` 本轮未发现直接漂移，保持不改。

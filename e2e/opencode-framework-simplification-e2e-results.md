@@ -68,7 +68,7 @@ v2.2 桥接在运行验证时发现 Orchestrator **首轮 LLM 请求**存在冷�
 | Case ID | Suite | Result | Main Evidence | Notes |
 |---|---|---|---|---|
 | E2E-S0-001 | Baseline | **PASS** | Runtime snapshot: 325 TS files, 68,337 lines, 45 DB tables, schema v33; post-audit live code: 318 TS files, 67,890 lines, 44 DB tables, schema v33 | Baseline is valid, but numeric metrics are snapshot-sensitive |
-| E2E-S0-002 | Baseline | **PASS** | `plans/01-phase0-baseline-freeze.md` explicitly downgrades stale claims | 9 stale claims listed with corrections |
+| E2E-S0-002 | Baseline | **PASS** | `plans/opencode-framework-simplification-roadmap/01-phase0-baseline-freeze.md` explicitly downgrades stale claims | 9 stale claims listed with corrections |
 | E2E-S1-001 | Skill-first | **PASS** | v2.3 runtime logs show non-empty `keywordGroups` for Orchestrator first-round architecture prompt and build source-edit prompt | v2.1/v2.2 cold-start defect resolved by bridge + DB fallback |
 | E2E-S1-002 | Skill-first | **PASS** | `keywordSkills` includes `codegraph-first`, `brainstorming`, `cicd-database-seeding`, `sqlite-bloat-investigation`; source-edit maps to `codegraph-first` | Keyword-driven recommendation now fires in live sessions |
 | E2E-S1-003 | Skill-first | **PASS** | `preflight-lite/SKILL.md` 37 lines, lightweight guidance | Caveat: `FULL.md` (312 lines) still has old hard-gate language |

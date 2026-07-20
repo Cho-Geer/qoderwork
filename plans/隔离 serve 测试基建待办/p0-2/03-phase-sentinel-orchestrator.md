@@ -31,7 +31,7 @@
 |---|---|---|
 | `scripts/test-serve/p02-sentinel.ts` | add | module entry |
 | `scripts/test-serve/p02-orchestrator.ts` | add | `P02_STAGES`, `runP02` |
-| `scripts/test-serve/types.ts` | modify | P02 stage/result types |
+| `scripts/test-serve/types.ts` | modify | P02 stage/result types; `RunManifest.rootDir?`（orchestrator 写入、verifier 读取的冗余顶层字段，属 P02 合同表面） |
 | `scripts/test-serve/__tests__/p02-orchestrator.test.ts` | add | P02-O matrix |
 
 ## Forbidden files and behaviors
@@ -105,7 +105,8 @@ git diff --check -- scripts/test-serve/p02-sentinel.ts scripts/test-serve/p02-or
 ## Phase completion gate
 
 - [ ] PHASE-02 evidence is attached
-- [ ] Exact 16-stage order and every stage failure are tested
-- [ ] Sentinel identity and stop-once contracts pass
-- [ ] Component command is 0 fail
+- [ ] Exact 16-stage order and every stage failure have a sensitive failure boundary proving later business calls are 0 (D1 closed per audit-5: `P02-O-D1-FAILURE-BOUNDARY` + `-OK`; `assertNoBusinessAfterFailure` uses last `failure` marker as boundary)
+- [ ] Sentinel signal errors fail closed; identity and stop-once contracts pass (D2 closed per audit-5: `P02-O-D2-SIGTERM-NONESRCH` + `validateSentinelIdentity three-state`; `stopSentinel` only swallows ESRCH, non-ESRCH signal errors fail-closed)
+- [ ] Component command is 0 fail (186 pass / 0 fail per audit-5)
 - [ ] PHASE-04 remains blocked until all boxes are checked
+- [ ] P0-2 plan remains IN-PROGRESS (PHASE-03 DONE per audit-5; PLAN_SET validator requires ≥1 unchecked box per phase)

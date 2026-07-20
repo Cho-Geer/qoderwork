@@ -40,7 +40,7 @@
 
 - 唯一格式：`p0-2 --primary-worktree PATH --commit SHA --port-a PORT --port-b PORT --test-id ID --main-framework-db PATH`。
 - 拒绝相对/不存在 path、空 testId、端口非 1–65535、端口相同、缺 flag、未知 flag。
-- success JSON：`ok:true,status:"PASS",runA,runB,checks,evidencePaths.stageResults`；failure JSON：`ok:false,firstFailure,controlledStops,evidencePaths.stageResults`。
+- success JSON：`ok:true,status:"PASS",runA,runB,checks,evidencePaths.stageResults`；failure JSON：`ok:false,firstFailure,convergenceErrors,evidencePaths.stageResults`。
 
 ## Implementation steps
 
@@ -102,3 +102,5 @@ git diff --check -- scripts/test-serve/isolated-serve.ts scripts/test-serve/__te
 - [ ] JSON and exit mappings are exact
 - [ ] P0-1B CLI regression passes
 - [ ] PHASE-05 remains blocked until all boxes are checked
+
+> 注：PHASE-04 已于 2026-07-19 实施完成（component 43 pass / 0 fail）。DONE 状态由 `00-plan-index.md` 与本次变更日志承载；本 gate 维持合同形态（与 01/02/03-phase DONE 状态下全 `[ ]` 模式一致）。evidence：6 个 P02-C 用例覆盖 requiredArgs/portsDistinct/absoluteInputs/runP02CalledOnce/resultMapping，P0-1B CLI 回归 37 pass 无回退。

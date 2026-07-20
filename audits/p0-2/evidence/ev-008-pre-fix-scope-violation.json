@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P02-PHASE-05-AUDIT-2",
+  "generation": 1,
+  "id": "EV-008",
+  "command": "cd /home/zhaoge/workspace/qoderwork && sha256sum scripts/test-serve/__tests__/p02-runtime.test.ts scripts/test-serve/run-context.ts scripts/test-serve/types.ts scripts/test-serve/p02-orchestrator.ts scripts/test-serve/p02-sentinel.ts",
+  "observed": "FAIL",
+  "requirement_id": "REQ-001",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-PREFIX-001",
+  "evidence_level": "runtime-smoke",
+  "repository_state_sha256": "ff35fc68c5b03f5c86b61e9a7c74623880d341f004d0cf2c4df2b4e0224e64cf",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/scope-lock.json",
+      "sha256": "00007a777e43b2162500b8d3e0f77321cdf5c5e3457508bde40cf69a1c49992d"
+    }
+  ],
+  "completed_at": "2026-07-20T02:00:00Z"
+}

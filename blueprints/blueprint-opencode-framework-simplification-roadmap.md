@@ -20,7 +20,7 @@
 | Enforcement | 🟡 主体完成 | runtime smoke + component + direct tool smoke | question recovery smoke；framework maintenance tests 13/13 PASS；rule-disposition active；相关治理/path/codegraph/safe_shell 套件 104/104 PASS；`safe_shell` 已通过 `VerifiedCommandPlan` + `execFile`/`spawn`（`shell:false`）执行 direct `pwd` smoke | `isWriteAllowed` / `getAgentShellAllowlist` 等 per-agent caller 仍需收口；**`agent-identity.ts` DISPLAY_NAMES 残留 `plan: "Meta-Planner"` 映射，导致 plan agent 权限走 legacy fallback、opencode.json plan 配置被忽略（2026-07-13 发现，见修订日志）**；safe_shell live allow-path、资源上限、中断、进程树终止 E2E 待补 |
 | Tool Governance MVC | 🟡 core 收缩已闭合，矩阵未完成 | component + static/code + unit + import smoke + live LLM E2E | `service/tool-governance/**` 接入 `tool-governance` before handler；`codegraph.ts` 已移除 repo-op/GitHub write 主裁决（仅留证据适配器）；before-dispatcher import smoke PASS；L3-012 session `ses_0a66bc378ffelPj4R46sNeG0zR` 见证 `safe_shell gh issue create --repo ...` 被 `[REPO-OP] ... layer=repo-policy outcome=deny` 阻断，且无 `WORKTREE_BOUNDARY` / `CODEGRAPH-ENFORCE` | L3-012 证据包为最小包；`gh api -X POST/PATCH/DELETE`、`gh issue comment`、`gh pr create`、release/workflow/secret 等 remote_write 变体仍需 companion cases；Orchestrator -> build allow-path live E2E 未补 |
 | Minimal State | 🟡 主体完成 | runtime smoke + component | JSONL writer + emitters；只读 hot-path 零 DB 写；deprecated 表停写 | `/children` HTML/non-JSON 故障注入未见独立证据 |
-| Legacy 退役 | ✅ 完成（归档闭环） | **live LLM E2E** + static/code + component | `skill-summary.ts` 已删除 9 个 inactive blueprint agent 映射；V5.1-V5.9 全量矩阵已归档（`plans/06` §7）；23 弱模型回归 23/23 PASS（2026-07-11 live GOV/GUARD 探针将 #5/#16/#21/#23 升级至 live LLM E2E，`e2e/weak-model-23-regression.md`）；`dispatch_subagent` 决策已固化（`temporary-audits/dispatch_subagent-decision.md`）；A2 核查 N/A（active 链角色无关） |
+| Legacy 退役 | ✅ 完成（归档闭环） | **live LLM E2E** + static/code + component | `skill-summary.ts` 已删除 9 个 inactive blueprint agent 映射；V5.1-V5.9 全量矩阵已归档（`plans/opencode-framework-simplification-roadmap/06-phase5-legacy-retirement.md` §7）；23 弱模型回归 23/23 PASS（2026-07-11 live GOV/GUARD 探针将 #5/#16/#21/#23 升级至 live LLM E2E，`e2e/weak-model-23-regression.md`）；`dispatch_subagent` 决策已固化（`temporary-audits/dispatch_subagent-decision.md`）；A2 核查 N/A（active 链角色无关） |
 
 ---
 
@@ -101,7 +101,7 @@
 1. **v4 结论边界**：canonical prompt reference 解决了 prompt handoff 脆弱性，`safe_framework_edit` 写入成功，grant `pending -> bound -> consumed`；但当时 queue lease 仍按 `agent_type` 租旧队列，不能称完整闭环。
 2. **v5 主链路闭环**：`dispatch-subagent.ts` 用 canonical `dagTaskId` 入队，`router.ts` 写 `session_map`/`session_events` 时 fallback 到 `effectiveDagTaskId`，`marker-consume.ts` 按 `queueId` 精确 lease；E2E v5 记录 queue 37 `running`、probe-v5 写入 `full-chain-ok`、compliance gate `passed=true` 且返回 `session_id`。
 3. **DB 证据边界**：当前 DB 中 queue 37、`dispatch_privilege_grants`、`session_events`、synthetic `dispatch:child:<dag_task_id>` 行一致；真实 native child session 行仍可能 `dag_task_id=NULL`，因为 session hook 不携带 canonical DAG ID。gate 的权威匹配当前依赖 synthetic dispatch row，而不是所有 child session row 都携带 DAG。
-4. **仍需保留的遗留项**：`dispatch_subagent` 已由 `temporary-audits/dispatch_subagent-decision.md` 决策固化（仅 framework maintenance trusted compat path，普通派遣改用原生 Task）；path 越界/TTL/并发复用/DB fallback 边界矩阵已归档于 `plans/06` §7.2（V5.9）。剩余：ACP watcher 自动监督为后续项。
+4. **仍需保留的遗留项**：`dispatch_subagent` 已由 `temporary-audits/dispatch_subagent-decision.md` 决策固化（仅 framework maintenance trusted compat path，普通派遣改用原生 Task）；path 越界/TTL/并发复用/DB fallback 边界矩阵已归档于 `plans/opencode-framework-simplification-roadmap/06-phase5-legacy-retirement.md` §7.2（V5.9）。剩余：ACP watcher 自动监督为后续项。
 
 ### 0.5 Smoke Test 其他结果复核（2026-07-07）
 

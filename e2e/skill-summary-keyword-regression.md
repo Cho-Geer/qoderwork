@@ -1,6 +1,6 @@
 # Skill-Summary 中英文关键词回归矩阵 (Bilingual Keyword Matrix)
 
-> 依据: `plans/02-phase1-skill-first.md` §2 + 本仓库 `work-one/.opencode/plugin-handlers/system/skill-summary.ts` (v2.3)
+> 依据: `plans/opencode-framework-simplification-roadmap/02-phase1-skill-first.md` §2 + 本仓库 `work-one/.opencode/plugin-handlers/system/skill-summary.ts` (v2.3)
 > 方法（v2，2026-07-11 全量 live LLM E2E）: 通过 **真实 serve API**（`127.0.0.1:4096`，Orchestrator，deepseek-v4-flash）对每条 prompt 创建独立真实 session 并 POST 用户消息；`skill-summary` 在 `experimental.chat.system.transform` 首轮即运行，从真实 `plugin-plugin-skill-summary-runtime.log` 抓取 `SKILL-SUMMARY-INJECTED` 事件。
 > 证据脚本: `qoderwork/scripts/_e2e_b1_live.py` ｜ 明细: `qoderwork/scripts/_e2e_b1_results.tsv` ｜ 日志: `work-one/.task_temp/_logs/2026-07-11/plugin-plugin-skill-summary-runtime.log`
 > 证据等级: **live LLM E2E**（2026-07-11 实测，24 条 CN+EN 全部在真实 serve session 命中日志；与 runtime-smoke 结果一致，互相验证）

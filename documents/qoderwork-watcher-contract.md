@@ -1,7 +1,7 @@
 # QoderWork Watcher — JSONL 事件契约与 R1–R7 规则
 
 > 配套实现：`scripts/qoder-watcher.ts`
-> 依据：`plans/02-phase1-skill-first.md` Step 7
+> 依据：`plans/opencode-framework-simplification-roadmap/02-phase1-skill-first.md` Step 7
 > 状态：契约已落地；`quality/skill/guidance` 三类流的框架侧发射属于 Phase 4 JSONL audit 工作，当前 watcher 对缺失流优雅跳过。
 
 ## 1. 框架侧统一 JSONL 流

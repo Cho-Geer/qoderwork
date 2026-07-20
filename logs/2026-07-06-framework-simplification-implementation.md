@@ -1,6 +1,6 @@
 # 框架简化路线图实施 — Phase 0-5 收口批次
 
-**为什么**: blueprint-opencode-framework-simplification-roadmap.md v1.7.0 和 plans/00-overview.md v1.9.0 标记了 11 项 P0/P1 收口任务。本轮集中处理文档基线刷新、preflight-lite/FULL.md 重写、enforcement mode 清理、legacy handler 隔离、0-byte DB 清理和 native Task smoke test。
+**为什么**: blueprint-opencode-framework-simplification-roadmap.md v1.7.0 和 plans/opencode-framework-simplification-roadmap/00-overview.md v1.9.0 标记了 11 项 P0/P1 收口任务。本轮集中处理文档基线刷新、preflight-lite/FULL.md 重写、enforcement mode 清理、legacy handler 隔离、0-byte DB 清理和 native Task smoke test。
 
 **改了什么**:
 
@@ -14,8 +14,8 @@ work-one 框架侧（通过 Bash 写入）：
 - `.opencode/state/` — 3 个 0-byte DB 文件移入 `.trash-db/`
 
 qoderwork 计划侧：
-- `plans/00-overview.md` — 修正 serve-api scripts 状态为已完成；更新 TS 计数；标记 stale docs 已修
-- `plans/03-phase2-native-agent-dag.md` — 添加 T2.1 运行级证据（native Task dispatch smoke test PASS）
+- `plans/opencode-framework-simplification-roadmap/00-overview.md` — 修正 serve-api scripts 状态为已完成；更新 TS 计数；标记 stale docs 已修
+- `plans/opencode-framework-simplification-roadmap/03-phase2-native-agent-dag.md` — 添加 T2.1 运行级证据（native Task dispatch smoke test PASS）
 
 **决策**:
 - FULL.md 选择完全重写而非增量修改，因为旧文本（MCP 絶対強制、DAG 硬前置、compliance gate）与当前轻量策略冲突过大

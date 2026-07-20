@@ -16,6 +16,6 @@
 - `qoderwork/e2e/opencode-framework-simplification-e2e-results.md` — 新增 Remediation Addendum 段，保留原 FAIL 历史状态同时记录修复路径
 - `qoderwork/blueprints/blueprint-opencode-framework-simplification-roadmap.md` — §0.1 遗留 #1 打勾、§0.2 复核 #3 打勾、§0.1 已落地 #3 更新、新增末尾"蓝图修订日志"段
 - `qoderwork/implementation-plans/phase3-implementation-plan.md` — §0.0 结论调整、§0.0a P0 缺陷打勾、新增 §0.0b 修复记录
-- `qoderwork/plans/02-phase1-skill-first.md` — 状态头更新、未完成列表打勾、T1.1/T1.2 验证步骤打勾、验收标准打勾
+- `qoderwork/plans/opencode-framework-simplification-roadmap/02-phase1-skill-first.md` — 状态头更新、未完成列表打勾、T1.1/T1.2 验证步骤打勾、验收标准打勾
 
 **下一步**: 重启 serve daemon（`bun run scripts/start-serve.ts --stop && bun run scripts/start-serve.ts`），发送含 source-edit / architecture / 中文关键词的 prompt，在 `.task_temp/_logs/*/plugin-plugin-skill-summary-runtime.log` 中确认 `SKILL-SUMMARY-INJECTED` 的 `keywordGroups` 非空，然后更新 E2E 结果文件 Final Summary Table。

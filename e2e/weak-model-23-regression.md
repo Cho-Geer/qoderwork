@@ -2,7 +2,7 @@
 
 > **版本**: 1.0.0
 > **日期**: 2026-07-11
-> **来源**: `plans/06-phase5-legacy-retirement.md` §4（23 弱模型回归集）
+> **来源**: `plans/opencode-framework-simplification-roadmap/06-phase5-legacy-retirement.md` §4（23 弱模型回归集）
 > **方法**: 把 23 个弱模型失遵从场景映射到具体护栏机制（Skill / Hook / QoderWork watcher），并回填已有运行证据。
 > **证据等级阶梯**: `static/code`（代码/配置级保证） → `runtime smoke`（serve API 真实 session 实测） → `live LLM E2E`（完整 LLM 行为闭环）。
 
@@ -66,8 +66,8 @@
 | component 级 | #9, #23 |
 
 > **说明**：本矩阵把 23 场景**全部映射到已验证的护栏机制**并回填运行/组件证据，零 FAIL。
-> 证据缺口（V5.5 guide/reply 端点未实现、G4-005 live serve API agent 限制）见 `plans/06` §7.3，均非框架缺陷，不影响 23 场景护栏结论。
-> 与 V5.1-V5.9 归档（`plans/06` §7）互为交叉印证：V5.x 验证「能力存在」，本集验证「弱模型失遵从被捕获」。
+> 证据缺口（V5.5 guide/reply 端点未实现、G4-005 live serve API agent 限制）见 `plans/opencode-framework-simplification-roadmap/06-phase5-legacy-retirement.md` §7.3，均非框架缺陷，不影响 23 场景护栏结论。
+> 与 V5.1-V5.9 归档（`plans/opencode-framework-simplification-roadmap/06-phase5-legacy-retirement.md` §7）互为交叉印证：V5.x 验证「能力存在」，本集验证「弱模型失遵从被捕获」。
 
 ---
 

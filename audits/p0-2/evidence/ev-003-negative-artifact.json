@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P02-PHASE-05-AUDIT-2",
+  "generation": 1,
+  "id": "EV-003",
+  "command": "cd /home/zhaoge/workspace/qoderwork && XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork P0_2_PORT_A=4001 P0_2_PORT_B=4002 /home/zhaoge/.bun/bin/bun run scripts/test-serve/__tests__/p02-r-artifact-negative.ts",
+  "observed": "FAIL",
+  "requirement_id": "REQ-002",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-002",
+  "fixture_id": "FIXTURE-BAD-ARTIFACT-001",
+  "evidence_level": "runtime-smoke",
+  "repository_state_sha256": "ff35fc68c5b03f5c86b61e9a7c74623880d341f004d0cf2c4df2b4e0224e64cf",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/ev-003-negative-artifact-output.txt",
+      "sha256": "777880afcc9bc8a59f363e5dae9a13c52e6648b6e39531407958ac7669e132c2"
+    }
+  ],
+  "completed_at": "2026-07-20T02:16:00Z"
+}

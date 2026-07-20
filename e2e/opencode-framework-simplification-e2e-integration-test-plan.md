@@ -6,13 +6,13 @@
 > Output location: `qoderwork/e2e/`  
 > Supersedes: v1.0.0 (2026-07-06), which mixed pre-2026-07-11 gaps with later evidence and did not require every acceptance item to have a true live LLM witness.  
 > Authoritative sources:
-> - `plans/00-overview.md`
-> - `plans/01-phase0-baseline-freeze.md`
-> - `plans/02-phase1-skill-first.md`
-> - `plans/03-phase2-native-agent-dag.md`
-> - `plans/04-phase3-enforcement-slimming.md`
-> - `plans/05-phase4-minimal-state.md`
-> - `plans/06-phase5-legacy-retirement.md`
+> - `plans/opencode-framework-simplification-roadmap/00-overview.md`
+> - `plans/opencode-framework-simplification-roadmap/01-phase0-baseline-freeze.md`
+> - `plans/opencode-framework-simplification-roadmap/02-phase1-skill-first.md`
+> - `plans/opencode-framework-simplification-roadmap/03-phase2-native-agent-dag.md`
+> - `plans/opencode-framework-simplification-roadmap/04-phase3-enforcement-slimming.md`
+> - `plans/opencode-framework-simplification-roadmap/05-phase4-minimal-state.md`
+> - `plans/opencode-framework-simplification-roadmap/06-phase5-legacy-retirement.md`
 > - `blueprints/blueprint-opencode-framework-simplification-roadmap.md`
 > - `blueprints/blueprint-tool-governance-mvc-refactor.md`
 > - `e2e/skill-summary-keyword-regression.md`
@@ -116,11 +116,11 @@ This table prevents us from double-counting lower-grade evidence as live closure
 | Question / reply / prompt_async / abort mechanics | `logs/2026-07-06-serve-api-e2e-validation.md` | live session validation | Partial | Need one integrated blocked-task recovery loop under current framework simplification acceptance |
 | Safety hard-blocks | `e2e/smoke-test-results-20260707.md` | `runtime smoke` | No | GOV/GUARD probes upgraded only some guard paths to live |
 | GOV / GUARD live probes | `e2e/weak-model-23-regression.md` | `live LLM E2E` | Partial | Confirms guard chain firing/blocking, not full enforcement matrix |
-| Tool governance REPO-OP write | `plans/04-phase3-enforcement-slimming.md`, D3 references | deterministic live-integration + runtime log smoke | No | Still needs actual LLM-triggered REPO-OP deny |
+| Tool governance REPO-OP write | `plans/opencode-framework-simplification-roadmap/04-phase3-enforcement-slimming.md`, D3 references | deterministic live-integration + runtime log smoke | No | Still needs actual LLM-triggered REPO-OP deny |
 | Tool governance protected-read allow | `logs/2026-07-11-tool-governance-protected-read-fix.md` | component + direct smoke | No | Must be seen in a real LLM session |
 | Ordinary hot-path DB slimming | `logs/2026-07-11-runtime-smoke.md` | `runtime smoke` | No | Needs explicit live-case closure in this master plan |
 | Weak-model 23-scenario matrix | `e2e/weak-model-23-regression.md` | mixed (`static/code` + `runtime smoke` + partial `live`) | No | Appendix A upgrades all 23 to explicit live targets |
-| Framework maintenance write chain | `e2e/smoke-test-results-20260707.md`, `logs/2026-07-07-live-llm-dispatch-e2e-partial.md`, `plans/06-phase5-legacy-retirement.md` | partial live + runtime smoke + component | No | Still the most important open full-live chain |
+| Framework maintenance write chain | `e2e/smoke-test-results-20260707.md`, `logs/2026-07-07-live-llm-dispatch-e2e-partial.md`, `plans/opencode-framework-simplification-roadmap/06-phase5-legacy-retirement.md` | partial live + runtime smoke + component | No | Still the most important open full-live chain |
 
 ## 4. Pre-Run Gates (Not Counted as Live Cases)
 

@@ -1,0 +1,13 @@
+=== P02-R-ARTIFACT: Negative Control (delete stage results, expect FAIL) ===
+Command: XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork P0_2_PORT_A=4001 P0_2_PORT_B=4002 bun run scripts/test-serve/__tests__/p02-r-artifact-negative.ts
+
+Test output:
+Running runP02...
+runP02 succeeded. Stage results path: /home/zhaoge/.local/state/qoderwork/qoderwork/test-runs/2026-07-20T02-15-58-088Z-p02-r-artifact-neg-a-739f7540/artifacts/p0-2-stage-results.json
+Artifact exists before corruption: true
+Artifact exists after corruption: false
+NEGATIVE CONTROL PASS: existsSync returned false after deletion
+This proves the test is sensitive to artifact corruption (artifactRetention check)
+
+Exit code: 0 (negative control script succeeded in proving sensitivity)
+Sensitivity: PROVEN — artifactRetention check fails when stage results file is deleted

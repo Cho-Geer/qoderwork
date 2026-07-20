@@ -83,4 +83,4 @@ rg --files .opencode -g '*.ts' -0 | xargs -0 wc -l | tail -1
 codegraph status
 ```
 
-然后把得到的数字回填 plans/00-overview.md §1 与 plans/01-phase0-baseline-freeze.md §1 的对应行，再进入 Phase 1 Step 1（冻结 live Skill 清单）。
+然后把得到的数字回填 plans/opencode-framework-simplification-roadmap/00-overview.md §1 与 plans/opencode-framework-simplification-roadmap/01-phase0-baseline-freeze.md §1 的对应行，再进入 Phase 1 Step 1（冻结 live Skill 清单）。

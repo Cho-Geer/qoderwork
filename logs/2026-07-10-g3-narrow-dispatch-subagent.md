@@ -1,6 +1,6 @@
 # Phase 2 G3: 收窄 dispatch_subagent 到 framework maintenance compat path
 
-**为什么**: 交叉审核 G3（logs/2026-07-10-framework-simplification-cross-review.md）发现 `dispatch_subagent` 仍被非框架维护的 legacy 文件引用。plans/03 Phase 2 Step5 完成门槛要求 "dispatch_subagent 只保留 framework maintenance compat 责任"。9 个 inactive legacy agent 不应持有 dispatch_subagent 授权。
+**为什么**: 交叉审核 G3（logs/2026-07-10-framework-simplification-cross-review.md）发现 `dispatch_subagent` 仍被非框架维护的 legacy 文件引用。plans/opencode-framework-simplification-roadmap/03-phase2-native-agent-dag.md Phase 2 Step5 完成门槛要求 "dispatch_subagent 只保留 framework maintenance compat 责任"。9 个 inactive legacy agent 不应持有 dispatch_subagent 授权。
 
 **改了什么**:
 - `.opencode/service/permission/legacy-agent-permissions.ts` — 删除 8 处 `    dispatch_subagent: "allow",`（Meta-Planner/Architect/Coder-BE/Coder-FE/Guardian/Arbiter/CI-CD-Agent/Super-Admin/Knowledge-Curator 等 legacy profile）。`bun build` 语法校验通过（Transpiled file in 12ms）。`rg -c dispatch_subagent` 该文件 = 0。

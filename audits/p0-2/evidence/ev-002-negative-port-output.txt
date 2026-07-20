@@ -1,0 +1,30 @@
+=== P02-R-PORT: Negative Control (occupy port 4001, expect FAIL) ===
+Port 4001 occupied by python3 dummy listener (PID verified via ss -tlnp)
+Command: XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork P0_2_PORT_A=4001 P0_2_PORT_B=4002 bun test scripts/test-serve/__tests__/p02-runtime.test.ts
+
+Test output:
+bun test v1.3.14 (0d9b296a)
+
+scripts/test-serve/__tests__/p02-runtime.test.ts:
+[P02-RUNTIME FAIL] {
+  "runDirA": null,
+  "runDirB": null,
+  "firstFailure": {
+    "stage": "create-a",
+    "error": "port already in use: 4001"
+  },
+  "convergenceErrors": []
+}
+expect(result.ok).toBe(true)
+error: expect(received).toBe(expected)
+Expected: true
+Received: false
+(fail) P0-2 dual-run runtime isolation (PHASE-05) > real runP02 completes 16 stages with A/B isolation evidence [38.60ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [82.00ms]
+
+Exit code: 1
+Sensitivity: PROVEN — runtimeResult check fails when port is occupied

@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P02-PHASE-05-AUDIT-2",
+  "generation": 1,
+  "id": "EV-002",
+  "command": "cd /home/zhaoge/workspace/qoderwork && python3 -c 'import socket,time; s=socket.socket(socket.AF_INET,socket.SOCK_STREAM); s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1); s.bind((\"127.0.0.1\",4001)); s.listen(1); time.sleep(120)' & sleep 1 && XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork P0_2_PORT_A=4001 P0_2_PORT_B=4002 /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/p02-runtime.test.ts",
+  "observed": "FAIL",
+  "requirement_id": "REQ-001",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-BAD-PORT-001",
+  "evidence_level": "runtime-smoke",
+  "repository_state_sha256": "ff35fc68c5b03f5c86b61e9a7c74623880d341f004d0cf2c4df2b4e0224e64cf",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/ev-002-negative-port-output.txt",
+      "sha256": "163af3159382076f09f43b48d5cc578acdf8e1bfa5e856f7c58440a099848b38"
+    }
+  ],
+  "completed_at": "2026-07-20T02:05:00Z"
+}
