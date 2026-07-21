@@ -1,19 +1,21 @@
 # P0-2 最新审计指针
 
-**Latest audit**: `2026-07-21-phase-06a-cleanup-extract-audit-g2.md`（PHASE-06a 循环依赖 + TDZ 修复独立复审，generation 2）
+**Latest audit**: `2026-07-21-phase-04-cli-reimplementation-audit-g3.md`（PHASE-04 CLI 重实施独立复审，generation 3）
 **Audit date**: 2026-07-21
-**Audited phase**: PHASE-06a（generation 2，独立复审）
-**Result**: ✅ ACCEPT
-**Scope lock**: PHASE-06a（lock_id=PHASE-06a，scope_lock SHA-256=d286218f...，status=FROZEN）
-**Freeze Gate 状态**: 已完成（scope-lock APPROVED → human approval → pre-change receipt → verdict-state receipt g2）
-**Findings**: 无
-**Validator**: `validate-audit.ts` valid=true, exit 0, 0 errors
-**Gate status**: PHASE-06a=ACCEPT（cleanup.ts 提取、循环依赖打破、TDZ 预防完成；generation 2 确认 generation 1 结论可复现）；PHASE-04/05/06/07/08 待后续步骤
+**Audited phase**: PHASE-04（generation 3，独立复审）
+**Result**: ✅ Accept（component 级；G2 结论可复现；runtime 补充证据通过）
+**Scope lock**: 不适用（component-only provenance）
+**Freeze Gate 状态**: 不适用（PHASE-01~04 = component-only）
+**Findings**: 2 项 NON_BLOCKING_DEBT 继承自 G2（F-001 existsSync、F-002 harness scope）；无新 BLOCKING
+**Validator**: 不适用（component-only plan）
+**Gate status**: PHASE-04=Accept（G3 独立复审确认可复现 + runtime 补充通过）；PHASE-06a=ACCEPT；下一步 PHASE-05 Freeze Gate
 
 ## 审计历史（新增）
 
 | Date | Audit file | Phase | Result |
 |---|---|---|---|
+| 2026-07-21 | `2026-07-21-phase-04-cli-reimplementation-audit-g3.md` | PHASE-04（generation 3，独立复审） | ✅ Accept（component 级；G2 结论全部可复现；runtime 补充验证 1 pass/50 expect() [20.88s]，16 stages allOk，A/B CLEANED；代码抽查 6 项符合；无新 BLOCKING） |
+| 2026-07-21 | `2026-07-21-phase-04-cli-reimplementation-audit.md` | PHASE-04（generation 2，重实施） | ✅ Accept（component 级；REQ-001/002/003 全 PASS；Check Registry 5 项满足；43 pass/0 fail；Fixed verification 3 命令全 pass；2 NON_BLOCKING_DEBT 继承自 G1；日志声明全部可复现） |
 | 2026-07-21 | `2026-07-21-phase-06a-cleanup-extract-audit-g2.md` | PHASE-06a（generation 2，独立复审） | ✅ ACCEPT（component 级；4 REQ 全 PASS；REQ-003 negative control SENSITIVE；implementation delta=4 allowed_files；validate-audit valid=true, 0 errors；确认 generation 1 可复现） |
 | 2026-07-20 | `2026-07-20-phase-06a-cleanup-extract-audit.md` | PHASE-06a（generation 1） | ✅ ACCEPT（component 级；4 REQ 全 PASS；REQ-003 negative control SENSITIVE；implementation delta=4 allowed_files；validate-audit valid=true, 0 errors） |
 | 2026-07-20 | `2026-07-20-phase-06-cli-smoke-audit.md` | PHASE-06 CLI smoke（generation 1） | ❌ INVALID（Pre-Implementation Freeze Gate 未完成；scope-lock 仍为 PHASE-05；代码修改违反 plan Forbidden） |

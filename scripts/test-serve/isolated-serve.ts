@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { resolve } from "node:path";
+import { isAbsolute, resolve } from "node:path";
 import { bootstrapRun } from "./bootstrap";
 import { cleanupRun } from "./cleanup";
 import { executeRun } from "./execute";
@@ -10,14 +10,15 @@ import {
 } from "./run-context";
 import { inspectRunProcesses, startRunProcesses, stopRunProcesses } from "./process";
 import { runP01b } from "./p01b-orchestrator";
+import { runP02 } from "./p02-orchestrator";
 import { verifyP01b } from "./verify-p01b";
-import type { P01bVerificationPhase } from "./types";
+import type { P01bVerificationPhase, P02Result } from "./types";
 
 
-type Command = "snapshot-source" | "create" | "start" | "status" | "bootstrap" | "execute" | "stop" | "cleanup" | "verify" | "p0-1b" | "help";
+type Command = "snapshot-source" | "create" | "start" | "status" | "bootstrap" | "execute" | "stop" | "cleanup" | "verify" | "p0-1b" | "p0-2" | "help";
 
-const command = (process.argv[2] || "help") as Command;
-const args = process.argv.slice(3);
+let command = (process.argv[2] || "help") as Command;
+let args = process.argv.slice(3);
 
 async function main(): Promise<void> {
   switch (command) {
@@ -148,6 +149,86 @@ async function main(): Promise<void> {
       }
       return;
     }
+    case "p0-2": {
+      // PHASE-04: P0-2 单命令 CLI — 验证 7 个固定 flag 后调用 runP02。
+      // 测试通过 globalThis.__P02_RUNNER__ 注入 spy，避免真实启动 coordinator。
+      const KNOWN_FLAGS = [
+        "--primary-worktree", "--commit", "--port-a", "--port-b",
+        "--test-id", "--main-framework-db",
+      ];
+      for (let i = 0; i < args.length; i += 2) {
+        if (!KNOWN_FLAGS.includes(args[i])) {
+          console.error(JSON.stringify({ ok: false, error: `unknown flag: ${args[i]}` }));
+          process.exit(1);
+          return;
+        }
+      }
+      const p02PrimaryWorktree = getArg("--primary-worktree");
+      const p02Commit = getArg("--commit");
+      const p02PortAStr = getArg("--port-a");
+      const p02PortBStr = getArg("--port-b");
+      const p02TestId = getArg("--test-id");
+      const p02MainFrameworkDb = getArg("--main-framework-db");
+      if (!p02PrimaryWorktree || !p02Commit || !p02PortAStr || !p02PortBStr || !p02TestId || !p02MainFrameworkDb) {
+        console.error(JSON.stringify({ ok: false, check: "requiredArgs" }));
+        process.exit(1);
+        return;
+      }
+      const portA = Number(p02PortAStr);
+      const portB = Number(p02PortBStr);
+      if (!Number.isInteger(portA) || portA < 1 || portA > 65535
+        || !Number.isInteger(portB) || portB < 1 || portB > 65535) {
+        console.error(JSON.stringify({ ok: false, check: "portsDistinct" }));
+        process.exit(1);
+        return;
+      }
+      if (portA === portB) {
+        console.error(JSON.stringify({ ok: false, check: "portsDistinct" }));
+        process.exit(1);
+        return;
+      }
+      if (!isAbsolute(p02PrimaryWorktree) || !isAbsolute(p02MainFrameworkDb)) {
+        console.error(JSON.stringify({ ok: false, check: "absoluteInputs" }));
+        process.exit(1);
+        return;
+      }
+      const g = globalThis as Record<string, unknown>;
+      const runP02Fn = (g.__P02_RUNNER__ as P02Runner | undefined) ?? ((input) =>
+        runP02(input, {
+          createRunContext,
+          startRunProcesses,
+          bootstrapRun,
+          stopRunProcesses,
+          cleanupRun,
+        }));
+      const result = await runP02Fn({
+        primaryWorktree: p02PrimaryWorktree,
+        mainFrameworkDbPath: p02MainFrameworkDb,
+        commit: p02Commit,
+        portA,
+        portB,
+        testId: p02TestId,
+      });
+      if (result.ok) {
+        console.log(JSON.stringify({
+          ok: true,
+          status: result.status,
+          runA: result.runDirA,
+          runB: result.runDirB,
+          checks: result.checks,
+          evidencePaths: result.evidencePaths,
+        }, null, 2));
+      } else {
+        console.error(JSON.stringify({
+          ok: false,
+          firstFailure: result.firstFailure,
+          convergenceErrors: result.convergenceErrors ?? [],
+          evidencePaths: result.evidencePaths,
+        }, null, 2));
+        process.exit(1);
+      }
+      return;
+    }
     case "help":
     default:
       printHelp();
@@ -155,6 +236,23 @@ async function main(): Promise<void> {
 }
 
 export { cleanupRun } from "./cleanup";
+
+// PHASE-04: P0-2 单命令 CLI 入口（component-testable）
+// 供 p02-cli-harness.ts 调用；通过 globalThis.__P02_RUNNER__ 注入 runP02 spy。
+type P02Runner = (input: {
+  primaryWorktree: string;
+  mainFrameworkDbPath: string;
+  commit: string;
+  portA: number;
+  portB: number;
+  testId: string;
+}) => Promise<P02Result>;
+
+export async function runTestServeCli(argv: string[]): Promise<void> {
+  command = (argv[2] || "help") as Command;
+  args = argv.slice(3);
+  return main();
+}
 
 function requiredArg(flag: string): string {
   const value = getArg(flag);
@@ -189,7 +287,8 @@ Commands:
   test-serve stop --run-dir <run-dir>
   test-serve cleanup --run-dir <run-dir>
   test-serve verify --run-dir <run-dir> --phase runtime|cleanup
-  test-serve p0-1b --primary-worktree <dir> --commit <sha> --port <port> --test-id <id>`);
+  test-serve p0-1b --primary-worktree <dir> --commit <sha> --port <port> --test-id <id>
+  test-serve p0-2 --primary-worktree <dir> --commit <sha> --port-a <port> --port-b <port> --test-id <id> --main-framework-db <path>`);
 }
 
 // PHASE-06a: import.meta.main 移到文件末尾，确保其在所有模块级 const 初始化之后执行，
