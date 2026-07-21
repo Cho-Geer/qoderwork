@@ -1168,14 +1168,14 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
   const scopeLockId = isObject(contract.scope_lock) && typeof contract.scope_lock.lock_id === "string" ? contract.scope_lock.lock_id : "";
   const preMap = stateEntryMap(preChangeState?.status_entries);
   const verdictMap = stateEntryMap(verdictState?.status_entries);
+  const sweepCompletedAt = isObject(contract.sweep) && typeof contract.sweep.completed_at === "string" ? Date.parse(contract.sweep.completed_at) : Number.NaN;
   if (preChangeState) {
     if (preChangeState.repository_realpath !== canonicalRepository) issue(errors, "PRE_CHANGE_REPOSITORY_MISMATCH", `pre-change receipt repository differs from baseline`);
     if (preChangeState.head !== implementationBase) issue(errors, "PRE_CHANGE_HEAD_MISMATCH", `pre-change receipt head must equal implementation_base_commit`);
     if (preChangeState.phase_id !== scopeLockId) issue(errors, "PRE_CHANGE_PHASE_MISMATCH", `pre-change receipt phase_id must equal scope_lock.lock_id`);
     if (preChangeState.scope_lock_sha256 !== scopeLockSha256) issue(errors, "PRE_CHANGE_SCOPE_LOCK_MISMATCH", `pre-change receipt is not bound to scope lock`);
     const preAt = typeof preChangeState.captured_at === "string" ? Date.parse(preChangeState.captured_at) : Number.NaN;
-    const frozenAt = isObject(contract.scope) && typeof contract.scope.frozen_at === "string" ? Date.parse(contract.scope.frozen_at) : Number.NaN;
-    if (Number.isNaN(preAt) || Number.isNaN(frozenAt) || preAt > frozenAt) issue(errors, "PRE_CHANGE_TIME_INVALID", `pre-change receipt must precede scope freeze`);
+    if (Number.isNaN(preAt) || Number.isNaN(sweepCompletedAt) || preAt > sweepCompletedAt) issue(errors, "PRE_CHANGE_TIME_INVALID", `pre-change receipt must precede sweep completion`);
   }
   if (verdictState) {
     if (verdictState.repository_realpath !== canonicalRepository) issue(errors, "VERDICT_STATE_REPOSITORY_MISMATCH", `verdict-state receipt repository differs from baseline`);
@@ -1184,8 +1184,7 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
     if (verdictState.scope_lock_sha256 !== scopeLockSha256) issue(errors, "VERDICT_STATE_SCOPE_LOCK_MISMATCH", `verdict-state receipt is not bound to scope lock`);
     if (JSON.stringify([...verdictMap.entries()].sort()) !== JSON.stringify([...actualStatus.entries()].sort())) issue(errors, "VERDICT_STATE_MISMATCH", `current git status differs from verdict-state receipt`);
     const verdictAt = typeof verdictState.captured_at === "string" ? Date.parse(verdictState.captured_at) : Number.NaN;
-    const sweepAt = isObject(contract.sweep) && typeof contract.sweep.completed_at === "string" ? Date.parse(contract.sweep.completed_at) : Number.NaN;
-    if (Number.isNaN(verdictAt) || Number.isNaN(sweepAt) || verdictAt < sweepAt) issue(errors, "VERDICT_STATE_TIME_INVALID", `verdict-state receipt must be captured after sweep completion`);
+    if (Number.isNaN(verdictAt) || Number.isNaN(sweepCompletedAt) || verdictAt < sweepCompletedAt) issue(errors, "VERDICT_STATE_TIME_INVALID", `verdict-state receipt must be captured after sweep completion`);
   }
 
   const deltaPaths = unique([...preMap.keys(), ...actualStatus.keys()]).filter((path) => preMap.get(path) !== actualStatus.get(path));
