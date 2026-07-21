@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { isAbsolute, relative, resolve } from "node:path";
 
-type AuditIssue = { code: string; message: string };
+type AuditIssue = { code: string; message: string; fix?: string };
 type JsonObject = Record<string, unknown>;
 
 export type AuditValidationResult = {
@@ -65,8 +65,8 @@ const EVIDENCE_LEVELS = new Map([
   ["live-LLM-E2E", 4],
 ]);
 
-function issue(target: AuditIssue[], code: string, message: string) {
-  target.push({ code, message });
+function issue(target: AuditIssue[], code: string, message: string, fix?: string) {
+  target.push(fix ? { code, message, fix } : { code, message });
 }
 
 function isObject(value: unknown): value is JsonObject {
@@ -91,7 +91,7 @@ function arrayAt(value: unknown, path: string, errors: AuditIssue[]): unknown[] 
 
 function stringAt(value: unknown, path: string, errors: AuditIssue[], allowNA = false): string {
   if (typeof value !== "string" || value.trim().length === 0 || (!allowNA && value.trim() === "N/A")) {
-    issue(errors, "EXPECTED_NONEMPTY_STRING", `${path} must be a concrete non-empty string`);
+    issue(errors, "EXPECTED_NONEMPTY_STRING", `${path} must be a concrete non-empty string`, "Fill in a concrete value; empty strings and N/A are rejected unless the field explicitly allows N/A.");
     return "";
   }
   return value.trim();
@@ -252,11 +252,11 @@ function checkEvidenceReceipts(value: unknown, verdictStateSha256: string, error
     if (evidenceLevel && !EVIDENCE_LEVELS.has(evidenceLevel)) issue(errors, "INVALID_EVIDENCE_LEVEL", `${path}.evidence_level=${evidenceLevel}`);
     const repositoryStateSha256 = stringAt(receipt.repository_state_sha256, `${path}.repository_state_sha256`, errors);
     requireSha256(repositoryStateSha256, `${path}.repository_state_sha256`, errors);
-    if (verdictStateSha256 && repositoryStateSha256 !== verdictStateSha256) issue(errors, "EVIDENCE_RECEIPT_BASELINE_MISMATCH", `${id}: receipt is not bound to baseline.verdict_state_receipt`);
+    if (verdictStateSha256 && repositoryStateSha256 !== verdictStateSha256) issue(errors, "EVIDENCE_RECEIPT_BASELINE_MISMATCH", `${id}: receipt is not bound to baseline.verdict_state_receipt`, "Set receipt repository_state_sha256 to the sha256 of baseline.verdict_state_receipt file.");
     const exitCode = Number.isInteger(receipt.exit_code) ? Number(receipt.exit_code) : null;
     if (exitCode === null) issue(errors, "INVALID_RECEIPT_EXIT_CODE", `${path}.exit_code must be an integer`);
-    if (observed === "PASS" && exitCode !== 0) issue(errors, "RECEIPT_EXIT_OBSERVATION_MISMATCH", `${id}: PASS requires exit_code=0`);
-    if (observed === "FAIL" && exitCode === 0) issue(errors, "RECEIPT_EXIT_OBSERVATION_MISMATCH", `${id}: FAIL requires non-zero exit_code`);
+    if (observed === "PASS" && exitCode !== 0) issue(errors, "RECEIPT_EXIT_OBSERVATION_MISMATCH", `${id}: PASS requires exit_code=0`, "Regenerate the receipt from a real passing execution (exit 0).");
+    if (observed === "FAIL" && exitCode === 0) issue(errors, "RECEIPT_EXIT_OBSERVATION_MISMATCH", `${id}: FAIL requires non-zero exit_code`, "Regenerate the receipt from a real failing execution (exit non-zero).");
     const cwd = stringAt(receipt.cwd, `${path}.cwd`, errors);
     if (cwd && !cwd.startsWith("/")) issue(errors, "RECEIPT_CWD_NOT_ABSOLUTE", `${path}.cwd must be absolute`);
     if (cwd && command && !command.startsWith(`cd ${cwd} && `)) issue(errors, "RECEIPT_CWD_COMMAND_MISMATCH", `${id}: command must start with receipt cwd`);
@@ -303,7 +303,7 @@ function checkControl(
     const receipt = receipts.get(evidence);
     if (!receipt) issue(errors, "EVIDENCE_RECEIPT_NOT_FOUND", `${path}.evidence references missing receipt ${evidence}`);
     else {
-      if (receipt.command !== command) issue(errors, "EVIDENCE_RECEIPT_COMMAND_MISMATCH", `${path}: ${evidence} command differs from control`);
+      if (receipt.command !== command) issue(errors, "EVIDENCE_RECEIPT_COMMAND_MISMATCH", `${path}: ${evidence} command differs from control`, "Copy the exact command string from the EV receipt into the control.command field.");
       if (receipt.observed !== observed) issue(errors, "EVIDENCE_RECEIPT_OBSERVED_MISMATCH", `${path}: ${evidence} observed differs from control`);
       if (binding) {
         if (receipt.requirementId !== binding.requirementId) issue(errors, "EVIDENCE_RECEIPT_REQUIREMENT_MISMATCH", `${path}: ${evidence} belongs to ${receipt.requirementId}`);
@@ -352,7 +352,7 @@ function checkRequirements(value: unknown, planPaths: string[], receipts: Map<st
       if (applicability !== "REQUIRED") issue(errors, "NEGATIVE_CONTROL_REQUIRED", `${id}: behavioral requirement needs REQUIRED negative control`);
       if (method === "N/A") issue(errors, "NEGATIVE_METHOD_MISSING", `${id}: behavioral negative method must be concrete`);
       if ((status === "PASS" || status === "FAIL") && negative.observed !== "FAIL") {
-        issue(errors, "NEGATIVE_CONTROL_NOT_SENSITIVE", `${id}: ${status} requires negative control observed FAIL`);
+        issue(errors, "NEGATIVE_CONTROL_NOT_SENSITIVE", `${id}: ${status} requires negative control observed FAIL`, "Run the negative control (bad fixture) and ensure it produces observed=FAIL in the EV receipt.");
       }
       if (positive.command === negative.command) {
         issue(errors, "CONTROL_COMMAND_NOT_DISCRIMINATING", `${id}: positive and negative controls must use observably different commands or fixtures`);
@@ -370,10 +370,10 @@ function checkRequirements(value: unknown, planPaths: string[], receipts: Map<st
         issue(errors, "STATIC_NEGATIVE_CONTRACT", `${id}: static negative control command/method/expected/observed must be N/A`);
       }
     }
-    if (status === "PASS" && positive.observed !== "PASS") issue(errors, "POSITIVE_CONTROL_MISMATCH", `${id}: PASS requires positive observed PASS`);
-    if (status === "FAIL" && positive.observed !== "FAIL") issue(errors, "POSITIVE_CONTROL_MISMATCH", `${id}: FAIL requires positive observed FAIL`);
+    if (status === "PASS" && positive.observed !== "PASS") issue(errors, "POSITIVE_CONTROL_MISMATCH", `${id}: PASS requires positive observed PASS`, "Align requirement status with positive_control.observed from the EV receipt.");
+    if (status === "FAIL" && positive.observed !== "FAIL") issue(errors, "POSITIVE_CONTROL_MISMATCH", `${id}: FAIL requires positive observed FAIL`, "Align requirement status with positive_control.observed from the EV receipt.");
     if (status === "BLOCKED" && !["BLOCKED", "NOT_RUN"].includes(positive.observed)) {
-      issue(errors, "POSITIVE_CONTROL_MISMATCH", `${id}: BLOCKED requires positive observed BLOCKED or NOT_RUN`);
+      issue(errors, "POSITIVE_CONTROL_MISMATCH", `${id}: BLOCKED requires positive observed BLOCKED or NOT_RUN`, "Align requirement status with positive_control.observed from the EV receipt.");
     }
     result.push({ id, planItemId, kind, status, requiredLevel, oracleId, source });
   }
@@ -497,7 +497,7 @@ function checkInheritedBlockers(value: unknown, errors: AuditIssue[]): void {
 function checkDowngradeDeclaration(value: unknown, provenanceLevel: string | null, evidenceCeiling: string | null, errors: AuditIssue[]): void {
   if (provenanceLevel === "v2.1-required" && evidenceCeiling === "component") {
     if (value === null || value === undefined) {
-      issue(errors, "DOWNGRADE_DECLARATION_REQUIRED", `provenance_level=v2.1-required with evidence_ceiling=component requires non-null downgrade_declaration (AGENTS.md §15 rule P-05)`);
+      issue(errors, "DOWNGRADE_DECLARATION_REQUIRED", `provenance_level=v2.1-required with evidence_ceiling=component requires non-null downgrade_declaration (AGENTS.md §15 rule P-05)`, "Add downgrade_declaration with 4 fields: reason, ceiling, unaffected_scope, affected_scope.");
       return;
     }
     const decl = objectAt(value, "downgrade_declaration", errors);
@@ -550,19 +550,19 @@ function checkReworkPackage(value: unknown, openBlockers: FindingSummary[], erro
 
 function checkVerdictBody(source: string, verdict: string, errors: AuditIssue[]) {
   const matches = [...source.matchAll(/^\*\*Verdict\*\*:\s*`(ACCEPT|REWORK|BLOCKED|INVALID)`\s*$/gm)];
-  if (matches.length !== 1) issue(errors, "BODY_VERDICT_COUNT", `expected one exact body verdict, found ${matches.length}`);
-  else if (matches[0][1] !== verdict) issue(errors, "BODY_VERDICT_MISMATCH", `body=${matches[0][1]}, contract=${verdict}`);
+  if (matches.length !== 1) issue(errors, "BODY_VERDICT_COUNT", `expected one exact body verdict, found ${matches.length}`, "Section 10 must contain exactly one line: **Verdict**: `ACCEPT` (backtick-wrapped, matching contract.verdict).");
+  else if (matches[0][1] !== verdict) issue(errors, "BODY_VERDICT_MISMATCH", `body=${matches[0][1]}, contract=${verdict}`, "Make the body verdict line match contract.verdict exactly.");
 }
 
 function checkNarrativeIdentity(source: string, auditId: string | null, commit: string, requirementIds: string[], findingIds: string[], errors: AuditIssue[]) {
   const narrative = source.replace(/<!-- AUDIT_CONTRACT_START -->[\s\S]*?<!-- AUDIT_CONTRACT_END -->/, "");
-  if (auditId && !narrative.includes(auditId)) issue(errors, "BODY_AUDIT_ID_MISSING", `narrative body must repeat audit_id ${auditId}`);
-  if (commit && !narrative.includes(commit)) issue(errors, "BODY_BASELINE_MISSING", `narrative body must repeat baseline commit ${commit}`);
+  if (auditId && !narrative.includes(auditId)) issue(errors, "BODY_AUDIT_ID_MISSING", `narrative body must repeat audit_id ${auditId}`, "Mention the audit_id string somewhere in the narrative sections (outside the contract JSON block).");
+  if (commit && !narrative.includes(commit)) issue(errors, "BODY_BASELINE_MISSING", `narrative body must repeat baseline commit ${commit}`, "Mention the baseline commit SHA somewhere in the narrative sections.");
   for (const id of requirementIds) {
-    if (!narrative.includes(id)) issue(errors, "BODY_REQUIREMENT_MISSING", `narrative body must cover ${id}`);
+    if (!narrative.includes(id)) issue(errors, "BODY_REQUIREMENT_MISSING", `narrative body must cover ${id}`, "Mention every REQ-NNN id in the narrative (e.g. in the requirement matrix or sweep table).");
   }
   for (const id of findingIds) {
-    if (!narrative.includes(id)) issue(errors, "BODY_FINDING_MISSING", `narrative body must cover ${id}`);
+    if (!narrative.includes(id)) issue(errors, "BODY_FINDING_MISSING", `narrative body must cover ${id}`, "Mention every F-NNN finding id in the narrative (e.g. in the findings section).");
   }
 }
 
@@ -571,7 +571,7 @@ export function validateAuditSource(source: string, label = "audit.md"): AuditVa
   const warnings: AuditIssue[] = [];
 
   for (const heading of REQUIRED_HEADINGS) {
-    if (!source.includes(heading)) issue(errors, "MISSING_SECTION", `${label}: ${heading}`);
+    if (!source.includes(heading)) issue(errors, "MISSING_SECTION", `${label}: ${heading}`, "Add the missing markdown heading verbatim (see REQUIRED_HEADINGS in validate-audit.ts or the audit-report-template.md).");
   }
   const unresolvedPatterns: Array<[string, RegExp]> = [
     ["UNRESOLVED_REPLACE", /\bREPLACE_[A-Z0-9_]+\b/g],
@@ -673,7 +673,7 @@ export function validateAuditSource(source: string, label = "audit.md"): AuditVa
   const completedAt = stringAt(sweep.completed_at, "sweep.completed_at", errors);
   requireIsoTimestamp(completedAt, "sweep.completed_at", errors);
   if (frozenAt && completedAt && !Number.isNaN(Date.parse(frozenAt)) && !Number.isNaN(Date.parse(completedAt)) && Date.parse(frozenAt) > Date.parse(completedAt)) {
-    issue(errors, "FREEZE_AFTER_SWEEP", `scope.frozen_at must be at or before sweep.completed_at`);
+    issue(errors, "FREEZE_AFTER_SWEEP", `scope.frozen_at must be at or before sweep.completed_at`, "Re-freeze the scope-lock before running the sweep, or correct scope.frozen_at to an earlier timestamp.");
   }
   if (sweepStatus === "COMPLETE" && !sameSet(sweepIds, inScope)) issue(errors, "SWEEP_SCOPE_SET_MISMATCH", `complete sweep requirement_ids must equal frozen in_scope`);
 
@@ -714,13 +714,13 @@ export function validateAuditSource(source: string, label = "audit.md"): AuditVa
     issue(errors, "EVIDENCE_CEILING_NOT_EXECUTABLE", `${verdictValue} cannot use evidence_ceiling=NOT-RUN`);
   }
   if (verdictValue === "ACCEPT" && provenanceLevel === "component-only") {
-    issue(errors, "COMPONENT_ONLY_ACCEPT_FORBIDDEN", `ACCEPT forbidden when scope.provenance_level=component-only (AGENTS.md §15 rule P-06)`);
+    issue(errors, "COMPONENT_ONLY_ACCEPT_FORBIDDEN", `ACCEPT forbidden when scope.provenance_level=component-only (AGENTS.md §15 rule P-06)`, "Use verdict REWORK or BLOCKED for component-only plans; v2.1 ACCEPT requires provenance_level=v2.1-required.");
   }
   if ((verdictValue === "ACCEPT" || verdictValue === "REWORK") && !preChangeReceipt) issue(errors, "PRE_CHANGE_RECEIPT_REQUIRED", `${verdictValue} requires baseline.pre_change_receipt`);
   if ((verdictValue === "ACCEPT" || verdictValue === "REWORK") && !verdictStateReceipt) issue(errors, "VERDICT_STATE_RECEIPT_REQUIRED", `${verdictValue} requires baseline.verdict_state_receipt`);
 
   if ((verdictValue === "ACCEPT" || verdictValue === "REWORK") && planPaths.length === 0) issue(errors, "AUTHORITATIVE_PLAN_MISSING", `${verdictValue} requires at least one plan source`);
-  if ((verdictValue === "ACCEPT" || verdictValue === "REWORK") && scopeStatus !== "FROZEN") issue(errors, "SCOPE_NOT_FROZEN", `${verdictValue} requires scope.status=FROZEN`);
+  if ((verdictValue === "ACCEPT" || verdictValue === "REWORK") && scopeStatus !== "FROZEN") issue(errors, "SCOPE_NOT_FROZEN", `${verdictValue} requires scope.status=FROZEN`, "Set contract scope.status to FROZEN (must match the frozen scope-lock).");
   if ((verdictValue === "ACCEPT" || verdictValue === "REWORK") && sweepStatus !== "COMPLETE") issue(errors, "SWEEP_NOT_COMPLETE", `${verdictValue} requires sweep.status=COMPLETE`);
   if ((verdictValue === "ACCEPT" || verdictValue === "REWORK") && commit !== headAtVerdict) issue(errors, "BASELINE_DRIFT", `${verdictValue} requires baseline commit == head_at_verdict`);
   if ((verdictValue === "ACCEPT" || verdictValue === "REWORK") && unclassified !== 0) issue(errors, "UNCLASSIFIED_FINDINGS", `${verdictValue} requires unclassified_findings=0`);
@@ -794,7 +794,7 @@ function hashFile(path: string): string {
 function resolveLedgerFile(root: string, ledgerPath: string, field: string, errors: AuditIssue[]): string | null {
   if (!root || !ledgerPath) return null;
   if (isAbsolute(ledgerPath)) {
-    issue(errors, "SOURCE_PATH_NOT_RELATIVE", `${field} must be relative to baseline.workspace_root`);
+    issue(errors, "SOURCE_PATH_NOT_RELATIVE", `${field} must be relative to baseline.workspace_root`, "Remove the absolute path prefix; use a path relative to baseline.workspace_root (e.g. audits/p0-2/evidence/file.json).");
     return null;
   }
   const candidate = resolve(root, ledgerPath);
@@ -917,7 +917,7 @@ function planAnchorExists(workspaceRoot: string, source: string): boolean {
 
 function checkPlanRegistry(lock: JsonObject, contract: JsonObject, workspaceRoot: string, errors: AuditIssue[]) {
   const registry = Array.isArray(lock.plan_registry) ? lock.plan_registry : [];
-  if (registry.length === 0) issue(errors, "PLAN_REGISTRY_MISSING", `approved scope lock requires a non-empty plan_registry`);
+  if (registry.length === 0) issue(errors, "PLAN_REGISTRY_MISSING", `approved scope lock requires a non-empty plan_registry`, "Add plan_registry to the scope-lock with one entry per plan item (IN_SCOPE or EXCLUDED).");
   const requirements = Array.isArray(contract.requirements) ? contract.requirements.filter(isObject) : [];
   const inScopeItems: JsonObject[] = [];
   const itemIds: string[] = [];
@@ -969,7 +969,7 @@ function checkPlanRegistry(lock: JsonObject, contract: JsonObject, workspaceRoot
       oracle_id: requirement.oracle_id,
       oracle: requirement.oracle,
     };
-    if (JSON.stringify(registryProjection) !== JSON.stringify(requirementProjection)) issue(errors, "PLAN_REGISTRY_REQUIREMENT_MISMATCH", `${String(item.plan_item_id)} differs from audit requirement`);
+    if (JSON.stringify(registryProjection) !== JSON.stringify(requirementProjection)) issue(errors, "PLAN_REGISTRY_REQUIREMENT_MISMATCH", `${String(item.plan_item_id)} differs from audit requirement`, "Make plan_registry IN_SCOPE entry fields (kind/source/behavior/required_evidence_level/oracle_id/oracle) identical to the corresponding requirements[] entry.");
   }
 }
 
@@ -1034,13 +1034,13 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
       if (isObject(contract.scope_lock) && verifiedLock.lock_id !== contract.scope_lock.lock_id) issue(errors, "SCOPE_LOCK_ID_MISMATCH", `scope_lock.lock_id differs from referenced lock`);
       const approval = isObject(verifiedLock.approval) ? verifiedLock.approval : {};
       const requiresApproval = contract.verdict === "ACCEPT" || contract.verdict === "REWORK";
-      if (requiresApproval && (approval.status !== "APPROVED" || approval.actor_type !== "HUMAN")) issue(errors, "SCOPE_LOCK_NOT_HUMAN_APPROVED", `${String(contract.verdict)} requires APPROVED HUMAN scope lock approval`);
+      if (requiresApproval && (approval.status !== "APPROVED" || approval.actor_type !== "HUMAN")) issue(errors, "SCOPE_LOCK_NOT_HUMAN_APPROVED", `${String(contract.verdict)} requires APPROVED HUMAN scope lock approval`, "Set scope-lock approval.status=APPROVED, actor_type=HUMAN, with approved_by and evidence fields.");
       if (!requiresApproval && !["APPROVED", "PENDING"].includes(String(approval.status))) issue(errors, "SCOPE_LOCK_APPROVAL_STATE_INVALID", `non-signing verdict permits scope lock approval status APPROVED or PENDING`);
       if (approval.status === "APPROVED" && (typeof approval.approved_by !== "string" || approval.approved_by.trim().length === 0 || typeof approval.evidence !== "string" || approval.evidence.trim().length === 0)) {
         issue(errors, "SCOPE_LOCK_APPROVAL_INCOMPLETE", `scope lock approval requires approved_by and evidence`);
       }
       if (JSON.stringify(scopeLockProjection(verifiedLock)) !== JSON.stringify(frozenProjection(contract))) {
-        issue(errors, "SCOPE_LOCK_CONTRACT_MISMATCH", `audit plan/scope/requirement contract differs from approved scope lock`);
+        issue(errors, "SCOPE_LOCK_CONTRACT_MISMATCH", `audit plan/scope/requirement contract differs from approved scope lock`, "Copy plan_sources, scope (in_scope/out_of_scope/assumptions/exit_criteria), and requirements verbatim from the scope-lock. Use prepare-audit.ts to generate the contract automatically.");
       }
       checkPlanRegistry(verifiedLock, contract, canonicalWorkspace, errors);
     }
@@ -1063,8 +1063,8 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
         delete actualPayload.schema_version;
         delete actualPayload.audit_id;
         delete actualPayload.generation;
-        if (receiptAuditId !== contract.audit_id || receiptGeneration !== contract.generation) issue(errors, "EVIDENCE_RECEIPT_AUDIT_MISMATCH", `${field} belongs to a different audit generation`);
-        if (JSON.stringify(actualPayload) !== JSON.stringify(expectedPayload)) issue(errors, "EVIDENCE_RECEIPT_PAYLOAD_MISMATCH", `${field} ledger differs from immutable receipt`);
+        if (receiptAuditId !== contract.audit_id || receiptGeneration !== contract.generation) issue(errors, "EVIDENCE_RECEIPT_AUDIT_MISMATCH", `${field} belongs to a different audit generation`, "Ensure all EV receipts have the same audit_id and generation as the contract. Regenerate receipts if needed.");
+        if (JSON.stringify(actualPayload) !== JSON.stringify(expectedPayload)) issue(errors, "EVIDENCE_RECEIPT_PAYLOAD_MISMATCH", `${field} ledger differs from immutable receipt`, "Copy every receipt field byte-for-byte into the ledger entry (minus schema_version/audit_id/generation), preserving key order. Use prepare-audit.ts to generate the contract automatically.");
         const cwd = typeof item.cwd === "string" ? item.cwd : "";
         if (!cwd || !isAbsolute(cwd) || !existsSync(cwd) || !statSync(cwd).isDirectory()) {
           issue(errors, "EVIDENCE_RECEIPT_CWD_UNAVAILABLE", `${field}.cwd is not an available absolute directory: ${cwd}`);
@@ -1150,7 +1150,7 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
   }
   const actualHead = headRun.stdout.toString().trim();
   if (baseline.head_at_verdict !== actualHead || baseline.commit !== actualHead) {
-    issue(errors, "GIT_HEAD_MISMATCH", `actual=${actualHead}, commit=${String(baseline.commit)}, head_at_verdict=${String(baseline.head_at_verdict)}`);
+    issue(errors, "GIT_HEAD_MISMATCH", `actual=${actualHead}, commit=${String(baseline.commit)}, head_at_verdict=${String(baseline.head_at_verdict)}`, "Set baseline.commit and baseline.head_at_verdict to the current repository_root HEAD (git -C <repository_root> rev-parse HEAD).");
   }
   const implementationBase = typeof baseline.implementation_base_commit === "string" ? baseline.implementation_base_commit : "";
   const ancestry = Bun.spawnSync({ cmd: ["git", "-C", canonicalRepository, "merge-base", "--is-ancestor", implementationBase, actualHead], stdout: "pipe", stderr: "pipe" });
@@ -1159,7 +1159,7 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
   const actualStatus = gitStatusEntryMap(canonicalRepository, errors);
   const actualDirty = [...actualStatus.keys()].sort();
   const declaredDirty = Array.isArray(baseline.dirty_paths) ? baseline.dirty_paths.filter((value): value is string => typeof value === "string").sort() : [];
-  if (!sameSet(actualDirty, declaredDirty)) issue(errors, "DIRTY_PATH_SET_MISMATCH", `declared=${JSON.stringify(declaredDirty)}, actual=${JSON.stringify(actualDirty)}`);
+  if (!sameSet(actualDirty, declaredDirty)) issue(errors, "DIRTY_PATH_SET_MISMATCH", `declared=${JSON.stringify(declaredDirty)}, actual=${JSON.stringify(actualDirty)}`, "Set baseline.dirty_paths to match git -C <repository_root> status --porcelain output, or commit/stash the dirty files.");
   const repositoryScope = verifiedLock && isObject(verifiedLock.repository_scope) ? verifiedLock.repository_scope : {};
   const allowed = Array.isArray(repositoryScope.allowed_paths) ? repositoryScope.allowed_paths.filter((value): value is string => typeof value === "string") : [];
   const forbidden = Array.isArray(repositoryScope.forbidden_paths) ? repositoryScope.forbidden_paths.filter((value): value is string => typeof value === "string") : [];
@@ -1171,20 +1171,20 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
   const sweepCompletedAt = isObject(contract.sweep) && typeof contract.sweep.completed_at === "string" ? Date.parse(contract.sweep.completed_at) : Number.NaN;
   if (preChangeState) {
     if (preChangeState.repository_realpath !== canonicalRepository) issue(errors, "PRE_CHANGE_REPOSITORY_MISMATCH", `pre-change receipt repository differs from baseline`);
-    if (preChangeState.head !== implementationBase) issue(errors, "PRE_CHANGE_HEAD_MISMATCH", `pre-change receipt head must equal implementation_base_commit`);
+    if (preChangeState.head !== implementationBase) issue(errors, "PRE_CHANGE_HEAD_MISMATCH", `pre-change receipt head must equal implementation_base_commit`, "Recapture pre-change receipt against the correct repository_root, or set implementation_base_commit to the pre-change receipt head.");
     if (preChangeState.phase_id !== scopeLockId) issue(errors, "PRE_CHANGE_PHASE_MISMATCH", `pre-change receipt phase_id must equal scope_lock.lock_id`);
     if (preChangeState.scope_lock_sha256 !== scopeLockSha256) issue(errors, "PRE_CHANGE_SCOPE_LOCK_MISMATCH", `pre-change receipt is not bound to scope lock`);
     const preAt = typeof preChangeState.captured_at === "string" ? Date.parse(preChangeState.captured_at) : Number.NaN;
-    if (Number.isNaN(preAt) || Number.isNaN(sweepCompletedAt) || preAt > sweepCompletedAt) issue(errors, "PRE_CHANGE_TIME_INVALID", `pre-change receipt must precede sweep completion`);
+    if (Number.isNaN(preAt) || Number.isNaN(sweepCompletedAt) || preAt > sweepCompletedAt) issue(errors, "PRE_CHANGE_TIME_INVALID", `pre-change receipt must precede sweep completion`, "Recapture pre-change receipt BEFORE running the sweep (captured_at <= sweep.completed_at).");
   }
   if (verdictState) {
     if (verdictState.repository_realpath !== canonicalRepository) issue(errors, "VERDICT_STATE_REPOSITORY_MISMATCH", `verdict-state receipt repository differs from baseline`);
-    if (verdictState.head !== actualHead) issue(errors, "VERDICT_STATE_HEAD_MISMATCH", `verdict-state receipt head must equal actual HEAD`);
+    if (verdictState.head !== actualHead) issue(errors, "VERDICT_STATE_HEAD_MISMATCH", `verdict-state receipt head must equal actual HEAD`, "Recapture verdict-state receipt at the current repository_root HEAD.");
     if (verdictState.phase_id !== scopeLockId) issue(errors, "VERDICT_STATE_PHASE_MISMATCH", `verdict-state receipt phase_id must equal scope_lock.lock_id`);
     if (verdictState.scope_lock_sha256 !== scopeLockSha256) issue(errors, "VERDICT_STATE_SCOPE_LOCK_MISMATCH", `verdict-state receipt is not bound to scope lock`);
     if (JSON.stringify([...verdictMap.entries()].sort()) !== JSON.stringify([...actualStatus.entries()].sort())) issue(errors, "VERDICT_STATE_MISMATCH", `current git status differs from verdict-state receipt`);
     const verdictAt = typeof verdictState.captured_at === "string" ? Date.parse(verdictState.captured_at) : Number.NaN;
-    if (Number.isNaN(verdictAt) || Number.isNaN(sweepCompletedAt) || verdictAt < sweepCompletedAt) issue(errors, "VERDICT_STATE_TIME_INVALID", `verdict-state receipt must be captured after sweep completion`);
+    if (Number.isNaN(verdictAt) || Number.isNaN(sweepCompletedAt) || verdictAt < sweepCompletedAt) issue(errors, "VERDICT_STATE_TIME_INVALID", `verdict-state receipt must be captured after sweep completion`, "Recapture verdict-state receipt AFTER the sweep completes (captured_at >= sweep.completed_at).");
   }
 
   const deltaPaths = unique([...preMap.keys(), ...actualStatus.keys()]).filter((path) => preMap.get(path) !== actualStatus.get(path));

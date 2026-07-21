@@ -108,6 +108,7 @@ change attributable and reviewable.
 | Scope-lock template | `templates/scope-lock-template.json` |
 | Evidence-receipt schema | `templates/evidence-receipt-template.json` (runner output shape; do not self-attest) |
 | State capture | `scripts/capture-state.ts` |
+| Contract generator | `scripts/prepare-audit.ts` — assembles byte-exact contract + report skeleton from scope-lock, EV receipts, pre-change and verdict-state receipts |
 | Pre-check (gate 1) | `scripts/pre-check-evidence.ts` |
 | Validator (gate 2) | `scripts/validate-audit.ts` |
 | Formal archive | `audits/<plan-name>/<YYYY-MM-DD>-audit[-N].md` |
@@ -153,6 +154,8 @@ produce `INVALID` verdicts.
    — the canonical report and receipt shapes.
 
 > **合理化检测**: 如果你发现自己在想「参考前序 phase 的 scope-lock 或 audit report 作为模板就够了，不需要读 validator」——停下来，这是跳步信号。前序 phase 可能本身就不合规；唯一权威是 validator 代码与官方模板。
+
+> **合理化检测**: 如果你发现自己在手动复制 receipt 字段到 contract ledger——停下来，这是 `EVIDENCE_RECEIPT_PAYLOAD_MISMATCH` 的首要原因。运行 `prepare-audit.ts` 自动生成 byte-exact contract，然后只编辑 `REPLACE_*` 占位符。
 
 ### Scope-lock 字段速查表
 
@@ -442,7 +445,19 @@ mislabelled.
 1. 完成 Step 4-8（sweep 全部 in-scope requirement），得到 sweep.completed_at 时间戳
 2. 用 `capture-state.ts` 捕获 verdict-state receipt 到新路径（`verdict-state-<PHASE>.json`）— 此时 `captured_at` 必须 ≥ `sweep.completed_at`
 3. 哈希 verdict-state receipt，将每个 EV-NNN receipt 的 `repository_state_sha256` 字段绑定到该哈希
-4. 复制 `templates/audit-report-template.md` 并填写完整内容，包括 JSON contract
+4. **推荐**：用 `prepare-audit.ts` 生成报告骨架（byte-exact contract + 21-section 结构），然后只编辑 `REPLACE_*` 占位符。手动转录 receipt 字段是 `EVIDENCE_RECEIPT_PAYLOAD_MISMATCH` 的首要原因。
+   ```bash
+   bun run .agents/skills/plan-audit-archiver/scripts/prepare-audit.ts \
+     --workspace-root /home/zhaoge/workspace/qoderwork \
+     --scope-lock audits/<plan>/scope-lock-<PHASE>.json \
+     --pre-change audits/<plan>/evidence/pre-change-<PHASE>.json \
+     --verdict-state audits/<plan>/evidence/verdict-state-<PHASE>.json \
+     --evidence-dir audits/<plan>/evidence \
+     --receipt-prefix <prefix> \
+     --output audits/<plan>/<YYYY-MM-DD>-audit[-N].md \
+     --verdict ACCEPT --evidence-ceiling component
+   ```
+5. 复制 `templates/audit-report-template.md` 并填写完整内容，包括 JSON contract（如未使用 prepare-audit.ts）
 5. **在 contract 中写 `verdict: ACCEPT` 之前**，必须先完成 step 6-7 的两道闸门
 6. **Gate 1**: 运行 `pre-check-evidence.ts` — exit 0 才能继续
 7. **Gate 2**: 运行 `validate-audit.ts` — exit 0 才能继续
