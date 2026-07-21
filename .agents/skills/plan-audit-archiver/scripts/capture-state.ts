@@ -55,9 +55,21 @@ export function captureRepositoryState(options: {
   scopeLockPath: string;
   phaseId: string;
   capturedAt?: string;
+  freezeAt?: string;
 }): RepositoryStateReceipt {
   if (!isAbsolute(options.repositoryRoot)) throw new Error("repositoryRoot must be absolute");
   if (!existsSync(options.scopeLockPath) || !statSync(options.scopeLockPath).isFile()) throw new Error("scopeLockPath must identify an existing file");
+  if (options.freezeAt !== undefined) {
+    if (Number.isNaN(Date.parse(options.freezeAt))) throw new Error("freezeAt must be ISO-8601");
+    const lockContent: unknown = JSON.parse(readFileSync(options.scopeLockPath, "utf8"));
+    if (typeof lockContent !== "object" || lockContent === null || typeof (lockContent as Record<string, unknown>).scope !== "object" || (lockContent as Record<string, unknown>).scope === null) {
+      throw new Error("scope-lock must contain a scope object to use --freeze");
+    }
+    const scope = (lockContent as Record<string, unknown>).scope as Record<string, unknown>;
+    scope.frozen_at = options.freezeAt;
+    scope.status = "FROZEN";
+    writeFileSync(options.scopeLockPath, JSON.stringify(lockContent, null, 2) + "\n");
+  }
   const repositoryRealpath = realpathSync(options.repositoryRoot);
   const gitRoot = realpathSync(git(repositoryRealpath, ["rev-parse", "--show-toplevel"]).trim());
   if (gitRoot !== repositoryRealpath) throw new Error(`repositoryRoot must equal git toplevel: ${gitRoot}`);
@@ -83,6 +95,12 @@ function argument(name: string): string {
   return process.argv[index + 1];
 }
 
+function optionalArgument(name: string): string | undefined {
+  const index = process.argv.indexOf(name);
+  if (index < 0 || !process.argv[index + 1]) return undefined;
+  return process.argv[index + 1];
+}
+
 function main() {
   try {
     const outputPath = argument("--output");
@@ -90,6 +108,7 @@ function main() {
       repositoryRoot: argument("--repository-root"),
       scopeLockPath: argument("--scope-lock"),
       phaseId: argument("--phase-id"),
+      freezeAt: optionalArgument("--freeze"),
     });
     mkdirSync(dirname(outputPath), { recursive: true });
     const text = `${JSON.stringify(receipt, null, 2)}\n`;
