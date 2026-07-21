@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "ISO-SERVE-06A-AUDIT-20260721",
+  "generation": 2,
+  "id": "EV-003",
+  "command": "cd /home/zhaoge/workspace/qoderwork && /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/p02-orchestrator.test.ts scripts/test-serve/__tests__/run-context.test.ts scripts/test-serve/__tests__/process.test.ts scripts/test-serve/__tests__/cleanup.test.ts scripts/test-serve/__tests__/cleanup-integration.test.ts 2>&1 | tail -5",
+  "observed": "PASS",
+  "requirement_id": "REQ-003",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-003",
+  "fixture_id": "FIXTURE-GOOD-001",
+  "evidence_level": "component",
+  "repository_state_sha256": "b9fcf6d178f4d8593c48578af273d2568556edceb461c9743de60b773397fc54",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/ev-003-req-003-positive-output.txt",
+      "sha256": "e606573220d7cd03a98230e5a125807de52d5c603a94b1132c55380f22b2a07a"
+    }
+  ],
+  "completed_at": "2026-07-21T07:43:10.616Z"
+}

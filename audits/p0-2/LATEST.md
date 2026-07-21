@@ -1,25 +1,22 @@
 # P0-2 最新审计指针
 
-**Latest audit**: `2026-07-20-phase-06-cli-smoke-audit.md`（PHASE-06 CLI smoke 审计，generation 1）
-**Audit date**: 2026-07-20
-**Audited phase**: PHASE-06 CLI smoke（generation 1，新链）
-**Result**: ❌ INVALID
-**Scope lock**: PHASE-05 仍生效（lock_id=PHASE-05），PHASE-06 scope-lock 未建立
-**Freeze Gate 状态**: PHASE-06 未完成 Pre-Implementation Freeze Gate
-**Findings**:
-- F-001 (OPEN, BLOCKING): Pre-Implementation Freeze Gate 未完成 — 无 `pre-change-PHASE-06.json` receipt；scope-lock.json `lock_id` 仍为 PHASE-05
-- F-002 (OPEN, BLOCKING, introduced_after_freeze): PHASE-06 plan 明确禁止修改代码（"不修改代码"），但实施创建了 `cleanup.ts` 并修改了 `isolated-serve.ts`、`p01b-orchestrator.ts`、`p02-orchestrator.ts`
-**Validator**: `validate-audit.ts` valid=false, exit 0（诊断通过，INVALID 报告结构可解析）
-**Gate status**: PHASE-06=INVALID；plan index 中 PHASE-06=DONE 标记不成立；PHASE-07/08 阻断待 PHASE-06 重新冻结
+**Latest audit**: `2026-07-21-phase-06a-cleanup-extract-audit-g2.md`（PHASE-06a 循环依赖 + TDZ 修复独立复审，generation 2）
+**Audit date**: 2026-07-21
+**Audited phase**: PHASE-06a（generation 2，独立复审）
+**Result**: ✅ ACCEPT
+**Scope lock**: PHASE-06a（lock_id=PHASE-06a，scope_lock SHA-256=d286218f...，status=FROZEN）
+**Freeze Gate 状态**: 已完成（scope-lock APPROVED → human approval → pre-change receipt → verdict-state receipt g2）
+**Findings**: 无
+**Validator**: `validate-audit.ts` valid=true, exit 0, 0 errors
+**Gate status**: PHASE-06a=ACCEPT（cleanup.ts 提取、循环依赖打破、TDZ 预防完成；generation 2 确认 generation 1 结论可复现）；PHASE-04/05/06/07/08 待后续步骤
 
-## 实施者应对方案
+## 审计历史（新增）
 
-PHASE-06 plan 当前 Allowed files 仅 `06-phase-cli-smoke.md`（execute-only），Forbidden 明确禁止修改代码。但实施者发现并修复了循环依赖 TDZ 缺陷（`cleanup.ts` 提取），这属于合法基础设施缺陷，但不能在 execute-only phase 中夹带修复。建议二选一：
-
-1. **Option A（revert + 纯执行）**：回滚所有代码修改，按 plan 原意用现有（已提交）代码执行 CLI smoke；若 CLI 因循环依赖不可用，则承认 PHASE-06 无法在当前 plan 范围内完成，需修订 plan
-2. **Option B（新 phase）**：保留 `cleanup.ts` 提取作为新 phase（如 PHASE-06a "infrastructure fix"），按 v2.1-required 流程完成 Freeze Gate（scope-lock → human approval → capture-state.ts → pre-change receipt），然后在其框架内重新审计；PHASE-06 原 plan 修订或废止
-
-无论哪种方案，PHASE-06 的 ACCEPT 不能在当前 process violation 状态下签署。
+| Date | Audit file | Phase | Result |
+|---|---|---|---|
+| 2026-07-21 | `2026-07-21-phase-06a-cleanup-extract-audit-g2.md` | PHASE-06a（generation 2，独立复审） | ✅ ACCEPT（component 级；4 REQ 全 PASS；REQ-003 negative control SENSITIVE；implementation delta=4 allowed_files；validate-audit valid=true, 0 errors；确认 generation 1 可复现） |
+| 2026-07-20 | `2026-07-20-phase-06a-cleanup-extract-audit.md` | PHASE-06a（generation 1） | ✅ ACCEPT（component 级；4 REQ 全 PASS；REQ-003 negative control SENSITIVE；implementation delta=4 allowed_files；validate-audit valid=true, 0 errors） |
+| 2026-07-20 | `2026-07-20-phase-06-cli-smoke-audit.md` | PHASE-06 CLI smoke（generation 1） | ❌ INVALID（Pre-Implementation Freeze Gate 未完成；scope-lock 仍为 PHASE-05；代码修改违反 plan Forbidden） |
 
 ## 审计历史
 

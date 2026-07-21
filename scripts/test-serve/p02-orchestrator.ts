@@ -26,7 +26,7 @@ import { startSentinel, stopSentinel, validateSentinelIdentity, finalizeSentinel
 import { createRunContext } from "./run-context";
 import { startRunProcesses, stopRunProcesses } from "./process";
 import { bootstrapRun } from "./bootstrap";
-import { cleanupRun } from "./isolated-serve";
+import { cleanupRun } from "./cleanup";
 import { verifyP02 } from "./verify-p02";
 import type {
   BootstrapInput,

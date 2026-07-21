@@ -3,7 +3,7 @@
  * QoderWork Watcher — R1–R7 over framework JSONL streams.
  *
  * Contract: documents/qoderwork-watcher-contract.md
- * Plan:     plans/02-phase1-skill-first.md Step 7
+ * Plan:     plans/opencode-framework-simplification-roadmap/02-phase1-skill-first.md Step 7
  *
  * Consumes up to four JSONL streams from work-one's `.task_temp/_logs/`:
  *   audit.jsonl, quality.jsonl, skill.jsonl, guidance.jsonl

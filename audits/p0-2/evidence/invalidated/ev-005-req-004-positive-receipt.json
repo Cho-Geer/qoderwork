@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "ISO-SERVE-06A-AUDIT-20260720",
+  "generation": 1,
+  "id": "EV-005",
+  "command": "cd /home/zhaoge/workspace/qoderwork && rg -q 'export.*cleanupRun.*from.*./cleanup' scripts/test-serve/isolated-serve.ts",
+  "observed": "PASS",
+  "requirement_id": "REQ-004",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-004",
+  "fixture_id": "FIXTURE-GOOD-001",
+  "evidence_level": "component",
+  "repository_state_sha256": "fb3b572dc68ab226c3d1b024eb68471fb56f76892e1eb57dc8175d49ec2d838d",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/ev-005-req-004-positive-output.txt",
+      "sha256": "890d9e753b02601aecc1b097f6f07eba60527b9d1715a5795a9e16763c2b9981"
+    }
+  ],
+  "completed_at": "2026-07-21T06:37:13.981Z"
+}

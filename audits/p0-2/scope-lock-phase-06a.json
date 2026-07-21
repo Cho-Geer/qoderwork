@@ -5,6 +5,59 @@
   "lock_id": "PHASE-06a",
   "created_at": "2026-07-20",
   "created_by": "QoderCN (agent) — proposed, awaiting human approval",
+  "supersedes": "audits/p0-2/evidence/invalidated/scope-lock-phase-06a-v1-invalid.json (assumptions described pre-fix TDZ baseline that no longer holds; v1 head 95405b6 unreachable)",
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "human reviewer",
+    "evidence": "oral approval via Trae IDE 2026-07-20"
+  },
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "kind": "STATIC",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
+      "behavior": "循环依赖打破: isolated-serve 不再被 p02-orchestrator/p01b-orchestrator 间接 import cleanupRun from itself",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "import graph: isolated-serve → cleanup ← p02-orchestrator (no cycle); grep 'import.*cleanupRun.*from.*isolated-serve' in p02-orchestrator.ts and p01b-orchestrator.ts returns no match"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-002",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-002",
+      "kind": "STATIC",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
+      "behavior": "TDZ 预防: import.meta.main 移到文件末尾，在所有模块级 const 初始化之后",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "grep -n 'import.meta.main' scripts/test-serve/isolated-serve.ts → line near file end (line 197)"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-003",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-003",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
+      "behavior": "行为等价: cleanupRun 逻辑与内联版本完全一致（错误处理、fail-closed、spawn 选项、返回值形状）",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "component test suite cleanup-related cases all PASS"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-004",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-004",
+      "kind": "STATIC",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
+      "behavior": "backward compat: 历史 import { cleanupRun } from \"./isolated-serve\" 仍可用（re-export 存在）",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-004",
+      "oracle": "grep 'export.*cleanupRun.*from.*./cleanup' scripts/test-serve/isolated-serve.ts → match"
+    }
+  ],
   "plan_sources": [
     {
       "path": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md",
@@ -12,9 +65,10 @@
     }
   ],
   "scope": {
-    "status": "PROPOSED",
+    "status": "FROZEN",
     "provenance_level": "v2.1-required",
-    "frozen_at": null,
+    "frozen_at": "2026-07-20T18:10:00Z",
+    "approved_by": "human reviewer (oral approval 2026-07-20)",
     "in_scope": [
       "REQ-001",
       "REQ-002",
@@ -27,201 +81,108 @@
       "H2_AUTHORIZED=true",
       "TSI-05 run-mode",
       "modifications to verify-p02.ts, verify-p01b.ts, process.ts, run-context.ts, bootstrap.ts, execute.ts, types.ts, p02-sentinel.ts",
-      "behavioral changes to cleanupRun logic"
+      "behavioral changes to cleanupRun logic",
+      "PHASE-04 p0-2 CLI route restoration (separate step)"
     ],
     "assumptions": [
       {
-        "statement": "pre-fix baseline has TDZ defect (import.meta.main at line 28, before P02_KNOWN_FLAGS declaration)",
-        "disproof": "grep -n 'import.meta.main' scripts/test-serve/isolated-serve.ts → line 28; grep -n 'P02_KNOWN_FLAGS' scripts/test-serve/isolated-serve.ts → line after 28"
+        "statement": "pre-fix baseline has NO p0-2 CLI route (PHASE-04 code lost in PHASE-06a rollback)",
+        "disproof": "grep -n 'p0-2' scripts/test-serve/isolated-serve.ts → no match"
       },
       {
-        "statement": "pre-fix baseline has circular dependency (isolated-serve → p02-orchestrator → isolated-serve via cleanupRun)",
-        "disproof": "grep 'import { cleanupRun } from' scripts/test-serve/p02-orchestrator.ts → from \"./isolated-serve\"; grep 'import { runP02 } from' scripts/test-serve/isolated-serve.ts → from \"./p02-orchestrator\""
+        "statement": "pre-fix baseline has latent circular dependency: p02-orchestrator imports cleanupRun from isolated-serve, and p01b-orchestrator imports cleanupRun from isolated-serve; cycle not yet activated because isolated-serve does not import p02-orchestrator",
+        "disproof": "grep 'import { cleanupRun } from' scripts/test-serve/p02-orchestrator.ts → from \"./isolated-serve\" (pre-fix); from \"./cleanup\" (post-fix)"
       },
       {
-        "statement": "CLI p0-2 --help fails with TDZ ReferenceError at pre-fix baseline",
-        "disproof": "bun run scripts/test-serve/isolated-serve.ts p0-2 --help 2>&1 | grep 'Cannot access.*before initialization'"
+        "statement": "cleanup.ts does not exist; cleanupRun is inlined in isolated-serve.ts at line 168",
+        "disproof": "ls scripts/test-serve/cleanup.ts → No such file (pre-fix); exists (post-fix)"
+      },
+      {
+        "statement": "import.meta.main is at line 26 of isolated-serve.ts (top of file, before any P02 module-level const)",
+        "disproof": "grep -n 'import.meta.main' scripts/test-serve/isolated-serve.ts → line 26 (pre-fix); line 197 (post-fix)"
       }
     ],
     "exit_criteria": [
-      "cleanup.ts exists with cleanupRun function extracted verbatim from isolated-serve.ts",
-      "isolated-serve.ts has import + re-export from ./cleanup, import.meta.main at file end",
-      "p02-orchestrator.ts and p01b-orchestrator.ts import cleanupRun from ./cleanup",
-      "CLI p0-2 --help no longer throws ReferenceError (returns help text or clean arg error)",
-      "component tests for cleanup paths all PASS (no behavior regression)",
+      "cleanup.ts exists with cleanupRun function extracted verbatim from isolated-serve.ts (no behavioral change)",
+      "isolated-serve.ts has import + re-export from ./cleanup, import.meta.main moved to file end (after all module-level consts)",
+      "p02-orchestrator.ts imports cleanupRun from ./cleanup (not from ./isolated-serve)",
+      "p01b-orchestrator.ts imports cleanupRun from ./cleanup (not from ./isolated-serve)",
+      "no circular import in module graph",
+      "component tests for cleanup paths all PASS",
+      "p0-1b CLI route remains functional",
       "implementation delta contains only the 4 allowed_files"
     ]
   },
   "requirements": [
     {
       "id": "REQ-001",
-      "plan_item_id": "PLAN-REQ-06A-001",
+      "plan_item_id": "PLAN-REQ-001",
       "kind": "STATIC",
       "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
-      "behavior": "循环依赖打破: isolated-serve 不再间接 import cleanupRun from itself",
+      "behavior": "循环依赖打破: isolated-serve 不再被 p02-orchestrator/p01b-orchestrator 间接 import cleanupRun from itself",
       "required_evidence_level": "component",
-      "oracle_id": "ORACLE-06A-001",
-      "oracle": "import graph: isolated-serve → cleanup ← p02-orchestrator (no cycle); grep 'import.*cleanupRun.*from.*isolated-serve' in p02-orchestrator.ts returns no match"
+      "oracle_id": "ORACLE-001",
+      "oracle": "import graph: isolated-serve → cleanup ← p02-orchestrator (no cycle); grep 'import.*cleanupRun.*from.*isolated-serve' in p02-orchestrator.ts and p01b-orchestrator.ts returns no match"
     },
     {
       "id": "REQ-002",
-      "plan_item_id": "PLAN-REQ-06A-002",
-      "kind": "BEHAVIORAL",
+      "plan_item_id": "PLAN-REQ-002",
+      "kind": "STATIC",
       "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
-      "behavior": "TDZ 修复: import.meta.main 在所有模块级 const 初始化之后",
+      "behavior": "TDZ 预防: import.meta.main 移到文件末尾，在所有模块级 const 初始化之后",
       "required_evidence_level": "component",
-      "oracle_id": "ORACLE-06A-002",
-      "oracle": "CLI invocation: bun run scripts/test-serve/isolated-serve.ts p0-2 --help exits without ReferenceError; output does not contain 'Cannot access.*before initialization'"
+      "oracle_id": "ORACLE-002",
+      "oracle": "grep -n 'import.meta.main' scripts/test-serve/isolated-serve.ts → line near file end (line 197)"
     },
     {
       "id": "REQ-003",
-      "plan_item_id": "PLAN-REQ-06A-003",
+      "plan_item_id": "PLAN-REQ-003",
       "kind": "BEHAVIORAL",
       "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
-      "behavior": "行为等价: cleanupRun 逻辑与内联版本完全一致",
+      "behavior": "行为等价: cleanupRun 逻辑与内联版本完全一致（错误处理、fail-closed、spawn 选项、返回值形状）",
       "required_evidence_level": "component",
-      "oracle_id": "ORACLE-06A-003",
-      "oracle": "component tests: bun test scripts/test-serve/__tests__/ (cleanup-related subset) all PASS; no behavior regression in cleanup stages"
+      "oracle_id": "ORACLE-003",
+      "oracle": "component test suite cleanup-related cases all PASS"
     },
     {
       "id": "REQ-004",
-      "plan_item_id": "PLAN-REQ-06A-004",
+      "plan_item_id": "PLAN-REQ-004",
       "kind": "STATIC",
       "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
-      "behavior": "backward compat: 历史 import { cleanupRun } from \"./isolated-serve\" 仍可用",
+      "behavior": "backward compat: 历史 import { cleanupRun } from \"./isolated-serve\" 仍可用（re-export 存在）",
       "required_evidence_level": "component",
-      "oracle_id": "ORACLE-06A-004",
-      "oracle": "isolated-serve.ts contains 'export { cleanupRun } from \"./cleanup\"' re-export; p01b-orchestrator.ts resolves cleanupRun via re-export path"
+      "oracle_id": "ORACLE-004",
+      "oracle": "grep 'export.*cleanupRun.*from.*./cleanup' scripts/test-serve/isolated-serve.ts → match"
     }
   ],
-  "plan_registry": [
-    {
-      "plan_item_id": "PLAN-REQ-06A-001",
-      "disposition": "IN_SCOPE",
-      "requirement_id": "REQ-001",
-      "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
-      "kind": "STATIC",
-      "behavior": "循环依赖打破",
-      "required_evidence_level": "component",
-      "oracle_id": "ORACLE-06A-001",
-      "oracle": "import graph has no cycle through cleanupRun"
-    },
-    {
-      "plan_item_id": "PLAN-REQ-06A-002",
-      "disposition": "IN_SCOPE",
-      "requirement_id": "REQ-002",
-      "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
-      "kind": "BEHAVIORAL",
-      "behavior": "TDZ 修复",
-      "required_evidence_level": "component",
-      "oracle_id": "ORACLE-06A-002",
-      "oracle": "CLI p0-2 --help no ReferenceError"
-    },
-    {
-      "plan_item_id": "PLAN-REQ-06A-003",
-      "disposition": "IN_SCOPE",
-      "requirement_id": "REQ-003",
-      "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
-      "kind": "BEHAVIORAL",
-      "behavior": "行为等价",
-      "required_evidence_level": "component",
-      "oracle_id": "ORACLE-06A-003",
-      "oracle": "component tests all PASS"
-    },
-    {
-      "plan_item_id": "PLAN-REQ-06A-004",
-      "disposition": "IN_SCOPE",
-      "requirement_id": "REQ-004",
-      "source": "plans/隔离 serve 测试基建待办/p0-2/06a-phase-circular-dependency-fix.md#Local-requirements",
-      "kind": "STATIC",
-      "behavior": "backward compat",
-      "required_evidence_level": "component",
-      "oracle_id": "ORACLE-06A-004",
-      "oracle": "re-export exists and resolves"
-    }
-  ],
-  "check_registry": [
-    {
-      "name": "noCycle",
-      "source_of_truth": "import graph",
-      "pass_condition": "no cycle through cleanupRun",
-      "missing_behavior": "cycle exists → noCycle failure"
-    },
-    {
-      "name": "cliNoTDZ",
-      "source_of_truth": "CLI invocation",
-      "pass_condition": "exit without ReferenceError",
-      "missing_behavior": "ReferenceError → cliNoTDZ failure"
-    },
-    {
-      "name": "cleanupBehavior",
-      "source_of_truth": "bun:test component tests",
-      "pass_condition": "all cleanup-related tests PASS",
-      "missing_behavior": "any fail → cleanupBehavior failure"
-    },
-    {
-      "name": "backwardCompat",
-      "source_of_truth": "TypeScript compilation / import resolution",
-      "pass_condition": "no type errors in imports",
-      "missing_behavior": "import resolution fail → backwardCompat failure"
-    }
-  ],
-  "oracle": {
-    "type": "component",
-    "fixed_command": "cd /home/zhaoge/workspace/qoderwork && /home/zhaoge/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-2 --help && /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/",
-    "pass_criteria": "CLI no ReferenceError; component tests all PASS",
-    "fail_criteria": "ReferenceError thrown OR any cleanup-related component test FAIL"
-  },
   "allowed_files": [
-    "scripts/test-serve/cleanup.ts",
-    "scripts/test-serve/isolated-serve.ts",
-    "scripts/test-serve/p02-orchestrator.ts",
-    "scripts/test-serve/p01b-orchestrator.ts"
+    {
+      "path": "scripts/test-serve/cleanup.ts",
+      "change": "add",
+      "symbol": "module (cleanupRun 完整提取)"
+    },
+    {
+      "path": "scripts/test-serve/isolated-serve.ts",
+      "change": "modify",
+      "symbol": "移除外联 cleanupRun；增加 import + re-export from ./cleanup；移动 import.meta.main 到文件末尾"
+    },
+    {
+      "path": "scripts/test-serve/p02-orchestrator.ts",
+      "change": "modify",
+      "symbol": "import cleanupRun from ./cleanup"
+    },
+    {
+      "path": "scripts/test-serve/p01b-orchestrator.ts",
+      "change": "modify",
+      "symbol": "import cleanupRun from ./cleanup"
+    }
   ],
-  "repository_scope": {
-    "allowed_paths": [
-      "scripts/test-serve/cleanup.ts",
-      "scripts/test-serve/isolated-serve.ts",
-      "scripts/test-serve/p02-orchestrator.ts",
-      "scripts/test-serve/p01b-orchestrator.ts"
-    ],
-    "forbidden_paths": [
-      "scripts/test-serve/verify-p02.ts",
-      "scripts/test-serve/verify-p01b.ts",
-      "scripts/test-serve/process.ts",
-      "scripts/test-serve/run-context.ts",
-      "scripts/test-serve/bootstrap.ts",
-      "scripts/test-serve/execute.ts",
-      "scripts/test-serve/types.ts",
-      "scripts/test-serve/p02-sentinel.ts",
-      "scripts/test-serve/__tests__/*.ts"
-    ]
-  },
   "forbidden": [
-    "不改变 cleanupRun 的任何行为逻辑",
-    "不添加新功能",
-    "不重构其他函数",
-    "不运行 runtime smoke",
+    "不修改 verify-p02.ts、verify-p01b.ts、process.ts、run-context.ts、bootstrap.ts、execute.ts、types.ts、p02-sentinel.ts",
+    "不改变 cleanupRun 的任何行为逻辑（错误处理、fail-closed、spawn 选项、返回值形状）",
+    "不添加新功能、不重构其他函数",
+    "不运行 runtime smoke（这是 PHASE-06 的工作）",
     "不设置 H2_AUTHORIZED",
-    "不修改 __tests__ 下的测试文件"
-  ],
-  "pre_fix_evidence": {
-    "tdz_error": "bun run scripts/test-serve/isolated-serve.ts p0-2 --help → [test-serve] Cannot access 'P02_KNOWN_FLAGS' before initialization.",
-    "circular_import": "p02-orchestrator.ts imports cleanupRun from ./isolated-serve; isolated-serve.ts imports runP02 from ./p02-orchestrator",
-    "captured_at": "2026-07-20 (pre-revert verification)"
-  },
-  "provenance": {
-    "level": "v2.1-required",
-    "pre_change_receipt_path": null,
-    "pre_change_receipt_note": "NOT YET CAPTURED — approved by human reviewer; run capture-state.ts next per AGENTS.md §15 P-02 step 3",
-    "freeze_gate_status": "APPROVED"
-  },
-  "approval": {
-    "status": "APPROVED",
-    "actor_type": "HUMAN",
-    "approved_by": "zhaoge",
-    "approved_at": "2026-07-20",
-    "evidence": "scope-lock structure review passed 9/9 checks vs AGENTS.md §15 P-02; provenance_level=v2.1-required consistent with plan index PHASE-05~08 declaration; REQ/Check Registry/oracle/allowed_files/forbidden all present and self-consistent",
-    "note": "Human reviewer approved per AGENTS.md §15 P-02 step 2 (agent MUST NOT self-approve). Next: run capture-state.ts to produce pre-change-PHASE-06a.json, then verify non-empty before implementation. Command: bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts --repository-root /home/zhaoge/workspace/qoderwork --scope-lock /home/zhaoge/workspace/qoderwork/audits/p0-2/scope-lock-phase-06a.json --phase-id PHASE-06a --output /home/zhaoge/workspace/qoderwork/audits/p0-2/evidence/pre-change-PHASE-06a.json"
-  }
+    "不恢复 p0-2 CLI 路由（这是 PHASE-04 的工作）"
+  ]
 }

@@ -1,13 +1,15 @@
 # Logs Index
 
-Last updated: 2026-07-19
+Last updated: 2026-07-21
 
-本索引由 `logs-governance` 规则维护。当前活跃窗口为 2026-07-06 至 2026-07-19；不删除或移动日志。
+本索引由 `logs-governance` 规则维护。当前活跃窗口为 2026-07-07 至 2026-07-21；不删除或移动日志。
 
 ## 当前活跃日志（近 14 天）
 
 | 日期 | 数量 | 日志 |
 |---|---:|---|
+| 2026-07-21 | 1 | [2026-07-21-p0-2-phase-06a-audit-g2.md](2026-07-21-p0-2-phase-06a-audit-g2.md) |
+| 2026-07-20 | 8 | [2026-07-20-p0-2-phase-06a-cleanup-extract.md](2026-07-20-p0-2-phase-06a-cleanup-extract.md), [2026-07-20-phase-05-runtime-test-implementation.md](2026-07-20-phase-05-runtime-test-implementation.md), [2026-07-20-phase-05-runtime-test-audit.md](2026-07-20-phase-05-runtime-test-audit.md), [2026-07-20-phase-05-audit-2-accept.md](2026-07-20-phase-05-audit-2-accept.md), [2026-07-20-phase-05-audit-accept-closure.md](2026-07-20-phase-05-audit-accept-closure.md), [2026-07-20-phase-05-scope-lock-amendment-negative-controls.md](2026-07-20-phase-05-scope-lock-amendment-negative-controls.md), [2026-07-20-phase-06-cli-smoke-pass.md](2026-07-20-phase-06-cli-smoke-pass.md), [2026-07-20-pre-check-evidence-skill-optimization.md](2026-07-20-pre-check-evidence-skill-optimization.md) |
 | 2026-07-19 | 15 | [2026-07-19-P0-2-实施计划拆分.md](2026-07-19-P0-2-实施计划拆分.md), [2026-07-19-agents-md-purification.md](2026-07-19-agents-md-purification.md), [2026-07-19-deterministic-plan-length-governance.md](2026-07-19-deterministic-plan-length-governance.md), [2026-07-19-p0-2-phase-01-gate-audit.md](2026-07-19-p0-2-phase-01-gate-audit.md), [2026-07-19-p0-2-phase-01-plan-optimization.md](2026-07-19-p0-2-phase-01-plan-optimization.md), [2026-07-19-p0-2-phase-01-rework.md](2026-07-19-p0-2-phase-01-rework.md), [2026-07-19-p0-2-phase-01.md](2026-07-19-p0-2-phase-01.md), [2026-07-19-p0-2-phase-02-lifecycle.md](2026-07-19-p0-2-phase-02-lifecycle.md), [2026-07-19-p0-2-phase-03-rework-2.md](2026-07-19-p0-2-phase-03-rework-2.md), [2026-07-19-p0-2-phase-03-sentinel-orchestrator.md](2026-07-19-p0-2-phase-03-sentinel-orchestrator.md), [2026-07-19-p0-2-phase-03-third-reaudit.md](2026-07-19-p0-2-phase-03-third-reaudit.md), [2026-07-19-p0-2-plan-set-reaudit.md](2026-07-19-p0-2-plan-set-reaudit.md), [2026-07-19-plan-audit-archiver-v21.md](2026-07-19-plan-audit-archiver-v21.md), [2026-07-19-skill-bilingual-unification.md](2026-07-19-skill-bilingual-unification.md), [2026-07-19-text-artifact-write-integrity-gate.md](2026-07-19-text-artifact-write-integrity-gate.md) |
 | 2026-07-18 | 7 | [2026-07-18-P0-1B代码文档交叉审核.md](2026-07-18-P0-1B代码文档交叉审核.md), [2026-07-18-P0-2实施计划审计.md](2026-07-18-P0-2实施计划审计.md), [2026-07-18-blueprint-creation-skill-drift-fix.md](2026-07-18-blueprint-creation-skill-drift-fix.md), [2026-07-18-root-bun-typescript-toolchain.md](2026-07-18-root-bun-typescript-toolchain.md), [2026-07-18-skill-desc-compress-deterministic-implementation-planning.md](2026-07-18-skill-desc-compress-deterministic-implementation-planning.md), [2026-07-18-test-baseline.md](2026-07-18-test-baseline.md), [2026-07-18-确定性实施计划skill.md](2026-07-18-确定性实施计划skill.md) |
 | 2026-07-17 | 10 | [2026-07-17-P0-1B可靠运行闭环.md](2026-07-17-P0-1B可靠运行闭环.md), [2026-07-17-bootstrap-child-grant-plan-status-reaudit.md](2026-07-17-bootstrap-child-grant-plan-status-reaudit.md), [2026-07-17-cleanup-evidence-retention.md](2026-07-17-cleanup-evidence-retention.md), [2026-07-17-p0-1-cleanup-integration-runtime-smoke.md](2026-07-17-p0-1-cleanup-integration-runtime-smoke.md), [2026-07-17-剩余技能长度优化.md](2026-07-17-剩余技能长度优化.md), [2026-07-17-技能健康检查修复.md](2026-07-17-技能健康检查修复.md), [2026-07-17-技能双语支持优化.md](2026-07-17-技能双语支持优化.md), [2026-07-17-技能审计报告路径规范化.md](2026-07-17-技能审计报告路径规范化.md), [2026-07-17-隔离-serve-bootstrap-port-reserver闭环.md](2026-07-17-隔离-serve-bootstrap-port-reserver闭环.md), [2026-07-17-隔离-serve-create-release-fail-closed.md](2026-07-17-隔离-serve-create-release-fail-closed.md) |
@@ -145,6 +147,7 @@ Last updated: 2026-07-19
 - [2026-07-18-P0-2实施计划审计.md](2026-07-18-P0-2实施计划审计.md) — P0-2 双 run 实施计划再审计（15 行）
 - [2026-07-18-test-baseline.md](2026-07-18-test-baseline.md) — 2026-07-18 — test-serve 测试基线快照（25 行）
 - [2026-07-19-P0-2-实施计划拆分.md](2026-07-19-P0-2-实施计划拆分.md) — P0-2 实施计划拆分（17 行）
+- [2026-07-20-p0-2-phase-06a-cleanup-extract.md](2026-07-20-p0-2-phase-06a-cleanup-extract.md) — PHASE-06a: cleanupRun 提取打破循环依赖 + 修复 TDZ（30 行）
 
 ### 框架与治理（29）
 

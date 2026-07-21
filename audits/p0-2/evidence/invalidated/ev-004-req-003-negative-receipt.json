@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "ISO-SERVE-06A-AUDIT-20260720",
+  "generation": 1,
+  "id": "EV-004",
+  "command": "cd /home/zhaoge/workspace/qoderwork && cp scripts/test-serve/cleanup.ts /tmp/cleanup.ts.bak && sed -i 's/success: false/success: true/g' scripts/test-serve/cleanup.ts && /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/cleanup.test.ts > /tmp/neg-out.txt 2>&1; TEST_EXIT=$?; cp /tmp/cleanup.ts.bak scripts/test-serve/cleanup.ts; rm -f /tmp/cleanup.ts.bak /tmp/neg-out.txt; exit $TEST_EXIT",
+  "observed": "FAIL",
+  "requirement_id": "REQ-003",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-003",
+  "fixture_id": "FIXTURE-BAD-001",
+  "evidence_level": "component",
+  "repository_state_sha256": "fb3b572dc68ab226c3d1b024eb68471fb56f76892e1eb57dc8175d49ec2d838d",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/ev-004-req-003-negative-output.txt",
+      "sha256": "b1e5c7757c6db7d7b5636d02c5636f1acb77c4071df430f80a8f52de6f2b8939"
+    }
+  ],
+  "completed_at": "2026-07-21T06:37:36.756Z"
+}

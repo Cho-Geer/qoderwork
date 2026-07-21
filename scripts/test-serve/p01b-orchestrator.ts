@@ -19,7 +19,7 @@ import { mkdirSync, renameSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { bootstrapRun } from "./bootstrap";
 import { executeRun } from "./execute";
-import { cleanupRun } from "./isolated-serve";
+import { cleanupRun } from "./cleanup";
 import { createRunContext } from "./run-context";
 import { startRunProcesses, stopRunProcesses } from "./process";
 import { verifyP01b } from "./verify-p01b";
