@@ -1,7 +1,7 @@
 # P0-2 最新审计指针
 
-**Latest audit**: `2026-07-21-phase-04a-existsync-audit-f4.md`（PHASE-04a existsSync fix 独立审计，F4）
-**Audit date**: 2026-07-21
+**Latest audit**: `2026-07-22-phase-04a-existsync-audit-f5.md`（PHASE-04a existsSync fix 独立审计，F5，使用 prepare-audit.ts 生成）
+**Audit date**: 2026-07-22
 **Audited phase**: PHASE-04a（absoluteInputs existsSync fix）
 **Result**: ✅ ACCEPT（v2.1-required；component 级证据；3 REQ 全 PASS；正/负控制 SENSITIVE）
 **Scope lock**: `scope-lock-phase-04a.json`（human-approved, frozen 2026-07-21T14:01:51Z）
@@ -14,6 +14,7 @@
 
 | Date | Audit file | Phase | Result |
 |---|---|---|---|
+| 2026-07-22 | `2026-07-22-phase-04a-existsync-audit-f5.md` | PHASE-04a（existsSync fix，F5 独立审计，prepare-audit.ts 生成） | ✅ ACCEPT（v2.1-required；component 级；3 REQ 全 PASS；正/负控制 SENSITIVE；Gate 1 + Gate 2 exit 0；contract 由 prepare-audit.ts 自动生成，structural errors=0） |
 | 2026-07-21 | `2026-07-21-phase-04a-existsync-audit-f4.md` | PHASE-04a（existsSync fix，F4 独立审计） | ✅ ACCEPT（v2.1-required；component 级；3 REQ 全 PASS；正/负控制 SENSITIVE；Gate 1 + Gate 2 exit 0；无 BLOCKING） |
 | 2026-07-21 | `2026-07-21-phase-04-cli-reimplementation-audit-g3.md` | PHASE-04（generation 3，独立复审） | ✅ Accept（component 级；G2 结论全部可复现；runtime 补充验证 1 pass/50 expect() [20.88s]，16 stages allOk，A/B CLEANED；代码抽查 6 项符合；无新 BLOCKING） |
 | 2026-07-21 | `2026-07-21-phase-04-cli-reimplementation-audit.md` | PHASE-04（generation 2，重实施） | ✅ Accept（component 级；REQ-001/002/003 全 PASS；Check Registry 5 项满足；43 pass/0 fail；Fixed verification 3 命令全 pass；2 NON_BLOCKING_DEBT 继承自 G1；日志声明全部可复现） |
