@@ -1,0 +1,23 @@
+# Checklist
+
+- [x] RC-4: 审计报告 baseline.commit/head_at_verdict 等于 work-one HEAD（95405b6...），dirty_paths 为空数组
+- [x] RC-4: pre-change receipt 的 repository_realpath 和 head 与 baseline 一致
+- [x] RC-1: scope-lock status 为 FROZEN
+- [x] RC-1: scope-lock 含 approval 对象（status=APPROVED, actor_type=HUMAN, approved_by 非空, evidence 非空）
+- [x] RC-1: scope-lock 含非空 plan_registry（4 项，plan_item_id 匹配 ^PLAN-REQ-\d{3}$）
+- [x] RC-1: scopeLockProjection 与审计报告 frozenProjection 完全一致
+- [x] RC-1: 审计报告 scope_lock.sha256 等于新 scope-lock 文件的实际 sha256
+- [x] RC-2: 3 个 STATIC REQ 的 negative_control applicability 为 NOT_APPLICABLE_STATIC
+- [x] RC-2: 3 个 STATIC REQ 的 negative_control command/method/expected/observed 为 N/A
+- [x] RC-2: 3 个 STATIC REQ 的 negative_control evidence 为非空具体字符串（非 N/A/NOT-RUN/NONE）
+- [x] RC-3: 4 个 REQ 的 plan_item_id 匹配 ^PLAN-REQ-\d{3}$
+- [x] RC-5: EV-003 ledger command 与 receipt 文件逐字符一致（含 2>&1 | tail -5）
+- [x] RC-5: EV-004 ledger command 与 receipt 文件逐字符一致（含 > /tmp/neg-out.txt 2>&1）
+- [x] RC-6a: downgrade_declaration 含 reason/ceiling/unaffected_scope/affected_scope 四个非空字符串
+- [x] RC-6b: scope.frozen_at ≤ sweep.completed_at
+- [x] RC-6b: verdict-state receipt captured_at > sweep.completed_at
+- [x] RC-6b: 所有 EV-NNN receipt 的 repository_state_sha256 等于新 verdict-state 的 sha256
+- [x] 最终: pre-check-evidence.ts 通过（0 problems, exit 0）
+- [x] 最终: validate-audit.ts exit 0，0 错误
+- [x] 最终: 审计报告 §11 Validator Evidence 含实际 Verified-by 行
+- [x] 最终: verdict 为 ACCEPT

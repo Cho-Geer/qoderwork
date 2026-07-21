@@ -2,7 +2,9 @@
 
 > 本文件由 QoderWork Session Startup 自动扫描。新增文档时请同步更新此索引。
 >
-> **最近更新**: 2026-07-18 — 交叉审核 P0-1 当前代码、实施计划与证据包：非 runtime 回归 92/92 PASS；P0-1B 已由 2026-07-17 CLI-only smoke 与 2026-07-18 runtime-test 两个全新 run 证明，后者为 1/1 PASS。同步补入 3 份漏索引文档。P0-2、TSI-05 run-mode 与 live LLM E2E 仍未执行。
+> **最近更新**: 2026-07-21 — 新增 diagrams/ 下 3 份复用基础设施文档（函数清单 + 分层调用拓扑 + 全局调用拓扑），覆盖 lib/test-serve/通用 CLI/sse-daemon 全部函数与调用链，并修正"lib 仅被排除脚本消费、in-scope 不形成单一三层链"的结构事实。
+>
+> **历史更新**: 2026-07-18 — 交叉审核 P0-1 当前代码、实施计划与证据包：非 runtime 回归 92/92 PASS；P0-1B 已由 2026-07-17 CLI-only smoke 与 2026-07-18 runtime-test 两个全新 run 证明，后者为 1/1 PASS。同步补入 3 份漏索引文档。P0-2、TSI-05 run-mode 与 live LLM E2E 仍未执行。
 >
 > **历史更新**: 2026-07-17 — P0-1B 首次通过 CLI-only runtime smoke，run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d`，完整保留 manifest/双 DB/SSE/log/artifact/cleanup evidence。
 >
@@ -41,6 +43,9 @@
 | review/tool-governance-before-chain-verification.md | Tool-governance before 链顺序验证 | 记录 esbuild 加载真实 dispatcher 的 handler 顺序、短路证据与测试层级局限。 | ~74 |
 | review/exec-execFile-spawn.md | 子进程 API 安全路由 | 固定 execFile/spawn 路由、禁用 shell 与资源边界。面向安全执行层实施。 | ~52 |
 | review/execFile-usage.md | execFile 安全规范 | 规定 file/argv/cwd/env 校验、拒绝条件与错误处理。面向 safe_shell 实施。 | ~53 |
+| diagrams/functions-reference.md | 复用基础设施函数清单 | scripts 可复用核心基础设施（lib/test-serve/通用 CLI/sse-daemon）逐函数清单：名称、描述、参数、返回值，含类型叶子说明与关键结构修正。面向源码阅读与调用链分析。 | ~257 |
+| diagrams/callgraph-layered.md | 分层调用链拓扑图 | 按子系统/层级分组的 Mermaid 拓扑：入口/编排/生命周期/基础三层 + lib + 独立叶子；实线直接、虚线间接。面向架构理解与链路追踪。 | ~211 |
+| diagrams/callgraph-global.md | 单一全局调用链拓扑图 | 全部可复用函数置于一张 Mermaid 图，连通所有调用链（直接/间接），附跨组关键链路摘要。面向全局依赖审计。 | ~273 |
 
 ## 按场景推荐阅读
 
@@ -69,3 +74,5 @@
 - **查 QoderWork Watcher 事件与 R1–R7 规则** → qoderwork-watcher-contract.md
 - **Skill 体系健康检查** → review/skill-audit-report.md
 - **Node.js 子进程安全选型** → review/exec-execFile-spawn.md → review/execFile-usage.md
+- **梳理 scripts 复用基础设施函数与调用链** → diagrams/functions-reference.md → diagrams/callgraph-global.md
+- **理解 test-serve 隔离测试运行单元架构** → diagrams/callgraph-layered.md

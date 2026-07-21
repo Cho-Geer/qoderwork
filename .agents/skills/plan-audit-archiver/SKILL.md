@@ -130,6 +130,123 @@ Use only these verdicts:
 
 `PASS`, progress percentages, and "基本完成" are not audit verdicts.
 
+## Pre-Audit Knowledge Required `[ANALYSIS]`
+
+Before writing any audit report content, the agent MUST read the validator
+source code in full to extract the acceptance contract. The audit report is
+the artifact under test; `validate-audit.ts` is the acceptance oracle. Writing
+the report without reading the oracle first is a process violation and will
+produce `INVALID` verdicts.
+
+### Mandatory reads before drafting the report
+
+1. `.agents/skills/plan-audit-archiver/scripts/validate-audit.ts` — read it
+   completely. Extract every `issue(errors, ...)` call site as a rule. Each
+   `code` string is an ERROR_CODE the report must not trigger.
+2. `.agents/skills/plan-audit-archiver/scripts/pre-check-evidence.ts` — read it
+   completely. This script is gate 1 of the two-gate validation; its rules are
+   the sole source of truth for evidence-file pre-checks and MUST NOT be
+   paraphrased elsewhere.
+3. `templates/scope-lock-template.json` — the canonical field shape. Any
+   scope-lock file the agent proposes MUST match this shape field-for-field.
+4. `templates/audit-report-template.md` and `templates/evidence-receipt-template.json`
+   — the canonical report and receipt shapes.
+
+> **合理化检测**: 如果你发现自己在想「参考前序 phase 的 scope-lock 或 audit report 作为模板就够了，不需要读 validator」——停下来，这是跳步信号。前序 phase 可能本身就不合规；唯一权威是 validator 代码与官方模板。
+
+### Scope-lock 字段速查表
+
+The word `status` appears in two distinct locations with distinct meanings.
+Confusing them is the most common cause of `INVALID` verdicts.
+
+| 字段位置 | 字段名 | 合法值 | 说明 |
+|---------|--------|--------|------|
+| scope-lock 文件顶层 `scope.status` | `scope.status` | `FROZEN` \| `UNFROZEN` | 表示冻结状态。`APPROVED` 不是合法值 |
+| scope-lock 文件顶层 `approval.status` | `approval.status` | `APPROVED` \| `PENDING` | 表示人类审批状态。`FROZEN` 不是合法值 |
+| audit contract 内 `scope.status` | `scope.status` | `FROZEN` \| `UNFROZEN` | 与 scope-lock 文件的 `scope.status` 同语义，但字段位于 audit report JSON contract 中 |
+| audit contract 内 `scope.provenance_level` | `scope.provenance_level` | `v2.1-required` \| `component-only` | 必须与 scope-lock 文件的 `scope.provenance_level` 一致 |
+
+**scope-lock 文件必填顶层字段**（缺任一项触发 `PLAN_REGISTRY_MISSING` / `INVALID_PLAN_ITEM_ID` 等）：
+
+- `schema_version`、`lock_id`、`created_at`、`plan_sources`
+- `scope`（含 `status`、`provenance_level`、`frozen_at`、`in_scope`、`out_of_scope`、`assumptions`、`exit_criteria`）
+- `requirements`（数组，每项含 `id`、`plan_item_id`、`kind`、`source`、`behavior`、`required_evidence_level`、`oracle_id`、`oracle`）
+- `plan_registry`（非空数组，每项含 `plan_item_id`、`disposition`、`requirement_id`、`source`、`kind`、`behavior`、`required_evidence_level`、`oracle_id`、`oracle`）
+- `repository_scope`（含 `allowed_paths`、`forbidden_paths`）
+- `approval`（含 `status`、`actor_type`、`approved_by`、`approved_at`、`evidence`）
+
+### ID 命名规范表
+
+所有 ID 必须使用 3 位数字（无 phase 前缀）。带 phase 前缀（如 `PLAN-REQ-06A-001`）是非法的。
+
+| ID 类型 | 正则 | 示例（合法） | 示例（非法） |
+|---------|------|-------------|-------------|
+| requirement_id | `^REQ-\d{3}$` | `REQ-001` | `REQ-06A-001` |
+| plan_item_id | `^PLAN-REQ-\d{3}$` | `PLAN-REQ-001` | `PLAN-REQ-06A-001` |
+| oracle_id | `^ORACLE-\d{3}$` | `ORACLE-001` | `ORACLE-06A-001` |
+| evidence_receipt id | `^EV-\d{3}$` | `EV-001` | `EV-06A-001` |
+| finding_id | `^F-\d{3}$` | `F-001` | `F-06A-001` |
+
+### negative_control 格式规范表
+
+`applicability` 字段必须是枚举值，不是任意字符串。`"N/A"` 字符串非法。
+
+| requirement kind | `applicability` 合法值 | `command` / `method` / `expected` / `observed` 要求 |
+|---|---|---|
+| `BEHAVIORAL` | `REQUIRED` | 必须是具体非空字符串；`expected` 必须为 `PASS` 或 `FAIL`；`observed` 必须与 `exit_code` 一致（0→PASS，非零→FAIL） |
+| `STATIC` | `NOT_APPLICABLE_STATIC` | 必须全为字符串 `"N/A"`（仅此一种字符串合法） |
+
+> **注意**: `STATIC` 的 `applicability` 是 `NOT_APPLICABLE_STATIC`（枚举值），不是 `"N/A"`（任意字符串）。validator 逐字段检查 `command === "N/A" && method === "N/A" && expected === "N/A" && observed === "N/A"`，任一非 "N/A" 触发 `STATIC_NEGATIVE_CONTRACT`。
+
+### 仓库身份字段使用规范表
+
+`baseline` 内两个字段决定仓库身份，禁止混用：
+
+| 字段 | 含义 | 取值要求 |
+|------|------|---------|
+| `baseline.workspace_root` | 审计工作区绝对路径 | qoderwork 根目录（如 `/home/zhaoge/workspace/qoderwork`） |
+| `baseline.repository_root` | 被审计仓库绝对路径 | work-one 根目录（如 `/home/zhaoge/workspace/opencode/work-one`） |
+| `baseline.commit` | 被审计仓库的 HEAD commit | 必须等于 `git -C <repository_root> rev-parse HEAD` |
+| `baseline.head_at_verdict` | verdict 时点的被审计仓库 HEAD | 必须等于 `baseline.commit` |
+| `baseline.dirty_paths` | 被审计仓库的 git status 路径 | 必须等于 `git -C <repository_root> status --porcelain` 输出，不是 workspace_root 的 |
+
+`capture-state.ts --repository-root <X>` 生成 receipt 时，receipt 内的 `head` 与 `repository_realpath` 字段都对应 X 仓库。audit contract 的 `baseline.commit` 必须与 verdict-state receipt 的 `head` 一致。
+
+> **合理化检测**: 如果你发现自己在想「我在 qoderwork 目录跑 `git rev-parse HEAD` 拿到 commit 填进 baseline」——停下来，这是跳步信号。validator 用 `repository_root` 校验 commit，必须填 work-one 的 HEAD，不是 qoderwork 的 HEAD。
+
+### 时间依赖关系图
+
+下列时间戳必须按顺序满足，任一倒挂触发 `FREEZE_AFTER_SWEEP` 或 `VERDICT_STATE_TIME_INVALID`：
+
+```
+pre_change_receipt.captured_at
+  ≤ scope.frozen_at
+  ≤ sweep.completed_at
+  ≤ verdict_state_receipt.captured_at
+```
+
+**含义**：
+- 先捕获 pre-change receipt（实施前快照）
+- 再冻结 scope（人类审批 + 写入 scope-lock）
+- 再完成 sweep（跑所有验证命令）
+- 最后捕获 verdict-state receipt（实施后快照）
+
+verdict-state receipt 必须在 sweep 完成后捕获，因为 `repository_state_sha256` 字段要绑定到 verdict-state，证明所有 EV-NNN receipt 与最终仓库状态一致。
+
+### 不可变 receipt 转录原则
+
+audit contract 内 `evidence_receipts[]` 数组中每个对象的字段必须与对应 receipt 文件 `EV-NNN-*.json` 逐字符一致。validator 用 `JSON.stringify(actualPayload) !== JSON.stringify(expectedPayload)` 对比，任何字符差异（包括空格、重定向、管道）触发 `EVIDENCE_RECEIPT_PAYLOAD_MISMATCH`。
+
+**禁止行为**：
+- 清理 receipt command 中的 `2>&1 | tail -5`、`> /tmp/xxx 2>&1` 等重定向
+- 修剪 command 文本中的空格或引号
+- 替换 `observed` 字段值（必须与 receipt 一致）
+- 调整 `exit_code`、`cwd`、`artifacts` 任何字段
+
+**合法行为**：
+- 从 receipt 文件复制完整字段到 contract ledger
+- 对 contract ledger 添加 SHA-256 等 meta 字段（receipt 文件没有的字段）
+
 ## Required workflow
 
 ### Step 0: Admit the audit `[ANALYSIS]`
@@ -310,11 +427,22 @@ mislabelled.
 
 ### Step 9: Validate, archive, and decide `[VERIFICATION -> OBSERVATION]`
 
-After the full sweep, capture the verdict state with `capture-state.ts` using a
-new output path. Hash that receipt and bind every execution receipt to it. Copy
-and fill `templates/audit-report-template.md`, including its JSON contract.
-Then run the **two-gate validation** in order — gate 1 (pre-check) then
-gate 2 (final validator). Skipping gate 1 is a process violation:
+**强制流程顺序**（禁止跳步）：
+
+1. 完成 Step 4-8（sweep 全部 in-scope requirement），得到 sweep.completed_at 时间戳
+2. 用 `capture-state.ts` 捕获 verdict-state receipt 到新路径（`verdict-state-<PHASE>.json`）— 此时 `captured_at` 必须 ≥ `sweep.completed_at`
+3. 哈希 verdict-state receipt，将每个 EV-NNN receipt 的 `repository_state_sha256` 字段绑定到该哈希
+4. 复制 `templates/audit-report-template.md` 并填写完整内容，包括 JSON contract
+5. **在 contract 中写 `verdict: ACCEPT` 之前**，必须先完成 step 6-7 的两道闸门
+6. **Gate 1**: 运行 `pre-check-evidence.ts` — exit 0 才能继续
+7. **Gate 2**: 运行 `validate-audit.ts` — exit 0 才能继续
+8. 两道闸门都 exit 0 后，才在 contract 中写 `verdict: ACCEPT`（或 `REWORK`）
+9. 写 `LATEST.md`，记录 report link、baseline commit、verdict、open blocker count、evidence ceiling
+10. 每个写入的文本文件立即用 `test -s`、`wc -l`、内容断言验证
+
+> **合理化检测**: 如果你发现自己在想「先写 ACCEPT 再跑 validator 修正」——停下来，这是跳步信号。先签 ACCEPT 再跑 validator 会让 mindset 锁定在「找理由合理化 ACCEPT」，而非「客观验证」。正确顺序是先验证再签署。
+
+> **注意**: validator 报错时，错误是 audit contract 本身的问题，不是 validator 的问题。修复方向是改 audit contract，不是绕过 validator。任何 `exit 1` 必须修复 contract 后重新跑两道闸门，禁止用 `--no-verify` 类似参数绕过。
 
 ```bash
 cd /home/zhaoge/workspace/qoderwork
@@ -336,6 +464,28 @@ before giving implementation instructions. Then write `LATEST.md` with
 the report link, baseline commit, verdict, open blocker count, and evidence
 ceiling. Verify every written text file immediately with `test -s`, `wc -l`,
 and a required-heading assertion.
+
+### Validator ERROR_CODE 速查表
+
+下表列出 validator 常见 ERROR_CODE 与对应修复方向。完整列表以 `validate-audit.ts` 代码为准，本表不替代代码阅读。
+
+| ERROR_CODE | 触发条件 | 修复方向 |
+|-----------|---------|---------|
+| `SCOPE_NOT_FROZEN` | ACCEPT/REWORK 时 `scope.status !== "FROZEN"` | 将 audit contract 的 `scope.status` 改为 `FROZEN`（不是 scope-lock 文件的 `scope.status`） |
+| `FREEZE_AFTER_SWEEP` | `scope.frozen_at > sweep.completed_at` | 确保 freeze 在 sweep 之前完成；若时间戳写错，修正 `frozen_at` |
+| `VERDICT_STATE_TIME_INVALID` | `verdict_state.captured_at < sweep.completed_at` | 重新捕获 verdict-state receipt，确保在 sweep 完成后 |
+| `STATIC_NEGATIVE_CONTRACT` | STATIC req 的 `applicability !== "NOT_APPLICABLE_STATIC"` 或 command/method/expected/observed 非 "N/A" | 改 `applicability` 为 `NOT_APPLICABLE_STATIC`，其他 4 字段全为 `"N/A"` |
+| `INVALID_PLAN_ITEM_ID` | `plan_item_id` 不匹配 `^PLAN-REQ-\d{3}$` | 改为 `PLAN-REQ-001` 格式（3 位数字，无 phase 前缀） |
+| `EVIDENCE_RECEIPT_PAYLOAD_MISMATCH` | contract ledger 与 receipt 文件 payload 不一致 | 从 receipt 文件逐字符复制所有字段到 contract ledger，禁止修剪重定向/空格 |
+| `DOWNGRADE_DECLARATION_REQUIRED` | `provenance_level=v2.1-required` 且 `evidence_ceiling=component` 但 `downgrade_declaration=null` | 填写 `downgrade_declaration` 对象（含 4 项：降级理由、降级后上限、不影响范围、影响范围） |
+| `GIT_HEAD_MISMATCH` | `baseline.commit` 与 `git -C <repository_root> rev-parse HEAD` 不一致 | 用 `repository_root` 仓库的 HEAD，不是 `workspace_root` 的 |
+| `DIRTY_PATH_SET_MISMATCH` | `baseline.dirty_paths` 与 `git -C <repository_root> status --porcelain` 不一致 | 用 `repository_root` 仓库的 git status 输出 |
+| `PLAN_REGISTRY_MISSING` | scope-lock 文件 `plan_registry` 为空或缺失 | 填写 `plan_registry` 数组，每项含 `plan_item_id`、`disposition`、`requirement_id` 等字段 |
+| `PRE_CHANGE_HEAD_MISMATCH` | pre-change receipt 的 `head` 与 `baseline.implementation_base_commit` 不一致 | 用 `capture-state.ts --repository-root <X>` 重新捕获，X 必须与 audit contract 的 `repository_root` 一致 |
+| `VERDICT_STATE_HEAD_MISMATCH` | verdict-state receipt 的 `head` 与 `baseline.commit` 不一致 | 同上 |
+| `SCOPE_LOCK_NOT_HUMAN_APPROVED` | scope-lock 文件 `approval.status !== "APPROVED"` 或 `actor_type !== "HUMAN"` | 填写 `approval` 对象，`status: "APPROVED"`、`actor_type: "HUMAN"` |
+| `RECEIPT_EXIT_OBSERVATION_MISMATCH` | `observed: "PASS"` 但 `exit_code !== 0`，或 `observed: "FAIL"` 但 `exit_code === 0` | 检查 receipt 的 exit_code 与 observed 是否一致；若 command 实际 exit 0 但填了 FAIL，修正 observed 为 PASS |
+| `REWORK_FINDING_SET_MISMATCH` | REWORK 时 `rework_package.finding_ids` 与 open blockers 不完全相等 | 将所有 open blocker 的 finding_id 列入 `rework_package.finding_ids`，不能多也不能少 |
 
 ## Deterministic closure rules
 
