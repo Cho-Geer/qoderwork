@@ -1,0 +1,60 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/test-serve/__tests__/p01b-orchestrator.test.ts:
+(pass) P01B_STAGES constant > fixed 8-stage order matches plan §6.5.1 [0.48ms]
+(pass) input validation > rejects missing primaryWorktree [0.75ms]
+(pass) input validation > rejects missing commit [0.16ms]
+(pass) input validation > rejects port out of range [0.14ms]
+(pass) input validation > rejects missing testId [0.26ms]
+(pass) all-success path > returns ok:true status:PASS and each dep called once [0.57ms]
+(pass) first-failure convergence at each stage > failure at create stops subsequent stages and records firstFailure [0.47ms]
+(pass) first-failure convergence at each stage > failure at start stops subsequent stages and records firstFailure [0.31ms]
+(pass) first-failure convergence at each stage > failure at bootstrap stops subsequent stages and records firstFailure [0.15ms]
+(pass) first-failure convergence at each stage > failure at execute-plan stops subsequent stages and records firstFailure [0.29ms]
+(pass) first-failure convergence at each stage > failure at verify-runtime stops subsequent stages and records firstFailure [0.19ms]
+(pass) first-failure convergence at each stage > failure at stop stops subsequent stages and records firstFailure [0.32ms]
+(pass) first-failure convergence at each stage > failure at cleanup stops subsequent stages and records firstFailure [0.22ms]
+(pass) first-failure convergence at each stage > failure at verify-cleanup stops subsequent stages and records firstFailure [0.20ms]
+(pass) controlled stop attempt > create failure: no manifest exists, controlled stop is NOT called [0.26ms]
+(pass) controlled stop attempt > start failure: create succeeded, controlled stop attempted once (manifest has PIDs, validate=true) [0.29ms]
+(pass) controlled stop attempt > execute-plan failure: controlled stop called once [0.17ms]
+(pass) controlled stop attempt > verify-runtime failure (verifier ok:false): controlled stop called once [0.35ms]
+(pass) controlled stop attempt > stop failure: throws inside stop stage, controlled stop attempted (count=2 total: 1 fail + 1 controlled) [0.17ms]
+(pass) controlled stop attempt > controlled stop swallow: stop stage + controlled stop both throw, runP01b still returns [0.26ms]
+(pass) controlled stop attempt > PID identity not verifiable: controlled stop NOT called even after failure [0.25ms]
+(pass) controlled stop attempt > cleanup failure: PIDs nulled by stop, no controlled stop beyond regular stop stage [0.24ms]
+(pass) controlled stop attempt > verify-cleanup failure: no controlled stop beyond regular stop stage [0.22ms]
+(pass) stage-results file > on success: writeStageResults called once per stage, final payload has all 8 stages [0.24ms]
+(pass) stage-results file > on failure: writeStageResults called for each reached stage + failed stage; failed stage has error [0.28ms]
+(pass) stage-results file > on create failure: writeStageResults is NOT called (no artifacts dir yet) [0.13ms]
+(pass) stage-results file > default writeStageResults writes to ${artifactsDir}/p0-1b-stage-results.json atomically [3.51ms]
+(pass) isolated-serve CLI adapter > help shows verify and p0-1b [26.66ms]
+(pass) isolated-serve CLI adapter > verify missing --run-dir exits 1 [27.50ms]
+(pass) isolated-serve CLI adapter > verify missing --phase exits 1 [26.21ms]
+(pass) isolated-serve CLI adapter > verify invalid phase exits 1 [26.28ms]
+(pass) isolated-serve CLI adapter > verify runtime CLI returns JSON and exit 0 with complete evidence [251.52ms]
+(pass) isolated-serve CLI adapter > p0-1b missing --primary-worktree exits 1 [23.80ms]
+(pass) isolated-serve CLI adapter > p0-1b missing --commit exits 1 [25.31ms]
+(pass) isolated-serve CLI adapter > p0-1b missing --port exits 1 [25.79ms]
+(pass) isolated-serve CLI adapter > p0-1b missing --test-id exits 1 [28.80ms]
+(pass) isolated-serve CLI adapter > p0-1b invalid --port exits 1 [27.06ms]
+
+scripts/test-serve/__tests__/p02-cli.test.ts:
+(pass) PHASE-04 p0-2 CLI contract > P02-C-MISSING: 缺失一个 flag → exit 1，runP02 调用 0 次 [1.39ms]
+(pass) PHASE-04 p0-2 CLI contract > P02-C-PORT: 两端口相同 → exit 1，runP02 调用 0 次 [0.40ms]
+(pass) PHASE-04 p0-2 CLI contract > P02-C-PATH: 相对 DB path → exit 1，runP02 调用 0 次 [0.22ms]
+(pass) PHASE-04 p0-2 CLI contract > P02-C-PATH-EXIST: 不存在的绝对 DB path → exit 1，runP02 调用 0 次 [0.35ms]
+(pass) PHASE-04 p0-2 CLI contract > 合法 argv → runP02 恰好 1 次，成功映射 ok/status/runA/runB/checks/evidencePaths [0.38ms]
+(pass) PHASE-04 p0-2 CLI contract > P02-C-FAIL: PASS stub 改为失败结果 → exit 1，映射 ok/firstFailure/evidencePaths [0.40ms]
+(pass) PHASE-04 p0-2 CLI contract > 未知 flag → exit 1，runP02 调用 0 次 [0.29ms]
+
+ 44 pass
+ 0 fail
+ 220 expect() calls
+Ran 44 tests across 2 files. [574.00ms]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

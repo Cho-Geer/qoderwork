@@ -10,7 +10,7 @@
 // 通过 globalThis.__P02_RUNNER__ 注入 spy，避免真实启动 coordinator（component 级，不触 runtime）。
 
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { P02Result } from "../types";
@@ -27,14 +27,18 @@ type P02Runner = (input: {
 
 const g = globalThis as Record<string, unknown>;
 
-const BASE_ARGS = [
+// 真实临时路径（每次 beforeEach 重建），满足 isolated-serve.ts absoluteInputs 的 existsSync 检查。
+let primaryWorktree = "";
+let mainFrameworkDb = "";
+
+const BASE_ARGS: string[] = [
   "p0-2",
-  "--primary-worktree", "/fake/primary",
+  "--primary-worktree", primaryWorktree,
   "--commit", "deadbeef",
   "--port-a", "41001",
   "--port-b", "41002",
   "--test-id", "P02-CLI-TEST",
-  "--main-framework-db", "/fake/framework-state.db",
+  "--main-framework-db", mainFrameworkDb,
 ];
 
 let tempRoot = "";
@@ -68,6 +72,20 @@ function makeFailResult(): P02Result {
 
 beforeEach(() => {
   tempRoot = mkdtempSync(join(tmpdir(), "p02-cli-test-"));
+  primaryWorktree = tempRoot;
+  mainFrameworkDb = join(tempRoot, "framework-state.db");
+  writeFileSync(mainFrameworkDb, "");
+  // BASE_ARGS 引用上面的变量，重建数组以确保使用本次 beforeEach 的真实路径。
+  BASE_ARGS.length = 0;
+  BASE_ARGS.push(
+    "p0-2",
+    "--primary-worktree", primaryWorktree,
+    "--commit", "deadbeef",
+    "--port-a", "41001",
+    "--port-b", "41002",
+    "--test-id", "P02-CLI-TEST",
+    "--main-framework-db", mainFrameworkDb,
+  );
 });
 
 afterEach(() => {
@@ -112,7 +130,23 @@ describe("PHASE-04 p0-2 CLI contract", () => {
     const callCount = { n: 0 };
     g.__P02_RUNNER__ = (async () => { callCount.n++; return makePassResult(); }) as P02Runner;
 
-    const argv = BASE_ARGS.map((a) => (a === "/fake/framework-state.db" ? "./framework-state.db" : a));
+    const argv = BASE_ARGS.map((a) => (a === mainFrameworkDb ? "./framework-state.db" : a));
+
+    const { exitCode, stdout, stderr } = await runCliP02(argv);
+    expect(exitCode).toBe(1);
+    expect(callCount.n).toBe(0);
+    expect(stdout).toBe("");
+    const err = JSON.parse(stderr);
+    expect(err.ok).toBe(false);
+    expect(err.check).toBe("absoluteInputs");
+  });
+
+  test("P02-C-PATH-EXIST: 不存在的绝对 DB path → exit 1，runP02 调用 0 次", async () => {
+    const callCount = { n: 0 };
+    g.__P02_RUNNER__ = (async () => { callCount.n++; return makePassResult(); }) as P02Runner;
+
+    const nonexistentDb = join(tempRoot, "does-not-exist.db");
+    const argv = BASE_ARGS.map((a) => (a === mainFrameworkDb ? nonexistentDb : a));
 
     const { exitCode, stdout, stderr } = await runCliP02(argv);
     expect(exitCode).toBe(1);
@@ -149,8 +183,8 @@ describe("PHASE-04 p0-2 CLI contract", () => {
 
     // runP02CalledOnce 且参数被精确传递
     expect(captured).toMatchObject({
-      primaryWorktree: "/fake/primary",
-      mainFrameworkDbPath: "/fake/framework-state.db",
+      primaryWorktree,
+      mainFrameworkDbPath: mainFrameworkDb,
       commit: "deadbeef",
       portA: 41001,
       portB: 41002,

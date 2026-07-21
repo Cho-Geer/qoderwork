@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "PHASE-04a-20260721",
+  "generation": 1,
+  "id": "EV-003",
+  "command": "cd /home/zhaoge/workspace/qoderwork && /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/p02-cli.test.ts scripts/test-serve/__tests__/p01b-orchestrator.test.ts",
+  "observed": "PASS",
+  "requirement_id": "REQ-003",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-003",
+  "fixture_id": "FULL-SUITE-44",
+  "evidence_level": "component",
+  "repository_state_sha256": "c4e92277982c9c045469a09fcda6fdaaa1a03cfcd6016fe92e557add62f8bda5",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "/home/zhaoge/workspace/qoderwork/audits/p0-2/evidence/p04a-F2-ev-003-output.txt",
+      "sha256": "788cbd1f2f64bd096eee4270ce6727d7f421dcc5b3c7553a9321c9bcaa649df2"
+    }
+  ],
+  "completed_at": "2026-07-21T12:41:21.588Z"
+}

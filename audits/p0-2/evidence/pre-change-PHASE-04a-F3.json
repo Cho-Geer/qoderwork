@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "repository_realpath": "/home/zhaoge/workspace/opencode/work-one",
+  "phase_id": "PHASE-04a",
+  "captured_at": "2026-07-21T13:46:20.178Z",
+  "head": "95405b6eb52750f5c5e84eef75a24bb63c6009d1",
+  "scope_lock_sha256": "b7fd0017daa0234a707fad07fd9b50d9244c920e110cc0c89b8893277a206176",
+  "status_entries": []
+}

@@ -5,7 +5,7 @@
 **Blocks**: PHASE-07
 **Outcome**: `isolated-serve.ts` 的 `absoluteInputs` 验证增加 `existsSync` 检查，测试 fixture 从 `/fake/*` 改为真实临时路径，关闭 PHASE-04 审计 F-001。
 **Evidence level**: component
-**Provenance level**: `component-only`（AGENTS.md §15 P-01：与 PHASE-01~04 一致；pre-change receipt 不可重建，接受 component 级证据上限；审计报告必须标注「证据上限：component」，禁止签署 v2.1 正式 ACCEPT）
+**Provenance level**: `v2.1-required`（AGENTS.md §15 P-02 适用：实施前必须完成 Freeze Gate：scope-lock 填写 → human approval → `capture-state.ts` 捕获 pre-change receipt → 验证非空；违反则审计判定 INVALID。选择依据：PHASE-04a 为新 phase，修改生产入口文件 `isolated-serve.ts`，pre-change receipt 可捕获，不满足 invariant 18 任何 component-only 豁免条件）
 
 ## Goal
 
@@ -27,7 +27,8 @@
   }
   ```
 - 当前 `p02-cli.test.ts` `BASE_ARGS` 使用 `/fake/primary`、`/fake/framework-state.db`（不存在的绝对路径）。
-- 缺 PHASE-04 证据：`BLOCKED`，不得实施。
+- **Freeze Gate 未完成**：scope-lock PHASE-04a 未创建，pre-change receipt 未捕获。Freeze Gate 完成前禁止实施代码写入（AGENTS.md §15 P-02）。
+- 缺 PHASE-04 证据或 Freeze Gate 未完成：`BLOCKED`，不得实施。
 
 ## Local requirements
 
@@ -72,15 +73,16 @@
 ## Implementation steps
 
 ```text
-1. 修改 isolated-serve.ts：
+1. Freeze Gate 完成后（scope-lock PHASE-04a → human approval → capture-state.ts → pre-change receipt 非空验证）：
+2. 修改 isolated-serve.ts：
    - 增加 import { existsSync } from "node:fs"（如尚不存在）
    - absoluteInputs 验证块增加 !existsSync(p02PrimaryWorktree) || !existsSync(p02MainFrameworkDb)
-2. 修改 p02-cli.test.ts：
+3. 修改 p02-cli.test.ts：
    - BASE_ARGS 中 /fake/primary → tempRoot（mkdtempSync 创建）
    - BASE_ARGS 中 /fake/framework-state.db → join(tempRoot, "framework-state.db")（writeFileSync 创建空文件）
    - 调整 BASE_ARGS 构建逻辑：在 beforeEach 中重建，因 tempRoot 每次变化
    - 新增 P02-C-PATH-EXIST 用例：DB path 改为 /nonexistent/absolute/path.db → exit 1, check="absoluteInputs", runP02 0
-3. 运行 Fixed verification 3 命令确认全 PASS。
+4. 运行 Fixed verification 3 命令确认全 PASS。
 ```
 
 ## Check Registry
@@ -130,6 +132,7 @@ git diff --check -- scripts/test-serve/isolated-serve.ts scripts/test-serve/__te
 
 ## Phase completion gate
 
+- [ ] Freeze Gate 完成（scope-lock PHASE-04a + human approval + pre-change receipt 非空）
 - [ ] PHASE-04 evidence is attached（G3 Accept）
 - [ ] Nonexistent absolute path never calls coordinator（P02-C-PATH-EXIST PASS）
 - [ ] Existing path positive control still passes（正控制不退化）

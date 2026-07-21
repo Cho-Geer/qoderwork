@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { existsSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
 import { bootstrapRun } from "./bootstrap";
 import { cleanupRun } from "./cleanup";
@@ -187,7 +188,8 @@ async function main(): Promise<void> {
         process.exit(1);
         return;
       }
-      if (!isAbsolute(p02PrimaryWorktree) || !isAbsolute(p02MainFrameworkDb)) {
+      if (!isAbsolute(p02PrimaryWorktree) || !isAbsolute(p02MainFrameworkDb)
+        || !existsSync(p02PrimaryWorktree) || !existsSync(p02MainFrameworkDb)) {
         console.error(JSON.stringify({ ok: false, check: "absoluteInputs" }));
         process.exit(1);
         return;

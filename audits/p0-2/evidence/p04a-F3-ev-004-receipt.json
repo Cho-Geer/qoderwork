@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "PHASE-04a-20260721",
+  "generation": 1,
+  "id": "EV-004",
+  "command": "cd /home/zhaoge/workspace/qoderwork && /home/zhaoge/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-2 --primary-worktree /nonexistent/path --commit abc123 --port-a 41001 --port-b 41002 --test-id NEG-TEST --main-framework-db /nonexistent/db",
+  "observed": "FAIL",
+  "requirement_id": "REQ-001",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "NONEXISTENT-PATH-DIRECT-CLI",
+  "evidence_level": "component",
+  "repository_state_sha256": "5abef3dad7ca66e2564195b780606eb1382d57996e254306c06fec88152108ed",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "/home/zhaoge/workspace/qoderwork/audits/p0-2/evidence/p04a-F3-ev-004-output.txt",
+      "sha256": "858068c8b7077b241ec6df92ab6bc1d0bfdff5b305c96cce4e0adc783ea68bbe"
+    }
+  ],
+  "completed_at": "2026-07-21T13:48:42.158Z"
+}

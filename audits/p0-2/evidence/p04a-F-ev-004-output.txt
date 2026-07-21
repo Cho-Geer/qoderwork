@@ -1,0 +1,7 @@
+=== STDOUT ===
+=== STDERR ===
+{"ok":false,"check":"absoluteInputs"}
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false
