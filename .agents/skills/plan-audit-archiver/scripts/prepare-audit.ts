@@ -272,7 +272,9 @@ export function buildAuditContract(opts: ContractOptions): JsonObject {
     rework_package: { status: "NONE", finding_ids: [], items: [] },
     reopen_records: [],
     inherited_blockers: [],
-    downgrade_declaration: null,
+    downgrade_declaration: (scope.provenance_level === "v2.1-required" && opts.evidenceCeiling === "component")
+      ? { reason: "REPLACE_DOWNGRADE_REASON", ceiling: opts.evidenceCeiling, unaffected_scope: "REPLACE_UNAFFECTED_SCOPE", affected_scope: "REPLACE_AFFECTED_SCOPE" }
+      : null,
     unclassified_findings: 0,
     evidence_ceiling: opts.evidenceCeiling,
     verdict: opts.verdict,

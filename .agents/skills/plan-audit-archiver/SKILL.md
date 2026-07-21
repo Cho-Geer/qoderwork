@@ -361,6 +361,19 @@ simulated execution. For adversarial/mutation/property/fuzz/live-path
 execution, use `test-specification-execution` as the trusted runner and
 preserve its raw output.
 
+**Evidence 子目录约定**：每轮审计的 EV receipts 和 artifacts 应放在独立子目录中，避免不同审计的文件混放导致 `pre-check-evidence.ts` 误报：
+
+```
+audits/<plan>/evidence/<PHASE>-<generation>/
+  ev-001-receipt.json
+  ev-001-output.txt
+  ev-002-receipt.json
+  ev-002-output.txt
+  ...
+```
+
+示例：`audits/p0-2/evidence/PHASE-04a-F5/ev-001-receipt.json`。`prepare-audit.ts --evidence-dir` 指向该子目录即可，`--receipt-prefix` 过滤变为可选。
+
 The requirement cannot be `PASS` when:
 
 - the positive control did not run or did not pass;

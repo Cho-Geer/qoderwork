@@ -217,9 +217,54 @@ describe("buildAuditContract", () => {
     expect(baseline.head_at_verdict).toBe("verdict-head");
     expect(baseline.implementation_base_commit).toBe("pre-head");
   });
-});
 
-// ─── buildReportMarkdown 测试 ───
+  test("downgrade_declaration auto-filled when v2.1-required + component ceiling", () => {
+    const contract = buildAuditContract({
+      workspaceRoot: "/workspace",
+      scopeLock: makeScopeLock() as never,
+      scopeLockRelPath: "audits/scope-lock.json",
+      scopeLockSha256: "e".repeat(64),
+      preChange: { head: "h1", repository_realpath: "/repo", captured_at: "2026-01-01T00:00:00Z", status_entries: [], scope_lock_sha256: "e".repeat(64), phase_id: "TEST-PHASE" },
+      preChangeRelPath: "evidence/pre-change.json",
+      preChangeSha256: "f".repeat(64),
+      verdictState: { head: "h1", repository_realpath: "/repo", captured_at: "2026-01-01T01:00:00Z", status_entries: [], scope_lock_sha256: "e".repeat(64), phase_id: "TEST-PHASE" },
+      verdictStateRelPath: "evidence/verdict-state.json",
+      verdictStateSha256: "a".repeat(64),
+      receipts: [],
+      verdict: "ACCEPT",
+      evidenceCeiling: "component",
+      supplementalSources: [],
+    });
+
+    const decl = contract.downgrade_declaration as Record<string, unknown>;
+    expect(decl).not.toBeNull();
+    expect(decl.reason).toBe("REPLACE_DOWNGRADE_REASON");
+    expect(decl.ceiling).toBe("component");
+    expect(decl.unaffected_scope).toBe("REPLACE_UNAFFECTED_SCOPE");
+    expect(decl.affected_scope).toBe("REPLACE_AFFECTED_SCOPE");
+  });
+
+  test("downgrade_declaration is null when ceiling is not component", () => {
+    const contract = buildAuditContract({
+      workspaceRoot: "/workspace",
+      scopeLock: makeScopeLock() as never,
+      scopeLockRelPath: "audits/scope-lock.json",
+      scopeLockSha256: "e".repeat(64),
+      preChange: { head: "h1", repository_realpath: "/repo", captured_at: "2026-01-01T00:00:00Z", status_entries: [], scope_lock_sha256: "e".repeat(64), phase_id: "TEST-PHASE" },
+      preChangeRelPath: "evidence/pre-change.json",
+      preChangeSha256: "f".repeat(64),
+      verdictState: { head: "h1", repository_realpath: "/repo", captured_at: "2026-01-01T01:00:00Z", status_entries: [], scope_lock_sha256: "e".repeat(64), phase_id: "TEST-PHASE" },
+      verdictStateRelPath: "evidence/verdict-state.json",
+      verdictStateSha256: "a".repeat(64),
+      receipts: [],
+      verdict: "ACCEPT",
+      evidenceCeiling: "integration",
+      supplementalSources: [],
+    });
+
+    expect(contract.downgrade_declaration).toBeNull();
+  });
+});
 
 describe("buildReportMarkdown", () => {
   test("contains all 21 required headings", () => {
