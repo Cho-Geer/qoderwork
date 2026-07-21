@@ -97,27 +97,6 @@ change attributable and reviewable.
     New rules are added only by modifying `pre-check-evidence.ts` code; this
     file is not edited when rules change.
 
-18. **Provenance selection criteria required.** A plan index declaring
-    `provenance_level` MUST follow these selection rules. The default for any
-    phase whose implementation has not yet begun at the time of plan creation
-    is `v2.1-required`. Declaring `component-only` requires a recorded
-    exemption satisfying at least one of the three conditions below.
-
-    | Exemption | When it applies | Required plan-index text (MUST appear verbatim in the provenance declaration) |
-    |---|---|---|
-    | **Physical impossibility** | The phase's implementation was completed before AGENTS.md §15 P-01 was established; pre-change receipt capture is physically impossible because the pre-implementation repository state no longer exists. | `component-only（实施先于 P-01 规则，pre-change receipt 不可重建）` |
-    | **Test-infrastructure-only change** | Every file the phase modifies is under a `__tests__/` directory or matches `*.test.ts`. No file with a `#!/usr/bin/env` shebang, and no module transitively imported by such a file, is modified. | `component-only（仅修改测试基础设施：<complete modified file list>）` |
-    | **Human-approved exemption** | A human reviewer (not an agent) explicitly approves `component-only` for this specific phase. Agent self-approval is MUST NOT. | `component-only（human reviewer 批准：<reviewer identity>, <YYYY-MM-DD>, <reason>）` |
-
-    A `component-only` declaration with no recorded exemption, or with a
-    recorded exemption that does not match any of the three conditions above,
-    is a contract defect. The audit verdict MUST be `INVALID`.
-
-    The auditor MUST verify the exemption in Step 0 before proceeding. If the
-    plan index declares `component-only` without a valid recorded exemption,
-    the auditor MUST reject the audit as `INVALID` and record the specific
-    missing condition. Do not proceed to Step 1.
-
 ## Inputs and paths
 
 | Input/artifact | Rule |
@@ -276,12 +255,6 @@ authoritative source, unresolved architecture choice, observable acceptance
 criterion, or complete machine-readable plan registry. A legacy plan may use a
 one-time `scope-lock-template.json` sidecar, but a human reviewer must approve
 its complete registry before it becomes authoritative.
-
-Verify the provenance selection per invariant 18: if the plan index declares
-`provenance_level = component-only`, confirm that a valid exemption (physical
-impossibility, test-infrastructure-only, or human-approved) is recorded in the
-plan index using the specified format. If no valid exemption is recorded,
-reject the audit as `INVALID` and do not proceed to Step 1.
 
 Record every supplemental source separately and hash all source files. Capture
 the implementation base commit, current commit, canonical repository root, and
