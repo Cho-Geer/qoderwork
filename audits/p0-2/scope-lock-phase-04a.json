@@ -1,0 +1,174 @@
+{
+  "schema_version": "2.0",
+  "plan_id": "ISO-SERVE-P0-2-PLANSET-20260719",
+  "phase_id": "PHASE-04a",
+  "lock_id": "PHASE-04a",
+  "created_at": "2026-07-21",
+  "created_by": "ZCode (agent) — proposed, awaiting human approval",
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "zhaoge (human reviewer)",
+    "approved_at": "2026-07-21",
+    "evidence": "Human reviewer approved scope-lock PHASE-04a in ZCode session 2026-07-21"
+  },
+  "plan_sources": [
+    {
+      "path": "plans/隔离 serve 测试基建待办/p0-2/04a-phase-existsync-fix.md",
+      "sha256": "54f590d5c7aa4af161b7139a6f5554d0eae6b417c3e191036ec631abeae7d050"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "in_scope": [
+      "REQ-001",
+      "REQ-002",
+      "REQ-003"
+    ],
+    "out_of_scope": [
+      "runtime smoke (PHASE-05 responsibility)",
+      "live LLM E2E",
+      "H2_AUTHORIZED=true",
+      "modifications to p02-orchestrator.ts contract",
+      "modifications to p02-cli-harness.ts (F-002 deferred to PHASE-08)",
+      "modifications to verify-p02.ts, verify-p01b.ts, process.ts, run-context.ts, bootstrap.ts, execute.ts, types.ts, p02-sentinel.ts, cleanup.ts",
+      "new CLI flags (--retry, --skip-*, --run-dir-a, --run-dir-b, H2, DRY_RUN)",
+      "success/failure JSON mapping field changes"
+    ],
+    "assumptions": [
+      {
+        "statement": "PHASE-04 CLI route exists and is functional (G3 Accept)",
+        "disproof": "bun run scripts/test-serve/isolated-serve.ts --help → contains p0-2 line"
+      },
+      {
+        "statement": "isolated-serve.ts absoluteInputs check currently only validates isAbsolute, not existsSync",
+        "disproof": "grep -n 'existsSync' scripts/test-serve/isolated-serve.ts → no match in case p0-2 block"
+      },
+      {
+        "statement": "p02-cli.test.ts BASE_ARGS uses /fake/primary and /fake/framework-state.db (nonexistent paths)",
+        "disproof": "grep '/fake/' scripts/test-serve/__tests__/p02-cli.test.ts → matches BASE_ARGS"
+      },
+      {
+        "statement": "work-one repository HEAD is 95405b6 and clean (no dirty paths)",
+        "disproof": "git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD → 95405b6; git status --porcelain → empty"
+      }
+    ],
+    "exit_criteria": [
+      "isolated-serve.ts absoluteInputs check validates both isAbsolute AND existsSync for primaryWorktree and mainFrameworkDbPath",
+      "p02-cli.test.ts BASE_ARGS uses mkdtempSync real temp paths (not /fake/*)",
+      "P02-C-PATH-EXIST test case exists: nonexistent absolute DB path → exit 1, check=absoluteInputs, runP02 callCount=0",
+      "positive control with existing paths still passes: exit 0, runP02 callCount=1",
+      "all existing P02-C tests (MISSING/PORT/PATH/FAIL/unknown flag) still pass without regression",
+      "P0-1B CLI regression: 37 pass / 0 fail",
+      "implementation delta contains only the 2 allowed_files"
+    ],
+    "frozen_at": "2026-07-21T14:01:51Z"
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-001",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/04a-phase-existsync-fix.md#Local-requirements",
+      "behavior": "不存在 path → CLI 拒绝非存在路径，coordinator 调用 0 次 → stderr JSON {ok:false, check:absoluteInputs} / exit 1",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "P02-C-PATH-EXIST: runCliP02 with nonexistent absolute DB path → exitCode=1, callCount.n=0, stderr JSON check=absoluteInputs"
+    },
+    {
+      "id": "REQ-002",
+      "plan_item_id": "PLAN-REQ-002",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/04a-phase-existsync-fix.md#Local-requirements",
+      "behavior": "存在 path（正控制）→ 调用一次 runP02，成功映射 → stdout JSON {ok:true, status, runA, runB, checks, evidencePaths} / exit 0",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "positive control: runCliP02 with real temp paths → exitCode=0, callCount.n=1, stdout JSON ok=true with all contract fields"
+    },
+    {
+      "id": "REQ-003",
+      "plan_item_id": "PLAN-REQ-003",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/04a-phase-existsync-fix.md#Local-requirements",
+      "behavior": "行为等价：其他 Check Registry 项不退化 → requiredArgs/portsDistinct/runP02CalledOnce/resultMapping 全 PASS",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "full component suite: bun test p02-cli.test.ts p01b-orchestrator.test.ts → 44 pass / 0 fail (original 43 + P02-C-PATH-EXIST 1)"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/04a-phase-existsync-fix.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "不存在 path → CLI 拒绝非存在路径，coordinator 调用 0 次 → stderr JSON {ok:false, check:absoluteInputs} / exit 1",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "P02-C-PATH-EXIST: runCliP02 with nonexistent absolute DB path → exitCode=1, callCount.n=0, stderr JSON check=absoluteInputs"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-002",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-002",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/04a-phase-existsync-fix.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "存在 path（正控制）→ 调用一次 runP02，成功映射 → stdout JSON {ok:true, status, runA, runB, checks, evidencePaths} / exit 0",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "positive control: runCliP02 with real temp paths → exitCode=0, callCount.n=1, stdout JSON ok=true with all contract fields"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-003",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-003",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/04a-phase-existsync-fix.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "行为等价：其他 Check Registry 项不退化 → requiredArgs/portsDistinct/runP02CalledOnce/resultMapping 全 PASS",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "full component suite: bun test p02-cli.test.ts p01b-orchestrator.test.ts → 44 pass / 0 fail (original 43 + P02-C-PATH-EXIST 1)"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "scripts/test-serve/isolated-serve.ts",
+      "scripts/test-serve/__tests__/p02-cli.test.ts"
+    ],
+    "forbidden_paths": [
+      "scripts/test-serve/p02-orchestrator.ts",
+      "scripts/test-serve/__tests__/p02-cli-harness.ts",
+      "scripts/test-serve/verify-p02.ts",
+      "scripts/test-serve/verify-p01b.ts",
+      "scripts/test-serve/process.ts",
+      "scripts/test-serve/run-context.ts",
+      "scripts/test-serve/bootstrap.ts",
+      "scripts/test-serve/execute.ts",
+      "scripts/test-serve/types.ts",
+      "scripts/test-serve/p02-sentinel.ts",
+      "scripts/test-serve/cleanup.ts"
+    ]
+  },
+  "allowed_files": [
+    {
+      "path": "scripts/test-serve/isolated-serve.ts",
+      "change": "modify",
+      "symbol": "absoluteInputs 验证块增加 existsSync；import 增加 existsSync from node:fs"
+    },
+    {
+      "path": "scripts/test-serve/__tests__/p02-cli.test.ts",
+      "change": "modify",
+      "symbol": "BASE_ARGS fixture 改为 mkdtempSync 真实临时路径；新增 P02-C-PATH-EXIST 用例"
+    }
+  ],
+  "forbidden": [
+    "不修改 p02-orchestrator.ts contract",
+    "不修改 p02-cli-harness.ts（F-002 留待 PHASE-08）",
+    "不改变 success/failure JSON 映射字段",
+    "不增加新 flag（--retry/--skip-*/--run-dir-a/--run-dir-b/H2/DRY_RUN）",
+    "不使用 shell command string 或第二条生命周期命令",
+    "不运行 runtime smoke（PHASE-05 责任）"
+  ]
+}
