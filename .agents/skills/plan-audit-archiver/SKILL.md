@@ -97,6 +97,27 @@ change attributable and reviewable.
     New rules are added only by modifying `pre-check-evidence.ts` code; this
     file is not edited when rules change.
 
+18. **Provenance selection criteria required.** A plan index declaring
+    `provenance_level` MUST follow these selection rules. The default for any
+    phase whose implementation has not yet begun at the time of plan creation
+    is `v2.1-required`. Declaring `component-only` requires a recorded
+    exemption satisfying at least one of the three conditions below.
+
+    | Exemption | When it applies | Required plan-index text (MUST appear verbatim in the provenance declaration) |
+    |---|---|---|
+    | **Physical impossibility** | The phase's implementation was completed before AGENTS.md §15 P-01 was established; pre-change receipt capture is physically impossible because the pre-implementation repository state no longer exists. | `component-only（实施先于 P-01 规则，pre-change receipt 不可重建）` |
+    | **Test-infrastructure-only change** | Every file the phase modifies is under a `__tests__/` directory or matches `*.test.ts`. No file with a `#!/usr/bin/env` shebang, and no module transitively imported by such a file, is modified. | `component-only（仅修改测试基础设施：<complete modified file list>）` |
+    | **Human-approved exemption** | A human reviewer (not an agent) explicitly approves `component-only` for this specific phase. Agent self-approval is MUST NOT. | `component-only（human reviewer 批准：<reviewer identity>, <YYYY-MM-DD>, <reason>）` |
+
+    A `component-only` declaration with no recorded exemption, or with a
+    recorded exemption that does not match any of the three conditions above,
+    is a contract defect. The audit verdict MUST be `INVALID`.
+
+    The auditor MUST verify the exemption in Step 0 before proceeding. If the
+    plan index declares `component-only` without a valid recorded exemption,
+    the auditor MUST reject the audit as `INVALID` and record the specific
+    missing condition. Do not proceed to Step 1.
+
 ## Inputs and paths
 
 | Input/artifact | Rule |
@@ -216,20 +237,19 @@ Confusing them is the most common cause of `INVALID` verdicts.
 
 ### 时间依赖关系图
 
-下列时间戳必须按顺序满足，任一倒挂触发 `FREEZE_AFTER_SWEEP` 或 `VERDICT_STATE_TIME_INVALID`：
+下列三条时间约束必须同时满足，任一倒挂触发对应 ERROR_CODE：
 
 ```
-pre_change_receipt.captured_at
-  ≤ scope.frozen_at
-  ≤ sweep.completed_at
-  ≤ verdict_state_receipt.captured_at
+pre_change_receipt.captured_at ≤ sweep.completed_at                  (PRE_CHANGE_TIME_INVALID)
+scope.frozen_at               ≤ sweep.completed_at                  (FREEZE_AFTER_SWEEP)
+sweep.completed_at            ≤ verdict_state_receipt.captured_at   (VERDICT_STATE_TIME_INVALID)
 ```
 
 **含义**：
-- 先捕获 pre-change receipt（实施前快照）
-- 再冻结 scope（人类审批 + 写入 scope-lock）
-- 再完成 sweep（跑所有验证命令）
-- 最后捕获 verdict-state receipt（实施后快照）
+- pre-change receipt 必须在 sweep 完成前捕获（实施前快照先于验证）
+- scope 必须在 sweep 完成前冻结（人类审批先于验证）
+- verdict-state receipt 必须在 sweep 完成后捕获（实施后快照后于验证）
+- pre-change 与 frozen_at 之间无顺序约束：两者都在 sweep 前完成即可。`capture-state.ts --freeze <ISO8601>` 可在同一原子操作中设置 `scope.frozen_at`/`scope.status` 并捕获 pre-change receipt，消除循环依赖。
 
 verdict-state receipt 必须在 sweep 完成后捕获，因为 `repository_state_sha256` 字段要绑定到 verdict-state，证明所有 EV-NNN receipt 与最终仓库状态一致。
 
@@ -256,6 +276,12 @@ authoritative source, unresolved architecture choice, observable acceptance
 criterion, or complete machine-readable plan registry. A legacy plan may use a
 one-time `scope-lock-template.json` sidecar, but a human reviewer must approve
 its complete registry before it becomes authoritative.
+
+Verify the provenance selection per invariant 18: if the plan index declares
+`provenance_level = component-only`, confirm that a valid exemption (physical
+impossibility, test-infrastructure-only, or human-approved) is recorded in the
+plan index using the specified format. If no valid exemption is recorded,
+reject the audit as `INVALID` and do not proceed to Step 1.
 
 Record every supplemental source separately and hash all source files. Capture
 the implementation base commit, current commit, canonical repository root, and
@@ -285,6 +311,17 @@ pre-change state before any implementation write:
 
 ```bash
 cd /home/zhaoge/workspace/qoderwork
+
+# 推荐：--freeze 原子操作（设置 scope.frozen_at + scope.status=FROZEN，然后捕获 pre-change receipt）
+# scope_lock_sha256 绑定到 frozen_at 写入后的最终版本，消除循环依赖
+bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
+  --repository-root /home/zhaoge/workspace/opencode/work-one \
+  --scope-lock /absolute/path/to/audits/plan-name/scope-lock.json \
+  --phase-id LOCK-ID \
+  --freeze 2026-07-21T12:00:00Z \
+  --output /absolute/path/to/audits/plan-name/evidence/pre-change.json
+
+# 兼容：不带 --freeze（scope-lock 必须已含 frozen_at 和 status=FROZEN）
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
   --repository-root /home/zhaoge/workspace/opencode/work-one \
   --scope-lock /absolute/path/to/audits/plan-name/scope-lock.json \
@@ -474,6 +511,7 @@ and a required-heading assertion.
 | `SCOPE_NOT_FROZEN` | ACCEPT/REWORK 时 `scope.status !== "FROZEN"` | 将 audit contract 的 `scope.status` 改为 `FROZEN`（不是 scope-lock 文件的 `scope.status`） |
 | `FREEZE_AFTER_SWEEP` | `scope.frozen_at > sweep.completed_at` | 确保 freeze 在 sweep 之前完成；若时间戳写错，修正 `frozen_at` |
 | `VERDICT_STATE_TIME_INVALID` | `verdict_state.captured_at < sweep.completed_at` | 重新捕获 verdict-state receipt，确保在 sweep 完成后 |
+| `PRE_CHANGE_TIME_INVALID` | `pre_change.captured_at > sweep.completed_at` | 确保 pre-change receipt 在 sweep 完成前捕获；使用 `capture-state.ts --freeze` 可原子化设置 frozen_at 并捕获 pre-change |
 | `STATIC_NEGATIVE_CONTRACT` | STATIC req 的 `applicability !== "NOT_APPLICABLE_STATIC"` 或 command/method/expected/observed 非 "N/A" | 改 `applicability` 为 `NOT_APPLICABLE_STATIC`，其他 4 字段全为 `"N/A"` |
 | `INVALID_PLAN_ITEM_ID` | `plan_item_id` 不匹配 `^PLAN-REQ-\d{3}$` | 改为 `PLAN-REQ-001` 格式（3 位数字，无 phase 前缀） |
 | `EVIDENCE_RECEIPT_PAYLOAD_MISMATCH` | contract ledger 与 receipt 文件 payload 不一致 | 从 receipt 文件逐字符复制所有字段到 contract ledger，禁止修剪重定向/空格 |
