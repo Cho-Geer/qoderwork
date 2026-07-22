@@ -101,7 +101,23 @@ export function writeRunManifest(manifest: RunManifest): void {
   renameSync(tmp, manifest.paths.manifestPath);
 }
 
+const TRANSITION_TABLE: Record<RunState, RunState[]> = {
+  CREATED: ["WORKTREE_READY", "BLOCKED", "FAILED"],
+  WORKTREE_READY: ["READY", "BLOCKED", "FAILED"],
+  READY: ["BOOTSTRAPPED", "BLOCKED", "FAILED"],
+  BOOTSTRAPPED: ["EXECUTED", "BLOCKED", "FAILED"],
+  EXECUTED: ["STOPPED", "BLOCKED", "FAILED"],
+  STOPPED: ["CLEANED", "BLOCKED", "FAILED"],
+  CLEANED: [],
+  BLOCKED: [],
+  FAILED: [],
+};
+
 export function setRunState(manifest: RunManifest, status: RunState): RunManifest {
+  const allowed = TRANSITION_TABLE[manifest.status];
+  if (!allowed.includes(status)) {
+    throw new Error(`illegal run state transition: ${manifest.status} -> ${status}`);
+  }
   manifest.status = status;
   writeRunManifest(manifest);
   return manifest;
@@ -116,10 +132,16 @@ export async function createRunContext(input: CreateRunInput, hooks?: CreateRunH
     ? validateSourceOverlay(resolveRequiredDir(input.sourceOverlayDir, "source overlay"))
     : null;
   
+  // Derive run ID and paths BEFORE port reservation so duplicate detection
+  // cannot leak a reserved port.
+  const runId = hooks?.makeRunId ? hooks.makeRunId(input.testId) : makeRunId(input.testId);
+  const paths = createRunPaths(runId);
+  if (existsSync(paths.rootDir)) {
+    throw new Error(`run id already exists: ${runId}`);
+  }
+
   // Physically reserve the port BEFORE any git/DB work, so create-phase is atomic.
   const portReserverPid = await spawnPortReserver(input.port);
-  const runId = makeRunId(input.testId);
-  const paths = createRunPaths(runId);
   ensureRunDirectories(paths);
 
   const manifest: RunManifest = {

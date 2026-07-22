@@ -1,0 +1,7 @@
+=== STDOUT ===
+=== STDERR ===
+GOOD: retained
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

@@ -1,0 +1,27 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/test-serve/__tests__/run-context.test.ts:
+(pass) run-context > writes manifest and prepares detached worktree [243.96ms]
+(pass) run-context > create fails with clear message when port is already in use [86.42ms]
+(pass) run-context > spawnPortReserver holds the port until released [379.92ms]
+(pass) run-context > STOPPED -> start fails BLOCKED when port was stolen while stopped [361.42ms]
+(pass) run-context > snapshot-source captures tracked and untracked overlay [74.66ms]
+(pass) run-context > snapshot-source rejects dirty source without explicit allow flag [17.35ms]
+(pass) run-context > rejects denied overlay paths [16.75ms]
+(pass) run-context > overlay validation rejects tar content drift [27.30ms]
+(pass) run-context > create failure after worktree add removes partial worktree and marks BLOCKED (TSI-02) [314.89ms]
+(pass) run-context > legal state sequence writes expected manifest status (P03-S-01) [373.13ms]
+(pass) run-context > terminal or backward transition throws before write (P03-S-02) [506.46ms]
+(pass) run-context > pre-created root rejects before reservation (P03-S-03) [310.51ms]
+(pass) run-context > manifest has port, patchSha256, and absolute paths (P03-S-04) [189.81ms]
+
+ 13 pass
+ 0 fail
+ 37 expect() calls
+Ran 13 tests across 1 file. [3.02s]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

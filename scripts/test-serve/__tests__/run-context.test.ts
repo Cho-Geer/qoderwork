@@ -6,6 +6,7 @@ import { join } from "node:path";
 import net from "node:net";
 import {
   createRunContext,
+  getStateRoot,
   readRunManifest,
   releasePortReservation,
   setRunState,
@@ -103,9 +104,13 @@ describe("run-context", () => {
     await releasePortReservation(manifest.process.portReserverPid as number);
 
     // 2) Simulate the post-stop state: no reservation, no serve/sse, status=STOPPED.
+    // Walk the legal lifecycle to reach STOPPED.
     manifest.process.portReserverPid = null;
     manifest.process.servePid = null;
     manifest.process.ssePid = null;
+    setRunState(manifest, "READY");
+    setRunState(manifest, "BOOTSTRAPPED");
+    setRunState(manifest, "EXECUTED");
     setRunState(manifest, "STOPPED");
 
     // 3) Steal the port externally.
@@ -213,6 +218,122 @@ describe("run-context", () => {
     // git worktree list 不应残留这条 worktree
     const list = git(["worktree", "list", "--porcelain"], repo);
     expect(list.includes(capturedPaths!.worktreeDir)).toBe(false);
+  });
+
+  test("legal state sequence writes expected manifest status (P03-S-01)", async () => {
+    const repo = createRepo();
+    const commit = git(["rev-parse", "HEAD"], repo).trim();
+    const manifest = await createRunContext({
+      primaryWorktree: repo,
+      commit,
+      port: 39020,
+      testId: "P03-S-01",
+    });
+    expect(manifest.status).toBe("WORKTREE_READY");
+
+    setRunState(manifest, "READY");
+    expect(readRunManifest(manifest.paths.rootDir).status).toBe("READY");
+
+    setRunState(manifest, "BOOTSTRAPPED");
+    setRunState(manifest, "EXECUTED");
+    setRunState(manifest, "STOPPED");
+    setRunState(manifest, "CLEANED");
+    expect(readRunManifest(manifest.paths.rootDir).status).toBe("CLEANED");
+
+    await releasePortReservation(manifest.process.portReserverPid as number);
+  });
+
+  test("terminal or backward transition throws before write (P03-S-02)", async () => {
+    const repo = createRepo();
+    const commit = git(["rev-parse", "HEAD"], repo).trim();
+    const manifest = await createRunContext({
+      primaryWorktree: repo,
+      commit,
+      port: 39021,
+      testId: "P03-S-02",
+    });
+
+    // Walk to CLEANED (terminal)
+    setRunState(manifest, "READY");
+    setRunState(manifest, "BOOTSTRAPPED");
+    setRunState(manifest, "EXECUTED");
+    setRunState(manifest, "STOPPED");
+    setRunState(manifest, "CLEANED");
+
+    // Terminal -> active must throw
+    expect(() => setRunState(manifest, "READY")).toThrow("illegal run state transition: CLEANED -> READY");
+    // Manifest retains prior status
+    expect(readRunManifest(manifest.paths.rootDir).status).toBe("CLEANED");
+
+    // Backward transition must throw
+    const manifest2 = await createRunContext({
+      primaryWorktree: repo,
+      commit,
+      port: 39022,
+      testId: "P03-S-02-backward",
+    });
+    setRunState(manifest2, "READY");
+    expect(() => setRunState(manifest2, "WORKTREE_READY")).toThrow("illegal run state transition: READY -> WORKTREE_READY");
+    expect(readRunManifest(manifest2.paths.rootDir).status).toBe("READY");
+
+    await releasePortReservation(manifest.process.portReserverPid as number);
+    await releasePortReservation(manifest2.process.portReserverPid as number);
+  });
+
+  test("pre-created root rejects before reservation (P03-S-03)", async () => {
+    const repo = createRepo();
+    const commit = git(["rev-parse", "HEAD"], repo).trim();
+
+    // Clean up any leftover run root from previous test runs (deterministic ID)
+    const leftoverRoot = join(getStateRoot(), "deterministic-run-id-p03-s03");
+    rmSync(leftoverRoot, { recursive: true, force: true });
+
+    // First create succeeds
+    const manifest1 = await createRunContext({
+      primaryWorktree: repo,
+      commit,
+      port: 39023,
+      testId: "P03-S-03",
+    }, {
+      makeRunId: () => "deterministic-run-id-p03-s03",
+    });
+    expect(manifest1.status).toBe("WORKTREE_READY");
+
+    // Second create with same run ID must throw before port reservation
+    await expect(
+      createRunContext({
+        primaryWorktree: repo,
+        commit,
+        port: 39024,
+        testId: "P03-S-03-dup",
+      }, {
+        makeRunId: () => "deterministic-run-id-p03-s03",
+      })
+    ).rejects.toThrow("run id already exists: deterministic-run-id-p03-s03");
+
+    await releasePortReservation(manifest1.process.portReserverPid as number);
+  });
+
+  test("manifest has port, patchSha256, and absolute paths (P03-S-04)", async () => {
+    const repo = createRepo();
+    const commit = git(["rev-parse", "HEAD"], repo).trim();
+    const manifest = await createRunContext({
+      primaryWorktree: repo,
+      commit,
+      port: 39025,
+      testId: "P03-S-04",
+    });
+
+    expect(typeof manifest.port).toBe("number");
+    expect(manifest.port).toBe(39025);
+    // All path fields must be absolute
+    expect(manifest.paths.rootDir.startsWith("/")).toBe(true);
+    expect(manifest.paths.manifestPath.startsWith("/")).toBe(true);
+    expect(manifest.paths.worktreeDir.startsWith("/")).toBe(true);
+    expect(manifest.paths.frameworkDbPath.startsWith("/")).toBe(true);
+    expect(manifest.paths.opencodeDbPath.startsWith("/")).toBe(true);
+
+    await releasePortReservation(manifest.process.portReserverPid as number);
   });
 });
 

@@ -113,4 +113,23 @@ describe("sse-daemon helpers", () => {
       })
     ).toThrow("QODERWORK_TEST_RUN_ID is required");
   });
+
+  test("sse-daemon throws when FRAMEWORK_DB_PATH missing (P03-S-06)", () => {
+    // Run sse-daemon.ts as a child process without FRAMEWORK_DB_PATH.
+    // The main() function checks FRAMEWORK_DB_PATH and throws when missing.
+    // Since autoWriteSessionMap is not exported, we verify via the main entry point.
+    const env: Record<string, string> = {};
+    for (const [k, v] of Object.entries(process.env)) {
+      if (v !== undefined && k !== "FRAMEWORK_DB_PATH") env[k] = v;
+    }
+    const result = Bun.spawnSync({
+      cmd: [process.execPath, "run", join(__dirname, "../../sse-daemon.ts")],
+      env,
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    const stderr = result.stderr.toString();
+    expect(result.exitCode).not.toBe(0);
+    expect(stderr).toContain("FRAMEWORK_DB_PATH is required");
+  });
 });

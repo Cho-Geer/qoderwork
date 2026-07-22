@@ -1,0 +1,20 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/test-serve/__tests__/sse-daemon.test.ts:
+(pass) sse-daemon helpers > ensureEventFile creates empty event file [9.46ms]
+(pass) sse-daemon helpers > writeSseReadyMarker writes valid JSON with correct content [1.25ms]
+(pass) sse-daemon helpers > writeSseReadyMarker overwrites with still-valid JSON [1.17ms]
+(pass) sse-daemon helpers > writeSseReadyMarker throws when SSE_READY_FILE is missing [1.09ms]
+(pass) sse-daemon helpers > writeSseReadyMarker throws when RUN_ID is missing [0.31ms]
+(pass) sse-daemon helpers > sse-daemon throws when FRAMEWORK_DB_PATH missing (P03-S-06) [22.56ms]
+
+ 6 pass
+ 0 fail
+ 11 expect() calls
+Ran 6 tests across 1 file. [100.00ms]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

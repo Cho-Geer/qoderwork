@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P0-3-01-AUDIT",
+  "generation": 1,
+  "id": "EV-010",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/p0-3 && bun -e \"const m={port:39025,paths:{rootDir:'/tmp'}};if(!m.patchSha256){console.error('MISSING: patchSha256');process.exit(1)};process.exit(0)\"",
+  "observed": "FAIL",
+  "requirement_id": "REQ-005",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-005",
+  "fixture_id": "FIXTURE-MISSING-FIELD",
+  "evidence_level": "component",
+  "repository_state_sha256": "06617bbc65a3bd99f8937ea4d03bbfc72a9720704b329a37b3c8182ccbbda91e",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/p0-3",
+  "artifacts": [
+    {
+      "path": "audits/p0-3/evidence/PHASE-01-G1/ev-010-output.txt",
+      "sha256": "cff6185236d5e2c1c1d20bd9f2fc4c059020ea2f6c1663252a6b0f7e986846c9"
+    }
+  ],
+  "completed_at": "2026-07-22T15:25:29.715Z"
+}

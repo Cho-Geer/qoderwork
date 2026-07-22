@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P0-3-01-AUDIT",
+  "generation": 1,
+  "id": "EV-014",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/p0-3 && bun -e \"const env={};for(const[k,v]of Object.entries(process.env)){if(v!==undefined&&k!=='FRAMEWORK_DB_PATH')env[k]=v}const r=Bun.spawnSync({cmd:[process.execPath,'run','./scripts/sse-daemon.ts'],env,stdout:'pipe',stderr:'pipe'});if(r.exitCode!==0&&r.stderr.toString().includes('FRAMEWORK_DB_PATH is required')){console.error('GOOD: threw');process.exit(1)}else{console.log('BAD');process.exit(0)}\"",
+  "observed": "FAIL",
+  "requirement_id": "REQ-007",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-007",
+  "fixture_id": "FIXTURE-NO-DB-PATH",
+  "evidence_level": "component",
+  "repository_state_sha256": "06617bbc65a3bd99f8937ea4d03bbfc72a9720704b329a37b3c8182ccbbda91e",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/p0-3",
+  "artifacts": [
+    {
+      "path": "audits/p0-3/evidence/PHASE-01-G1/ev-014-output.txt",
+      "sha256": "8f7c5819197a9776700275226c55ea5b36927096a87e0fb4d869f9c78bcaa94b"
+    }
+  ],
+  "completed_at": "2026-07-22T15:25:31.812Z"
+}

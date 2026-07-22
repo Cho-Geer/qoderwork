@@ -21,6 +21,8 @@ export interface CreateRunHooks {
   afterWorktreeReady?: (paths: RunPaths) => void | Promise<void>;
   /** Test-only fault injection for a reserver that remains alive during create cleanup. */
   releasePortReservation?: (pid: number) => Promise<void>;
+  /** Test-only: override run ID generation for deterministic component tests. Production uses the default random generator. */
+  makeRunId?: (testId: string) => string;
 }
 
 export type CleanupResult = {

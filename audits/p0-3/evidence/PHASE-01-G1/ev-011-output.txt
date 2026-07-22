@@ -1,0 +1,23 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/test-serve/__tests__/process.test.ts:
+(pass) process identity checks > status reports dead pids as not alive [1.68ms]
+(pass) process identity checks > keeps QODERWORK_TEST_RUN_ID on spawned child [7.64ms]
+(pass) process identity checks > fails closed when SIGKILL does not terminate the port reserver [1.67ms]
+(pass) process identity checks > does not clear portReserverPid or write STOPPED when reserver exit is unconfirmed [2.98ms]
+(pass) start four-gate checks > health true but sseReady false results in BLOCKED [106.31ms]
+(pass) start four-gate checks > marker runId mismatch results in BLOCKED [105.68ms]
+(pass) start four-gate checks > all four checks true returns READY with all-true checks [1.75ms]
+(pass) PID identity validation (P03-S-05) > foreign PID rejected by validateRunProcess (P03-S-05) [1.52ms]
+(pass) PID identity validation (P03-S-05) > correct PID accepted by validateRunProcess (P03-S-05 positive) [101.67ms]
+
+ 9 pass
+ 0 fail
+ 20 expect() calls
+Ran 9 tests across 1 file. [393.00ms]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

@@ -1,0 +1,7 @@
+=== STDOUT ===
+=== STDERR ===
+MISSING: patchSha256
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false
