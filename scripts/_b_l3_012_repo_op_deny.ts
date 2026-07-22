@@ -42,7 +42,7 @@ async function main() {
   log(`Target: ${SERVE_URL}`);
 
   // 0. serve API health check
-  const health = await httpJson("GET", "/session", undefined, SERVE_URL);
+  const health = await httpJson("GET", "/session", SERVE_URL);
   if (health.status !== 200) {
     log(`FATAL: serve not responding: ${health.status}`);
     process.exit(1);
@@ -50,10 +50,10 @@ async function main() {
   log(`  Verified-by: GET /session → ${health.status}, ${Array.isArray(health.data) ? health.data.length : 0} sessions`);
 
   // 1. Create session
-  const sessRes = await httpJson("POST", "/session", {
+  const sessRes = await httpJson("POST", "/session", SERVE_URL, {
     title: "[L3-012-repo-op-deny-rerun] no grant test",
     agent: "Orchestrator",
-  }, SERVE_URL);
+  });
   if (sessRes.status !== 200) {
     log(`FATAL: session create failed: ${sessRes.status} ${sessRes.raw}`);
     process.exit(1);
@@ -74,11 +74,11 @@ async function main() {
     const { pollAndReplyQuestionsWithMap } = await import("./lib/serve-api-client");
     return pollAndReplyQuestionsWithMap(serveUrl, knownSids, QUESTION_REPLY_DEFAULTS);
   };
-  const waitResult = await waitForIdle(sid, MAX_DENY_WAIT_MS, customReplier, SSE_FILE, SERVE_URL);
+  const waitResult = await waitForIdle(sid, MAX_DENY_WAIT_MS, SSE_FILE, SERVE_URL, customReplier);
   log(`  wait result: ${waitResult.reason} (total ${waitResult.totalMs}ms, ${waitResult.questionReplies} questions replied)`);
 
   // 4. 收集 messages + tool calls
-  const messages = await httpJson("GET", `/session/${sid}/message`, undefined, SERVE_URL);
+  const messages = await httpJson("GET", `/session/${sid}/message`, SERVE_URL);
   const msgArr = Array.isArray(messages.data) ? messages.data : [];
   log(`  Verified-by: GET /session/${sid.slice(0, 20)}/message → ${messages.status}, ${msgArr.length} messages`);
 
@@ -107,7 +107,7 @@ async function main() {
   log(`  denied/error tools: ${deniedTools.length}`);
 
   // 6. Get children
-  const childrenRes = await httpJson("GET", `/session/${sid}/children`, undefined, SERVE_URL);
+  const childrenRes = await httpJson("GET", `/session/${sid}/children`, SERVE_URL);
   const children = Array.isArray(childrenRes.data) ? childrenRes.data : [];
   log(`  Verified-by: GET /session/${sid.slice(0, 20)}/children → ${childrenRes.status}, ${children.length} child sessions`);
 

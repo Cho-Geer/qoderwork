@@ -32,7 +32,7 @@ import { basename, dirname, isAbsolute, join, relative, resolve } from "node:pat
 
 type JsonObject = Record<string, unknown>;
 
-type LoadedReceipt = {
+export type LoadedReceipt = {
   absPath: string;
   relPath: string;
   sha256: string;
