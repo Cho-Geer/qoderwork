@@ -11,6 +11,9 @@ scripts/.env
 .codeartsdoer/
 .zcode/
 
+# Git worktrees (isolated branch workspaces)
+.worktrees/
+
 # Python cache
 **/__pycache__/
 *.pyc
