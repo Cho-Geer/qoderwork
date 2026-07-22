@@ -1,0 +1,11 @@
+=== STDOUT ===
+=== STDERR ===
+Traceback (most recent call last):
+  File "/tmp/p07-verify-req001-neg.py", line 14, in <module>
+    assert ' 1 fail' in output or ' 2 fail' in output or result.returncode != 0, \
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Expected failures but suite passed (exit=0)
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

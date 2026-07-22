@@ -1,0 +1,7 @@
+=== STDOUT ===
+REQ002_POSITIVE: 16 stages ok, 5 checks ok, failedChecks=[]
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

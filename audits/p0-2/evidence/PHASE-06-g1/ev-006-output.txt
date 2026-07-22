@@ -1,0 +1,11 @@
+=== STDOUT ===
+=== STDERR ===
+Traceback (most recent call last):
+  File "/tmp/p06-verify-req003-neg.py", line 4, in <module>
+    assert os.path.isfile(fake_path), f"Expected file at {fake_path}"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Expected file at /home/zhaoge/.local/state/qoderwork/qoderwork/test-runs/NONEXISTENT-RUN/manifest.json
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

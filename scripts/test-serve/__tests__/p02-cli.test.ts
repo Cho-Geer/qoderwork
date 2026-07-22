@@ -50,19 +50,27 @@ function makePassResult(): P02Result {
     runDirA: "/fake/run-a",
     runDirB: "/fake/run-b",
     checks: {
-      reservations: { ok: true, failedChecks: [] },
-      coexistence: { ok: true, failedChecks: [] },
-      attribution: { ok: true, failedChecks: [] },
-      "after-stop-a": { ok: true, failedChecks: [] },
-      cleanup: { ok: true, failedChecks: [] },
+      reservations: { ok: true, phase: "reservations", checks: {}, failedChecks: [] },
+      coexistence: { ok: true, phase: "coexistence", checks: {}, failedChecks: [] },
+      attribution: { ok: true, phase: "attribution", checks: {}, failedChecks: [] },
+      "after-stop-a": { ok: true, phase: "after-stop-a", checks: {}, failedChecks: [] },
+      cleanup: { ok: true, phase: "cleanup", checks: {}, failedChecks: [] },
     },
-    evidencePaths: { stageResults: "/fake/run-a/artifacts/p0-2-stage-results.json" },
+    evidencePaths: {
+      manifestA: "/fake/run-a/manifest.json",
+      manifestB: "/fake/run-b/manifest.json",
+      artifactsDirA: "/fake/run-a/artifacts",
+      stageResults: "/fake/run-a/artifacts/p0-2-stage-results.json",
+    },
   };
 }
 
 function makeFailResult(): P02Result {
   return {
     ok: false,
+    runDirA: null,
+    runDirB: null,
+    failedCheck: "",
     firstFailure: { stage: "start-a", error: "injected coordinator failure" },
     stages: [{ stage: "start-a", startedAt: "t", finishedAt: "t", status: "failed", error: "x" }],
     convergenceErrors: [],

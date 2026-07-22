@@ -1,0 +1,9 @@
+=== STDOUT ===
+total rg matches: 1
+active violations (not in string): 0
+REQ002_POSITIVE: all matches are string constants/error messages, no active implementation
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

@@ -1,0 +1,7 @@
+=== STDOUT ===
+REQ001_POSITIVE: ok=True status=PASS
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

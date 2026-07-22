@@ -1,19 +1,21 @@
 # P0-2 最新审计指针
 
-**Latest audit**: `2026-07-22-phase-05-runtime-test-audit-g2.md`（PHASE-05 runtime test 审计，scope-lock v3，prepare-audit.ts 生成）
+**Latest audit**: `2026-07-22-phase-07-regression-audit-g1.md`（PHASE-07 regression 审计，scope-lock-phase-07.json，prepare-audit.ts 生成）
 **Audit date**: 2026-07-22
-**Audited phase**: PHASE-05（first real dual-run runtime test）
-**Result**: ✅ ACCEPT（v2.1-required；runtime-smoke 级；generation 2；3 REQ 全 PASS；正/负控制 SENSITIVE；改进工具链一次通过 Gate 1+2）
-**Scope lock**: `scope-lock.json`（v3, human-approved, frozen 2026-07-21T16:28:12Z）
-**Freeze Gate 状态**: 完成（pre-change-PHASE-05-v3 + verdict-state-PHASE-05-v3 receipts 捕获，repository_root=work-one）
-**Findings**: 无 BLOCKING；无 NON_BLOCKING_DEBT
-**Validator**: validate-audit.ts valid=true, errors=[], exit 0（generation 2 一次通过，零手动修复）
-**Gate status**: PHASE-05=ACCEPT
+**Audited phase**: PHASE-07（regression and static closure gate）
+**Result**: ⚠️ BLOCKED（v2.1-required；component 级；generation 1；REQ-001 PASS + REQ-002 PASS + REQ-003 BLOCKED-BY-ROOT-TYPECHECK；Gate 2 exit 0）
+**Scope lock**: `scope-lock-phase-07.json`（human-approved, frozen 2026-07-22T03:42:17Z）
+**Freeze Gate 状态**: 完成（pre-change-PHASE-07 + verdict-state-PHASE-07 receipts 捕获，repository_root=work-one）
+**Findings**: 无 BLOCKING；REQ-003 BLOCKED（33 non-P0-2 type errors）
+**Validator**: validate-audit.ts valid=true, errors=[], exit 0
+**Gate status**: PHASE-07=BLOCKED（等待 root typecheck 债务清理后 re-audit）
 
 ## 审计历史（新增）
 
 | Date | Audit file | Phase | Result |
 |---|---|---|---|
+| 2026-07-22 | `2026-07-22-phase-07-regression-audit-g1.md` | PHASE-07（regression + static closure gate，prepare-audit.ts 生成） | ⚠️ BLOCKED（v2.1-required；component 级；REQ-001 PASS 206/0 fail + REQ-002 PASS 无活跃禁止模式 + REQ-003 BLOCKED-BY-ROOT-TYPECHECK 33 non-P0-2 errors；Gate 2 exit 0） |
+| 2026-07-22 | `2026-07-22-phase-06-cli-smoke-audit-g1.md` | PHASE-06（CLI smoke，第二组端口 4003/4004，prepare-audit.ts 生成） | ✅ ACCEPT（v2.1-required；runtime-smoke 级；3 REQ 全 PASS；正/负控制 SENSITIVE；Gate 1 + Gate 2 exit 0；repository_root=work-one；verification-only 零代码变更） |
 | 2026-07-22 | `2026-07-22-phase-05-runtime-test-audit-g2.md` | PHASE-05（runtime test，scope-lock v3，prepare-audit.ts 生成） | ✅ ACCEPT（v2.1-required；runtime-smoke 级；3 REQ 全 PASS；正/负控制 SENSITIVE；Gate 1 + Gate 2 exit 0；repository_root=work-one） |
 | 2026-07-22 | `2026-07-22-phase-04a-existsync-audit-f5.md` | PHASE-04a（existsSync fix，F5 独立审计，prepare-audit.ts 生成） | ✅ ACCEPT（v2.1-required；component 级；3 REQ 全 PASS；正/负控制 SENSITIVE；Gate 1 + Gate 2 exit 0；contract 由 prepare-audit.ts 自动生成，structural errors=0） |
 | 2026-07-21 | `2026-07-21-phase-04a-existsync-audit-f4.md` | PHASE-04a（existsSync fix，F4 独立审计） | ✅ ACCEPT（v2.1-required；component 级；3 REQ 全 PASS；正/负控制 SENSITIVE；Gate 1 + Gate 2 exit 0；无 BLOCKING） |

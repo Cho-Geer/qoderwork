@@ -3,7 +3,7 @@
 **Plan mode**: `PLAN_SET`
 **ID**: `ISO-SERVE-P0-2-PLANSET-20260719`
 **Status**: `IN-PROGRESS`
-**Only implementation path**: PHASE-04 Accept（generation 2 重实施审计 2026-07-21；CLI 路由恢复；43 pass / 0 fail；component 级；审计 `audits/p0-2/2026-07-21-phase-04-cli-reimplementation-audit.md`）。PHASE-06a ACCEPT（G2 独立复审 2026-07-21）。PHASE-03 DONE（audit-5 Accept）。PHASE-05 ACCEPT（v3 审计 2026-07-22；runtime-smoke 级；审计 `audits/p0-2/2026-07-22-phase-05-runtime-test-audit-v3.md`）。下一步：PHASE-06 CLI smoke（需重新走 Freeze Gate）。
+**Only implementation path**: PHASE-04 Accept（generation 2 重实施审计 2026-07-21；CLI 路由恢复；43 pass / 0 fail；component 级；审计 `audits/p0-2/2026-07-21-phase-04-cli-reimplementation-audit.md`）。PHASE-06a ACCEPT（G2 独立复审 2026-07-21）。PHASE-03 DONE（audit-5 Accept）。PHASE-05 ACCEPT（v3 审计 2026-07-22；runtime-smoke 级；审计 `audits/p0-2/2026-07-22-phase-05-runtime-test-audit-v3.md`）。PHASE-06 ACCEPT（g1 审计 2026-07-22；runtime-smoke 级；CLI smoke 端口 4003/4004；审计 `audits/p0-2/2026-07-22-phase-06-cli-smoke-audit-g1.md`）。PHASE-07 BLOCKED（g1 审计 2026-07-22；REQ-001/002 PASS，REQ-003 BLOCKED-BY-ROOT-TYPECHECK；审计 `audits/p0-2/2026-07-22-phase-07-regression-audit-g1.md`）。下一步：等待 root typecheck 债务清理后 PHASE-07 re-audit。
 **Evidence ceiling**: component suite 为 292 pass / 0 component fail / 2 runtime NOT-RUN（2026-07-21 PHASE-04 重实施复验：p02-cli 6 + p01b-orchestrator 37 = 43 pass / 0 fail；完整 suite 292 pass / 2 runtime 前置拒绝）；PHASE-06a `ACCEPT`（G2 独立复审 2026-07-21）；PHASE-04 `Accept`（generation 2 重实施审计 2026-07-21：CLI 路由恢复，日志声明全部可复现；审计 `audits/p0-2/2026-07-21-phase-04-cli-reimplementation-audit.md`）。PHASE-06a 作为前置修复提前执行，不依赖 PHASE-04/05 完成。
 
 **Provenance level**（AGENTS.md §15 规则 P-01 声明）:
@@ -87,7 +87,7 @@
 
 > **2026-07-21 状态同步**：PHASE-06a（cleanup.ts 提取 + 循环依赖打破 + TDZ 预防）经 G2 独立复审判定 ACCEPT（审计 `audits/p0-2/2026-07-21-phase-06a-cleanup-extract-audit-g2.md`，validate-audit valid=true, 0 errors）。PHASE-04 重实施完成（CLI 路由恢复 + `runTestServeCli` 导出），generation 2 审计 Accept（component 级；审计 `audits/p0-2/2026-07-21-phase-04-cli-reimplementation-audit.md`；43 pass / 0 fail；日志声明全部可复现）。下一步：PHASE-05 runtime test（需 reviewer 端口 + v2.1 Freeze Gate）。
 
-> **2026-07-22 状态同步**：PHASE-05（首次真实双 run runtime test）经 v3 审计判定 ACCEPT（v2.1-required；runtime-smoke 级；审计 `audits/p0-2/2026-07-22-phase-05-runtime-test-audit-v3.md`；validate-audit valid=true, 0 errors）。scope-lock v3 human-approved（allowed_files 收窄至 p02-runtime.test.ts）；runtime test 1 pass/0 fail/50 expect()；16 stages ok；A/B CLEANED；3 负控制 SENSITIVE。PHASE-04a F5 独立审计 ACCEPT（component 级）。下一步：PHASE-06 CLI smoke（需重新走 Freeze Gate）。
+> **2026-07-22 状态同步**：PHASE-05（首次真实双 run runtime test）经 v3 审计判定 ACCEPT（v2.1-required；runtime-smoke 级；审计 `audits/p0-2/2026-07-22-phase-05-runtime-test-audit-v3.md`；validate-audit valid=true, 0 errors）。scope-lock v3 human-approved（allowed_files 收窄至 p02-runtime.test.ts）；runtime test 1 pass/0 fail/50 expect()；16 stages ok；A/B CLEANED；3 负控制 SENSITIVE。PHASE-04a F5 独立审计 ACCEPT（component 级）。PHASE-06（CLI smoke，第二组端口 4003/4004）经 g1 审计判定 ACCEPT（v2.1-required；runtime-smoke 级；审计 `audits/p0-2/2026-07-22-phase-06-cli-smoke-audit-g1.md`；validate-audit valid=true, 0 errors；verification-only 零代码变更；3 REQ 全 PASS；正/负控制 SENSITIVE）。下一步：PHASE-07 regression（需 Freeze Gate）。
 
 ## 4. End-to-end traceability
 
@@ -127,6 +127,6 @@
 | 4.5 | PHASE-04a | `04a-phase-existsync-fix.md` | PHASE-04 | `ACCEPT`（F5 独立审计 2026-07-22：existsSync fix + P02-C-PATH-EXIST 用例；3 REQ 全 PASS；component 级；审计 `audits/p0-2/2026-07-22-phase-04a-existsync-audit-f5.md`；validate-audit valid=true, 0 errors；prepare-audit.ts 生成，structural errors=0） |
 | 5 | PHASE-05 | `05-phase-runtime-test.md` | PHASE-04 | `ACCEPT`（v3 审计 2026-07-22：scope-lock v3 human-approved；runtime test 1 pass/0 fail/50 expect()；16 stages ok；A/B CLEANED；3 负控制 SENSITIVE；runtime-smoke 级；审计 `audits/p0-2/2026-07-22-phase-05-runtime-test-audit-v3.md`；validate-audit valid=true, 0 errors） |
 | 5.5 | PHASE-06a | `06a-phase-circular-dependency-fix.md` | PHASE-03（前置修复，提前执行） | `ACCEPT`（G2 独立复审 2026-07-21：cleanup.ts 提取 + 循环依赖打破 + TDZ 预防；4 REQ 全 PASS；component 级；审计 `audits/p0-2/2026-07-21-phase-06a-cleanup-extract-audit-g2.md`；validate-audit valid=true, 0 errors） |
-| 6 | PHASE-06 | `06-phase-cli-smoke.md` | PHASE-06a | BLOCKED（audit-1 INVALID：Freeze Gate 未完成 + 代码修改违反 plan Forbidden；修复后重新走 Freeze Gate） |
-| 7 | PHASE-07 | `07-phase-regression.md` | PHASE-06 | BLOCKED |
+| 6 | PHASE-06 | `06-phase-cli-smoke.md` | PHASE-06a | `ACCEPT`（g1 审计 2026-07-22：CLI smoke 第二组端口 4003/4004；v2.1-required；runtime-smoke 级；3 REQ 全 PASS；正/负控制 SENSITIVE；审计 `audits/p0-2/2026-07-22-phase-06-cli-smoke-audit-g1.md`；validate-audit valid=true, 0 errors；verification-only 零代码变更） |
+| 7 | PHASE-07 | `07-phase-regression.md` | PHASE-06 | `BLOCKED`（g1 审计 2026-07-22：REQ-001 PASS 206/0 fail + REQ-002 PASS + REQ-003 BLOCKED-BY-ROOT-TYPECHECK；33 non-P0-2 type errors 不可修；审计 `audits/p0-2/2026-07-22-phase-07-regression-audit-g1.md`；validate-audit valid=true） |
 | 8 | PHASE-08 | `08-phase-document-closure.md` | PHASE-07 | BLOCKED |

@@ -1,0 +1,7 @@
+=== STDOUT ===
+REQ003_POSITIVE: A=2026-07-22T02-35-47-406Z-p0-2-cli-smoke-a-2fe75c29 B=2026-07-22T02-35-48-008Z-p0-2-cli-smoke-b-64a9bd76 distinct, ports 4003/4004
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

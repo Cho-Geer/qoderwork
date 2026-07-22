@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "p0-2-phase-07-g1",
+  "generation": 1,
+  "id": "EV-002",
+  "command": "cd /home/zhaoge/workspace/qoderwork && python3 /tmp/p07-verify-req001-neg.py",
+  "observed": "FAIL",
+  "requirement_id": "REQ-001",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-ASSERT-FAIL",
+  "evidence_level": "component",
+  "repository_state_sha256": "10d93f4b11c93c9014d00814f8218c8103ac59e2953a2a1180c141d2f5b10988",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/PHASE-07-g1/ev-002-output.txt",
+      "sha256": "6496d68d2605f36fb5cbf71a28a08fc71008b988953fcaeee1ddf25744850a89"
+    }
+  ],
+  "completed_at": "2026-07-22T04:05:21.530Z"
+}

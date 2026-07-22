@@ -1,0 +1,7 @@
+=== STDOUT ===
+REQ001_POSITIVE: component suite exit 0, 0 fail
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

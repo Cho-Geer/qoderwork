@@ -1,0 +1,200 @@
+{
+  "schema_version": "2.0",
+  "plan_id": "ISO-SERVE-P0-2-PLANSET-20260719",
+  "phase_id": "PHASE-06",
+  "lock_id": "PHASE-06",
+  "created_at": "2026-07-22",
+  "created_by": "ZCode (agent) — proposed, awaiting human approval",
+  "plan_sources": [
+    {
+      "path": "plans/隔离 serve 测试基建待办/p0-2/06-phase-cli-smoke.md",
+      "sha256": "6d589404dedd0a60f1ad2d0ee598683c3c67302998747f3f477b024274882d8e"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "2026-07-22T02:27:23Z",
+    "in_scope": [
+      "REQ-001",
+      "REQ-002",
+      "REQ-003"
+    ],
+    "out_of_scope": [
+      "live LLM E2E",
+      "H2_AUTHORIZED=true",
+      "TSI-05 run-mode",
+      "any code modification (PHASE-06 is verification-only)",
+      "PHASE-05 port pair 4001/4002 (must not be reused)",
+      "PHASE-07 regression",
+      "PHASE-08 document closure"
+    ],
+    "assumptions": [
+      {
+        "statement": "reviewer-provided second port pair 4003/4004 are free at CLI execution time",
+        "disproof": "ss -tlnp | grep -E ':4003|:4004' returns no match"
+      },
+      {
+        "statement": "PHASE-05 gate is ACCEPT (precondition per plan Starting state)",
+        "disproof": "audits/p0-2/LATEST.md shows PHASE-05=ACCEPT"
+      },
+      {
+        "statement": "mainFrameworkDbPath exists at work-one/.opencode/state/framework-state.db",
+        "disproof": "ls -la /home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db"
+      },
+      {
+        "statement": "work-one HEAD commit is 95405b6eb52750f5c5e84eef75a24bb63c6009d1 at freeze time",
+        "disproof": "git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD"
+      }
+    ],
+    "exit_criteria": [
+      "CLI command executes exactly once with port-a=4003 port-b=4004",
+      "CLI exit code is 0",
+      "stdout JSON contains ok:true and status:\"PASS\"",
+      "16 stages all ok",
+      "5 check groups all true, failedChecks length 0",
+      "A/B run directories contain readable manifests with independent run IDs",
+      "no code files in work-one are modified (verification-only phase)"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-008",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/06-phase-cli-smoke.md#Local-requirements",
+      "behavior": "CLI input: 使用 reviewer 第二组端口（4003/4004，区别于 PHASE-05 的 4001/4002）执行一次 test-serve p0-2 命令",
+      "required_evidence_level": "runtime-smoke",
+      "oracle_id": "ORACLE-001",
+      "oracle": "CLI process invoked exactly once with --port-a 4003 --port-b 4004; command executes without argument rejection; process exits (any code)"
+    },
+    {
+      "id": "REQ-002",
+      "plan_item_id": "PLAN-REQ-009",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/06-phase-cli-smoke.md#Local-requirements",
+      "behavior": "CLI result: 输出 PASS JSON，exit 0，16 stages 全 ok，五组 checks 全真",
+      "required_evidence_level": "runtime-smoke",
+      "oracle_id": "ORACLE-002",
+      "oracle": "exit code === 0; stdout JSON ok===true, status===\"PASS\"; stageResults.stages length 16 all status===\"ok\"; 5 check groups all ok:true, failedChecks length 0"
+    },
+    {
+      "id": "REQ-003",
+      "plan_item_id": "PLAN-REQ-010",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/06-phase-cli-smoke.md#Local-requirements",
+      "behavior": "evidence: A/B artifacts 可读，run IDs 独立（不复用 PHASE-05 run IDs）",
+      "required_evidence_level": "runtime-smoke",
+      "oracle_id": "ORACLE-003",
+      "oracle": "A/B run directories exist; manifest.json in each is readable JSON with distinct run_id; stageResultsPath, cleanupReportPath exist and are readable"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-008",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/06-phase-cli-smoke.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "CLI input: 使用 reviewer 第二组端口（4003/4004，区别于 PHASE-05 的 4001/4002）执行一次 test-serve p0-2 命令",
+      "required_evidence_level": "runtime-smoke",
+      "oracle_id": "ORACLE-001",
+      "oracle": "CLI process invoked exactly once with --port-a 4003 --port-b 4004; command executes without argument rejection; process exits (any code)"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-009",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-002",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/06-phase-cli-smoke.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "CLI result: 输出 PASS JSON，exit 0，16 stages 全 ok，五组 checks 全真",
+      "required_evidence_level": "runtime-smoke",
+      "oracle_id": "ORACLE-002",
+      "oracle": "exit code === 0; stdout JSON ok===true, status===\"PASS\"; stageResults.stages length 16 all status===\"ok\"; 5 check groups all ok:true, failedChecks length 0"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-010",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-003",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/06-phase-cli-smoke.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "evidence: A/B artifacts 可读，run IDs 独立（不复用 PHASE-05 run IDs）",
+      "required_evidence_level": "runtime-smoke",
+      "oracle_id": "ORACLE-003",
+      "oracle": "A/B run directories exist; manifest.json in each is readable JSON with distinct run_id; stageResultsPath, cleanupReportPath exist and are readable"
+    }
+  ],
+  "check_registry": [
+    {
+      "name": "cliExit",
+      "source_of_truth": "process exit code",
+      "pass_condition": "exit code === 0",
+      "missing_behavior": "non-zero exit → cliExit failure"
+    },
+    {
+      "name": "cliPayload",
+      "source_of_truth": "stdout JSON",
+      "pass_condition": "ok:true, status:\"PASS\", 16 stages ok, 5 check groups true",
+      "missing_behavior": "missing/malformed JSON or failed checks → cliPayload failure"
+    },
+    {
+      "name": "independentEvidence",
+      "source_of_truth": "A/B run paths",
+      "pass_condition": "new run IDs readable, distinct from PHASE-05",
+      "missing_behavior": "missing/reused run IDs → independentEvidence failure"
+    }
+  ],
+  "oracle": {
+    "type": "runtime-smoke",
+    "fixed_command": "cd /home/zhaoge/workspace/qoderwork && XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork /home/zhaoge/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-2 --primary-worktree /home/zhaoge/workspace/opencode/work-one --commit 95405b6eb52750f5c5e84eef75a24bb63c6009d1 --port-a 4003 --port-b 4004 --test-id P0-2-CLI-SMOKE --main-framework-db /home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db",
+    "pass_criteria": "exit 0, ok:true, status:\"PASS\", 16 stages all ok, 5 check groups all true, A/B artifacts readable with independent run IDs",
+    "fail_criteria": "preserve stdout/stderr and run paths; status BLOCKED; do not retry; do not delete failed run artifacts"
+  },
+  "allowed_files": [],
+  "repository_scope": {
+    "allowed_paths": [],
+    "forbidden_paths": [
+      "scripts/test-serve/isolated-serve.ts",
+      "scripts/test-serve/run-context.ts",
+      "scripts/test-serve/types.ts",
+      "scripts/test-serve/p02-orchestrator.ts",
+      "scripts/test-serve/p02-sentinel.ts",
+      "scripts/test-serve/process.ts",
+      "scripts/test-serve/bootstrap.ts",
+      "scripts/test-serve/verify-p01b.ts",
+      "scripts/test-serve/verify-p02.ts",
+      "scripts/test-serve/cleanup.ts",
+      "scripts/test-serve/execute.ts",
+      "scripts/test-serve/__tests__/p02-runtime.test.ts",
+      "scripts/test-serve/__tests__/p02-cli.test.ts"
+    ]
+  },
+  "forbidden": [
+    "不修改任何代码文件（PHASE-06 是 verification-only）",
+    "不复用 PHASE-05 端口 4001/4002",
+    "不设置 H2_AUTHORIZED",
+    "不在失败后重试 CLI",
+    "不手工编辑 manifest",
+    "不删除失败 run 的 artifacts",
+    "不把 component 级证据写成 runtime-smoke PASS"
+  ],
+  "reviewer_ports": {
+    "P0_2_PORT_A": 4003,
+    "P0_2_PORT_B": 4004,
+    "distinct_from_phase_05": true,
+    "verified_free_at": "2026-07-22",
+    "status": "CONFIRMED_BY_REVIEWER"
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "zhaoge (human reviewer)",
+    "approved_at": "2026-07-22",
+    "evidence": "Human reviewer approved scope-lock-phase-06.json on 2026-07-22: 3 BEHAVIORAL REQ (runtime-smoke), allowed_paths=[] (verification-only), ports 4003/4004 confirmed"
+  },
+  "provenance": {
+    "level": "v2.1-required",
+    "pre_change_receipt_path": "audits/p0-2/evidence/pre-change-PHASE-06.json",
+    "freeze_gate_status": "PENDING"
+  }
+}

@@ -1,0 +1,11 @@
+=== STDOUT ===
+=== STDERR ===
+Traceback (most recent call last):
+  File "/tmp/p06-verify-req002-neg.py", line 5, in <module>
+    assert len(stages) == 0, f"Expected 0 stages but got {len(stages)}"
+           ^^^^^^^^^^^^^^^^
+AssertionError: Expected 0 stages but got 16
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

@@ -1,0 +1,11 @@
+=== STDOUT ===
+=== STDERR ===
+Traceback (most recent call last):
+  File "/tmp/p06-verify-req001-neg.py", line 6, in <module>
+    assert d['status'] == 'FAIL', f"Expected FAIL but got {d['status']}"
+           ^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Expected FAIL but got PASS
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

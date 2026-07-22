@@ -88,8 +88,8 @@ XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork /home/zhaoge/.bun/bin/bun run
 
 ## Phase completion gate
 
-- [ ] PHASE-05 evidence is attached
-- [ ] second reviewer port pair is distinct
-- [ ] CLI result and A/B evidence are readable
-- [ ] runtime-smoke is not inferred from component evidence
-- [ ] PHASE-07 remains blocked until all boxes are checked
+- [x] PHASE-05 evidence is attached
+- [x] second reviewer port pair is distinct
+- [x] CLI result and A/B evidence are readable
+- [x] runtime-smoke is not inferred from component evidence
+- [x] PHASE-07 remains blocked until all boxes are checked

@@ -1,0 +1,204 @@
+{
+  "schema_version": "2.0",
+  "plan_id": "ISO-SERVE-P0-2-PLANSET-20260719",
+  "phase_id": "PHASE-07",
+  "lock_id": "PHASE-07",
+  "created_at": "2026-07-22",
+  "created_by": "ZCode (agent) — proposed, awaiting human approval",
+  "plan_sources": [
+    {
+      "path": "plans/隔离 serve 测试基建待办/p0-2/07-phase-regression.md",
+      "sha256": "8ed8db219ae3b4409ddc3a50505695037bcaca355f88414e36d6d627b4d07fd1"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "2026-07-22T03:42:17Z",
+    "in_scope": [
+      "REQ-001",
+      "REQ-002",
+      "REQ-003"
+    ],
+    "out_of_scope": [
+      "live LLM E2E",
+      "H2_AUTHORIZED=true",
+      "TSI-05 run-mode",
+      "fixing work-one typecheck debt (non-P0-2 owned)",
+      "fixing unrelated script typecheck debt (scripts/_b_l3_012_repo_op_deny.ts)",
+      "fixing audit tooling type errors (prepare-audit.test.ts)",
+      "PHASE-08 document closure"
+    ],
+    "assumptions": [
+      {
+        "statement": "root typecheck currently exits 1 with 33 non-P0-2 errors; REQ-003 will be BLOCKED unless all errors are resolved",
+        "disproof": "bun run typecheck → exit 0"
+      },
+      {
+        "statement": "P0-2 owned type errors exist in p02-cli.test.ts (6 errors, stale fixture types)",
+        "disproof": "bun run typecheck 2>&1 | grep p02-cli.test.ts → no match"
+      },
+      {
+        "statement": "PHASE-06 A/B runtime evidence is readable (precondition)",
+        "disproof": "ls /home/zhaoge/.local/state/qoderwork/qoderwork/test-runs/2026-07-22T02-35-47-406Z-p0-2-cli-smoke-a-2fe75c29/manifest.json"
+      }
+    ],
+    "exit_criteria": [
+      "P0-2 regression suite (6 test files) exits 0 with 0 fail",
+      "static safety rg checks show no active forbidden pattern implementation",
+      "oracle/verifier SQL is readonly (no INSERT/UPDATE/DELETE/DROP/ALTER)",
+      "root typecheck exit 0 (or honest BLOCKED-BY-ROOT-TYPECHECK if non-P0-2 errors remain)",
+      "implementation delta contains only P0-2 owned files if any repair is needed"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-011",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/07-phase-regression.md#Local-requirements",
+      "behavior": "regressions: P0-2 test suite 6 files 0 fail",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "bun test 6 P0-2 test files → exit 0, 0 fail reported in output"
+    },
+    {
+      "id": "REQ-002",
+      "plan_item_id": "PLAN-REQ-012",
+      "kind": "STATIC",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/07-phase-regression.md#Local-requirements",
+      "behavior": "static safety: 禁用模式（固定 4097、固定 SSE 文件、pkill、H2 自授权）不在活跃实现路径中",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "rg -n '4097|/tmp/sse-events.jsonl|pkill|H2_AUTHORIZED=true' on active source paths → no active implementation match (documentation/rejection text excluded by review)"
+    },
+    {
+      "id": "REQ-003",
+      "plan_item_id": "PLAN-REQ-013",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/07-phase-regression.md#Local-requirements",
+      "behavior": "typecheck: root bun run typecheck exit 0",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "bun run typecheck → exit code 0"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-011",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/07-phase-regression.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "regressions: P0-2 test suite 6 files 0 fail",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "bun test 6 P0-2 test files → exit 0, 0 fail reported in output"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-012",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-002",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/07-phase-regression.md#Local-requirements",
+      "kind": "STATIC",
+      "behavior": "static safety: 禁用模式（固定 4097、固定 SSE 文件、pkill、H2 自授权）不在活跃实现路径中",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "rg -n '4097|/tmp/sse-events.jsonl|pkill|H2_AUTHORIZED=true' on active source paths → no active implementation match (documentation/rejection text excluded by review)"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-013",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-003",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/07-phase-regression.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "typecheck: root bun run typecheck exit 0",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "bun run typecheck → exit code 0"
+    }
+  ],
+  "check_registry": [
+    {
+      "name": "p02Regression",
+      "source_of_truth": "Bun test output",
+      "pass_condition": "0 fail across 6 P0-2 test files",
+      "missing_behavior": "non-zero fail → p02Regression failure"
+    },
+    {
+      "name": "rootTypecheck",
+      "source_of_truth": "bun run typecheck exit code",
+      "pass_condition": "exit 0",
+      "missing_behavior": "non-zero → rootTypecheck failure → BLOCKED-BY-ROOT-TYPECHECK"
+    },
+    {
+      "name": "forbiddenRuntimePattern",
+      "source_of_truth": "rg on active source paths",
+      "pass_condition": "no active implementation match",
+      "missing_behavior": "active match → forbiddenRuntimePattern failure"
+    },
+    {
+      "name": "readonlyOracle",
+      "source_of_truth": "oracle/verifier SQL source",
+      "pass_condition": "no write SQL verbs (INSERT/UPDATE/DELETE/DROP/ALTER)",
+      "missing_behavior": "write verb found → readonlyOracle failure"
+    }
+  ],
+  "oracle": {
+    "type": "component",
+    "fixed_commands": [
+      "cd /home/zhaoge/workspace/qoderwork && /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/oracle.test.ts scripts/test-serve/__tests__/verify-p01b.test.ts scripts/test-serve/__tests__/verify-p02.test.ts scripts/test-serve/__tests__/p02-orchestrator.test.ts scripts/test-serve/__tests__/p02-cli.test.ts scripts/test-serve/__tests__/p02-runtime.test.ts",
+      "cd /home/zhaoge/workspace/qoderwork && /home/zhaoge/.bun/bin/bun run typecheck",
+      "cd /home/zhaoge/workspace/qoderwork && rg -n '4097|/tmp/sse-events.jsonl|pkill|H2_AUTHORIZED=true' scripts/test-serve .agents/skills/isolated-serve-test .qoder/skills/isolated-serve-test .trae/skills/isolated-serve-test .workbuddy/skills/isolated-serve-test"
+    ],
+    "pass_criteria": "regression 0 fail; typecheck exit 0; no active forbidden pattern; oracle SQL readonly",
+    "fail_criteria": "preserve output; BLOCKED on typecheck non-zero; do not suppress failures"
+  },
+  "allowed_files": [
+    {
+      "path": "scripts/test-serve/__tests__/p02-cli.test.ts",
+      "change": "modify",
+      "symbol": "fix stale P02VerificationResult/P02Result fixture types (P0-2 owned regression defect)"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "scripts/test-serve/__tests__/p02-cli.test.ts"
+    ],
+    "forbidden_paths": [
+      "scripts/test-serve/isolated-serve.ts",
+      "scripts/test-serve/run-context.ts",
+      "scripts/test-serve/types.ts",
+      "scripts/test-serve/p02-orchestrator.ts",
+      "scripts/test-serve/p02-sentinel.ts",
+      "scripts/test-serve/process.ts",
+      "scripts/test-serve/bootstrap.ts",
+      "scripts/test-serve/verify-p01b.ts",
+      "scripts/test-serve/verify-p02.ts",
+      "scripts/test-serve/cleanup.ts",
+      "scripts/test-serve/execute.ts",
+      "scripts/test-serve/oracle.ts"
+    ]
+  },
+  "forbidden": [
+    "不修复 work-one typecheck 债务",
+    "不修复无关脚本 typecheck 债务（scripts/_b_l3_012_repo_op_deny.ts 等）",
+    "不删除断言",
+    "不将 rg 禁用说明文本误判为活跃实现",
+    "不设置 H2_AUTHORIZED",
+    "不将范围外 debt 写成 PASS",
+    "不将 component 级证据写成 runtime-smoke PASS"
+  ],
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "zhaoge (human reviewer)",
+    "approved_at": "2026-07-22",
+    "evidence": "Human reviewer instructed '启动多智能体模式，主agent是审核者执行Freeze Gate' on 2026-07-22, approving scope-lock-phase-07.json and Path A (fix P0-2 owned errors, honest BLOCKED-BY-ROOT-TYPECHECK)"
+  },
+  "provenance": {
+    "level": "v2.1-required",
+    "pre_change_receipt_path": "audits/p0-2/evidence/pre-change-PHASE-07.json",
+    "freeze_gate_status": "PENDING"
+  }
+}
