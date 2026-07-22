@@ -165,3 +165,83 @@ COMMIT=$(git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD)
 - 缺少 `P0_1B_PORT` 时自行扫描、猜测或复用历史端口
 
 失败时只记录结构化 `firstFailure` 与 `evidencePaths`，等待 reviewer 提供新端口后创建全新 run。
+
+## 9. P0-2 双 run 隔离 runtime-smoke 专用流程
+
+P0-2 验证双 run 隔离、SSE 写入归属、reservation 接管与外部 PID 不受影响。弱模型只能使用下列两个入口之一，禁止分步手动拼接生命周期。证据等级固定为 runtime-smoke。
+
+**入口 A（test harness，PHASE-05）**：
+
+```bash
+: "${P0_2_PORT_A:?reviewer must provide P0_2_PORT_A}"
+: "${P0_2_PORT_B:?reviewer must provide P0_2_PORT_B}"
+XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork \
+  P0_2_PORT_A="$P0_2_PORT_A" P0_2_PORT_B="$P0_2_PORT_B" \
+  /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/p02-runtime.test.ts
+```
+
+**入口 B（CLI 子命令，PHASE-06）**：
+
+```bash
+COMMIT=$(git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD)
+: "${P0_2_PORT_A:?reviewer must provide P0_2_PORT_A}"
+: "${P0_2_PORT_B:?reviewer must provide P0_2_PORT_B}"
+/home/zhaoge/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-2 \
+  --primary-worktree /home/zhaoge/workspace/opencode/work-one \
+  --commit "$COMMIT" --port-a "$P0_2_PORT_A" --port-b "$P0_2_PORT_B" \
+  --test-id P0-2-CLI-SMOKE \
+  --main-framework-db /home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db
+```
+
+**PASS 唯一标准**（必须同时满足）：
+- 命令 exit 0；最终 JSON `ok:true`、`status:"PASS"`
+- A/B 两组 16 stage 全 `ok`；五组 checks 全真
+- A/B manifest、stage results、cleanup report 可读；cleanup `success:true`
+- 两组端口不得相同，亦不得复用既有 run 的端口
+
+**禁止**：
+- 自授 H2、发送 live prompt、mock 生产生命周期
+- 失败时重试同 run 或手工编辑 manifest
+- 用 component/integration 证据推断 runtime-smoke PASS
+
+TSI-05 run-mode 真跑与 live LLM E2E 属独立待办，不得由 P0-2 代替；P0-2 通过不等于整体 DONE。
+
+## 9. P0-2 双 run 隔离 runtime-smoke 专用流程
+
+P0-2 验证双 run 隔离、SSE 写入归属、reservation 接管与外部 PID 不受影响。弱模型只能使用下列两个入口之一，禁止分步手动拼接生命周期。证据等级固定为 runtime-smoke。
+
+**入口 A（test harness，PHASE-05）**：
+
+```bash
+: "${P0_2_PORT_A:?reviewer must provide P0_2_PORT_A}"
+: "${P0_2_PORT_B:?reviewer must provide P0_2_PORT_B}"
+XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork \
+  P0_2_PORT_A="$P0_2_PORT_A" P0_2_PORT_B="$P0_2_PORT_B" \
+  /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/p02-runtime.test.ts
+```
+
+**入口 B（CLI 子命令，PHASE-06）**：
+
+```bash
+COMMIT=$(git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD)
+: "${P0_2_PORT_A:?reviewer must provide P0_2_PORT_A}"
+: "${P0_2_PORT_B:?reviewer must provide P0_2_PORT_B}"
+/home/zhaoge/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-2 \
+  --primary-worktree /home/zhaoge/workspace/opencode/work-one \
+  --commit "$COMMIT" --port-a "$P0_2_PORT_A" --port-b "$P0_2_PORT_B" \
+  --test-id P0-2-CLI-SMOKE \
+  --main-framework-db /home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db
+```
+
+**PASS 唯一标准**（必须同时满足）：
+- 命令 exit 0；最终 JSON `ok:true`、`status:"PASS"`
+- A/B 两组 16 stage 全 `ok`；五组 checks 全真
+- A/B manifest、stage results、cleanup report 可读；cleanup `success:true`
+- 两组端口不得相同，亦不得复用既有 run 的端口
+
+**禁止**：
+- 自授 H2、发送 live prompt、mock 生产生命周期
+- 失败时重试同 run 或手工编辑 manifest
+- 用 component/integration 证据推断 runtime-smoke PASS
+
+TSI-05 run-mode 真跑与 live LLM E2E 属独立待办，不得由 P0-2 代替；P0-2 通过不等于整体 DONE。

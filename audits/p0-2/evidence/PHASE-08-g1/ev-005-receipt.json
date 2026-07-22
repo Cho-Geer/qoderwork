@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "p0-2-phase-08-g1",
+  "generation": 1,
+  "id": "EV-005",
+  "command": "cd /home/zhaoge/workspace/qoderwork && test $(wc -l < logs/2026-07-22-p0-2-closure.md) -le 20 && git diff --check",
+  "observed": "PASS",
+  "requirement_id": "REQ-003",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-003",
+  "fixture_id": "FIXTURE-CLOSURE-VALID",
+  "evidence_level": "component",
+  "repository_state_sha256": "81792e5c2e765a643b5ebf4745efeb9359bb5ca940300b12397352294aa863ef",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/PHASE-08-g1/ev-005-output.txt",
+      "sha256": "890d9e753b02601aecc1b097f6f07eba60527b9d1715a5795a9e16763c2b9981"
+    }
+  ],
+  "completed_at": "2026-07-22T08:46:09.648Z"
+}

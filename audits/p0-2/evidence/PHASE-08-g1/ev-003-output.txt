@@ -1,0 +1,7 @@
+=== STDOUT ===
+2026-07-22 复审（证据等级 runtime-smoke；PHASE-05/06 audit ACCEPT、PHASE-07 regression audit ACCEPT）：双 run 隔离由两组真实 `opencode serve` run 证明，非 component 推断。PHASE-05（端口 4001/4002）run `2026-07-22T02-09-00-600Z-p02-runtime-a-4b9bbc65` / `2026-07-22T02-09-00-893Z-p02-runtime-b-6003c8a3`：16 stage 全 `ok`，五组 checks 全真，`verify-coexistence`、`bootstrap-a`、`verify-attribution`、`stop-a`、`verify-after-stop-a`、`cleanup-a|b` 均 `ok`，A/B cleanup report `success:true`。PHASE-06（端口 4003/4004，独立 CLI 入口 `test-serve p0-2`）run `2026-07-22T02-35-47-406Z-p0-2-cli-smoke-a-2fe75c29` / `2026-07-22T02-35-48-008Z-p0-2-cli-smoke-b-64a9bd76`：同样 16 stage 全 `ok`、cleanup `success:true`。manifest、stage results、sentinel marker、`sse-ready.json` 与 cleanup report 均可读。patch 应用失败的负向用例属 TSI-02 component 范畴，未由上述 runtime run 覆盖，故该项仍未勾选。
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

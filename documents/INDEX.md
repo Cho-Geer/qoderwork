@@ -2,7 +2,9 @@
 
 > 本文件由 QoderWork Session Startup 自动扫描。新增文档时请同步更新此索引。
 >
-> **最近更新**: 2026-07-21 — 新增 diagrams/ 下 3 份复用基础设施文档（函数清单 + 分层调用拓扑 + 全局调用拓扑），覆盖 lib/test-serve/通用 CLI/sse-daemon 全部函数与调用链，并修正"lib 仅被排除脚本消费、in-scope 不形成单一三层链"的结构事实。
+> **最近更新**: 2026-07-22 - P0-2 文档关闭（PHASE-08）：Blueprint §5.2 写入 PHASE-05（4001/4002）/PHASE-06（4003/4004）真实 run ID 与 runtime-smoke ACCEPT 证据；4 份 isolated-serve-test skill 增加 P0-2 流程并保持 SHA-256 一致；待办 P0-2 状态更新为 RUNTIME-SMOKE。TSI-05 run-mode 与 live LLM E2E 仍未执行。
+>
+> **历史更新**: 2026-07-21 — 新增 diagrams/ 下 3 份复用基础设施文档（函数清单 + 分层调用拓扑 + 全局调用拓扑），覆盖 lib/test-serve/通用 CLI/sse-daemon 全部函数与调用链，并修正"lib 仅被排除脚本消费、in-scope 不形成单一三层链"的结构事实。
 >
 > **历史更新**: 2026-07-18 — 交叉审核 P0-1 当前代码、实施计划与证据包：非 runtime 回归 92/92 PASS；P0-1B 已由 2026-07-17 CLI-only smoke 与 2026-07-18 runtime-test 两个全新 run 证明，后者为 1/1 PASS。同步补入 3 份漏索引文档。P0-2、TSI-05 run-mode 与 live LLM E2E 仍未执行。
 >
@@ -20,7 +22,7 @@
 |------|------|------|------|
 | **opencode-framework/opencode-cognitive-map.md** | **框架认知地图（全景架构）** | **四层架构总览（元认知→编排执行→验证→运维）、39 Plugin / 70+ Tool / 51 Lib / 12 MCP Server 全景、Agent 角色定义、数据流图、故障排查手册。是理解整体设计的第一入口。** | **~694** |
 | **blueprints/2026-07-12-framework-deprecated-content-audit-blueprint.md** | **框架废弃内容审计与清理蓝图** | **严格审计 work-one 中过时/废弃/兼容尾巴：AGENTS 启动文档漂移、Scout 残留、legacy role 与 permission fallback、旧 DAG/pre-execution 脚本、handler 状态混乱、enforcement mode 兼容 shim、dispatch_context stub，并给出分阶段清理计划。** | **~403** |
-| **blueprints/blueprint-isolated-serve-test-infrastructure.md** | **隔离 Serve 测试基建与测试专用 Skill** | **定义测试运行单元的 worktree、显式脏改动 overlay、framework/SDK 双 DB、SSE、进程生命周期、grant bootstrap、H2 授权、scripts 收口与证据契约；用于可复现 runtime/live/mutation 测试。** | **~377** |
+| **blueprints/blueprint-isolated-serve-test-infrastructure.md** | **隔离 Serve 测试基建与测试专用 Skill** | **定义测试运行单元的 worktree、显式脏改动 overlay、framework/SDK 双 DB、SSE、进程生命周期、grant bootstrap、H2 授权、scripts 收口与证据契约；用于可复现 runtime/live/mutation 测试。** | **~379** |
 | opencode-framework/opencode-db-canonical-design.md | DB-only & DB-Canonical 设计 | DB-only 和 DB-canonical 设计理念、50 个数据表全景架构（54 CREATE - 4 DROP）、9 大类数据模型详解、实体关系图、表关系与业务关联、DB-canonical 设计证据、数据库迁移机制（v1-v37）、关键代码索引。 | ~802 |
 | opencode-framework/opencode-cli-acp-integration.md | CLI 命令 & ACP 协议集成 | OpenCode CLI 全命令参考（run/serve/web/acp）、ACP 协议 stdio JSON-RPC 2.0 交互流程、session 生命周期管理、QoderWork↔OpenCode 双向通道设计。面向 ACP 桥接开发调试。 | ~270 |
 | opencode-framework/opencode-enforcement-exemption-matrix.md | Enforcement & 豁免机制完整矩阵 | advisory/strict/locked 三模式完整矩阵：37 个工具 Before/After Hook 链、豁免机制（Agent/路径/工具类别）、阻断/警告行为、Agent 权限级别、Guidance Gate 两阶段协议。面向 enforcement 调试和权限排查。 | ~659 |

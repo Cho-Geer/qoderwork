@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "p0-2-phase-08-g1",
+  "generation": 1,
+  "id": "EV-001",
+  "command": "cd /home/zhaoge/workspace/qoderwork && test $(sha256sum .agents/skills/isolated-serve-test/SKILL.md .qoder/skills/isolated-serve-test/SKILL.md .trae/skills/isolated-serve-test/SKILL.md .workbuddy/skills/isolated-serve-test/SKILL.md | awk '{print $1}' | sort -u | wc -l) -eq 1",
+  "observed": "PASS",
+  "requirement_id": "REQ-001",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-4-COPIES-REAL",
+  "evidence_level": "component",
+  "repository_state_sha256": "81792e5c2e765a643b5ebf4745efeb9359bb5ca940300b12397352294aa863ef",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/PHASE-08-g1/ev-001-output.txt",
+      "sha256": "890d9e753b02601aecc1b097f6f07eba60527b9d1715a5795a9e16763c2b9981"
+    }
+  ],
+  "completed_at": "2026-07-22T08:46:09.552Z"
+}

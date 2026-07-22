@@ -2,7 +2,7 @@
 
 **版本**: v1.3.2
 **日期**: 2026-07-18
-**状态**: 部分实施（P0-1A cleanup 集成已完成；P0-1B runtime smoke 已通过 CLI-only run，并于 2026-07-18 以全新 runtime-test run 独立复验；TSI-05 run-mode、双 run 与 live LLM E2E 仍未执行。）
+**状态**: 部分实施（P0-1A cleanup 集成已完成；P0-1B runtime smoke 已通过 CLI-only run，并于 2026-07-18 以全新 runtime-test run 独立复验；P0-2 双 run 隔离已于 2026-07-22 由 PHASE-05/06 runtime-smoke 证明并 ACCEPT；TSI-05 run-mode 与 live LLM E2E 仍未执行。）
 **优先级**: P0
 **唯一实施路径**: 本文定义的 `test-serve` 运行单元；不得继续扩展 `_b_pt_wm_00r2_live.ts` 的临时隔离实现。
 
@@ -15,7 +15,7 @@
 | 范围 | 当前结论 | 证据等级 | 审计结果 / 未关闭项 |
 |---|---|---|---|
 | TSI-01 run context / manifest | 🟡 部分实施 | component | overlay 在 reservation 前校验；run manifest 原子写入、端口 reservation、失败 `BLOCKED` 与 create 阶段 release 成功/失败分支均有回归覆盖。非法跳转、重复 run ID 等完整验收仍未逐项执行。 |
-| TSI-02 worktree / 双 DB / overlay | 🟡 部分实施 | integration + component | P0-1A 已用真实临时 repo/detached worktree 覆盖 cleanup 与 evidence 保留；历史执行 1/1 + 规定回归 14/14 PASS。双 run 隔离仍缺失。 |
+| TSI-02 worktree / 双 DB / overlay | 🟡 部分实施 | integration + component + runtime-smoke | P0-1A 已用真实临时 repo/detached worktree 覆盖 cleanup 与 evidence 保留；历史执行 1/1 + 规定回归 14/14 PASS。双 run 隔离已于 2026-07-22 由 PHASE-05/06 runtime-smoke 证明（见 §5.2）；patch 应用失败负向用例仍待 TSI-02 component 覆盖。 |
 | TSI-03 serve / SSE / cleanup | ✅ runtime smoke PASS | runtime-smoke | CLI-only smoke run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d` 与复验 run `2026-07-18T02-17-01-468Z-p0-1b-runtime-test-cf6b83f9` 均八阶段全 `ok`；`start` 自行返回 `READY`，serve/SSE log、`events.jsonl`、plan artifact 与 cleanup report 完整可读。 |
 | TSI-04 grant / session bootstrap | ✅ 组件闭环；runtime PASS | component + runtime-smoke | 复验 run 的 isolated SDK DB 有 root/child（`ses_08cfc50a2ffe6foGKvEqrR2tJ5`/`ses_08cfc4fa4ffeOrs5jiSzOMAUac`）且 parent 链正确，framework DB grant `27e8746a-1e48-48df-9280-c00a94ff80bd` 为 `bound`并绑定该 child。 |
 | TSI-05 runner 迁移 | 🟡 部分实施 | static/code | `execute --mode plan --runner ...` 已确保只写 `NOT-RUN` artifact；2026-07-17 审计：14 个 `_b_pt_wm_00r2_*` 文件均经 `readRunManifest`/`clientContextFromManifest`/`--run-dir` 读取 manifest，runner 与 `serve-api-client.ts` 中 `4097`/`sse-events`/主 work-one 路径零命中，静态迁移契约已满足；run-mode 真跑验收（`GET /session`、root/child、isolated DB 查询）仍 NOT-RUN。 |
@@ -36,7 +36,7 @@
 ### 剩余 P0 顺序
 
 1. ~~为当前组件闭环版本执行一次完整 `create → start → bootstrap → execute(plan) → stop → cleanup` runtime smoke，并保存 run manifest、DB、SSE/log、PID 与 cleanup artifact。~~（2026-07-17 已完成：run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d`，port 4001，CLEANED。）
-2. 完成双 run 隔离、SSE 写入归属和真实 serve 接管 reservation 的确定性集成证据。
+2. ~~完成双 run 隔离、SSE 写入归属和真实 serve 接管 reservation 的确定性集成证据。~~（2026-07-22 已完成：PHASE-05 端口 4001/4002、PHASE-06 端口 4003/4004 双 run 16 stage 全 `ok`，runtime-smoke ACCEPT，见 §5.2。）
 3. ~~迁移所有 G2/G3/G4 runner 与 `serve-api-client.ts` 的固定端口/SSE/主路径假设~~（2026-07-18 复审：静态迁移已完成、遗留常量零命中）；迁移后 runner 的 run-mode 真跑验收是独立待办，不得用 P0-1B `execute(plan)` 代替。
 4. 仅在 reviewer 显式提供 H2 后，执行所需 live LLM E2E。
 
@@ -328,11 +328,13 @@ ${XDG_STATE_HOME:-$HOME/.local/state}/qoderwork/test-runs/<run_id>/
 
 ### 5.2 确定性集成
 
-- [ ] 同时创建两个 run；worktree、双 DB、日志、事件文件均不同。
-- [ ] 在 run A 创建 session/grant；run B 和主 DB 均查询不到该记录。
-- [ ] 让 run A 的 SSE 收到 `session.created`；只写 A 的 framework DB。
-- [ ] `stop` 仅停止 A 的 serve/SSE，不影响 B、4096 或其他外部 PID。
+- [x] 同时创建两个 run；worktree、双 DB、日志、事件文件均不同。
+- [x] 在 run A 创建 session/grant；run B 和主 DB 均查询不到该记录。
+- [x] 让 run A 的 SSE 收到 `session.created`；只写 A 的 framework DB。
+- [x] `stop` 仅停止 A 的 serve/SSE，不影响 B、4096 或其他外部 PID。
 - [ ] 强制 patch 应用失败；确认没有残留 worktree/进程/DB。
+
+2026-07-22 复审（证据等级 runtime-smoke；PHASE-05/06 audit ACCEPT、PHASE-07 regression audit ACCEPT）：双 run 隔离由两组真实 `opencode serve` run 证明，非 component 推断。PHASE-05（端口 4001/4002）run `2026-07-22T02-09-00-600Z-p02-runtime-a-4b9bbc65` / `2026-07-22T02-09-00-893Z-p02-runtime-b-6003c8a3`：16 stage 全 `ok`，五组 checks 全真，`verify-coexistence`、`bootstrap-a`、`verify-attribution`、`stop-a`、`verify-after-stop-a`、`cleanup-a|b` 均 `ok`，A/B cleanup report `success:true`。PHASE-06（端口 4003/4004，独立 CLI 入口 `test-serve p0-2`）run `2026-07-22T02-35-47-406Z-p0-2-cli-smoke-a-2fe75c29` / `2026-07-22T02-35-48-008Z-p0-2-cli-smoke-b-64a9bd76`：同样 16 stage 全 `ok`、cleanup `success:true`。manifest、stage results、sentinel marker、`sse-ready.json` 与 cleanup report 均可读。patch 应用失败的负向用例属 TSI-02 component 范畴，未由上述 runtime run 覆盖，故该项仍未勾选。
 
 ### 5.3 runtime smoke
 

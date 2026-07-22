@@ -1,0 +1,192 @@
+{
+  "schema_version": "2.0",
+  "plan_id": "ISO-SERVE-P0-2-PLANSET-20260719",
+  "phase_id": "PHASE-08",
+  "lock_id": "PHASE-08",
+  "created_at": "2026-07-22",
+  "created_by": "ZCode (agent) - proposed, awaiting human approval",
+  "plan_sources": [
+    {
+      "path": "plans/隔离 serve 测试基建待办/p0-2/08-phase-document-closure.md",
+      "sha256": "36898e3e0a396f289300805a5ce709ceec39afdaaea8d17a650f0f4ec5f59722"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "2026-07-22T06:30:00Z",
+    "in_scope": [
+      "REQ-001",
+      "REQ-002",
+      "REQ-003"
+    ],
+    "out_of_scope": [
+      "live LLM E2E",
+      "H2_AUTHORIZED=true",
+      "code modifications (PHASE-08 is document-only)",
+      "TSI-05 run-mode"
+    ],
+    "assumptions": [
+      {
+        "statement": "PHASE-05 and PHASE-06 runtime artifacts are readable with real run IDs",
+        "disproof": "ls /home/zhaoge/.local/state/qoderwork/qoderwork/test-runs/*p0-2* -> 4 directories exist"
+      },
+      {
+        "statement": "four isolated-serve-test skill copies currently have identical SHA-256 (32a5e7b8...)",
+        "disproof": "sha256sum .agents/.qoder/.trae/.workbuddy skills/isolated-serve-test/SKILL.md -> all identical"
+      },
+      {
+        "statement": "PHASE-07 ACCEPT (g2 audit 2026-07-22) is the immediate predecessor",
+        "disproof": "audits/p0-2/2026-07-22-phase-07-regression-audit-g2.md exists with verdict ACCEPT"
+      }
+    ],
+    "exit_criteria": [
+      "four skill copies hash-identical after any updates",
+      "Blueprint/backlog/index reference real PHASE-05/06 run IDs, ports, manifests",
+      "closure log <= 20 lines listing all updated document paths",
+      "documentation claims match evidence levels (no component->runtime inflation)",
+      "no code files modified (document-only phase)"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-014",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/08-phase-document-closure.md#Local-requirements",
+      "behavior": "skill copies: 四份 isolated-serve-test SKILL.md 内容一致 (SHA-256 相同)",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "sha256sum four SKILL.md copies -> all four hashes identical"
+    },
+    {
+      "id": "REQ-002",
+      "plan_item_id": "PLAN-REQ-015",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/08-phase-document-closure.md#Local-requirements",
+      "behavior": "Blueprint/backlog: 引用实际 PHASE-05/06 run IDs, ports, manifests; 不夸大证据层级",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "rg run IDs in Blueprint/backlog -> real run IDs from PHASE-05/06 artifacts; no unsupported runtime claims from component evidence"
+    },
+    {
+      "id": "REQ-003",
+      "plan_item_id": "PLAN-REQ-016",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/08-phase-document-closure.md#Local-requirements",
+      "behavior": "closure log/index: 记录准确变更, 可追溯文档路径",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "closure log file exists, <= 20 lines, lists all updated document paths; git diff --check clean"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-014",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/08-phase-document-closure.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "skill copies: 四份 isolated-serve-test SKILL.md 内容一致 (SHA-256 相同)",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "sha256sum four SKILL.md copies -> all four hashes identical"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-015",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-002",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/08-phase-document-closure.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "Blueprint/backlog: 引用实际 PHASE-05/06 run IDs, ports, manifests; 不夸大证据层级",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "rg run IDs in Blueprint/backlog -> real run IDs from PHASE-05/06 artifacts; no unsupported runtime claims from component evidence"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-016",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-003",
+      "source": "plans/隔离 serve 测试基建待办/p0-2/08-phase-document-closure.md#Local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "closure log/index: 记录准确变更, 可追溯文档路径",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "closure log file exists, <= 20 lines, lists all updated document paths; git diff --check clean"
+    }
+  ],
+  "allowed_files": [
+    {
+      "path": "blueprints/blueprint-isolated-serve-test-infrastructure.md",
+      "change": "modify",
+      "symbol": "§5.2 evidence runtime status"
+    },
+    {
+      "path": "logs/2026-07-16-隔离-serve-测试基建待办.md",
+      "change": "modify",
+      "symbol": "P0-2 item status"
+    },
+    {
+      "path": ".agents/skills/isolated-serve-test/SKILL.md",
+      "change": "modify",
+      "symbol": "P0-2 procedure copy parity"
+    },
+    {
+      "path": ".qoder/skills/isolated-serve-test/SKILL.md",
+      "change": "modify",
+      "symbol": "P0-2 procedure copy parity"
+    },
+    {
+      "path": ".trae/skills/isolated-serve-test/SKILL.md",
+      "change": "modify",
+      "symbol": "P0-2 procedure copy parity"
+    },
+    {
+      "path": ".workbuddy/skills/isolated-serve-test/SKILL.md",
+      "change": "modify",
+      "symbol": "P0-2 procedure copy parity"
+    },
+    {
+      "path": "documents/INDEX.md",
+      "change": "modify",
+      "symbol": "Blueprint entry index sync"
+    },
+    {
+      "path": "logs/2026-07-22-p0-2-closure.md",
+      "change": "add",
+      "symbol": "closure log handoff"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "blueprints/blueprint-isolated-serve-test-infrastructure.md",
+      "logs/2026-07-16-隔离-serve-测试基建待办.md",
+      ".agents/skills/isolated-serve-test/SKILL.md",
+      ".qoder/skills/isolated-serve-test/SKILL.md",
+      ".trae/skills/isolated-serve-test/SKILL.md",
+      ".workbuddy/skills/isolated-serve-test/SKILL.md",
+      "documents/INDEX.md",
+      "logs/2026-07-22-p0-2-closure.md"
+    ],
+    "forbidden_paths": [
+      "scripts/test-serve/**/*.ts",
+      "scripts/test-serve/__tests__/**/*.ts",
+      ".opencode/service/**/*.ts"
+    ]
+  },
+  "forbidden": [
+    "不修改任何代码文件（PHASE-08 是文档关闭阶段）",
+    "不因计划完成写 DONE（除非所有 completion gate 全部勾选）",
+    "不伪造 run ID、hash、artifact path",
+    "不重写无关 INDEX 条目",
+    "不将 component PASS 写成 runtime-smoke PASS",
+    "不设置 H2_AUTHORIZED"
+  ],
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "zhaoge (human reviewer)",
+    "approved_at": "2026-07-22",
+    "evidence": "Human reviewer instructed '你是审计者，子agent是执行者' with full Phase -1~2 workflow specification on 2026-07-22, approving PHASE-08 scope-lock and multi-agent execution"
+  }
+}

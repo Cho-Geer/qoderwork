@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "p0-2-phase-08-g1",
+  "generation": 1,
+  "id": "EV-004",
+  "command": "cd /home/zhaoge/workspace/qoderwork && rg 'FAKE-RUN-ID-NONEXISTENT-99999' blueprints/blueprint-isolated-serve-test-infrastructure.md",
+  "observed": "FAIL",
+  "requirement_id": "REQ-002",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-002",
+  "fixture_id": "FIXTURE-FAKE-RUN-ID",
+  "evidence_level": "component",
+  "repository_state_sha256": "81792e5c2e765a643b5ebf4745efeb9359bb5ca940300b12397352294aa863ef",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/PHASE-08-g1/ev-004-output.txt",
+      "sha256": "b1e5c7757c6db7d7b5636d02c5636f1acb77c4071df430f80a8f52de6f2b8939"
+    }
+  ],
+  "completed_at": "2026-07-22T08:46:09.622Z"
+}
