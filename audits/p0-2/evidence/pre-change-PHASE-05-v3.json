@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "repository_realpath": "/home/zhaoge/workspace/qoderwork",
+  "phase_id": "PHASE-05",
+  "captured_at": "2026-07-21T16:28:12.242Z",
+  "head": "35ce45bb6245ba555a3d0ae18a331f9d438cb9d7",
+  "scope_lock_sha256": "c71b0133ad949742a101ba41d243fdd096589ecdf4b3788a1877ef219d2238a3",
+  "status_entries": [
+    {
+      "path": "audits/p0-2/scope-lock.json",
+      "status": " M",
+      "content_sha256": "c71b0133ad949742a101ba41d243fdd096589ecdf4b3788a1877ef219d2238a3"
+    },
+    {
+      "path": "plans/隔离 serve 测试基建待办/p0-2/00-plan-index.md",
+      "status": " M",
+      "content_sha256": "5c9662912118de1d01ead42f50dab80fc54c97cb0b951785ba628f866d1e7c63"
+    }
+  ]
+}

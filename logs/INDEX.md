@@ -1,13 +1,14 @@
 # Logs Index
 
-Last updated: 2026-07-21
+Last updated: 2026-07-22
 
-本索引由 `logs-governance` 规则维护。当前活跃窗口为 2026-07-07 至 2026-07-21；不删除或移动日志。
+本索引由 `logs-governance` 规则维护。当前活跃窗口为 2026-07-08 至 2026-07-22；不删除或移动日志。
 
 ## 当前活跃日志（近 14 天）
 
 | 日期 | 数量 | 日志 |
 |---|---:|---|
+| 2026-07-22 | 1 | [2026-07-22-p0-2-phase-05-runtime-test.md](2026-07-22-p0-2-phase-05-runtime-test.md) |
 | 2026-07-21 | 2 | [2026-07-21-p0-2-phase-06a-audit-g2.md](2026-07-21-p0-2-phase-06a-audit-g2.md), [2026-07-21-p0-2-phase-04a-existsync-fix.md](2026-07-21-p0-2-phase-04a-existsync-fix.md) |
 | 2026-07-20 | 8 | [2026-07-20-p0-2-phase-06a-cleanup-extract.md](2026-07-20-p0-2-phase-06a-cleanup-extract.md), [2026-07-20-phase-05-runtime-test-implementation.md](2026-07-20-phase-05-runtime-test-implementation.md), [2026-07-20-phase-05-runtime-test-audit.md](2026-07-20-phase-05-runtime-test-audit.md), [2026-07-20-phase-05-audit-2-accept.md](2026-07-20-phase-05-audit-2-accept.md), [2026-07-20-phase-05-audit-accept-closure.md](2026-07-20-phase-05-audit-accept-closure.md), [2026-07-20-phase-05-scope-lock-amendment-negative-controls.md](2026-07-20-phase-05-scope-lock-amendment-negative-controls.md), [2026-07-20-phase-06-cli-smoke-pass.md](2026-07-20-phase-06-cli-smoke-pass.md), [2026-07-20-pre-check-evidence-skill-optimization.md](2026-07-20-pre-check-evidence-skill-optimization.md) |
 | 2026-07-19 | 15 | [2026-07-19-P0-2-实施计划拆分.md](2026-07-19-P0-2-实施计划拆分.md), [2026-07-19-agents-md-purification.md](2026-07-19-agents-md-purification.md), [2026-07-19-deterministic-plan-length-governance.md](2026-07-19-deterministic-plan-length-governance.md), [2026-07-19-p0-2-phase-01-gate-audit.md](2026-07-19-p0-2-phase-01-gate-audit.md), [2026-07-19-p0-2-phase-01-plan-optimization.md](2026-07-19-p0-2-phase-01-plan-optimization.md), [2026-07-19-p0-2-phase-01-rework.md](2026-07-19-p0-2-phase-01-rework.md), [2026-07-19-p0-2-phase-01.md](2026-07-19-p0-2-phase-01.md), [2026-07-19-p0-2-phase-02-lifecycle.md](2026-07-19-p0-2-phase-02-lifecycle.md), [2026-07-19-p0-2-phase-03-rework-2.md](2026-07-19-p0-2-phase-03-rework-2.md), [2026-07-19-p0-2-phase-03-sentinel-orchestrator.md](2026-07-19-p0-2-phase-03-sentinel-orchestrator.md), [2026-07-19-p0-2-phase-03-third-reaudit.md](2026-07-19-p0-2-phase-03-third-reaudit.md), [2026-07-19-p0-2-plan-set-reaudit.md](2026-07-19-p0-2-plan-set-reaudit.md), [2026-07-19-plan-audit-archiver-v21.md](2026-07-19-plan-audit-archiver-v21.md), [2026-07-19-skill-bilingual-unification.md](2026-07-19-skill-bilingual-unification.md), [2026-07-19-text-artifact-write-integrity-gate.md](2026-07-19-text-artifact-write-integrity-gate.md) |

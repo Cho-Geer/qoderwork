@@ -122,7 +122,7 @@
 | 3 | PHASE-03 | `03-phase-sentinel-orchestrator.md` | PHASE-02 | DONE（audit-5 Accept；D1–D4 全部关闭） |
 | 4 | PHASE-04 | `04-phase-cli.md` | PHASE-03 | DONE（2026-07-19 实施：CLI 路由 + 6 P02-C 用例 + P0-1B 回归 37 pass，共 43 pass / 0 fail） |
 | 4 | PHASE-04 | `04-phase-cli.md` | PHASE-03 | DONE（2026-07-21 重实施：CLI 路由恢复 + 6 P02-C 用例 + P0-1B 回归 37 pass，共 43 pass / 0 fail；generation 2 审计 Accept，component 级；审计 `audits/p0-2/2026-07-21-phase-04-cli-reimplementation-audit.md`） |
-| 4.5 | PHASE-04a | `04a-phase-existsync-fix.md` | PHASE-04 | TODO（debt phase：关闭 F-001 existsSync 简化；absoluteInputs 增加 existsSync 检查 + fixture 改为真实临时路径 + 新增 P02-C-PATH-EXIST 用例；**v2.1-required provenance**，实施前需完成 Freeze Gate；必须在 PHASE-07 前完成） |
+| 4.5 | PHASE-04a | `04a-phase-existsync-fix.md` | PHASE-04 | `ACCEPT`（F5 独立审计 2026-07-22：existsSync fix + P02-C-PATH-EXIST 用例；3 REQ 全 PASS；component 级；审计 `audits/p0-2/2026-07-22-phase-04a-existsync-audit-f5.md`；validate-audit valid=true, 0 errors；prepare-audit.ts 生成，structural errors=0） |
 | 5 | PHASE-05 | `05-phase-runtime-test.md` | PHASE-04 | `NOT-RUN`（2026-07-20 修正：原声明 runtime 证据丢失；`p02-runtime.test.ts` 文件存在但 runtime artifacts 不在持久 state root；需 Freeze Gate + reviewer 端口重跑） |
 | 5.5 | PHASE-06a | `06a-phase-circular-dependency-fix.md` | PHASE-03（前置修复，提前执行） | `ACCEPT`（G2 独立复审 2026-07-21：cleanup.ts 提取 + 循环依赖打破 + TDZ 预防；4 REQ 全 PASS；component 级；审计 `audits/p0-2/2026-07-21-phase-06a-cleanup-extract-audit-g2.md`；validate-audit valid=true, 0 errors） |
 | 6 | PHASE-06 | `06-phase-cli-smoke.md` | PHASE-06a | BLOCKED（audit-1 INVALID：Freeze Gate 未完成 + 代码修改违反 plan Forbidden；修复后重新走 Freeze Gate） |

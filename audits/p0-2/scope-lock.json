@@ -6,19 +6,25 @@
   "created_at": "2026-07-20",
   "created_by": "QoderCN (agent)",
   "amendment": {
-    "version": 2,
-    "amended_at": "2026-07-20",
-    "amended_by": "QoderCN (agent)",
-    "reason": "PHASE-05 实施期间发现 4 处 PHASE-02/03 遗留基础设施缺陷（被 component mock 掩盖），属阻断性修复。审计 generation 1 判定 INVALID（F-001 scope violation）。本次修订将 4 个实际修改文件纳入 allowed_files。",
-    "previous_allowed_files": ["scripts/test-serve/__tests__/p02-runtime.test.ts"],
+    "version": 3,
+    "amended_at": "2026-07-22",
+    "amended_by": "ZCode (agent) — proposed, awaiting human approval",
+    "reason": "amendment v2 中纳入的 4 个基础设施文件（run-context.ts, types.ts, p02-orchestrator.ts, p02-sentinel.ts）的修复已在 f5add83 基线重置时作为 PHASE-01~03 存量代码提交；p02-orchestrator.ts import 修复已由 PHASE-06a (79024f2) 完成。git log f5add83..HEAD 确认 run-context.ts/types.ts/p02-sentinel.ts 零变更，p02-orchestrator.ts 仅 PHASE-06a 一次变更。allowed_files 收窄回 PHASE-05 规格书原始范围（仅 p02-runtime.test.ts）。同时补齐 scope.status/provenance_level/frozen_at 和 repository_scope 字段。",
+    "previous_allowed_files": [
+      "scripts/test-serve/__tests__/p02-runtime.test.ts",
+      "scripts/test-serve/run-context.ts",
+      "scripts/test-serve/types.ts",
+      "scripts/test-serve/p02-orchestrator.ts",
+      "scripts/test-serve/p02-sentinel.ts"
+    ],
     "audit_reference": "audits/p0-2/2026-07-20-phase-05-runtime-test-audit.md"
   },
   "approval": {
     "status": "APPROVED",
     "actor_type": "HUMAN",
     "approved_by": "zhaoge (human reviewer)",
-    "approved_at": "2026-07-20",
-    "evidence": "Human reviewer approved scope-lock amendment v2 on 2026-07-20, expanding allowed_files from 1 to 5 files to cover PHASE-02/03 infrastructure fixes"
+    "approved_at": "2026-07-22",
+    "evidence": "Human reviewer approved scope-lock amendment v3 on 2026-07-22: allowed_files narrowed 5→1 (p02-runtime.test.ts only), 4 infrastructure files removed (fixes already in f5add83 baseline), structural fields added, Freeze Gate reset"
   },
   "plan_sources": [
     {
@@ -27,7 +33,14 @@
     }
   ],
   "scope": {
-    "in_scope": ["REQ-001", "REQ-002", "REQ-003"],
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "2026-07-21T16:28:12Z",
+    "in_scope": [
+      "REQ-001",
+      "REQ-002",
+      "REQ-003"
+    ],
     "out_of_scope": [
       "live LLM E2E",
       "H2_AUTHORIZED=true",
@@ -146,15 +159,29 @@
     "fail_criteria": "preserve failure run and firstFailure; no cleanup/retry"
   },
   "allowed_files": [
-    "scripts/test-serve/__tests__/p02-runtime.test.ts",
-    "scripts/test-serve/run-context.ts",
-    "scripts/test-serve/types.ts",
-    "scripts/test-serve/p02-orchestrator.ts",
-    "scripts/test-serve/p02-sentinel.ts"
+    {
+      "path": "scripts/test-serve/__tests__/p02-runtime.test.ts",
+      "change": "modify",
+      "symbol": "real runtime test case（不 mock 生产生命周期）"
+    }
   ],
   "repository_scope": {
-    "allowed_paths": [],
-    "forbidden_paths": []
+    "allowed_paths": [
+      "scripts/test-serve/__tests__/p02-runtime.test.ts"
+    ],
+    "forbidden_paths": [
+      "scripts/test-serve/run-context.ts",
+      "scripts/test-serve/types.ts",
+      "scripts/test-serve/p02-orchestrator.ts",
+      "scripts/test-serve/p02-sentinel.ts",
+      "scripts/test-serve/process.ts",
+      "scripts/test-serve/bootstrap.ts",
+      "scripts/test-serve/verify-p01b.ts",
+      "scripts/test-serve/verify-p02.ts",
+      "scripts/test-serve/isolated-serve.ts",
+      "scripts/test-serve/cleanup.ts",
+      "scripts/test-serve/execute.ts"
+    ]
   },
   "forbidden": [
     "不 mock serve/SSE/worktree/bootstrap",
@@ -166,11 +193,11 @@
   "reviewer_ports": {
     "P0_2_PORT_A": 4001,
     "P0_2_PORT_B": 4002,
-    "verified_free_at": "2026-07-20"
+    "verified_free_at": "2026-07-22"
   },
   "provenance": {
     "level": "v2.1-required",
-    "pre_change_receipt_path": "audits/p0-2/evidence/pre-change-PHASE-05-v2.json",
-    "freeze_gate_status": "REAPPROVED"
+    "pre_change_receipt_path": "audits/p0-2/evidence/pre-change-PHASE-05-v3.json",
+    "freeze_gate_status": "FROZEN"
   }
 }

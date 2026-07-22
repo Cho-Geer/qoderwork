@@ -1,14 +1,14 @@
 # P0-2 最新审计指针
 
-**Latest audit**: `2026-07-22-phase-04a-existsync-audit-f5.md`（PHASE-04a existsSync fix 独立审计，F5，使用 prepare-audit.ts 生成）
+**Latest audit**: `2026-07-22-phase-05-runtime-test-audit-v3.md`（PHASE-05 runtime test 审计，scope-lock v3，prepare-audit.ts 生成）
 **Audit date**: 2026-07-22
-**Audited phase**: PHASE-04a（absoluteInputs existsSync fix）
-**Result**: ✅ ACCEPT（v2.1-required；component 级证据；3 REQ 全 PASS；正/负控制 SENSITIVE）
-**Scope lock**: `scope-lock-phase-04a.json`（human-approved, frozen 2026-07-21T14:01:51Z）
-**Freeze Gate 状态**: 完成（pre-change + verdict-state receipts 捕获）
+**Audited phase**: PHASE-05（first real dual-run runtime test）
+**Result**: ⏳ PENDING（Gate 1 + Gate 2 待运行）
+**Scope lock**: `scope-lock.json`（v3, human-approved, frozen 2026-07-21T16:28:12Z）
+**Freeze Gate 状态**: 完成（pre-change-PHASE-05-v3 + verdict-state-PHASE-05-v3 receipts 捕获）
 **Findings**: 无 BLOCKING；无 NON_BLOCKING_DEBT
-**Validator**: validate-audit.ts valid=true, errors=[], exit 0
-**Gate status**: PHASE-04a=ACCEPT；PHASE-07 解除 blocked 条件之一已满足
+**Validator**: 待运行
+**Gate status**: PHASE-05=PENDING
 
 ## 审计历史（新增）
 
