@@ -10,14 +10,14 @@
   "oracle_id": "ORACLE-001",
   "fixture_id": "FIXTURE-GOOD-001",
   "evidence_level": "runtime-smoke",
-  "repository_state_sha256": "493312096fa645377aae5dc02905d918410ec8c758a8822df5d96c3240373a2f",
+  "repository_state_sha256": "56b6ddef64ecb03ac88ef382a92a422614446974bd2b4d373089596daa72e472",
   "exit_code": 0,
   "cwd": "/home/zhaoge/workspace/qoderwork",
   "artifacts": [
     {
-      "path": "/home/zhaoge/workspace/qoderwork/audits/p0-2/evidence/PHASE-05-v3/ev-001-output.txt",
-      "sha256": "7e74b99172aa3fa7168df914e79c60f3e0f0646a823d6100ab8ba36e0ff0222e"
+      "path": "audits/p0-2/evidence/PHASE-05-v3/ev-001-output.txt",
+      "sha256": "1d2eef10bd51dd19b6e9c4a8e3cebafab3615361676082cf23a3ea0547717aa6"
     }
   ],
-  "completed_at": "2026-07-22T00:49:06.372Z"
+  "completed_at": "2026-07-22T01:10:05.461Z"
 }

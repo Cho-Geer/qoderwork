@@ -12,11 +12,11 @@ scripts/test-serve/__tests__/p02-runtime.test.ts:
                                           ^
 error: P0_2_PORT_A and P0_2_PORT_B must differ
       at <anonymous> (/home/zhaoge/workspace/qoderwork/scripts/test-serve/__tests__/p02-runtime.test.ts:51:38)
-(fail) P0-2 dual-run runtime isolation (PHASE-05) > real runP02 completes 16 stages with A/B isolation evidence [0.40ms]
+(fail) P0-2 dual-run runtime isolation (PHASE-05) > real runP02 completes 16 stages with A/B isolation evidence [4.46ms]
 
  0 pass
  1 fail
-Ran 1 test across 1 file. [65.00ms]
+Ran 1 test across 1 file. [50.00ms]
 === EXIT_CODE ===
 1
 === TIMED_OUT ===

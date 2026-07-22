@@ -13,7 +13,7 @@ scripts/test-serve/__tests__/p02-runtime.test.ts:
 error: P0_2_PORT_A must be an integer in [1024, 65535], got: 70000
       at requirePort (/home/zhaoge/workspace/qoderwork/scripts/test-serve/__tests__/p02-runtime.test.ts:39:15)
       at <anonymous> (/home/zhaoge/workspace/qoderwork/scripts/test-serve/__tests__/p02-runtime.test.ts:49:21)
-(fail) P0-2 dual-run runtime isolation (PHASE-05) > real runP02 completes 16 stages with A/B isolation evidence [1.06ms]
+(fail) P0-2 dual-run runtime isolation (PHASE-05) > real runP02 completes 16 stages with A/B isolation evidence [0.42ms]
 
  0 pass
  1 fail
