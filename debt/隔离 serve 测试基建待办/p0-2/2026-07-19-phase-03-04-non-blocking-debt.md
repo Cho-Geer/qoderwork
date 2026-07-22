@@ -10,6 +10,21 @@
 
 PHASE-03 与 PHASE-04 审计共识别 5 项发现：1 项项目约定（非缺陷，F-03-001 已修正分类）、4 项 NON_BLOCKING_DEBT。均不阻断 component 级 DONE。plan-audit-archiver v2.1 正式 ACCEPT 仍 BLOCKED（provenance 缺口，跨 phase 共性，单列 F-COMMON-001）。
 
+## 当前状态（2026-07-22 复核）
+
+本清单按当前代码、计划索引、PHASE-04a/05/06/08 审计与 runtime artifact 复核后更新。当前仍保留的仅是 **F-COMMON-001 历史 provenance 限制**；PHASE-01~04 已在 `00-plan-index.md` 明确降级为 `component-only`，不再声称具备 v2.1 正式 ACCEPT 资格。
+
+| ID | 当前状态 | 处理结论 |
+|---|---|---|
+| F-03-001 | CLOSED-AS-CONVENTION | 项目约定，非缺陷，无需处理。 |
+| F-03-002 | CLOSED-AS-GOVERNANCE-LIMIT | 历史 audit-5 文本未补 provenance 声明；当前 plan index 已将 PHASE-01~04 标为 `component-only`，该限制不再阻断现行 P0-2 closure。 |
+| F-04-001 | CLOSED | `controlledStops` 笔误已改为 `convergenceErrors`。 |
+| F-04-002 | CLOSED | PHASE-04a 已加入 `existsSync`，P02-C-PATH-EXIST 与现有 CLI 测试通过；PHASE-05/06 runtime-smoke 亦已完成。 |
+| F-04-003 | CLOSED-AS-SCOPE-GOVERNANCE | harness 已纳入当前测试基础设施范围并被 Git 跟踪；生产路径不受影响。 |
+| F-COMMON-001 | RETAINED-HISTORICAL-LIMITATION | PHASE-01~04 的 pre-change receipt 无法回建；仅在未来要求这些历史 phase 重新签署 v2.1 时需要重新实施取证。 |
+
+**当前 debt 数量**: 1 项历史限制（F-COMMON-001）；0 项待修复代码 debt；0 项阻断 P0-2 DONE 的 debt。
+
 ## PHASE-03 发现（audit-6）
 
 ### F-03-001: plan completion gate box 全 `[ ]`（项目约定，非缺陷）
