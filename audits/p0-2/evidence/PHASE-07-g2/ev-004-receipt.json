@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "p0-2-phase-07-g2",
+  "generation": 2,
+  "id": "EV-004",
+  "command": "cd /home/zhaoge/workspace/qoderwork && /home/zhaoge/.bun/bin/bun run typecheck",
+  "observed": "PASS",
+  "requirement_id": "REQ-003",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-003",
+  "fixture_id": "FIXTURE-TYPECHECK-CLEAN",
+  "evidence_level": "component",
+  "repository_state_sha256": "f94bcc446ea9b952a392a7175d59620289b06e0820d625405a06809a0f20dbe8",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/PHASE-07-g2/ev-004-output.txt",
+      "sha256": "375b1e6a9e4c350dda88f94ebc9c55d319c8b2afb7018f2e96b1918bc1ecb3cc"
+    }
+  ],
+  "completed_at": "2026-07-22T06:23:05.679Z"
+}

@@ -1,0 +1,19 @@
+=== STDOUT ===
+.workbuddy/skills/isolated-serve-test/SKILL.md:32:- 裸 `curl localhost:4097`
+.workbuddy/skills/isolated-serve-test/SKILL.md:80:- `H2_AUTHORIZED=true`
+.workbuddy/skills/isolated-serve-test/SKILL.md:114:- 不允许自行设置 `H2_AUTHORIZED=true`
+.qoder/skills/isolated-serve-test/SKILL.md:32:- 裸 `curl localhost:4097`
+.qoder/skills/isolated-serve-test/SKILL.md:80:- `H2_AUTHORIZED=true`
+.qoder/skills/isolated-serve-test/SKILL.md:114:- 不允许自行设置 `H2_AUTHORIZED=true`
+.agents/skills/isolated-serve-test/SKILL.md:32:- 裸 `curl localhost:4097`
+.agents/skills/isolated-serve-test/SKILL.md:80:- `H2_AUTHORIZED=true`
+.agents/skills/isolated-serve-test/SKILL.md:114:- 不允许自行设置 `H2_AUTHORIZED=true`
+.trae/skills/isolated-serve-test/SKILL.md:32:- 裸 `curl localhost:4097`
+.trae/skills/isolated-serve-test/SKILL.md:80:- `H2_AUTHORIZED=true`
+.trae/skills/isolated-serve-test/SKILL.md:114:- 不允许自行设置 `H2_AUTHORIZED=true`
+scripts/test-serve/execute.ts:45:            ? "missing H2_AUTHORIZED=true, DRY_RUN=false, READY/BOOTSTRAPPED state or bootstrap_complete"
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

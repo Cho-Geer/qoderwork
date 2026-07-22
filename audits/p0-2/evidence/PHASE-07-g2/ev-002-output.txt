@@ -1,0 +1,24 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/test-serve/__tests__/p02-runtime.test.ts:
+31 |   }).toString().trim();
+32 | }
+33 | 
+34 | function requirePort(name: string): number {
+35 |   const raw = process.env[name];
+36 |   if (!raw) throw new Error(`${name} environment variable must be set`);
+                           ^
+error: P0_2_PORT_A environment variable must be set
+      at requirePort (/home/zhaoge/workspace/qoderwork/scripts/test-serve/__tests__/p02-runtime.test.ts:36:23)
+      at <anonymous> (/home/zhaoge/workspace/qoderwork/scripts/test-serve/__tests__/p02-runtime.test.ts:49:21)
+(fail) P0-2 dual-run runtime isolation (PHASE-05) > real runP02 completes 16 stages with A/B isolation evidence [0.36ms]
+
+ 0 pass
+ 1 fail
+Ran 1 test across 1 file. [50.00ms]
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

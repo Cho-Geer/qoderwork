@@ -7,7 +7,7 @@
 | component | PHASE-01–04 commands | prior gates | 0 fail | test output | PHASE-01 ready, later blocked |
 | runtime-smoke | PHASE-05 command | reviewer pair A | 1 pass / 0 fail | A/B packet | ACCEPT（2026-07-22, 4001/4002） |
 | runtime-smoke | PHASE-06 command | reviewer pair B | exit 0/PASS JSON | A/B packet | ACCEPT（2026-07-22, 4003/4004） |
-| manual verification | PHASE-07/08 commands | two runtime packets | every closure gate true | diff/hash/log | BLOCKED |
+| manual verification | PHASE-07/08 commands | two runtime packets | every closure gate true | diff/hash/log | PHASE-07 ACCEPT; PHASE-08 pending |
 
 ### Evidence preservation
 
@@ -33,7 +33,7 @@
 - [x] Every index requirement has one owning Phase and traceability row.
 - [x] PHASE-01–04 component gates have retained output.
 - [x] PHASE-05 and PHASE-06 have two independent runtime-smoke packets.
-- [ ] PHASE-07 root typecheck, safety scans and regressions all pass.
+- [x] PHASE-07 root typecheck, safety scans and regressions all pass.
 - [ ] PHASE-08 hashes and evidence-qualified document updates pass.
 - [x] No lower-level result is reported as runtime-smoke or DONE.
 

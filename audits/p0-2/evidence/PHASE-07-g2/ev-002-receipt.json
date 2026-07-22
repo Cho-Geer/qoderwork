@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "p0-2-phase-07-g2",
+  "generation": 2,
+  "id": "EV-002",
+  "command": "cd /home/zhaoge/workspace/qoderwork && /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/p02-runtime.test.ts",
+  "observed": "FAIL",
+  "requirement_id": "REQ-001",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-RUNTIME-NO-PORT",
+  "evidence_level": "component",
+  "repository_state_sha256": "f94bcc446ea9b952a392a7175d59620289b06e0820d625405a06809a0f20dbe8",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/PHASE-07-g2/ev-002-output.txt",
+      "sha256": "ee3a7310a7a2cc2dbd5e21c881d31352ae9ce36315391740da2360607eb6d106"
+    }
+  ],
+  "completed_at": "2026-07-22T06:23:05.369Z"
+}

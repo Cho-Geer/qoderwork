@@ -1,19 +1,20 @@
 # P0-2 最新审计指针
 
-**Latest audit**: `2026-07-22-phase-07-regression-audit-g1.md`（PHASE-07 regression 审计，scope-lock-phase-07.json，prepare-audit.ts 生成）
+**Latest audit**: `2026-07-22-phase-07-regression-audit-g2.md`（PHASE-07 regression 审计 generation 2，scope-lock-phase-07.json，prepare-audit.ts 生成）
 **Audit date**: 2026-07-22
 **Audited phase**: PHASE-07（regression and static closure gate）
-**Result**: ⚠️ BLOCKED（v2.1-required；component 级；generation 1；REQ-001 PASS + REQ-002 PASS + REQ-003 BLOCKED-BY-ROOT-TYPECHECK；Gate 2 exit 0）
+**Result**: ✅ ACCEPT（v2.1-required；component 级；generation 2；REQ-001 PASS + REQ-002 PASS + REQ-003 PASS；Gate 1 + Gate 2 exit 0）
 **Scope lock**: `scope-lock-phase-07.json`（human-approved, frozen 2026-07-22T03:42:17Z）
-**Freeze Gate 状态**: 完成（pre-change-PHASE-07 + verdict-state-PHASE-07 receipts 捕获，repository_root=work-one）
-**Findings**: 无 BLOCKING；REQ-003 BLOCKED（33 non-P0-2 type errors）
+**Freeze Gate 状态**: 完成（pre-change-PHASE-07-g2 + verdict-state-PHASE-07-g2 receipts 捕获，repository_root=work-one）
+**Findings**: 无 BLOCKING；g1 BLOCKED-BY-ROOT-TYPECHECK 已 CLOSED（typecheck debt fixed）
 **Validator**: validate-audit.ts valid=true, errors=[], exit 0
-**Gate status**: PHASE-07=BLOCKED（等待 root typecheck 债务清理后 re-audit）
+**Gate status**: PHASE-07=ACCEPT（下一步 PHASE-08 document closure）
 
 ## 审计历史（新增）
 
 | Date | Audit file | Phase | Result |
 |---|---|---|---|
+| 2026-07-22 | `2026-07-22-phase-07-regression-audit-g2.md` | PHASE-07（regression + static closure gate，generation 2，prepare-audit.ts 生成） | ✅ ACCEPT（v2.1-required；component 级；REQ-001 PASS 206/0 fail + REQ-002 PASS 无活跃禁止模式 + REQ-003 PASS typecheck exit 0；g1 BLOCKED-BY-ROOT-TYPECHECK CLOSED；Gate 1 + Gate 2 exit 0） |
 | 2026-07-22 | `2026-07-22-phase-07-regression-audit-g1.md` | PHASE-07（regression + static closure gate，prepare-audit.ts 生成） | ⚠️ BLOCKED（v2.1-required；component 级；REQ-001 PASS 206/0 fail + REQ-002 PASS 无活跃禁止模式 + REQ-003 BLOCKED-BY-ROOT-TYPECHECK 33 non-P0-2 errors；Gate 2 exit 0） |
 | 2026-07-22 | `2026-07-22-phase-06-cli-smoke-audit-g1.md` | PHASE-06（CLI smoke，第二组端口 4003/4004，prepare-audit.ts 生成） | ✅ ACCEPT（v2.1-required；runtime-smoke 级；3 REQ 全 PASS；正/负控制 SENSITIVE；Gate 1 + Gate 2 exit 0；repository_root=work-one；verification-only 零代码变更） |
 | 2026-07-22 | `2026-07-22-phase-05-runtime-test-audit-g2.md` | PHASE-05（runtime test，scope-lock v3，prepare-audit.ts 生成） | ✅ ACCEPT（v2.1-required；runtime-smoke 级；3 REQ 全 PASS；正/负控制 SENSITIVE；Gate 1 + Gate 2 exit 0；repository_root=work-one） |

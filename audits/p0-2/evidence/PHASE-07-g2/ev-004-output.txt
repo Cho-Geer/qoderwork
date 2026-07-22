@@ -1,0 +1,7 @@
+=== STDOUT ===
+=== STDERR ===
+$ tsc --noEmit --pretty false
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

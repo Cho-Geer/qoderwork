@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "p0-2-phase-07-g2",
+  "generation": 2,
+  "id": "EV-003",
+  "command": "cd /home/zhaoge/workspace/qoderwork && rg -n '4097|/tmp/sse-events.jsonl|pkill|H2_AUTHORIZED=true' scripts/test-serve .agents/skills/isolated-serve-test .qoder/skills/isolated-serve-test .trae/skills/isolated-serve-test .workbuddy/skills/isolated-serve-test",
+  "observed": "PASS",
+  "requirement_id": "REQ-002",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-002",
+  "fixture_id": "FIXTURE-RG-FORBIDDEN",
+  "evidence_level": "component",
+  "repository_state_sha256": "f94bcc446ea9b952a392a7175d59620289b06e0820d625405a06809a0f20dbe8",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork",
+  "artifacts": [
+    {
+      "path": "audits/p0-2/evidence/PHASE-07-g2/ev-003-output.txt",
+      "sha256": "3e654dd20a10002618b008eccacba15daa079f848dc36a7d36ebbc873130abc1"
+    }
+  ],
+  "completed_at": "2026-07-22T06:23:05.396Z"
+}
