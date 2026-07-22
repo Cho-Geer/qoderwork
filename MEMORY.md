@@ -37,3 +37,14 @@
 | 内置 | 平台自带（11 个） | simplify, security-review, quest 等 |
 | 用户级 | `~/.qoder-cn/skills/` | 当前不存在，需手动创建 |
 | 项目级 | `.qoder/skills/` | 活跃，21 个 Skill + 12 个 .merged 备份 |
+
+## work-one 规则: P0-2 隔离 serve 测试基建已完成（2026-07-22）
+
+P0-2 plan 全部 8 phase（含 04a/06a）ACCEPT/DONE。关键事实：
+- **test-serve CLI** 位于 `scripts/test-serve/isolated-serve.ts`，支持 `create/start/bootstrap/execute/verify/stop/cleanup` 完整生命周期
+- **双 run 隔离** 经两组独立端口验证：PHASE-05（4001/4002）+ PHASE-06（4003/4004），16 stages all ok
+- **runtime 证据** 位于 `~/.local/state/qoderwork/qoderwork/test-runs/`，含 manifest/stage-results/cleanup-report/sentinel-marker
+- **4 份 skill 副本**（.agents/.qoder/.trae/.workbuddy）SHA-256 一致（d333c99a...）
+- **审计链**：`audits/p0-2/` 含完整 scope-lock + EV receipts + validate-audit 记录，LATEST.md 指向 PHASE-08 ACCEPT
+- **typecheck** 已 exit 0（33 errors 修复于 2026-07-22，commit 757b5f6 + 9c6011d9）
+- **P0-1**（bootstrap-child-grant-fail-closed）尚未启动，是同族 plan 的下一步
