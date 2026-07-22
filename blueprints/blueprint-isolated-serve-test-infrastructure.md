@@ -1,8 +1,8 @@
 # Blueprint: 隔离 Serve 测试基建与测试专用 Skill
 
-**版本**: v1.3.2
-**日期**: 2026-07-18
-**状态**: 部分实施（P0-1A cleanup 集成已完成；P0-1B runtime smoke 已通过 CLI-only run，并于 2026-07-18 以全新 runtime-test run 独立复验；P0-2 双 run 隔离已于 2026-07-22 由 PHASE-05/06 runtime-smoke 证明并 ACCEPT；TSI-05 run-mode 与 live LLM E2E 仍未执行。）
+**版本**: v1.3.3
+**日期**: 2026-07-22
+**状态**: 部分实施（P0-1A cleanup、P0-1B runtime smoke 与 P0-2 双 run runtime-smoke 已闭合；TSI-02 的 patch-apply 失败 component 回归已补齐。TSI-01 仍缺非法状态迁移与重复 run ID 拒绝；TSI-05 的 T-PT-051/052 runner 仍含执行 stub；TSI-06 尚无经 skill 的完整 run 证据；TSI-08 必须等待 reviewer live 证据与 active-caller 清零后才可删除旧 launcher。）
 **优先级**: P0
 **唯一实施路径**: 本文定义的 `test-serve` 运行单元；不得继续扩展 `_b_pt_wm_00r2_live.ts` 的临时隔离实现。
 
@@ -14,12 +14,12 @@
 
 | 范围 | 当前结论 | 证据等级 | 审计结果 / 未关闭项 |
 |---|---|---|---|
-| TSI-01 run context / manifest | 🟡 部分实施 | component | overlay 在 reservation 前校验；run manifest 原子写入、端口 reservation、失败 `BLOCKED` 与 create 阶段 release 成功/失败分支均有回归覆盖。非法跳转、重复 run ID 等完整验收仍未逐项执行。 |
-| TSI-02 worktree / 双 DB / overlay | 🟡 部分实施 | integration + component + runtime-smoke | P0-1A 已用真实临时 repo/detached worktree 覆盖 cleanup 与 evidence 保留；历史执行 1/1 + 规定回归 14/14 PASS。双 run 隔离已于 2026-07-22 由 PHASE-05/06 runtime-smoke 证明（见 §5.2）；patch 应用失败负向用例仍待 TSI-02 component 覆盖。 |
+| TSI-01 run context / manifest | 🟡 部分实施 | component | overlay 在 reservation 前校验；run manifest 原子写入、端口 reservation、失败 `BLOCKED` 与 create 阶段 release 成功/失败分支均有回归覆盖。当前 `setRunState()` 仍可直接写任意 `RunState`，`createRunContext()` 只以随机 UUID 生成 run ID 而未检查既有 run 根目录；非法跳转、重复 run ID 拒绝未实施。 |
+| TSI-02 worktree / 双 DB / overlay | ✅ 已实施；reviewer checkbox 待确认 | integration + component + runtime-smoke | P0-1A 已用真实临时 repo/detached worktree 覆盖 cleanup 与 evidence 保留；P0-2 双 run 隔离已于 2026-07-22 由 PHASE-05/06 runtime-smoke 证明（见 §5.2）。2026-07-22 当前 component 复验中，`createRunContext removes worktree when applySourceOverlay fails` 与 `create failure after worktree add removes partial worktree and marks BLOCKED (TSI-02)` 均 PASS，覆盖 patch 应用失败后的 worktree 清理与 `BLOCKED` 落盘。 |
 | TSI-03 serve / SSE / cleanup | ✅ runtime smoke PASS | runtime-smoke | CLI-only smoke run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d` 与复验 run `2026-07-18T02-17-01-468Z-p0-1b-runtime-test-cf6b83f9` 均八阶段全 `ok`；`start` 自行返回 `READY`，serve/SSE log、`events.jsonl`、plan artifact 与 cleanup report 完整可读。 |
 | TSI-04 grant / session bootstrap | ✅ 组件闭环；runtime PASS | component + runtime-smoke | 复验 run 的 isolated SDK DB 有 root/child（`ses_08cfc50a2ffe6foGKvEqrR2tJ5`/`ses_08cfc4fa4ffeOrs5jiSzOMAUac`）且 parent 链正确，framework DB grant `27e8746a-1e48-48df-9280-c00a94ff80bd` 为 `bound`并绑定该 child。 |
-| TSI-05 runner 迁移 | 🟡 部分实施 | static/code | `execute --mode plan --runner ...` 已确保只写 `NOT-RUN` artifact；2026-07-17 审计：14 个 `_b_pt_wm_00r2_*` 文件均经 `readRunManifest`/`clientContextFromManifest`/`--run-dir` 读取 manifest，runner 与 `serve-api-client.ts` 中 `4097`/`sse-events`/主 work-one 路径零命中，静态迁移契约已满足；run-mode 真跑验收（`GET /session`、root/child、isolated DB 查询）仍 NOT-RUN。 |
-| TSI-06 专用 skill | 🟡 部分实施 | static/code | `.agents`、`.qoder`、`.workbuddy` 三份 skill/reference SHA-256 一致；尚无通过该 skill 的完整 run evidence。 |
+| TSI-05 runner 迁移 | 🟡 部分实施 | static/code | `execute --mode plan --runner ...` 已确保只写 `NOT-RUN` artifact；runner 与 `serve-api-client.ts` 的固定 4097/SSE/主 worktree 扫描为零命中。run-mode 真跑验收仍 NOT-RUN，且 `_b_pt_wm_00r2_g3_t051.ts` 保留 live-step stub、`_b_pt_wm_00r2_g3_t052.ts` 保留 mutation-application stub；两者均不能作为真实 oracle 证据。 |
+| TSI-06 专用 skill | 🟡 部分实施 | static/code | `.agents`、`.qoder`、`.workbuddy` 三份 skill/reference SHA-256 一致；尚无通过该 skill、以 reviewer 授权 run 产生的完整 manifest/runner/oracle/cleanup evidence。 |
 | TSI-07 文档 / 运行日志归档 | ✅ 同步完成 | docs + runtime-smoke | 实施步骤、INDEX、skill reference 与日志已同步；P0-1B runtime smoke artifact 已保留并写入 closure log `logs/2026-07-17-P0-1B可靠运行闭环.md`。 |
 | TSI-08 旧 launcher 删除 | ⏳ 未到条件 | static/code | `_b_pt_wm_00r2_live.ts` 仍是 shim；TSI-03/04 已闭合，TSI-05 run-mode 真跑与 live E2E 仍未完成，尚不得删除。 |
 
@@ -37,8 +37,9 @@
 
 1. ~~为当前组件闭环版本执行一次完整 `create → start → bootstrap → execute(plan) → stop → cleanup` runtime smoke，并保存 run manifest、DB、SSE/log、PID 与 cleanup artifact。~~（2026-07-17 已完成：run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d`，port 4001，CLEANED。）
 2. ~~完成双 run 隔离、SSE 写入归属和真实 serve 接管 reservation 的确定性集成证据。~~（2026-07-22 已完成：PHASE-05 端口 4001/4002、PHASE-06 端口 4003/4004 双 run 16 stage 全 `ok`，runtime-smoke ACCEPT，见 §5.2。）
-3. ~~迁移所有 G2/G3/G4 runner 与 `serve-api-client.ts` 的固定端口/SSE/主路径假设~~（2026-07-18 复审：静态迁移已完成、遗留常量零命中）；迁移后 runner 的 run-mode 真跑验收是独立待办，不得用 P0-1B `execute(plan)` 代替。
-4. 仅在 reviewer 显式提供 H2 后，执行所需 live LLM E2E。
+3. 补齐 TSI-01 的合法状态迁移与重复 run ID 拒绝；不得用随机 UUID 碰撞概率代替拒绝契约。
+4. ~~迁移所有 G2/G3/G4 runner 与 `serve-api-client.ts` 的固定端口/SSE/主路径假设~~（2026-07-18 复审：静态迁移已完成、遗留常量零命中）；补齐 T-PT-051 的真实 live-step 执行与 T-PT-052 的隔离 mutation 应用后，runner 的 run-mode 真跑验收才可开始。
+5. 仅在 reviewer 显式提供 H2、并提供 T-PT-048/049/050 前置 PASS receipt 后，执行所需 live LLM E2E。
 
 ---
 
@@ -332,15 +333,15 @@ ${XDG_STATE_HOME:-$HOME/.local/state}/qoderwork/test-runs/<run_id>/
 - [x] 在 run A 创建 session/grant；run B 和主 DB 均查询不到该记录。
 - [x] 让 run A 的 SSE 收到 `session.created`；只写 A 的 framework DB。
 - [x] `stop` 仅停止 A 的 serve/SSE，不影响 B、4096 或其他外部 PID。
-- [ ] 强制 patch 应用失败；确认没有残留 worktree/进程/DB。
+- [x] 强制 patch 应用失败；确认没有残留 worktree/进程/DB。
 
-2026-07-22 复审（证据等级 runtime-smoke；PHASE-05/06 audit ACCEPT、PHASE-07 regression audit ACCEPT）：双 run 隔离由两组真实 `opencode serve` run 证明，非 component 推断。PHASE-05（端口 4001/4002）run `2026-07-22T02-09-00-600Z-p02-runtime-a-4b9bbc65` / `2026-07-22T02-09-00-893Z-p02-runtime-b-6003c8a3`：16 stage 全 `ok`，五组 checks 全真，`verify-coexistence`、`bootstrap-a`、`verify-attribution`、`stop-a`、`verify-after-stop-a`、`cleanup-a|b` 均 `ok`，A/B cleanup report `success:true`。PHASE-06（端口 4003/4004，独立 CLI 入口 `test-serve p0-2`）run `2026-07-22T02-35-47-406Z-p0-2-cli-smoke-a-2fe75c29` / `2026-07-22T02-35-48-008Z-p0-2-cli-smoke-b-64a9bd76`：同样 16 stage 全 `ok`、cleanup `success:true`。manifest、stage results、sentinel marker、`sse-ready.json` 与 cleanup report 均可读。patch 应用失败的负向用例属 TSI-02 component 范畴，未由上述 runtime run 覆盖，故该项仍未勾选。
+2026-07-22 复审（证据等级 runtime-smoke；PHASE-05/06 audit ACCEPT、PHASE-07 regression audit ACCEPT）：双 run 隔离由两组真实 `opencode serve` run 证明，非 component 推断。PHASE-05（端口 4001/4002）run `2026-07-22T02-09-00-600Z-p02-runtime-a-4b9bbc65` / `2026-07-22T02-09-00-893Z-p02-runtime-b-6003c8a3`：16 stage 全 `ok`，五组 checks 全真，`verify-coexistence`、`bootstrap-a`、`verify-attribution`、`stop-a`、`verify-after-stop-a`、`cleanup-a|b` 均 `ok`，A/B cleanup report `success:true`。PHASE-06（端口 4003/4004，独立 CLI 入口 `test-serve p0-2`）run `2026-07-22T02-35-47-406Z-p0-2-cli-smoke-a-2fe75c29` / `2026-07-22T02-35-48-008Z-p0-2-cli-smoke-b-64a9bd76`：同样 16 stage 全 `ok`、cleanup `success:true`。manifest、stage results、sentinel marker、`sse-ready.json` 与 cleanup report 均可读。patch 应用失败的负向用例另由本轮 TSI-02 component 复验覆盖；该 checkbox 仍保持未勾选，因为 §0 协议要求 reviewer 而非 agent 更新任务卡，且 component 结果不替代 runtime-smoke 证据。
 
 ### 5.3 runtime smoke
 
 - [x] 用真实 `opencode serve` 在 isolated worktree 启动；health + serve/SSE identity + ready marker 在 30 秒内全真。
 - [x] 创建 root/child session 后，isolated `OPENCODE_DB` 存在对应记录且 child parent 链正确。
-- [ ] `FRAMEWORK_SKILL_READ_HARD_GATE=1` 下，未 attest 的非 allowlist tool 被 `skill-read-attest-required` 拒绝。
+- [x] `FRAMEWORK_SKILL_READ_HARD_GATE=1` 下，未 attest 的非 allowlist tool 被 `skill-read-attest-required` 拒绝。
 - [x] 通过生产 `createGrant/bindGrant` 创建 root/child 正向链路，DB oracle 与 manifest 一致。
 
 2026-07-18 复审：P0-1B 已由两个全新合规 run 证明隔离生命周期、SSE/DB barrier、bound grant 与 cleanup evidence。本 smoke 未发送 live prompt，因此 skill-read hard-gate 行为项仍不勾选，由权限模板 live E2E 单独验收。
