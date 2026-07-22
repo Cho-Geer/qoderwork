@@ -217,6 +217,29 @@ Confusing them is the most common cause of `INVALID` verdicts.
 
 > **合理化检测**: 如果你发现自己在想「我在 qoderwork 目录跑 `git rev-parse HEAD` 拿到 commit 填进 baseline」——停下来，这是跳步信号。validator 用 `repository_root` 校验 commit，必须填 work-one 的 HEAD，不是 qoderwork 的 HEAD。
 
+### repository_root 选择规则（强制）
+
+`repository_root` 必须（MUST）设为被审计目标仓库（work-one：`/home/zhaoge/workspace/opencode/work-one`），禁止（MUST NOT）设为审计工作区（qoderwork：`/home/zhaoge/workspace/qoderwork`）。
+
+**原因链**（validator 代码逻辑，非约定）：
+
+1. validator 用 `git -C <repository_root> status --porcelain` 计算 `actualStatus`（validate-audit.ts 第 1159 行 `gitStatusEntryMap`）
+2. `deltaPaths` = pre-change receipt 的 `status_entries` 与 `actualStatus` 的对称差（第 1190 行）
+3. `deltaPaths` 中不在 `repository_scope.allowed_paths` 内的路径触发 `DIRTY_PATH_OUTSIDE_SCOPE`（第 1197 行）
+4. validator 对 `audits/`、`logs/`、`evidence/` 等审计基建路径**无任何豁免逻辑**（第 1191-1198 行循环中无前置路径过滤）
+5. 审计基建文件（报告、EV receipts、verdict-state、LATEST.md、日志）全部在 workspace_root（qoderwork）中产生
+6. 若 `repository_root = workspace_root`，所有审计基建文件出现在 `deltaPaths` 中，全部触发 `DIRTY_PATH_OUTSIDE_SCOPE`
+7. 若 `repository_root = work-one`（审计过程中保持 clean，`status_entries = []`），`deltaPaths` 为空，审计基建文件不影响验证
+
+**操作要求**：
+
+- `capture-state.ts --repository-root` 必须（MUST）传入 work-one 路径
+- `generate-evidence-receipt.ts --repository-root` 必须（MUST）传入 work-one 路径
+- `baseline.commit` / `baseline.head_at_verdict` 填 work-one 的 HEAD（`git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD`）
+- 实施范围由 scope-lock 的 `repository_scope.allowed_paths` / `forbidden_paths` 控制，不由 `repository_root` 的 dirty path 检查控制
+
+> **合理化检测**: 如果你发现自己在想「这个 phase 改的是 qoderwork 的测试文件，所以 repository_root 应该填 qoderwork」——停下来，这是跳步信号。`repository_root` 的唯一作用是提供一个 clean 的 git 基线，证明被审计目标仓库无意外变更。实施文件的范围约束由 scope-lock 的 `repository_scope` 字段承担，两者职责不同。
+
 ### 时间依赖关系图
 
 下列三条时间约束必须同时满足，任一倒挂触发对应 ERROR_CODE：
@@ -380,6 +403,18 @@ The requirement cannot be `PASS` when:
 - the negative control did not run or did not fail;
 - both controls use different or implementation-derived oracles;
 - evidence is missing, stale, or below the required level.
+
+**负控制命令区分规则（validator 强制检查）**:
+
+validator 对每个 `BEHAVIORAL` requirement 检查 `positive_control.command !== negative_control.command`（字符串严格不等，validate-audit.ts 第 357 行）。若两个 `command` 字段完全相同，触发 `CONTROL_COMMAND_NOT_DISCRIMINATING`，审计不可签署。
+
+设计负控制时，必须（MUST）确保 `negative_control.command` 字符串与 `positive_control.command` 存在可观测差异。合法方式：
+
+- 变更环境变量值（如 `P0_2_PORT_A=70000` 替代 `P0_2_PORT_A=4001`）
+- 变更命令行参数（如 `--port 9999` 替代 `--port 4001`）
+- 变更输入文件路径（如指向不存在的 fixture）
+
+禁止（MUST NOT）仅依赖外部进程注入（如后台启动 python 监听器占用端口）而保持 `command` 字符串与正控制完全不变——validator 只比较 `command` 字段文本，不感知外部进程状态。
 
 Use `test-specification-execution` for adversarial, mutation, property, fuzz,
 or live-path execution when those levels are required.

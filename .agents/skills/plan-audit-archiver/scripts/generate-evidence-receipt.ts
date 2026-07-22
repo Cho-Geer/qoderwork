@@ -220,6 +220,13 @@ function writeArtifactAndReceipt(args: ValidatedArgs, result: ExecutionResult, o
     }
     const artifactSha256 = sha256File(args.artifactPath);
 
+    const realWorkspace = realpathSync(args.workspaceRoot);
+    const artifactAbsPath = resolve(args.artifactPath);
+    const artifactRelPath = relative(realWorkspace, artifactAbsPath);
+    if (artifactRelPath.startsWith("..") || isAbsolute(artifactRelPath)) {
+      fail(`--artifact-path is outside workspace-root: ${args.artifactPath}`);
+    }
+
     const completedAt = new Date().toISOString();
     const receiptPayload = {
       schema_version: "1.0",
@@ -236,7 +243,7 @@ function writeArtifactAndReceipt(args: ValidatedArgs, result: ExecutionResult, o
       repository_state_sha256: args.verdictStateSha256,
       exit_code: result.exitCode,
       cwd: args.cwd,
-      artifacts: [{ path: args.artifactPath, sha256: artifactSha256 }],
+      artifacts: [{ path: artifactRelPath, sha256: artifactSha256 }],
       completed_at: completedAt,
     };
     const receiptContent = `${JSON.stringify(receiptPayload, null, 2)}\n`;

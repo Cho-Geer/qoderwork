@@ -1,0 +1,15 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/test-serve/__tests__/p02-runtime.test.ts:
+(pass) P0-2 dual-run runtime isolation (PHASE-05) > real runP02 completes 16 stages with A/B isolation evidence [18717.68ms]
+
+ 1 pass
+ 0 fail
+ 50 expect() calls
+Ran 1 test across 1 file. [18.77s]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

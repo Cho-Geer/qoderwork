@@ -1,0 +1,23 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/test-serve/__tests__/p02-runtime.test.ts:
+46 |     "real runP02 completes 16 stages with A/B isolation evidence",
+47 |     async () => {
+48 |       // --- 前置验证 ---
+49 |       const portA = requirePort("P0_2_PORT_A");
+50 |       const portB = requirePort("P0_2_PORT_B");
+51 |       if (portA === portB) throw new Error("P0_2_PORT_A and P0_2_PORT_B must differ");
+                                          ^
+error: P0_2_PORT_A and P0_2_PORT_B must differ
+      at <anonymous> (/home/zhaoge/workspace/qoderwork/scripts/test-serve/__tests__/p02-runtime.test.ts:51:38)
+(fail) P0-2 dual-run runtime isolation (PHASE-05) > real runP02 completes 16 stages with A/B isolation evidence [0.42ms]
+
+ 0 pass
+ 1 fail
+Ran 1 test across 1 file. [49.00ms]
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false
