@@ -333,6 +333,24 @@ frozen, stop with `INVALID`. If a valid scope is awaiting human approval or a
 required pre-change state no longer exists, stop with `BLOCKED`. Do not begin a
 rolling or reconstructed audit.
 
+### Step 1.5: Impact analysis for shared functions `[ANALYSIS]`
+
+If the plan modifies any function body (not just imports or type definitions),
+identify shared functions and record their callers:
+
+1. List all functions whose body will be modified in `impact_analysis.modified_functions`.
+2. For each, run `codegraph callers <函数名>` (or `rg -n "函数名" scripts/` if not indexed).
+3. If the returned `file`-level callers span ≥ 2 files, add the function to
+   `impact_analysis.shared_functions`.
+4. Record all caller files in `impact_analysis.caller_files`.
+5. For each caller file, determine its test file path:
+   - `scripts/foo.ts` -> `scripts/__tests__/foo.test.ts` (or `scripts/test-serve/__tests__/foo.test.ts`)
+   - If the test file does not exist, omit it.
+6. Record test files in `impact_analysis.caller_tests`.
+7. Hash the scan output and record in `impact_analysis.scan_output_sha256`.
+8. The plan's Fixed verification command MUST include every file in
+   `impact_analysis.caller_tests`. If it does not, the scope-lock is INVALID.
+
 ### Step 2: Build the oracle and falsification matrix `[ANALYSIS]`
 
 For every `REQ-NNN`, record one observable behavior and one implementation-

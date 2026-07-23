@@ -61,6 +61,14 @@
       "REPLACE_EXACT_FORBIDDEN_PATH"
     ]
   },
+  "impact_analysis": {
+    "modified_functions": [],
+    "shared_functions": [],
+    "caller_scan_command": "",
+    "caller_files": [],
+    "caller_tests": [],
+    "scan_output_sha256": ""
+  },
   "approval": {
     "status": "APPROVED",
     "actor_type": "HUMAN",
