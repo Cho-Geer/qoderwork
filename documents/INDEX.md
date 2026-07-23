@@ -2,7 +2,9 @@
 
 > 本文件由 QoderWork Session Startup 自动扫描。新增文档时请同步更新此索引。
 >
-> **最近更新**: 2026-07-22 - 隔离 Serve 蓝图与当前代码交叉审核：TSI-02 patch-apply 失败 component 回归已验证；TSI-01 仍缺状态迁移/重复 run ID 拒绝；T-PT-051/052 runner 仍含执行 stub。已创建 P0-3 六阶段实施计划并通过结构校验；reviewer live 证据与旧 launcher 删除仍未执行。
+> **最近更新**: 2026-07-23 - Task Lens M1 蓝图完成 v0.1.5 设计返工：冻结输入/差异/可序列化图模型/DA coverage/反馈写回/安全与 provenance 合同；方向可行，下一步必须先创建 v2.1-required 实施计划并通过 Freeze Gate。
+>
+> **历史更新**: 2026-07-22 - 隔离 Serve 蓝图与当前代码交叉审核：TSI-02 patch-apply 失败 component 回归已验证；TSI-01 仍缺状态迁移/重复 run ID 拒绝；T-PT-051/052 runner 仍含执行 stub。已创建 P0-3 六阶段实施计划并通过结构校验；reviewer live 证据与旧 launcher 删除仍未执行。
 >
 > **历史更新**: 2026-07-21 — 新增 diagrams/ 下 3 份复用基础设施文档（函数清单 + 分层调用拓扑 + 全局调用拓扑），覆盖 lib/test-serve/通用 CLI/sse-daemon 全部函数与调用链，并修正"lib 仅被排除脚本消费、in-scope 不形成单一三层链"的结构事实。
 >
@@ -23,6 +25,8 @@
 | **opencode-framework/opencode-cognitive-map.md** | **框架认知地图（全景架构）** | **四层架构总览（元认知→编排执行→验证→运维）、39 Plugin / 70+ Tool / 51 Lib / 12 MCP Server 全景、Agent 角色定义、数据流图、故障排查手册。是理解整体设计的第一入口。** | **~694** |
 | **blueprints/2026-07-12-framework-deprecated-content-audit-blueprint.md** | **框架废弃内容审计与清理蓝图** | **严格审计 work-one 中过时/废弃/兼容尾巴：AGENTS 启动文档漂移、Scout 残留、legacy role 与 permission fallback、旧 DAG/pre-execution 脚本、handler 状态混乱、enforcement mode 兼容 shim、dispatch_context stub，并给出分阶段清理计划。** | **~403** |
 | **blueprints/blueprint-isolated-serve-test-infrastructure.md** | **隔离 Serve 测试基建与测试专用 Skill** | **定义测试运行单元的 worktree、显式脏改动 overlay、framework/SDK 双 DB、SSE、进程生命周期、grant bootstrap、H2 授权、scripts 收口与证据契约；P0-3 六阶段计划负责状态机、真实 runner、reviewer live 证据与旧 launcher 收口。** | **~380** |
+| **blueprints/blueprint-task-lens-m1.md** | **Task Lens M1 确定性任务透镜蓝图** | **定义项目外只读输入、working-tree/commit 差异语义、TaskGraphV1/SpineForest、DA coverage、反馈闭环、安全边界、12 子系统审计与 v2.1-required Freeze Gate；v0.1.5 已完成设计返工，尚未实施。** | **~487** |
+| **handoff/task-lens-resume.md** | **Task Lens 跨 session 续接纪要** | **固化 M1 已决策项、现状证据、v0.1.5 已关闭缺口、M2/M3 未验证边界与下一步固定顺序，防止后续 session 将路线图能力误写成已实现。** | **~104** |
 | opencode-framework/opencode-db-canonical-design.md | DB-only & DB-Canonical 设计 | DB-only 和 DB-canonical 设计理念、50 个数据表全景架构（54 CREATE - 4 DROP）、9 大类数据模型详解、实体关系图、表关系与业务关联、DB-canonical 设计证据、数据库迁移机制（v1-v37）、关键代码索引。 | ~802 |
 | opencode-framework/opencode-cli-acp-integration.md | CLI 命令 & ACP 协议集成 | OpenCode CLI 全命令参考（run/serve/web/acp）、ACP 协议 stdio JSON-RPC 2.0 交互流程、session 生命周期管理、QoderWork↔OpenCode 双向通道设计。面向 ACP 桥接开发调试。 | ~270 |
 | opencode-framework/opencode-enforcement-exemption-matrix.md | Enforcement & 豁免机制完整矩阵 | advisory/strict/locked 三模式完整矩阵：37 个工具 Before/After Hook 链、豁免机制（Agent/路径/工具类别）、阻断/警告行为、Agent 权限级别、Guidance Gate 两阶段协议。面向 enforcement 调试和权限排查。 | ~659 |
@@ -54,6 +58,7 @@
 - **初次了解框架** → opencode-framework/opencode-cognitive-map.md → opencode-framework/opencode-subsystems-report.md
 - **清理过时/废弃框架内容** → blueprints/2026-07-12-framework-deprecated-content-audit-blueprint.md
 - **执行隔离 serve 的 runtime/live/mutation 测试** → blueprints/blueprint-isolated-serve-test-infrastructure.md
+- **理解或实施 Task Lens M1** → blueprints/blueprint-task-lens-m1.md → handoff/task-lens-resume.md
 - **理解 DB-only & DB-Canonical 设计** → opencode-framework/opencode-db-canonical-design.md
 - **理解数据模型与表关系** → opencode-framework/opencode-db-canonical-design.md（§3-4）
 - **调试 ACP 桥接** → opencode-framework/opencode-cli-acp-integration.md

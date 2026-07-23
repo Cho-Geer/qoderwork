@@ -8,8 +8,8 @@ Last updated: 2026-07-23
 
 | 日期 | 数量 | 日志 |
 |---|---:|---|
-| 2026-07-23 | 1 | [2026-07-23-task-lens-blueprint.md](2026-07-23-task-lens-blueprint.md) |
-| 2026-07-22 | 8 | [2026-07-22-p0-2-phase-05-runtime-test.md](2026-07-22-p0-2-phase-05-runtime-test.md), [2026-07-22-phase-06-cli-smoke-execution.md](2026-07-22-phase-06-cli-smoke-execution.md), [2026-07-22-phase-07-regression-execution.md](2026-07-22-phase-07-regression-execution.md), [2026-07-22-phase-07-runtime-supplement.md](2026-07-22-phase-07-runtime-supplement.md), [2026-07-22-typecheck-debt-fix.md](2026-07-22-typecheck-debt-fix.md), [2026-07-22-p0-2-closure.md](2026-07-22-p0-2-closure.md), [2026-07-22-p0-2-debt-status.md](2026-07-22-p0-2-debt-status.md), [2026-07-22-isolated-serve-blueprint-cross-audit.md](2026-07-22-isolated-serve-blueprint-cross-audit.md) |
+| 2026-07-23 | 2 | [2026-07-23-task-lens-blueprint.md](2026-07-23-task-lens-blueprint.md), [2026-07-23-impact-analysis-framework.md](2026-07-23-impact-analysis-framework.md) |
+| 2026-07-22 | 10 | [2026-07-22-p0-2-phase-05-runtime-test.md](2026-07-22-p0-2-phase-05-runtime-test.md), [2026-07-22-phase-06-cli-smoke-execution.md](2026-07-22-phase-06-cli-smoke-execution.md), [2026-07-22-phase-07-regression-execution.md](2026-07-22-phase-07-regression-execution.md), [2026-07-22-phase-07-runtime-supplement.md](2026-07-22-phase-07-runtime-supplement.md), [2026-07-22-typecheck-debt-fix.md](2026-07-22-typecheck-debt-fix.md), [2026-07-22-p0-2-closure.md](2026-07-22-p0-2-closure.md), [2026-07-22-p0-2-debt-status.md](2026-07-22-p0-2-debt-status.md), [2026-07-22-isolated-serve-blueprint-cross-audit.md](2026-07-22-isolated-serve-blueprint-cross-audit.md), [2026-07-22-p0-3-01-state-contract.md](2026-07-22-p0-3-01-state-contract.md), [2026-07-22-hotfix-transition-table.md](2026-07-22-hotfix-transition-table.md) |
 | 2026-07-21 | 2 | [2026-07-21-p0-2-phase-06a-audit-g2.md](2026-07-21-p0-2-phase-06a-audit-g2.md), [2026-07-21-p0-2-phase-04a-existsync-fix.md](2026-07-21-p0-2-phase-04a-existsync-fix.md) |
 | 2026-07-20 | 8 | [2026-07-20-p0-2-phase-06a-cleanup-extract.md](2026-07-20-p0-2-phase-06a-cleanup-extract.md), [2026-07-20-phase-05-runtime-test-implementation.md](2026-07-20-phase-05-runtime-test-implementation.md), [2026-07-20-phase-05-runtime-test-audit.md](2026-07-20-phase-05-runtime-test-audit.md), [2026-07-20-phase-05-audit-2-accept.md](2026-07-20-phase-05-audit-2-accept.md), [2026-07-20-phase-05-audit-accept-closure.md](2026-07-20-phase-05-audit-accept-closure.md), [2026-07-20-phase-05-scope-lock-amendment-negative-controls.md](2026-07-20-phase-05-scope-lock-amendment-negative-controls.md), [2026-07-20-phase-06-cli-smoke-pass.md](2026-07-20-phase-06-cli-smoke-pass.md), [2026-07-20-pre-check-evidence-skill-optimization.md](2026-07-20-pre-check-evidence-skill-optimization.md) |
 | 2026-07-19 | 15 | [2026-07-19-P0-2-实施计划拆分.md](2026-07-19-P0-2-实施计划拆分.md), [2026-07-19-agents-md-purification.md](2026-07-19-agents-md-purification.md), [2026-07-19-deterministic-plan-length-governance.md](2026-07-19-deterministic-plan-length-governance.md), [2026-07-19-p0-2-phase-01-gate-audit.md](2026-07-19-p0-2-phase-01-gate-audit.md), [2026-07-19-p0-2-phase-01-plan-optimization.md](2026-07-19-p0-2-phase-01-plan-optimization.md), [2026-07-19-p0-2-phase-01-rework.md](2026-07-19-p0-2-phase-01-rework.md), [2026-07-19-p0-2-phase-01.md](2026-07-19-p0-2-phase-01.md), [2026-07-19-p0-2-phase-02-lifecycle.md](2026-07-19-p0-2-phase-02-lifecycle.md), [2026-07-19-p0-2-phase-03-rework-2.md](2026-07-19-p0-2-phase-03-rework-2.md), [2026-07-19-p0-2-phase-03-sentinel-orchestrator.md](2026-07-19-p0-2-phase-03-sentinel-orchestrator.md), [2026-07-19-p0-2-phase-03-third-reaudit.md](2026-07-19-p0-2-phase-03-third-reaudit.md), [2026-07-19-p0-2-plan-set-reaudit.md](2026-07-19-p0-2-plan-set-reaudit.md), [2026-07-19-plan-audit-archiver-v21.md](2026-07-19-plan-audit-archiver-v21.md), [2026-07-19-skill-bilingual-unification.md](2026-07-19-skill-bilingual-unification.md), [2026-07-19-text-artifact-write-integrity-gate.md](2026-07-19-text-artifact-write-integrity-gate.md) |
@@ -29,8 +29,9 @@ Last updated: 2026-07-23
 
 ## 按主题聚类
 
-### 审计与计划（81）
+### 审计与计划（82）
 
+- [2026-07-23-task-lens-blueprint.md](2026-07-23-task-lens-blueprint.md) — Task Lens M1 blueprint 创建与 v0.1.5 设计返工（20 行）
 - [2026-07-05-framework-simplification-blueprint.md](2026-07-05-framework-simplification-blueprint.md) — OpenCode 框架瘦身路线图（8 行）
 - [2026-07-05-native-agent-skill-hook-blueprint-update.md](2026-07-05-native-agent-skill-hook-blueprint-update.md) — Native Agent 与 Skill/Hook 重构路线图更新（9 行）
 - [2026-07-05-opencode-plans-live-refresh.md](2026-07-05-opencode-plans-live-refresh.md) — OpenCode plans live refresh（14 行）
@@ -113,7 +114,7 @@ Last updated: 2026-07-23
 - [2026-07-19-p0-2-plan-set-reaudit.md](2026-07-19-p0-2-plan-set-reaudit.md) — P0-2 Plan Set 再审计（8 行）
 - [2026-07-19-plan-audit-archiver-v21.md](2026-07-19-plan-audit-archiver-v21.md) — Plan Audit Archiver v2.1（19 行）
 
-### 测试与运行态（34）
+### 测试与运行态（35）
 
 - [2026-07-06-serve-api-e2e-doc-sync.md](2026-07-06-serve-api-e2e-doc-sync.md) — Serve API E2E doc sync（10 行）
 - [2026-07-06-serve-api-e2e-validation.md](2026-07-06-serve-api-e2e-validation.md) — Serve API v1.3.0 E2E 验证报告（52 行）
@@ -151,8 +152,11 @@ Last updated: 2026-07-23
 - [2026-07-19-P0-2-实施计划拆分.md](2026-07-19-P0-2-实施计划拆分.md) — P0-2 实施计划拆分（17 行）
 - [2026-07-20-p0-2-phase-06a-cleanup-extract.md](2026-07-20-p0-2-phase-06a-cleanup-extract.md) — PHASE-06a: cleanupRun 提取打破循环依赖 + 修复 TDZ（30 行）
 
-### 框架与治理（29）
+### 框架与治理（32）
 
+- [2026-07-23-impact-analysis-framework.md](2026-07-23-impact-analysis-framework.md) — 共享函数改动影响面分析框架（33 行）
+- [2026-07-22-p0-3-01-state-contract.md](2026-07-22-p0-3-01-state-contract.md) — P0-3-01 状态转换守卫与重复 run ID 拒绝（27 行）
+- [2026-07-22-hotfix-transition-table.md](2026-07-22-hotfix-transition-table.md) — TRANSITION_TABLE 与实际状态机对齐 hotfix（29 行）
 - [2026-07-05-system-transform-skill-db-boundary-roadmap.md](2026-07-05-system-transform-skill-db-boundary-roadmap.md) — System Transform、Skill 注入与最小 DB 边界（9 行）
 - [2026-07-05-todowrite-execution-state-roadmap.md](2026-07-05-todowrite-execution-state-roadmap.md) — TodoWrite 执行状态机路线并入 plan（12 行）
 - [2026-07-06-d2-dispatch-privilege-implementation.md](2026-07-06-d2-dispatch-privilege-implementation.md) — dispatch_privilege P0+P1 实施失败 + D.2 E2E 发现（18 行）
