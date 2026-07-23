@@ -1,11 +1,26 @@
 # Blueprint: task-lens M1 —— 任务透镜：AI 任务的函数级理解收据生成器
 
-**版本**: 0.1.2
+**版本**: 0.1.4
 **日期**: 2026-07-23
 **状态**: 待实施
 **优先级**: P1
 
-> 读图提示：第一次接触 task-lens，请先读文末「八、设计图纸」（成品 → 过程 → 结构），再读正文。
+> 读图提示：第一次接触 task-lens，先读「〇、路线图」看全局里程碑与闸门，再读文末「八、设计图纸」（成品 → 过程 → 结构），再读正文。
+
+---
+
+## 〇、路线图（M1 → M2 → M3 + 闸门判定）
+
+本蓝图覆盖 M1 完整设计；M2/M3 在此给出边界与解锁闸门，详细 spec 留待各自启动前补。每个里程碑有前置闸门，未通过则下一里程碑不启动；闸门判定基于 `metrics.jsonl` 与 receipts，不基于主观感觉。红线①-⑤与通用性不变量 G1-G5（见 §2.4.0）跨里程碑恒成立。
+
+| 里程碑 | 范围 | 交付物 | 解锁闸门（判定标准） | provenance 上限 |
+|--------|------|--------|---------------------|-----------------|
+| **M1** | diff → 邻域 → 卡片 | 五节 markdown 卡 + `metrics.jsonl` | ① 10 真实任务出卡并填反馈区 ② metrics 回看确认减负 ③ 第二 TS 项目出卡成功（G1/G2 实证） ④ `bun test` + `tsc --strict` 全绿 | component+integration |
+| **M1.5**（可选） | LLM 叙事层 | 自然语言主干叙事替换模板腔 | ① narrative-lint 先建成（叙事每句函数引用必须回溯到 TaskGraph 节点 id） ② M1 反馈区数据证明模板叙事"读不懂" | component（lint 闸门保证不造边） |
+| **M2** | 录制-重放 | CDP `Debugger` 断点录真实入参/出参 + `Runtime.evaluate` 交互重跑 + receipt + cpu-prof 观测边 | ① M1 通过其闸门 ② 沙箱内录制-重放跑通并产出 receipt ③ 交互重跑价值有数据支撑 | component+integration（沙箱） |
+| **M3** | 画布 | React Flow 读同一份 TaskGraph JSON | ① M2 通过其闸门 ② 交互价值数据支撑画布投资 | component |
+
+**闸门纪律**：每个闸门是硬性的，未通过禁止启动下一里程碑。M2/M3 的详细 spec（数据模型、接口、测试）在各自启动前补写，不在本蓝图展开。M2 观测源备选见 §7.3。
 
 ---
 
@@ -25,7 +40,7 @@ AI 协作开发中，AI 单位时间产出（代码 + 文档）的信息密度�
 
 - **Verified-by**: `codegraph status`（work-one）-> 4,424 nodes / 14,765 edges / 1,349 functions。结论：全库图作为人审界面不可行，任务局部图是唯一可用形态。
 - **Verified-by**: `codegraph node resolveBaseline` -> 返回 Location/Signature/带行号源码/Calls/Called-by；其中 Calls 混入 `StatSnapshot`（类型）、`get/set`（内置方法）、`execute.ts:1`（文件级 import 边）。结论：原料可用但必须过滤，edge-filter 是硬需求。
-- **Verified-by**: Bun 1.3.14 inspector 探针（`/tmp/insp-probe2.ts`）-> `Runtime.evaluate` 进程外调用活进程函数成功（add(20,22)→42）、`Debugger.enable` 接受、`Profiler` 域缺席。结论：M2 录制/重放原语存在；观测边来源在 Bun 上需用 coverage 而非 CPU profile。
+- **Verified-by**: Bun 1.3.14 inspector 探针（`/tmp/insp-probe2.ts`）-> `Runtime.evaluate` 进程外调用活进程函数成功（add(20,22)→42）、`Debugger.enable` 接受；CDP `Profiler` 域缺席，**但** `bun --cpu-prof/--cpu-prof-md` CLI 存在（同日二测：`/tmp/prof-test.ts` -> `.cpuprofile` 含 functionName/children/hitCount 调用树，`.md` 含 Call Tree 与 Called-by 表）。结论：M2 录制/重放原语存在；Bun 观测边有 coverage（执行与否，全量无方向）+ cpu-prof（调用关系+频次，采样制有盲区）两源互补。
 
 **结论**：问题是"验证原料未按任务聚合"，解法是确定性管线把三个已有源聚合成一页任务级理解收据。
 
@@ -275,6 +290,21 @@ interface TaskGraph { range: string; seeds: string[]; nodes: Map<string, Functio
 - 设计讨论记录：本会话 2026-07-23（缓冲带构想 → 交互式函数画布 → 契约与 inspector 两问 → 蓝图收敛）
 - 参照物：Swagger UI（统一边界+活服务+表单）、Storybook（props 面板）、tRPC（函数签名即契约）
 - 红线沉淀：①边只来自确定性工具 ②一屏预算 ≤20 节点 ③声明值/观测值分列 ④交互必出 receipt ⑤产物一次性
+
+### 7.3 M2 运行时观测源备选（2026-07-23 增补调研）
+
+针对"运行时才能确定的元信息"（动态调用边、真实入参出参、异步关联），已调研/实测的获取手段：
+
+| 元信息 | 手段 | 状态 | 精度特性 |
+|--------|------|------|---------|
+| 调用边（谁调谁） | `bun --cpu-prof` / `--cpu-prof-md` | VERIFIED（本机探针） | 有方向+频次；采样制（实测 1ms 间隔），快函数可能漏采 |
+| 执行与否 | `bun test --coverage` lcov | M1 采用 | 全量但无方向 |
+| 真实入参/出参 | CDP `Debugger` 断点读 scopeChain | VERIFIED（inspector 探针） | 精确到单次调用；热路径慢，限沙箱使用 |
+| 交互重跑 | CDP `Runtime.evaluate` | VERIFIED（inspector 探针） | 进程外调用活进程函数并取值 |
+| 异步边界关联 | `AsyncLocalStorage` trace id | 可用（两运行时） | 需注入；跨 await 传播 |
+| 函数级生命周期事件 | `node:diagnostics_channel` TracingChannel（start/end/asyncStart/asyncEnd/error） | Node 实验性（稳定性 1）；Bun 兼容性 UNVERIFIED；需插桩包裹 | 事件可携带参数/返回值，但只覆盖被包裹函数 |
+
+M2 观测源分工初判：调用树=cpu-prof，参数录制=CDP 断点，异步关联=ALS；diagnostics_channel 列为备选（若 Bun 兼容可免断点插桩）。M1 观测层维持 lcov-only 不变（先丑后美纪律）。
 
 ---
 
