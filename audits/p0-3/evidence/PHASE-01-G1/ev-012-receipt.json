@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P0-3-01-AUDIT",
+  "generation": 1,
+  "id": "EV-012",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/p0-3 && bun -e \"const{validateRunProcess}=require('./scripts/test-serve/process');const{spawn}=require('child_process');const c=spawn('sleep',['5'],{env:{...process.env,QODERWORK_TEST_RUN_ID:'foreign-run'},stdio:'ignore'});setTimeout(()=>{const r=validateRunProcess(c.pid,'my-run','sleep');c.kill('SIGKILL');if(r){console.log('BAD');process.exit(0)}else{console.error('GOOD: rejected');process.exit(1)}},200)\"",
+  "observed": "FAIL",
+  "requirement_id": "REQ-006",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-006",
+  "fixture_id": "FIXTURE-FOREIGN-PID",
+  "evidence_level": "component",
+  "repository_state_sha256": "06617bbc65a3bd99f8937ea4d03bbfc72a9720704b329a37b3c8182ccbbda91e",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/p0-3",
+  "artifacts": [
+    {
+      "path": "audits/p0-3/evidence/PHASE-01-G1/ev-012-output.txt",
+      "sha256": "f2e0e020b7dc6f0cb0f708e19ed1276dd5143f1d0f2028ae4f3577545b60ab5c"
+    }
+  ],
+  "completed_at": "2026-07-22T15:25:30.936Z"
+}

@@ -70,6 +70,9 @@ describe("cleanup integration", () => {
 
     await releasePortReservation(manifest.process.portReserverPid as number);
     manifest.process.portReserverPid = null;
+    setRunState(manifest, "READY");
+    setRunState(manifest, "BOOTSTRAPPED");
+    setRunState(manifest, "EXECUTED");
     setRunState(manifest, "STOPPED");
 
     seedEvidence(manifest.paths, manifest.paths.worktreeDir);

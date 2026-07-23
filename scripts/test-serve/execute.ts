@@ -31,7 +31,7 @@ export async function executeRun(input: ExecuteInput): Promise<{
     process.env.H2_AUTHORIZED !== "true" ||
     process.env.DRY_RUN !== "false" ||
     !manifest.bootstrapComplete ||
-    !["READY", "BOOTSTRAPPED"].includes(manifest.status);
+    !["BOOTSTRAPPED"].includes(manifest.status);
 
   if (gatingFailure || !input.runnerScript) {
     await Bun.write(
@@ -42,7 +42,7 @@ export async function executeRun(input: ExecuteInput): Promise<{
           mode: input.mode,
           status: "NOT-RUN",
           reason: gatingFailure
-            ? "missing H2_AUTHORIZED=true, DRY_RUN=false, READY/BOOTSTRAPPED state or bootstrap_complete"
+            ? "missing H2_AUTHORIZED=true, DRY_RUN=false, BOOTSTRAPPED state or bootstrap_complete"
             : "runner script omitted",
         },
         null,

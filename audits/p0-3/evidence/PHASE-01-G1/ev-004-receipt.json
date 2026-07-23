@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P0-3-01-AUDIT",
+  "generation": 1,
+  "id": "EV-004",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/p0-3 && bun -e \"const{setRunState}=require('./scripts/test-serve/run-context');const m={status:'READY',paths:{manifestPath:'/tmp/p03-neg-002.json'}};require('fs').writeFileSync('/tmp/p03-neg-002.json','{}');try{setRunState(m,'WORKTREE_READY');process.exit(0)}catch(e){console.error(e.message);process.exit(1)}\"",
+  "observed": "FAIL",
+  "requirement_id": "REQ-002",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-002",
+  "fixture_id": "FIXTURE-BACKWARD-TRANSITION",
+  "evidence_level": "component",
+  "repository_state_sha256": "06617bbc65a3bd99f8937ea4d03bbfc72a9720704b329a37b3c8182ccbbda91e",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/p0-3",
+  "artifacts": [
+    {
+      "path": "audits/p0-3/evidence/PHASE-01-G1/ev-004-output.txt",
+      "sha256": "5643707da0b09e9e0ff3233848cadb13d23a1ec659969c9e1a18b1efcbb244f3"
+    }
+  ],
+  "completed_at": "2026-07-22T15:25:20.139Z"
+}

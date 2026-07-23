@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P0-3-01-AUDIT",
+  "generation": 1,
+  "id": "EV-001",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/p0-3 && bun test scripts/test-serve/__tests__/run-context.test.ts --filter 'P03-S-01'",
+  "observed": "PASS",
+  "requirement_id": "REQ-001",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-LEGAL-LIFECYCLE",
+  "evidence_level": "component",
+  "repository_state_sha256": "06617bbc65a3bd99f8937ea4d03bbfc72a9720704b329a37b3c8182ccbbda91e",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/p0-3",
+  "artifacts": [
+    {
+      "path": "audits/p0-3/evidence/PHASE-01-G1/ev-001-output.txt",
+      "sha256": "5bdfdb19cd73452e97805fbbc1af7e8616f5c90cfc90c415206d9e38590bf1a5"
+    }
+  ],
+  "completed_at": "2026-07-22T15:25:16.138Z"
+}

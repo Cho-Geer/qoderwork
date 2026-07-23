@@ -1,0 +1,261 @@
+{
+  "schema_version": "1.0",
+  "lock_id": "P0-3-01",
+  "created_at": "2026-07-22T13:44:06Z",
+  "plan_sources": [
+    {
+      "path": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md",
+      "sha256": "bb347d8fe9adaa45b55c8b84d5e32af764e8f0502527f56d0fc50d2fe7ed3f22"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "2026-07-22T13:50:00Z",
+    "in_scope": [
+      "REQ-001",
+      "REQ-002",
+      "REQ-003",
+      "REQ-004",
+      "REQ-005",
+      "REQ-006",
+      "REQ-007",
+      "REQ-008"
+    ],
+    "out_of_scope": [
+      "work-one source code changes",
+      "process.ts / bootstrap.ts / execute.ts production behavior changes",
+      "CLI argument changes",
+      "live-E2E or runtime-smoke evidence (component ceiling only)",
+      "T-PT-046/047/051/052 live execution (reserved for P0-3-02/05)",
+      "old launcher deletion (reserved for P0-3-06)"
+    ],
+    "assumptions": [
+      {
+        "statement": "setRunState currently assigns manifest.status directly without transition validation",
+        "disproof": "Read run-context.ts setRunState; confirmed direct assignment at line 105"
+      },
+      {
+        "statement": "createRunContext generates random run ID then creates root, no existing-root rejection",
+        "disproof": "Read run-context.ts createRunContext; confirmed makeRunId called before existsSync check"
+      },
+      {
+        "statement": "sse-daemon reads FRAMEWORK_DB_PATH from env and throws when missing",
+        "disproof": "grep sse-daemon.ts lines 15,110-111,253-254; confirmed throw on missing"
+      },
+      {
+        "statement": "validateRunProcess checks QODERWORK_TEST_RUN_ID in /proc/PID/environ",
+        "disproof": "Read process.ts lines 210-222; confirmed envText.includes check"
+      }
+    ],
+    "exit_criteria": [
+      "bun test scripts/test-serve/__tests__/run-context.test.ts scripts/test-serve/__tests__/process.test.ts scripts/test-serve/__tests__/sse-daemon.test.ts exits 0",
+      "bun run typecheck exits 0",
+      "git diff --check exits 0",
+      "rg -n 'process\\.env\\.H2_AUTHORIZED\\s*=' scripts/test-serve/ .agents/skills/isolated-serve-test/ .qoder/skills/isolated-serve-test/ .trae/skills/isolated-serve-test/ .workbuddy/skills/isolated-serve-test/ returns zero matches"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-001",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "behavior": "setRunState rejects illegal state transitions before writing manifest, throwing 'illegal run state transition: SOURCE -> TARGET'",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "A test that calls setRunState with a legal transition (CREATED->WORKTREE_READY) succeeds; a test that calls setRunState from terminal CLEANED to READY throws with the exact error message and manifest retains prior status"
+    },
+    {
+      "id": "REQ-002",
+      "plan_item_id": "PLAN-REQ-002",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "behavior": "All documented lifecycle transitions remain executable and any state may transition to BLOCKED",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "A test that walks the full documented lifecycle (CREATED->WORKTREE_READY->BOOTSTRAPPED->RUNNING->STOPPED->CLEANED) passes; a test that attempts a backward transition (WORKTREE_READY->CREATED) throws"
+    },
+    {
+      "id": "REQ-003",
+      "plan_item_id": "PLAN-REQ-003",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "behavior": "createRunContext derives run ID before port reservation and rejects an existing run root without reserving a port",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "A test using a makeRunId hook that returns a pre-existing run ID throws 'run id already exists: RUN_ID' before any port reservation or directory mutation; a test with a fresh generated ID succeeds"
+    },
+    {
+      "id": "REQ-004",
+      "plan_item_id": "PLAN-REQ-004",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#fixed-contract",
+      "behavior": "Successful state write still uses writeRunManifest (atomic tmp+rename), retaining atomic manifest replacement",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-004",
+      "oracle": "A test that calls setRunState with a legal transition produces a valid manifest.json at the expected path with correct status; a test that verifies the manifest file is not corrupted by concurrent read during write"
+    },
+    {
+      "id": "REQ-005",
+      "plan_item_id": "PLAN-REQ-005",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "behavior": "Manifest fields (port, patchSha256, absolute paths) are written correctly and asserted",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-005",
+      "oracle": "A test that creates a run context and reads the manifest asserts port is an integer, patchSha256 is 64 hex chars, and all path fields are absolute; a test with a missing field fails with the field name in failedChecks"
+    },
+    {
+      "id": "REQ-006",
+      "plan_item_id": "PLAN-REQ-006",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "behavior": "PID identity check rejects killing processes not belonging to this run (mismatched QODERWORK_TEST_RUN_ID)",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-006",
+      "oracle": "A test that calls validateRunProcess with a correct PID+runId returns true; a test with a foreign PID (different QODERWORK_TEST_RUN_ID in environ) returns false and the process is not killed"
+    },
+    {
+      "id": "REQ-007",
+      "plan_item_id": "PLAN-REQ-007",
+      "kind": "BEHAVIORAL",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "behavior": "sse-daemon uses FRAMEWORK_DB_PATH from environment and throws immediately when missing",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-007",
+      "oracle": "A test that imports sse-daemon with FRAMEWORK_DB_PATH set reads the env var; a test without FRAMEWORK_DB_PATH throws 'FRAMEWORK_DB_PATH is required' before any DB operation"
+    },
+    {
+      "id": "REQ-008",
+      "plan_item_id": "PLAN-REQ-008",
+      "kind": "STATIC",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "behavior": "H2_AUTHORIZED is never written (assigned) by infrastructure or skill code",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-008",
+      "oracle": "rg -n 'process\\.env\\.H2_AUTHORIZED\\s*=' across scripts/test-serve/, .agents/skills/isolated-serve-test/, .qoder/skills/isolated-serve-test/, .trae/skills/isolated-serve-test/, .workbuddy/skills/isolated-serve-test/ returns zero matches (NOT_FOUND)"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "setRunState rejects illegal state transitions before writing manifest, throwing 'illegal run state transition: SOURCE -> TARGET'",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "A test that calls setRunState with a legal transition (CREATED->WORKTREE_READY) succeeds; a test that calls setRunState from terminal CLEANED to READY throws with the exact error message and manifest retains prior status"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-002",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-002",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "All documented lifecycle transitions remain executable and any state may transition to BLOCKED",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "A test that walks the full documented lifecycle (CREATED->WORKTREE_READY->BOOTSTRAPPED->RUNNING->STOPPED->CLEANED) passes; a test that attempts a backward transition (WORKTREE_READY->CREATED) throws"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-003",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-003",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "createRunContext derives run ID before port reservation and rejects an existing run root without reserving a port",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "A test using a makeRunId hook that returns a pre-existing run ID throws 'run id already exists: RUN_ID' before any port reservation or directory mutation; a test with a fresh generated ID succeeds"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-004",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-004",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#fixed-contract",
+      "kind": "BEHAVIORAL",
+      "behavior": "Successful state write still uses writeRunManifest (atomic tmp+rename), retaining atomic manifest replacement",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-004",
+      "oracle": "A test that calls setRunState with a legal transition produces a valid manifest.json at the expected path with correct status; a test that verifies the manifest file is not corrupted by concurrent read during write"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-005",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-005",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "Manifest fields (port, patchSha256, absolute paths) are written correctly and asserted",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-005",
+      "oracle": "A test that creates a run context and reads the manifest asserts port is an integer, patchSha256 is 64 hex chars, and all path fields are absolute; a test with a missing field fails with the field name in failedChecks"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-006",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-006",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "PID identity check rejects killing processes not belonging to this run (mismatched QODERWORK_TEST_RUN_ID)",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-006",
+      "oracle": "A test that calls validateRunProcess with a correct PID+runId returns true; a test with a foreign PID (different QODERWORK_TEST_RUN_ID in environ) returns false and the process is not killed"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-007",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-007",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "kind": "BEHAVIORAL",
+      "behavior": "sse-daemon uses FRAMEWORK_DB_PATH from environment and throws immediately when missing",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-007",
+      "oracle": "A test that imports sse-daemon with FRAMEWORK_DB_PATH set reads the env var; a test without FRAMEWORK_DB_PATH throws 'FRAMEWORK_DB_PATH is required' before any DB operation"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-008",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-008",
+      "source": "plans/隔离 serve 测试基建待办/p0-3/01-phase-state-contract.md#local-requirements",
+      "kind": "STATIC",
+      "behavior": "H2_AUTHORIZED is never written (assigned) by infrastructure or skill code",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-008",
+      "oracle": "rg -n 'process\\.env\\.H2_AUTHORIZED\\s*=' across scripts/test-serve/, .agents/skills/isolated-serve-test/, .qoder/skills/isolated-serve-test/, .trae/skills/isolated-serve-test/, .workbuddy/skills/isolated-serve-test/ returns zero matches (NOT_FOUND)"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "scripts/test-serve/types.ts",
+      "scripts/test-serve/run-context.ts",
+      "scripts/test-serve/__tests__/run-context.test.ts",
+      "scripts/test-serve/process.ts",
+      "scripts/test-serve/__tests__/process.test.ts",
+      "scripts/test-serve/__tests__/sse-daemon.test.ts",
+      "scripts/sse-daemon.ts"
+    ],
+    "forbidden_paths": [
+      "scripts/test-serve/bootstrap.ts",
+      "scripts/test-serve/execute.ts",
+      "scripts/test-serve/isolated-serve.ts",
+      "scripts/test-serve/cleanup.ts",
+      "scripts/test-serve/port-reserver.ts",
+      "scripts/test-serve/oracle.ts",
+      "scripts/test-serve/p01b-orchestrator.ts",
+      "scripts/test-serve/p02-orchestrator.ts",
+      "scripts/test-serve/p02-sentinel.ts",
+      "scripts/test-serve/verify-p01b.ts",
+      "scripts/test-serve/verify-p02.ts"
+    ]
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "zhaoge",
+    "approved_at": "2026-07-22T13:50:00Z",
+    "evidence": "User replied '批准' in session chat approving scope-lock-PHASE-01.json for P0-3-01 implementation"
+  }
+}

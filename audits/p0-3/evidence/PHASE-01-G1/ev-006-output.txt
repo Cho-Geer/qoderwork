@@ -1,0 +1,9 @@
+=== STDOUT ===
+=== STDERR ===
+Command failed: git rev-parse --verify HEAD
+fatal: not a git repository (or any of the parent directories): .git
+
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

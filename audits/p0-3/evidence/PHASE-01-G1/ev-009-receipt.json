@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P0-3-01-AUDIT",
+  "generation": 1,
+  "id": "EV-009",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/p0-3 && bun test scripts/test-serve/__tests__/run-context.test.ts --filter 'P03-S-04'",
+  "observed": "PASS",
+  "requirement_id": "REQ-005",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-005",
+  "fixture_id": "FIXTURE-MANIFEST-FIELDS",
+  "evidence_level": "component",
+  "repository_state_sha256": "06617bbc65a3bd99f8937ea4d03bbfc72a9720704b329a37b3c8182ccbbda91e",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/p0-3",
+  "artifacts": [
+    {
+      "path": "audits/p0-3/evidence/PHASE-01-G1/ev-009-output.txt",
+      "sha256": "016e1da1bdf376226e7205cee7c758f362b742d98f022398a54f17899f0e396b"
+    }
+  ],
+  "completed_at": "2026-07-22T15:25:29.590Z"
+}

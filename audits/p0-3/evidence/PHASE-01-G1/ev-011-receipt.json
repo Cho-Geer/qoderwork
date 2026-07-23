@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P0-3-01-AUDIT",
+  "generation": 1,
+  "id": "EV-011",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/p0-3 && bun test scripts/test-serve/__tests__/process.test.ts --filter 'P03-S-05 positive'",
+  "observed": "PASS",
+  "requirement_id": "REQ-006",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-006",
+  "fixture_id": "FIXTURE-CORRECT-PID",
+  "evidence_level": "component",
+  "repository_state_sha256": "06617bbc65a3bd99f8937ea4d03bbfc72a9720704b329a37b3c8182ccbbda91e",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/p0-3",
+  "artifacts": [
+    {
+      "path": "audits/p0-3/evidence/PHASE-01-G1/ev-011-output.txt",
+      "sha256": "e5bc6c9ea1d6f3d0bb0dfff437afccf64a574681562234f26caa21b10d4d6dd1"
+    }
+  ],
+  "completed_at": "2026-07-22T15:25:30.605Z"
+}

@@ -207,7 +207,7 @@ export function readValidSseReadyMarker(manifest: RunManifest): boolean {
   }
 }
 
-function validateRunProcess(pid: number | null, runId: string, commandFragment: string): boolean {
+export function validateRunProcess(pid: number | null, runId: string, commandFragment: string): boolean {
   if (!pid) return false;
   try {
     process.kill(pid, 0);

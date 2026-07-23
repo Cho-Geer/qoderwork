@@ -2,7 +2,7 @@
 
 **版本**: v1.3.3
 **日期**: 2026-07-22
-**状态**: 部分实施（P0-1A cleanup、P0-1B runtime smoke 与 P0-2 双 run runtime-smoke 已闭合；TSI-02 的 patch-apply 失败 component 回归已补齐。TSI-01 仍缺非法状态迁移与重复 run ID 拒绝；TSI-05 的 T-PT-051/052 runner 仍含执行 stub；TSI-06 尚无经 skill 的完整 run 证据；TSI-08 必须等待 reviewer live 证据与 active-caller 清零后才可删除旧 launcher。）
+**状态**: 部分实施（P0-1A cleanup、P0-1B runtime smoke 与 P0-2 双 run runtime-smoke 已闭合；TSI-02 的 patch-apply 失败 component 回归已补齐。TSI-01 状态转换守卫与重复 run ID 拒绝已于 P0-3-01 component 审计 ACCEPT（2026-07-22）；TSI-05 的 T-PT-051/052 runner 仍含执行 stub；TSI-06 尚无经 skill 的完整 run 证据；TSI-08 必须等待 reviewer live 证据与 active-caller 清零后才可删除旧 launcher。）
 **优先级**: P0
 **唯一实施路径**: 本文定义的 `test-serve` 运行单元；不得继续扩展 `_b_pt_wm_00r2_live.ts` 的临时隔离实现。
 
@@ -14,7 +14,7 @@
 
 | 范围 | 当前结论 | 证据等级 | 审计结果 / 未关闭项 |
 |---|---|---|---|
-| TSI-01 run context / manifest | 🟡 部分实施 | component | overlay 在 reservation 前校验；run manifest 原子写入、端口 reservation、失败 `BLOCKED` 与 create 阶段 release 成功/失败分支均有回归覆盖。当前 `setRunState()` 仍可直接写任意 `RunState`，`createRunContext()` 只以随机 UUID 生成 run ID 而未检查既有 run 根目录；非法跳转、重复 run ID 拒绝未实施。 |
+| TSI-01 run context / manifest | ✅ 已实施（component） | component | P0-3-01 审计 ACCEPT（2026-07-22）+ hotfix（P0-3-HOTFIX-TT，component-only）：`setRunState` 加 TRANSITION_TABLE 守卫；`createRunContext` 先推导 run ID 再 `existsSync` 检查重复根目录。hotfix 修复转换表与实际状态机冲突：+STOPPED 到 WORKTREE_READY/READY/BOOTSTRAPPED（stopRunProcesses 多入口）、+READY 到 STOPPED（重启）、+CLEANED 到 BLOCKED（失败 run 清理）；execute gate 收紧删除 READY 死分支；cleanup 条件调用避免 BLOCKED 自环。38 component tests PASS。 |
 | TSI-02 worktree / 双 DB / overlay | ✅ 已实施；reviewer checkbox 待确认 | integration + component + runtime-smoke | P0-1A 已用真实临时 repo/detached worktree 覆盖 cleanup 与 evidence 保留；P0-2 双 run 隔离已于 2026-07-22 由 PHASE-05/06 runtime-smoke 证明（见 §5.2）。2026-07-22 当前 component 复验中，`createRunContext removes worktree when applySourceOverlay fails` 与 `create failure after worktree add removes partial worktree and marks BLOCKED (TSI-02)` 均 PASS，覆盖 patch 应用失败后的 worktree 清理与 `BLOCKED` 落盘。 |
 | TSI-03 serve / SSE / cleanup | ✅ runtime smoke PASS | runtime-smoke | CLI-only smoke run `2026-07-17T15-39-11-311Z-p0-1b-runtime-smoke-5e5ffb6d` 与复验 run `2026-07-18T02-17-01-468Z-p0-1b-runtime-test-cf6b83f9` 均八阶段全 `ok`；`start` 自行返回 `READY`，serve/SSE log、`events.jsonl`、plan artifact 与 cleanup report 完整可读。 |
 | TSI-04 grant / session bootstrap | ✅ 组件闭环；runtime PASS | component + runtime-smoke | 复验 run 的 isolated SDK DB 有 root/child（`ses_08cfc50a2ffe6foGKvEqrR2tJ5`/`ses_08cfc4fa4ffeOrs5jiSzOMAUac`）且 parent 链正确，framework DB grant `27e8746a-1e48-48df-9280-c00a94ff80bd` 为 `bound`并绑定该 child。 |

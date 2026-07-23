@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "P0-3-01-AUDIT",
+  "generation": 1,
+  "id": "EV-008",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/p0-3 && bun -e \"const{setRunState}=require('./scripts/test-serve/run-context');const m={status:'CLEANED',paths:{manifestPath:'/tmp/p03-neg-004.json'}};require('fs').writeFileSync('/tmp/p03-neg-004.json',JSON.stringify({status:'CLEANED'}));try{setRunState(m,'READY');console.log('BAD');process.exit(0)}catch(e){const after=JSON.parse(require('fs').readFileSync('/tmp/p03-neg-004.json','utf8'));if(after.status==='CLEANED'){console.error('GOOD: retained');process.exit(1)}else{process.exit(0)}}\"",
+  "observed": "FAIL",
+  "requirement_id": "REQ-004",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-004",
+  "fixture_id": "FIXTURE-ILLEGAL-RETAIN",
+  "evidence_level": "component",
+  "repository_state_sha256": "06617bbc65a3bd99f8937ea4d03bbfc72a9720704b329a37b3c8182ccbbda91e",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/p0-3",
+  "artifacts": [
+    {
+      "path": "audits/p0-3/evidence/PHASE-01-G1/ev-008-output.txt",
+      "sha256": "2bc565560ce5afca1bce025980e6ba9d5b20413dd46ec64c2f204bd0792576cc"
+    }
+  ],
+  "completed_at": "2026-07-22T15:25:26.601Z"
+}

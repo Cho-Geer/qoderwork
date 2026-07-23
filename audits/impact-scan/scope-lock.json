@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.0",
+  "lock_id": "IMPACT-SCAN-001",
+  "created_at": "2026-07-23T10:00:00Z",
+  "plan_sources": [
+    {
+      "path": "plans/框架改进/impact-scan-tool.md",
+      "sha256": "d82e340f6e25f42c4eac672b154cd65a2783d6d6d96b3a6232373ed84365e511"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "component-only",
+    "frozen_at": "2026-07-23T10:10:00Z",
+    "in_scope": [
+      "REQ-001",
+      "REQ-002",
+      "REQ-003"
+    ],
+    "out_of_scope": [
+      "work-one source code",
+      "v2.1 audit flow",
+      "AGENTS.md changes (Track A, already done by main agent)",
+      "end-to-end validation (blueprint §4.3, future work)"
+    ],
+    "assumptions": [
+      {
+        "statement": "CodeGraph CLI is available at /home/zhaoge/.local/bin/codegraph and indexes qoderwork",
+        "disproof": "codegraph status shows indexed files"
+      }
+    ],
+    "exit_criteria": [
+      "bun test scripts/test-serve/__tests__/impact-scan.test.ts exits 0",
+      "bun run scripts/impact-scan.ts --functions setRunState outputs shared_functions containing setRunState",
+      "bun run typecheck has no new errors",
+      "git diff --check exits 0"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-001",
+      "kind": "BEHAVIORAL",
+      "source": "plans/框架改进/impact-scan-tool.md#修改清单",
+      "behavior": "scope-lock-template.json contains impact_analysis field with 6 sub-fields between repository_scope and approval",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "JSON parse of template confirms impact_analysis object with modified_functions, shared_functions, caller_scan_command, caller_files, caller_tests, scan_output_sha256 fields"
+    },
+    {
+      "id": "REQ-002",
+      "plan_item_id": "PLAN-REQ-002",
+      "kind": "BEHAVIORAL",
+      "source": "plans/框架改进/impact-scan-tool.md#修改清单",
+      "behavior": "SKILL.md contains Step 1.5 between Step 1 and Step 2 for impact analysis of shared functions",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "grep Step 1.5 SKILL.md returns a match; Step 1.5 is between Step 1 and Step 2"
+    },
+    {
+      "id": "REQ-003",
+      "plan_item_id": "PLAN-REQ-003",
+      "kind": "BEHAVIORAL",
+      "source": "plans/框架改进/impact-scan-tool.md#修改清单",
+      "behavior": "impact-scan.ts runs codegraph callers, parses output, identifies shared functions, and outputs correct JSON report; impact-scan.test.ts passes 4 component tests",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "bun run scripts/impact-scan.ts --functions setRunState outputs shared_functions containing setRunState; bun test impact-scan.test.ts exits 0"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "source": "plans/框架改进/impact-scan-tool.md#修改清单",
+      "kind": "BEHAVIORAL",
+      "behavior": "scope-lock-template.json contains impact_analysis field with 6 sub-fields between repository_scope and approval",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "JSON parse of template confirms impact_analysis object with modified_functions, shared_functions, caller_scan_command, caller_files, caller_tests, scan_output_sha256 fields"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-002",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-002",
+      "source": "plans/框架改进/impact-scan-tool.md#修改清单",
+      "kind": "BEHAVIORAL",
+      "behavior": "SKILL.md contains Step 1.5 between Step 1 and Step 2 for impact analysis of shared functions",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "grep Step 1.5 SKILL.md returns a match; Step 1.5 is between Step 1 and Step 2"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-003",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-003",
+      "source": "plans/框架改进/impact-scan-tool.md#修改清单",
+      "kind": "BEHAVIORAL",
+      "behavior": "impact-scan.ts runs codegraph callers, parses output, identifies shared functions, and outputs correct JSON report; impact-scan.test.ts passes 4 component tests",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "bun run scripts/impact-scan.ts --functions setRunState outputs shared_functions containing setRunState; bun test impact-scan.test.ts exits 0"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      ".agents/skills/plan-audit-archiver/templates/scope-lock-template.json",
+      ".agents/skills/plan-audit-archiver/SKILL.md",
+      "scripts/impact-scan.ts",
+      "scripts/test-serve/__tests__/impact-scan.test.ts"
+    ],
+    "forbidden_paths": [
+      "AGENTS.md",
+      "scripts/test-serve/run-context.ts",
+      "scripts/test-serve/process.ts",
+      "scripts/test-serve/execute.ts",
+      "scripts/test-serve/cleanup.ts"
+    ]
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "zhaoge",
+    "approved_at": "2026-07-23T10:10:00Z",
+    "evidence": "User replied '批准' in session chat approving scope-lock for IMPACT-SCAN-001"
+  }
+}

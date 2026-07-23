@@ -325,12 +325,45 @@ bun run clean-sessions.ts
 - 弱模型不得自行设置、转发或伪造 `H2_AUTHORIZED`。
 - 不得把组件/集成测试结果写成 runtime smoke 或 live E2E PASS。
 
+### 8.4 共享函数验证覆盖规则
+
+当 scope-lock 的 `impact_analysis.shared_functions` 非空时，plan 的 Fixed verification 命令必须包含 `impact_analysis.caller_tests` 中列出的每一个测试文件。
+
+验证方法：将 Fixed verification 命令中的测试文件列表与 `impact_analysis.caller_tests` 做集合比较。如果 `caller_tests` 中有文件不在验证命令中，验证不通过。
+
+例外：如果 `caller_tests` 中的某个测试文件需要特殊环境（如 `P0_1B_PORT`），在 plan 中标注并说明原因，可豁免该文件。
+
+### 8.5 共享函数测试覆盖策略
+
+**fake 注入标注**：
+
+当测试通过依赖注入（dependency injection）替换真实函数实现时（如 `stopRunProcesses: async () => { return mockManifest; }`），必须在该测试上方添加注释：
+
+```typescript
+// FAKE-INJECTION: stopRunProcesses replaced, real setRunState not exercised
+```
+
+**真实路径覆盖**：
+
+对于 scope-lock `impact_analysis.shared_functions` 中的每个共享函数，至少 1 个测试必须调用该函数的真实实现（不通过 fake/mock 替换）。如果现有测试全部使用 fake 注入，实施者必须新增至少 1 个非-fake 测试。
+
+**审计检查**：
+
+审计者在 Step 5（Complete the full in-scope sweep）中，对每个共享函数执行以下检查：
+1. `rg -n "FAKE-INJECTION" <caller_test_file>` 列出所有 fake 注入点。
+2. 确认至少 1 个测试不包含 `FAKE-INJECTION` 注释且调用了该共享函数的真实路径。
+3. 如果全部测试都是 fake 注入，标记为 BLOCKING finding。
+
 
 ## 9. CodeGraph 使用规则
 
 ### 9.1 强制规则
 
-**分析或修改 work-one 代码前，必须先用 CodeGraph CLI 查询影响范围。**
+**分析或修改 work-one 代码或 qoderwork `scripts/` 下的共享函数前，必须先用 CodeGraph CLI 查询影响范围。**
+
+"共享函数"定义：被 2 个以上文件调用的函数。判断方法：`codegraph callers <函数名>` 返回的 `file` 级别调用方 ≥ 2 个文件时，该函数为共享函数。
+
+查询结果必须记录到 plan 的 scope-lock `impact_analysis` 字段中。如果 CodeGraph 未索引目标文件，用 `rg -n "函数名" scripts/` 作为替代。
 
 常用命令：
 
