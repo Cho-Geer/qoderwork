@@ -134,7 +134,9 @@ export async function cleanupRun(
   manifest.cleanup.status = "blocked";
   manifest.cleanup.notes.push(...notes);
   writeRunManifest(manifest);
-  setRunState(manifest, "BLOCKED");
+  if (manifest.status !== "BLOCKED") {
+    setRunState(manifest, "BLOCKED");
+  }
   // 保留现场：不删 worktree/ 目录，不写 CLEANED。
   return {
     ok: false,

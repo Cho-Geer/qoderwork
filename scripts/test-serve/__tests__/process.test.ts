@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createRunPaths, releasePortReservation, writeRunManifest } from "../run-context";
+import { createRunPaths, releasePortReservation, setRunState, writeRunManifest } from "../run-context";
 import { inspectRunProcesses, startRunProcesses, stopRunProcesses, validateRunProcess } from "../process";
 import type { RunManifest, RunPaths } from "../types";
 
@@ -254,5 +254,33 @@ describe("PID identity validation (P03-S-05)", () => {
     } finally {
       child.kill("SIGKILL");
     }
+  });
+});
+
+describe("STOPPED -> READY restart transition (hotfix)", () => {
+  test("STOPPED -> READY restart transition is legal (hotfix)", async () => {
+    // Verify the transition table allows STOPPED -> READY for restart
+    // We test this at the setRunState level since startRunProcesses requires
+    // real port/process infrastructure
+    const paths = createRunPaths("hotfix-restart-test");
+    paths.rootDir = tempRoot;
+    paths.manifestPath = join(tempRoot, "manifest.json");
+    const manifest: RunManifest = {
+      runId: "hotfix-restart-test", testId: "HOTFIX-RESTART", status: "STOPPED",
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      primaryWorktree: tempRoot, commit: "HEAD", port: 39990, paths,
+      env: { QODERWORK_TEST_RUN_ID: "hotfix-restart-test" },
+      sourceOverlay: null, sourceStatusPorcelainZ: null,
+      rootSessionId: null, childSessionId: null, grantId: null, dispatchKey: null,
+      allowedPaths: [], bootstrapComplete: false,
+      authorization: { h2Authorized: false, dryRun: true },
+      process: { servePid: null, ssePid: null, portReserverPid: null },
+      cleanup: { status: "pending", notes: [] },
+    };
+    writeRunManifest(manifest);
+    // STOPPED -> READY should now be legal
+    setRunState(manifest, "READY");
+    const after = JSON.parse(await Bun.file(paths.manifestPath).text()) as RunManifest;
+    expect(after.status).toBe("READY");
   });
 });

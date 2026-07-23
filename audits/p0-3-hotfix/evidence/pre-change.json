@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "repository_realpath": "/home/zhaoge/workspace/opencode/work-one",
+  "phase_id": "P0-3-HOTFIX-TT",
+  "captured_at": "2026-07-23T00:29:27.039Z",
+  "head": "e65e229521359992399bb7c22d2510e3fcee63b4",
+  "scope_lock_sha256": "4424ca857291998113da4e7852207e0c54d8f8efee35dc3d68ae08e282baab83",
+  "status_entries": []
+}

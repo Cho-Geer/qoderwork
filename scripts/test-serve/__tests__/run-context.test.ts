@@ -335,6 +335,41 @@ describe("run-context", () => {
 
     await releasePortReservation(manifest.process.portReserverPid as number);
   });
+
+  test("BLOCKED -> CLEANED is legal for failed run cleanup (hotfix)", async () => {
+    const repo = createRepo();
+    const commit = git(["rev-parse", "HEAD"], repo).trim();
+    const manifest = await createRunContext({
+      primaryWorktree: repo,
+      commit,
+      port: 39030,
+      testId: "HOTFIX-BLOCKED-CLEANED",
+    });
+    // Walk to BLOCKED via legal path
+    setRunState(manifest, "READY");
+    setRunState(manifest, "BLOCKED");
+    // BLOCKED -> CLEANED should now be legal
+    setRunState(manifest, "CLEANED");
+    expect(readRunManifest(manifest.paths.rootDir).status).toBe("CLEANED");
+    await releasePortReservation(manifest.process.portReserverPid as number);
+  });
+
+  test("BOOTSTRAPPED -> STOPPED is legal (hotfix)", async () => {
+    const repo = createRepo();
+    const commit = git(["rev-parse", "HEAD"], repo).trim();
+    const manifest = await createRunContext({
+      primaryWorktree: repo,
+      commit,
+      port: 39031,
+      testId: "HOTFIX-BOOTSTRAPPED-STOPPED",
+    });
+    setRunState(manifest, "READY");
+    setRunState(manifest, "BOOTSTRAPPED");
+    // BOOTSTRAPPED -> STOPPED should now be legal (orchestrator stop path)
+    setRunState(manifest, "STOPPED");
+    expect(readRunManifest(manifest.paths.rootDir).status).toBe("STOPPED");
+    await releasePortReservation(manifest.process.portReserverPid as number);
+  });
 });
 
 function createRepo(): string {

@@ -103,13 +103,13 @@ export function writeRunManifest(manifest: RunManifest): void {
 
 const TRANSITION_TABLE: Record<RunState, RunState[]> = {
   CREATED: ["WORKTREE_READY", "BLOCKED", "FAILED"],
-  WORKTREE_READY: ["READY", "BLOCKED", "FAILED"],
-  READY: ["BOOTSTRAPPED", "BLOCKED", "FAILED"],
-  BOOTSTRAPPED: ["EXECUTED", "BLOCKED", "FAILED"],
+  WORKTREE_READY: ["READY", "STOPPED", "BLOCKED", "FAILED"],
+  READY: ["BOOTSTRAPPED", "STOPPED", "BLOCKED", "FAILED"],
+  BOOTSTRAPPED: ["EXECUTED", "STOPPED", "BLOCKED", "FAILED"],
   EXECUTED: ["STOPPED", "BLOCKED", "FAILED"],
-  STOPPED: ["CLEANED", "BLOCKED", "FAILED"],
+  STOPPED: ["CLEANED", "READY", "BLOCKED", "FAILED"],
   CLEANED: [],
-  BLOCKED: [],
+  BLOCKED: ["CLEANED"],
   FAILED: [],
 };
 
@@ -131,7 +131,7 @@ export async function createRunContext(input: CreateRunInput, hooks?: CreateRunH
   const overlay = input.sourceOverlayDir
     ? validateSourceOverlay(resolveRequiredDir(input.sourceOverlayDir, "source overlay"))
     : null;
-  
+
   // Derive run ID and paths BEFORE port reservation so duplicate detection
   // cannot leak a reserved port.
   const runId = hooks?.makeRunId ? hooks.makeRunId(input.testId) : makeRunId(input.testId);
@@ -416,7 +416,7 @@ export async function spawnPortReserver(port: number): Promise<number> {
  * (e.g. EADDRINUSE) are always surfaced — unlike the old busy-loop
  * implementation which blocked the event loop and starved the stderr reader.
  */
-async function waitForReadyLine(child: ChildProcess, timeoutMs: number = 3000): Promise<ReadyResult> { 
+async function waitForReadyLine(child: ChildProcess, timeoutMs: number = 3000): Promise<ReadyResult> {
   return new Promise<ReadyResult>((resolve) => {
     let settled = false;
     let stdoutBuf = '';
