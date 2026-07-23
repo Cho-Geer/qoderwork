@@ -531,7 +531,7 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 - **规则**：实施者必须按以下顺序完成 Freeze Gate，且禁止跳步：
   1. 审计者填写 `scope-lock.json`（覆盖本 phase 的 REQ/Check Registry/oracle）
   2. Human reviewer 批准 `scope-lock.json`（agent 不得自批准）
-  3. 运行 `capture-state.ts` 捕获 pre-change receipt，输出到 `audits/<plan-name>/evidence/pre-change-<PHASE-N>.json`
+  3. 运行 `capture-state.ts` 捕获 pre-change receipt，输出到 `audits/<plan-name>/evidence/pre-change-<PHASE-N>.json`；`--repository-root` 必须按 P-07 取干净锚点仓库（work-one），禁止填审计工作区或当前 worktree
   4. 验证 receipt 存在且非空（`test -s` + 内容断言）
 - **违反判定**：实施已开始但 `evidence/pre-change-<PHASE-N>.json` 不存在或为空
 - **违反后果**：审计必须判定为 `INVALID`（不是 BLOCKED），因为实施流程违规导致审计合同无效
@@ -578,8 +578,16 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 - **违反判定**：component-only plan 的审计报告签署 v2.1 ACCEPT，或未标注证据上限
 - **违反后果**：审计报告判定为 `INVALID`
 
+### 规则 P-07：repository_root 干净锚点（worktree 感知）
+
+- **约束主体**：计划作者 + 实施者
+- **触发条件**：任何 plan 的 Fixed verification 命令含 `capture-state.ts --repository-root` 或 `generate-evidence-receipt.ts --repository-root`
+- **规则**：`--repository-root` 必须（MUST）指向干净锚点仓库（默认 work-one：`/home/zhaoge/workspace/opencode/work-one`）；禁止（MUST NOT）指向审计工作区（qoderwork 主仓 `/home/zhaoge/workspace/qoderwork` 或其任何 `.worktrees/*` worktree）。原因：validator（`validate-audit.ts` L1190-1197）将 pre-change receipt 的 `status_entries` 与审计时 `repository_root` 的实时 git status 做对称差，差集中不在 `repository_scope.allowed_paths` 内的路径触发 `DIRTY_PATH_OUTSIDE_SCOPE`；validator 对 `audits/`、`logs/`、`evidence/` 等审计基建路径无豁免。若 `repository_root` 指向审计工作区，审计基建文件（报告、EV receipts、verdict-state、LATEST.md、日志）全部落入差集，审计不可行。实施范围由 scope-lock 的 `repository_scope.allowed_paths` / `forbidden_paths` 控制，与 `repository_root` 职责不同。在 qoderwork worktree（如 `.worktrees/check-plan`）中实施 qoderwork 工具代码时，`workspace_root` 是该 worktree 路径，`repository_root` 仍是 work-one。
+- **违反判定**：plan 的 Fixed verification 中 `--repository-root` 指向 qoderwork 主仓或其 worktree
+- **违反后果**：pre-change receipt 无法通过 `validate-audit.ts`，审计判定为 `INVALID`
+
 ---
 
-**最后更新**：2026-07-19
+**最后更新**：2026-07-23
 **维护者**：QoderWork Agent 协作链
 **变更方式**：本文件被完整覆盖时，旧版本内容不再生效；所有更新必须基于当前工作区实际状态。

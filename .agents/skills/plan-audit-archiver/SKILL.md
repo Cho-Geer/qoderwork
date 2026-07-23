@@ -207,8 +207,8 @@ Confusing them is the most common cause of `INVALID` verdicts.
 
 | 字段 | 含义 | 取值要求 |
 |------|------|---------|
-| `baseline.workspace_root` | 审计工作区绝对路径 | qoderwork 根目录（如 `/home/zhaoge/workspace/qoderwork`） |
-| `baseline.repository_root` | 被审计仓库绝对路径 | work-one 根目录（如 `/home/zhaoge/workspace/opencode/work-one`） |
+| `baseline.workspace_root` | 审计工作区绝对路径 | qoderwork 主仓或其 worktree（如 `/home/zhaoge/workspace/qoderwork` 或 `/home/zhaoge/workspace/qoderwork/.worktrees/<branch>`） |
+| `baseline.repository_root` | 干净锚点仓库绝对路径 | 默认 work-one（`/home/zhaoge/workspace/opencode/work-one`）；不能是接收 `audits/`、`plans/`、`evidence/` 写入的工作区本身 |
 | `baseline.commit` | 被审计仓库的 HEAD commit | 必须等于 `git -C <repository_root> rev-parse HEAD` |
 | `baseline.head_at_verdict` | verdict 时点的被审计仓库 HEAD | 必须等于 `baseline.commit` |
 | `baseline.dirty_paths` | 被审计仓库的 git status 路径 | 必须等于 `git -C <repository_root> status --porcelain` 输出，不是 workspace_root 的 |
@@ -219,7 +219,9 @@ Confusing them is the most common cause of `INVALID` verdicts.
 
 ### repository_root 选择规则（强制）
 
-`repository_root` 必须（MUST）设为被审计目标仓库（work-one：`/home/zhaoge/workspace/opencode/work-one`），禁止（MUST NOT）设为审计工作区（qoderwork：`/home/zhaoge/workspace/qoderwork`）。
+`repository_root` 必须（MUST）设为干净锚点仓库（默认 work-one：`/home/zhaoge/workspace/opencode/work-one`）；禁止（MUST NOT）设为审计工作区（qoderwork 主仓 `/home/zhaoge/workspace/qoderwork` 或其任何 `.worktrees/*` worktree）。无论审计对象是 work-one 本身还是 qoderwork 自身的工具代码（如 `scripts/task-lens/**`），`repository_root` 恒为干净锚点——它的唯一作用是提供一个审计期间不变的 git 基线，证明被审计目标仓库无意外变更。
+
+**worktree 场景**：当在 qoderwork worktree（如 `.worktrees/check-plan`）中实施时，`workspace_root` 是该 worktree 路径，`repository_root` 仍是 work-one。git 在 linked worktree 中 `rev-parse --show-toplevel` 返回 worktree 自身路径，`capture-state.ts` 的 toplevel 校验（L73-75）对 worktree 天然兼容；但 worktree 是接收 `audits/`、`plans/`、`evidence/` 写入的工作区，其 git status 会随审计推进变脏，因此不能作 `repository_root`。
 
 **原因链**（validator 代码逻辑，非约定）：
 
@@ -239,6 +241,8 @@ Confusing them is the most common cause of `INVALID` verdicts.
 - 实施范围由 scope-lock 的 `repository_scope.allowed_paths` / `forbidden_paths` 控制，不由 `repository_root` 的 dirty path 检查控制
 
 > **合理化检测**: 如果你发现自己在想「这个 phase 改的是 qoderwork 的测试文件，所以 repository_root 应该填 qoderwork」——停下来，这是跳步信号。`repository_root` 的唯一作用是提供一个 clean 的 git 基线，证明被审计目标仓库无意外变更。实施文件的范围约束由 scope-lock 的 `repository_scope` 字段承担，两者职责不同。
+>
+> **合理化检测（worktree）**: 如果你发现自己在想「我在 `.worktrees/check-plan` worktree 里实施，所以 repository_root 应该填这个 worktree」——停下来，这是跳步信号。worktree 是接收 `audits/`、`evidence/` 写入的工作区，其 git status 会变脏；`repository_root` 必须填 work-one（干净锚点），不是当前 worktree。
 
 ### 时间依赖关系图
 
@@ -309,10 +313,12 @@ human approval receipt. Hash the approved scope lock, then capture the
 pre-change state before any implementation write:
 
 ```bash
+# cd 到审计工作区（qoderwork 主仓或其 worktree，如 .worktrees/<branch>）
 cd /home/zhaoge/workspace/qoderwork
 
 # 推荐：--freeze 原子操作（设置 scope.frozen_at + scope.status=FROZEN，然后捕获 pre-change receipt）
 # scope_lock_sha256 绑定到 frozen_at 写入后的最终版本，消除循环依赖
+# --repository-root 必须是干净锚点（work-one），不是当前 worktree（见 §15 P-07）
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
   --repository-root /home/zhaoge/workspace/opencode/work-one \
   --scope-lock /absolute/path/to/audits/plan-name/scope-lock.json \

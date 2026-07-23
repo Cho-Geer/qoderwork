@@ -1,0 +1,154 @@
+{
+  "schema_version": "1.0",
+  "lock_id": "TASK-LENS-M1-PHASE-02-20260723",
+  "created_at": "2026-07-23T12:02:01Z",
+  "plan_sources": [
+    {
+      "path": "plans/task-lens-m1/00-plan-index.md",
+      "sha256": "eaf98fde9f6d941ecf0feebd844de89dadd9aac67c844daaa6371cd3294fdfbd"
+    },
+    {
+      "path": "plans/task-lens-m1/02-phase-input-safety-diff.md",
+      "sha256": "c6367b8aa2506ff10ecce7d1546ebeea71c4f8cf45aa05a98b6c148207d91ced"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "2026-07-23T12:02:01Z",
+    "in_scope": [
+      "REQ-002",
+      "REQ-003",
+      "REQ-004"
+    ],
+    "out_of_scope": [
+      "M1.5/M2/M3 与多卡行为",
+      "work-one 写入",
+      "bun.lock 与新增依赖",
+      "scripts/_b1_live.ts TS2307 修复（PHASE-07 前由所有者清零，中间禁新增）",
+      "卡片/artifact/metrics 写入（PHASE-02 不构图不写 artifact）",
+      "CodeGraph 查询（PHASE-02 禁止）"
+    ],
+    "assumptions": [
+      {
+        "statement": "PHASE-02 的 8 个 allowed files 当前均不存在（package.json 存在但无 task-lens script），实施为纯新增",
+        "disproof": "rg -n '\"task-lens\"\\s*:' package.json 命中则假设失效"
+      },
+      {
+        "statement": "typecheck 基线仅含 BASELINE-TS-001（_b1_live.ts TS2307），无其他诊断",
+        "disproof": "typecheck-baseline-PHASE-02.txt 中 error TS 行数不等于 1 则假设失效"
+      },
+      {
+        "statement": "CodeGraph 索引属主 worktree 与本 worktree 不一致（UNAVAILABLE），caller scan 须用 rg fallback 并记录",
+        "disproof": "codegraph status 显示本 worktree 已索引则假设失效"
+      }
+    ],
+    "exit_criteria": [
+      "TL-DIFF-WT/COMMIT/DELETE、TL-CMD-ARGV/RESOURCE、TL-PATH-OUT、TL-CONFIG、TL-RECEIPT、TL-CLI、TL-TSC-DELTA 全 PASS",
+      "all-pass fixture + 8 项 single-mutation（TL-C-101~108）各精确单一诊断、零新增 TS error",
+      "typecheck 相对 BASELINE-TS-001 零新增诊断，git diff --check 通过",
+      "仅 8 个 Allowed files 有 diff，bun.lock 未变",
+      "至少一个测试走真实 runCommand；所有依赖注入 fake 有 FAKE-INJECTION 标注"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-002",
+      "plan_item_id": "PLAN-REQ-002",
+      "kind": "BEHAVIORAL",
+      "source": "plans/task-lens-m1/02-phase-input-safety-diff.md#REQ-002",
+      "behavior": "working-tree/commit 输入固定快照：tracked diff+untracked full file 纳入模型；commit mode base 为 full SHA、head=current HEAD、worktree clean 否则拒绝；rename/delete 保留 old/new，纯删除写 DeletedRegion",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "临时 Git repo fixture（initial commit + staged/unstaged/untracked/rename/delete）：working-tree 提取三类变更齐全；commit 提取要求 full SHA 且 current HEAD 且 worktree clean 否则 exit 10；DeletedRegion 含 hash/range/provenance=preimage-only。实现无关：用 git 原生命令独立复算 hunks 与 DeletedRegion 比对"
+    },
+    {
+      "id": "REQ-003",
+      "plan_item_id": "PLAN-REQ-003",
+      "kind": "BEHAVIORAL",
+      "source": "plans/task-lens-m1/02-phase-input-safety-diff.md#REQ-003",
+      "behavior": "命令/CLI/config/path 输入安全：Bun.spawn 固定 argv、shell=false、最小 env；30s/5MiB/取消/非零分类；绝对路径+realpath/symlink 边界；固定 YAML schema，未知字段/正则/项目内 out 拒绝 exit 10",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "spawn receipt 检查 argv 固定且 shell=false；timeout/limit 测试产出 exact ProcessFailure 且进程树已终止；realpath 测试 out 严格在 project 外，parent/symlink 不可读则 exit 10；parsed YAML exact schema 仅固定 keys/literals。实现无关：检查 Bun.spawnSync 调用参数与 exit code 分类表"
+    },
+    {
+      "id": "REQ-004",
+      "plan_item_id": "PLAN-REQ-004",
+      "kind": "BEHAVIORAL",
+      "source": "plans/task-lens-m1/02-phase-input-safety-diff.md#REQ-004",
+      "behavior": "receipt/taskId 版本化：固定字段 canonical JSON 后 SHA-256 得 taskId；generatedAt 不参与 taskId；CLI generate/feedback/metrics summarize 语法，其余组合 exit 10",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "两 receipt 同输入异 clock：taskId 哈希相等；argv matrix：唯一 subcommand grammar，未知组合 exit 10。实现无关：对 canonical JSON 独立 SHA-256 复算比对"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-002",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-002",
+      "source": "plans/task-lens-m1/02-phase-input-safety-diff.md#REQ-002",
+      "kind": "BEHAVIORAL",
+      "behavior": "working-tree/commit 输入固定快照与 rename/delete 保留",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "临时 Git repo fixture 独立复算 hunks/DeletedRegion 比对"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-003",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-003",
+      "source": "plans/task-lens-m1/02-phase-input-safety-diff.md#REQ-003",
+      "kind": "BEHAVIORAL",
+      "behavior": "命令/CLI/config/path 输入安全合同",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "spawn receipt argv/shell 检查 + exit code 分类表"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-004",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-004",
+      "source": "plans/task-lens-m1/02-phase-input-safety-diff.md#REQ-004",
+      "kind": "BEHAVIORAL",
+      "behavior": "receipt/taskId canonical hash 版本化与 CLI 语法",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "两 receipt 异 clock 同 taskId + argv matrix exit 10"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "package.json",
+      "scripts/task-lens/types.ts",
+      "scripts/task-lens/cli.ts",
+      "scripts/task-lens/command-runner.ts",
+      "scripts/task-lens/config.ts",
+      "scripts/task-lens/diff-extractor.ts",
+      "scripts/task-lens/__tests__/input-diff.test.ts",
+      "scripts/task-lens/__tests__/command-security.test.ts"
+    ],
+    "forbidden_paths": [
+      "bun.lock",
+      "scripts/_b1_live.ts",
+      "/home/zhaoge/workspace/opencode/work-one",
+      "scripts/test-serve/**"
+    ]
+  },
+  "impact_analysis": {
+    "modified_functions": [],
+    "shared_functions": [],
+    "caller_scan_command": "rg -n --no-heading \"scripts/task-lens\" scripts package.json tsconfig.json 2>&1",
+    "caller_files": [],
+    "caller_tests": [],
+    "scan_output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "ChoGeer",
+    "approved_at": "2026-07-23T12:10:42Z",
+    "evidence": "Human reviewer 审查 scope-lock-PHASE-02 草稿后批准：in_scope=REQ-002/003/004 精确对应 PHASE-02；8 个 allowed paths 匹配 PHASE-02 Allowed files；forbidden 含 bun.lock/scripts/_b1_live.ts/work-one；typecheck 基线仅 BASELINE-TS-001 无额外诊断；CodeGraph UNAVAILABLE 已用 rg fallback 记录 scan_output_sha256；plan_sources sha256 真实。批准 PHASE-02 冻结范围，解除 PHASE-02 BLOCKED 前置。"
+  }
+}

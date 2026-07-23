@@ -36,6 +36,10 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
   specification rather than an implementation plan.
 - Use `guided-code-editing` after this plan exists and the user wants manual
   implementation guidance.
+- Reference `plan-audit-archiver` for v2.1 provenance rules: any Fixed
+  verification command containing `capture-state.ts --repository-root` must
+  follow AGENTS.md §15 P-07 (repository_root = clean anchor work-one, never
+  the audit workspace or current worktree).
 - This skill does not implement code and does not mark product behavior PASS.
 
 ## Non-negotiable rules
@@ -69,6 +73,13 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
 11. **Bounded execution context.** Never trade Phase-local completeness for one
     oversized document. Use the sizing gate below; exceeding any hard limit is
     blocking and requires semantic Phase splitting.
+12. **repository_root clean anchor.** Any Fixed verification command containing
+    `capture-state.ts --repository-root` or `generate-evidence-receipt.ts
+    --repository-root` must set it to the clean anchor repository (work-one:
+    `/home/zhaoge/workspace/opencode/work-one`), never the audit workspace
+    (qoderwork main repo or any `.worktrees/*` worktree). See AGENTS.md §15
+    P-07. Violation makes the pre-change receipt fail `validate-audit.ts`
+    (`DIRTY_PATH_OUTSIDE_SCOPE`), rendering the audit `INVALID`.
 
 ## Output sizing contract
 
