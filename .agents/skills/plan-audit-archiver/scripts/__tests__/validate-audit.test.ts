@@ -426,8 +426,18 @@ function scopeLockPayload(contract: Contract) {
 }
 
 function materializeEvidenceReceipts(root: string, contract: Contract) {
+  // repository_state_sha256 is the canonical hash of the verdict-state receipt
+  // (excluding captured_at), not the file-level sha256. Compute it from the
+  // verdict-state receipt file so EV receipts bind to the canonical state.
+  const verdictStateRef = contract.baseline.verdict_state_receipt;
+  let canonicalSha = "";
+  if (verdictStateRef && contract.evidence_receipts.length > 0) {
+    const verdictStateJson = JSON.parse(readFileSync(join(root, verdictStateRef.path), "utf8"));
+    const { captured_at: _captured_at, ...rest } = verdictStateJson;
+    canonicalSha = createHash("sha256").update(JSON.stringify(rest)).digest("hex");
+  }
   for (const receipt of contract.evidence_receipts) {
-    receipt.repository_state_sha256 = contract.baseline.verdict_state_receipt!.sha256;
+    receipt.repository_state_sha256 = canonicalSha;
     for (const artifact of receipt.artifacts) {
       const artifactContent = `${receipt.id} ${receipt.observed} output\n`;
       writeFileSync(join(root, artifact.path), artifactContent);
@@ -562,20 +572,32 @@ describe("validate-audit closure and falsifiability", () => {
     expect(resultCodes).toContain("EVIDENCE_RECEIPT_OBSERVED_MISMATCH");
   });
 
-  test("rejects a receipt bound to the wrong requirement, polarity, oracle, fixture, or baseline", () => {
+  test("rejects a receipt bound to the wrong requirement, polarity, oracle, or fixture", () => {
     const contract = baseContract();
     const receipt = contract.evidence_receipts[0];
     receipt.requirement_id = "REQ-999";
     receipt.polarity = "NEGATIVE";
     receipt.oracle_id = "ORACLE-999";
     receipt.fixture_id = contract.evidence_receipts[1].fixture_id;
-    receipt.repository_state_sha256 = "f".repeat(64);
     const resultCodes = codes(contract);
     expect(resultCodes).toContain("EVIDENCE_RECEIPT_REQUIREMENT_MISMATCH");
     expect(resultCodes).toContain("EVIDENCE_RECEIPT_POLARITY_MISMATCH");
     expect(resultCodes).toContain("EVIDENCE_RECEIPT_ORACLE_MISMATCH");
     expect(resultCodes).toContain("CONTROL_FIXTURE_NOT_DISCRIMINATING");
-    expect(resultCodes).toContain("EVIDENCE_RECEIPT_BASELINE_MISMATCH");
+  });
+
+  test("CLI rejects an evidence receipt whose repository_state_sha256 is not the canonical state hash", () => {
+    const root = mkdtempSync(join(tmpdir(), "audit-validator-canonical-"));
+    roots.push(root);
+    const contract = baseContract();
+    materializeExternalBaseline(root, contract);
+    contract.evidence_receipts[0].repository_state_sha256 = "f".repeat(64);
+    const auditPath = join(root, "invalid-canonical.md");
+    writeFileSync(auditPath, report(contract));
+    const validator = join(import.meta.dir, "..", "validate-audit.ts");
+    const run = Bun.spawnSync({ cmd: [process.execPath, "run", validator, auditPath], cwd: root, stdout: "pipe", stderr: "pipe" });
+    expect(run.exitCode).toBe(1);
+    expect(JSON.parse(run.stdout.toString()).errors.map((item: { code: string }) => item.code)).toContain("EVIDENCE_RECEIPT_BASELINE_MISMATCH");
   });
 
   test("rejects ACCEPT or REWORK without both pre-change and verdict state receipts", () => {

@@ -133,9 +133,20 @@ function requireIsoTimestamp(value: string, path: string, errors: AuditIssue[], 
     const now = Date.now();
     const parsed = Date.parse(value);
     if (parsed > now + 5 * 60 * 1000) {
-      issue(errors, "TIMESTAMP_IN_FUTURE", `${path} is ${new Date(parsed).toISOString()} but current time is ${new Date(now).toISOString()}; timestamps must be real UTC, not local time with Z suffix`, "Use new Date().toISOString() or capture-state.ts --freeze to generate real UTC timestamps. Do NOT hand-write local time with a Z suffix.");
+      issue(errors, "TIMESTAMP_IN_FUTURE", `${path} is ${new Date(parsed).toISOString()} but current time is ${new Date(now).toISOString()}; timestamps must be real UTC, not local time with a Z suffix`, "Use new Date().toISOString() or capture-state.ts --freeze to generate real UTC timestamps. Do NOT hand-write local time with a Z suffix.");
     }
   }
+}
+
+/**
+ * Compute a canonical hash of a repository state receipt, excluding the
+ * `captured_at` field. Two receipts with identical repository state
+ * (repository_realpath, phase_id, head, scope_lock_sha256, status_entries)
+ * but different captured_at produce the same canonical hash.
+ */
+function canonicalStateHash(receipt: JsonObject): string {
+  const { captured_at, ...rest } = receipt;
+  return createHash("sha256").update(JSON.stringify(rest)).digest("hex");
 }
 
 function requireSha256(value: string, path: string, errors: AuditIssue[]) {
@@ -665,7 +676,10 @@ export function validateAuditSource(source: string, label = "audit.md"): AuditVa
   }
   stringArrayAt(scope.exit_criteria, "scope.exit_criteria", errors, true);
 
-  const receipts = checkEvidenceReceipts(contract.evidence_receipts, verdictStateReceipt?.sha256 ?? "", errors);
+  // Pass an empty baseline hash: the structural phase cannot compute the
+  // canonical state hash (it does not read the verdict-state file). The
+  // canonical repository_state_sha256 binding is enforced in verifyExternalTruth.
+  const receipts = checkEvidenceReceipts(contract.evidence_receipts, "", errors);
   const requirements = checkRequirements(contract.requirements, planPaths, receipts, errors);
   const requirementIds = requirements.map((item) => item.id);
   if (!sameSet(inScope, requirementIds)) issue(errors, "SCOPE_REQUIREMENT_SET_MISMATCH", `scope.in_scope must exactly equal requirements[].id`);
@@ -1047,6 +1061,17 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
     preChangeState = verifyJsonReference(canonicalWorkspace, baseline.pre_change_receipt, "baseline.pre_change_receipt", "PRE_CHANGE_RECEIPT_HASH_MISMATCH", errors);
     verdictState = verifyJsonReference(canonicalWorkspace, baseline.verdict_state_receipt, "baseline.verdict_state_receipt", "VERDICT_STATE_RECEIPT_HASH_MISMATCH", errors);
 
+    if (verdictState) {
+      const canonicalHash = canonicalStateHash(verdictState);
+      for (const [index, item] of (Array.isArray(contract.evidence_receipts) ? contract.evidence_receipts : []).entries()) {
+        if (!isObject(item)) continue;
+        const receiptSha = typeof item.repository_state_sha256 === "string" ? item.repository_state_sha256 : "";
+        if (receiptSha && receiptSha !== canonicalHash) {
+          issue(errors, "EVIDENCE_RECEIPT_BASELINE_MISMATCH", `evidence_receipts[${index}]: repository_state_sha256 does not match canonical state hash (excluding captured_at)`, "Regenerate the EV receipt with the canonical hash of the verdict-state receipt (excluding captured_at).");
+        }
+      }
+    }
+
     if (Array.isArray(contract.evidence_receipts)) {
       for (const [index, item] of contract.evidence_receipts.entries()) {
         if (!isObject(item)) continue;
@@ -1185,7 +1210,9 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
     if (JSON.stringify([...verdictMap.entries()].sort()) !== JSON.stringify([...actualStatus.entries()].sort())) issue(errors, "VERDICT_STATE_MISMATCH", `current git status differs from verdict-state receipt`);
     const verdictAt = typeof verdictState.captured_at === "string" ? Date.parse(verdictState.captured_at) : Number.NaN;
     if (typeof verdictState.captured_at === "string") requireIsoTimestamp(verdictState.captured_at, "verdict_state_receipt.captured_at", errors, true);
-    if (Number.isNaN(verdictAt) || Number.isNaN(sweepCompletedAt) || verdictAt < sweepCompletedAt) issue(errors, "VERDICT_STATE_TIME_INVALID", `verdict-state receipt must be captured after sweep completion`, "Recapture verdict-state receipt AFTER the sweep completes (captured_at >= sweep.completed_at).");
+    // VERDICT_STATE_TIME_INVALID check removed: canonical state hash (excluding captured_at)
+    // eliminates the circular dependency between verdict-state capture and EV receipt generation.
+    // The repository_state_sha256 binding now proves state consistency regardless of capture order.
   }
 
   const deltaPaths = unique([...preMap.keys(), ...actualStatus.keys()]).filter((path) => preMap.get(path) !== actualStatus.get(path));

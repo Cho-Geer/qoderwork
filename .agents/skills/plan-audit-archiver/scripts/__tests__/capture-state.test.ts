@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -163,5 +164,64 @@ describe("capture-state", () => {
     });
 
     expect(readFileSync(scopeLock, "utf8")).toBe(originalContent);
+  });
+
+  test("canonical hash is stable across different captured_at with same repository state", () => {
+    const workspace = mkdtempSync(join(tmpdir(), "audit-canonical-"));
+    roots.push(workspace);
+    const repository = join(workspace, "repository");
+    mkdirSync(repository, { recursive: true });
+    writeFileSync(join(repository, "init.ts"), "export const init = true;\n");
+    runGit(repository, ["init", "-q"]);
+    runGit(repository, ["add", "init.ts"]);
+    runGit(repository, ["-c", "user.name=Audit Test", "-c", "user.email=audit@example.invalid", "commit", "-qm", "fixture"]);
+    const scopeLock = join(workspace, "scope-lock.json");
+    writeFileSync(scopeLock, JSON.stringify({ lock_id: "LOCK-CANON" }, null, 2) + "\n");
+
+    const receipt1 = captureRepositoryState({
+      repositoryRoot: repository,
+      scopeLockPath: scopeLock,
+      phaseId: "LOCK-CANON",
+      capturedAt: "2026-07-21T12:00:01Z",
+    });
+    const receipt2 = captureRepositoryState({
+      repositoryRoot: repository,
+      scopeLockPath: scopeLock,
+      phaseId: "LOCK-CANON",
+      capturedAt: "2026-07-21T12:30:00Z",
+    });
+
+    // captured_at differs by construction, but the canonical hash (which
+    // excludes captured_at) must be identical for the same repository state.
+    expect(receipt1.captured_at).not.toBe(receipt2.captured_at);
+    const { captured_at: _ignored1, ...rest1 } = receipt1;
+    const { captured_at: _ignored2, ...rest2 } = receipt2;
+    const canonical1 = createHash("sha256").update(JSON.stringify(rest1)).digest("hex");
+    const canonical2 = createHash("sha256").update(JSON.stringify(rest2)).digest("hex");
+    expect(canonical1).toBe(canonical2);
+    expect(canonical1).toMatch(/^[a-f0-9]{64}$/);
+  });
+
+  test("CLI output includes canonical_sha256 excluding captured_at", () => {
+    const workspace = mkdtempSync(join(tmpdir(), "audit-canonical-cli-"));
+    roots.push(workspace);
+    const repository = join(workspace, "repository");
+    mkdirSync(repository, { recursive: true });
+    writeFileSync(join(repository, "init.ts"), "export const init = true;\n");
+    runGit(repository, ["init", "-q"]);
+    runGit(repository, ["add", "init.ts"]);
+    runGit(repository, ["-c", "user.name=Audit Test", "-c", "user.email=audit@example.invalid", "commit", "-qm", "fixture"]);
+    const scopeLock = join(workspace, "scope-lock.json");
+    writeFileSync(scopeLock, JSON.stringify({ lock_id: "LOCK-CLI" }, null, 2) + "\n");
+    const captureScript = join(import.meta.dir, "..", "capture-state.ts");
+    const outputPath = join(workspace, "state.json");
+    const run = Bun.spawnSync({ cmd: [process.execPath, "run", captureScript, "--output", outputPath, "--scope-lock", scopeLock, "--repository-root", repository, "--phase-id", "LOCK-CLI"], stdout: "pipe", stderr: "pipe" });
+    expect(run.exitCode).toBe(0);
+    const out = JSON.parse(run.stdout.toString());
+    expect(out.canonical_sha256).toMatch(/^[a-f0-9]{64}$/);
+    const receipt = JSON.parse(readFileSync(outputPath, "utf8"));
+    const { captured_at, ...rest } = receipt;
+    const expected = createHash("sha256").update(JSON.stringify(rest)).digest("hex");
+    expect(out.canonical_sha256).toBe(expected);
   });
 });

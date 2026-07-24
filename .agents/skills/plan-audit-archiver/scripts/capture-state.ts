@@ -136,7 +136,10 @@ function main() {
     writeFileSync(outputPath, text, { flag: "wx" });
     if (!statSync(outputPath).isFile() || statSync(outputPath).size === 0) throw new Error("state receipt write integrity check failed");
     JSON.parse(readFileSync(outputPath, "utf8"));
-    console.log(JSON.stringify({ path: outputPath, sha256: sha256File(outputPath), entries: receipt.status_entries.length }));
+    const fileSha = sha256File(outputPath);
+    const { captured_at, ...rest } = receipt;
+    const canonicalSha = createHash("sha256").update(JSON.stringify(rest)).digest("hex");
+    console.log(JSON.stringify({ path: outputPath, sha256: fileSha, canonical_sha256: canonicalSha, entries: receipt.status_entries.length }));
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exit(1);
