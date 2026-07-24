@@ -48,7 +48,7 @@ Use [MODE] SUBAGENT only when a task has a clearly bounded subtask, a specialize
 Use [MODE] MULTI-AGENT only when multiple subtasks are low-coupling, independently verifiable, and parallel execution will materially improve speed or quality.
 
 6. Do not dispatch subagents for:
-- very small tasks
+- very small tasks requiring judgment (mechanical small tasks may be delegated to cheap sub-agents)
 - strongly sequential tasks
 - tasks with heavy shared-file overlap
 - tasks requiring one unified final judgment or one tightly coupled implementation path
