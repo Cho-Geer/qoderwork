@@ -62,7 +62,7 @@ Phase 2: Post-Execution Audit
 
 ### Step 2: 可用 skill 扫描
 
-**v2.6 新增**：扫描执行类 skill 之前，先检查是否需要 dispatch 评估。如果任务涉及代码/文件操作，先引用 `task-dispatch-router` 输出 Dispatch Assessment（MODE + 角色 + 模型 tier），再根据 MODE 决定后续流程：
+**v2.6 新增**：扫描执行类 skill 之前，先检查是否需要 dispatch 评估。如果任务涉及代码/文件操作，先引用 `task-dispatch-router` 输出 Dispatch Assessment（MODE + 角色），再根据 MODE 决定后续流程：
 - SINGLE → 继续本 Phase -1 的 skill 扫描
 - SUBAGENT → 构造 dispatch prompt 并派遣子 agent，pre-flight checklist 由子 agent 执行
 - MULTI-AGENT → 引用 `dispatching-parallel-agents` 确定并行策略

@@ -6,7 +6,7 @@ description: >-
   spec determinism) and outputs a dispatch recommendation: SINGLE mode (do it
   yourself), SUBAGENT mode (dispatch one sub-agent with role + model), or
   MULTI-AGENT mode (dispatch multiple sub-agents in parallel). References
-  subagent-driven-development for model-tier rules and dispatching-parallel-agents
+  dispatching-parallel-agents
   for parallel/sequential decisions — does not duplicate them. Trigger: any task
   that involves code changes, file edits, git commit, multi-step work, or
   uncertainty about whether to delegate. Also trigger: 提交文件, 修改代码, 实施计划,

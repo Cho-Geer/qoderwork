@@ -48,7 +48,7 @@ Main agent handles reasoning, planning, auditing. Sub-agents handle execution.
 Use [MODE] SINGLE only when the task is too small to decompose or requires main agent's direct design judgment.
 
 6. Do not dispatch subagents for:
-- very small tasks requiring judgment (mechanical small tasks may be delegated to cheap sub-agents)
+- very small tasks requiring judgment (mechanical small tasks may be delegated to sub-agents)
 - strongly sequential tasks
 - tasks with heavy shared-file overlap
 - tasks requiring one unified final judgment or one tightly coupled implementation path
