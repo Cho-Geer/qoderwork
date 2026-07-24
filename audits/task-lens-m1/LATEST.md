@@ -1,6 +1,6 @@
 # TASK-LENS-M1 LATEST
 
-**Active phase**: PHASE-04 (ACCEPTED) → PHASE-05 (BLOCKED)
+**Active phase**: PHASE-04 (ACCEPTED) → PHASE-05 (NOT_STARTED, Freeze Gate pending)
 
 ## PHASE-04
 **Plan**: plans/task-lens-m1/04-phase-coverage-card-artifact.md

@@ -1,6 +1,6 @@
 {
   "schema_version": "phase-progression/v1",
-  "plan_index_sha256": "0a7cb204ff38cd894fa0be9089f0837b7caf37f9c25f9462872ddd500e7d626a",
+  "plan_index_sha256": "60f6a3a6a08a3583a44dd9a85e12b741b12f0e25ed48f0cdb3d4e8873a2a05e9",
   "phase_file_sha256": "256309533e72c678b70647cc1243f50ea75f06ad2256895c2a5bcf75b3908876",
   "audit_report_sha256": "fd7d06a261307d8029ee1eb4de10e606d0f3b38e992be1c99d72eac81b45f964",
   "validator_output_sha256": "fd21b3f4876324ac2bddf10c61a7d1f99e7dfb61a7a15e1f0c7e0134f4898c08",

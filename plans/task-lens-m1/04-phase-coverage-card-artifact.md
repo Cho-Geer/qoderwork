@@ -4,7 +4,8 @@
 **Depends on**: PHASE-03
 **Outcome**: TaskGraph 获得可信 observation/sideEffects，并一次性写出单一 card、graph、receipt；尚不写 metrics。
 **Evidence level**: component
-**Progression status**: `NOT_STARTED`
+**Progression status**: `ACCEPTED`
+**Completion receipt**: `../../audits/task-lens-m1/evidence/progression-receipt-PHASE-04.json`
 
 ## Goal
 
@@ -160,9 +161,9 @@ rg -n 'FAKE-INJECTION' scripts/task-lens/__tests__/artifact-writer.test.ts
 
 ## Phase completion gate
 
-- [ ] PHASE-04 Freeze Gate 与共享 caller tests 完整。
-- [ ] coverage 两路径、未绑定降级、side-effect/card checks 全 PASS。
-- [ ] canonical/atomic/conflict 单一 mutations 精确失败。
-- [ ] 真实 writeArtifacts 路径覆盖；fake 均有 FAKE-INJECTION。
-- [ ] typecheck 零新增、bun.lock 无 diff、Allowed-file diff only。
-- [ ] PHASE-05 在全部勾选前保持 BLOCKED。
+- [x] PHASE-04 Freeze Gate 与共享 caller tests 完整。
+- [x] coverage 两路径、未绑定降级、side-effect/card checks 全 PASS。
+- [x] canonical/atomic/conflict 单一 mutations 精确失败。
+- [x] 真实 writeArtifacts 路径覆盖；fake 均有 FAKE-INJECTION。
+- [x] typecheck 零新增、bun.lock 无 diff、Allowed-file diff only。
+- [x] PHASE-05 在全部勾选前保持 BLOCKED。
