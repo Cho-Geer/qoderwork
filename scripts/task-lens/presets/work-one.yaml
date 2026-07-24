@@ -1,0 +1,24 @@
+schemaVersion: task-lens.config/v1
+entries:
+  - src/index.ts#main
+sideEffectTokens:
+  - kind: DB
+    token: new Database
+  - kind: DB
+    token: db.query
+  - kind: DB
+    token: db.run
+  - kind: FS
+    token: writeFileSync
+  - kind: FS
+    token: readFile
+  - kind: FS
+    token: mkdirSync
+  - kind: FS
+    token: unlinkSync
+  - kind: NET
+    token: fetch
+  - kind: PROC
+    token: Bun.spawn
+  - kind: PROC
+    token: Bun.spawnSync

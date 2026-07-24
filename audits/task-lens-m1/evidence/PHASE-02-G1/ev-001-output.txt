@@ -1,0 +1,16 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/task-lens/__tests__/input-diff.test.ts:
+(pass) TL-DIFF-WT working-tree extraction > all-pass: real runCommand, three change kinds present [29.07ms]
+
+ 1 pass
+ 22 filtered out
+ 0 fail
+ 10 expect() calls
+Ran 1 test across 1 file. [77.00ms]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

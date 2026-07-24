@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-02",
+  "generation": 1,
+  "id": "EV-001",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun test scripts/task-lens/__tests__/input-diff.test.ts -t 'TL-DIFF-WT.*all-pass'",
+  "observed": "PASS",
+  "requirement_id": "REQ-002",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-GOOD-001",
+  "evidence_level": "component",
+  "repository_state_sha256": "210f70ed14890072c3cfeb48e4bf144a43837546232158e7ae049478cdfc5bf7",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-02-G1/ev-001-output.txt",
+      "sha256": "4ff5d6031c033703ac208fe3542a4c6a7cdaa864a1a10b0561d791c702fd0f47"
+    }
+  ],
+  "completed_at": "2026-07-24T01:37:44.310Z"
+}

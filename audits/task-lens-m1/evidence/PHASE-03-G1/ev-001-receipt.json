@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-03",
+  "generation": 1,
+  "id": "EV-001",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun test scripts/task-lens/__tests__/provider-graph.test.ts -t 'TL-PROBE.*all-pass'",
+  "observed": "PASS",
+  "requirement_id": "REQ-005",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-004",
+  "fixture_id": "FIXTURE-GOOD-001",
+  "evidence_level": "component",
+  "repository_state_sha256": "2f5b24dbb53224648370a7043c54feaf6986b07bc8fb744d0cb280cd00534cd2",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-03-G1/ev-001-output.txt",
+      "sha256": "6126bc84053e43fcb1d1fc9fddf8f4a6581e521db48da1f2343abd324690a8af"
+    }
+  ],
+  "completed_at": "2026-07-24T08:01:35.936Z"
+}

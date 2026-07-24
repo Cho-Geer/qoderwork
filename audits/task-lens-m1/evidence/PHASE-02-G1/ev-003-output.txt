@@ -1,0 +1,16 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/task-lens/__tests__/command-security.test.ts:
+(pass) TL-CMD-ARGV safe argv + shell=false + minimal env > all-pass: real runCommand git --version returns fixed argv, shell false [2.49ms]
+
+ 1 pass
+ 24 filtered out
+ 0 fail
+ 9 expect() calls
+Ran 1 test across 1 file. [72.00ms]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

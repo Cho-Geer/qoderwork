@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-03",
+  "generation": 1,
+  "id": "EV-004",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun -e 'const{filterEdges}=require(\"./scripts/task-lens/graph-builder.ts\");try{filterEdges(null,[]);process.exit(0)}catch(e){process.exit(1)}'",
+  "observed": "FAIL",
+  "requirement_id": "REQ-006",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-005",
+  "fixture_id": "FIXTURE-BAD-002",
+  "evidence_level": "component",
+  "repository_state_sha256": "2f5b24dbb53224648370a7043c54feaf6986b07bc8fb744d0cb280cd00534cd2",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-03-G1/ev-004-output.txt",
+      "sha256": "b1e5c7757c6db7d7b5636d02c5636f1acb77c4071df430f80a8f52de6f2b8939"
+    }
+  ],
+  "completed_at": "2026-07-24T08:01:36.092Z"
+}

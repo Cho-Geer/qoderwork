@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-03",
+  "generation": 1,
+  "id": "EV-005",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun test scripts/task-lens/__tests__/spine.test.ts -t 'TL-SPINE.*all-pass'",
+  "observed": "PASS",
+  "requirement_id": "REQ-007",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-006",
+  "fixture_id": "FIXTURE-GOOD-003",
+  "evidence_level": "component",
+  "repository_state_sha256": "2f5b24dbb53224648370a7043c54feaf6986b07bc8fb744d0cb280cd00534cd2",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-03-G1/ev-005-output.txt",
+      "sha256": "a83356e60224ce8f1d6064c1792553933002b9566a3910e608ffc502de9d21c6"
+    }
+  ],
+  "completed_at": "2026-07-24T08:01:36.168Z"
+}

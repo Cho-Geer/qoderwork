@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-02",
+  "generation": 1,
+  "id": "EV-006",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun -e 'const{parseCli}=require(\"./scripts/task-lens/cli.ts\");try{parseCli([\"invalid-subcommand\",\"--project\",process.cwd()]);process.exit(0)}catch(e){process.exit(e.exitCode??1)}'",
+  "observed": "FAIL",
+  "requirement_id": "REQ-004",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-003",
+  "fixture_id": "FIXTURE-BAD-003",
+  "evidence_level": "component",
+  "repository_state_sha256": "210f70ed14890072c3cfeb48e4bf144a43837546232158e7ae049478cdfc5bf7",
+  "exit_code": 10,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-02-G1/ev-006-output.txt",
+      "sha256": "7fd7e2f9173239cbb4fa5670762105a0b645f1e595abc40964dcbc537bfb6377"
+    }
+  ],
+  "completed_at": "2026-07-24T01:37:44.586Z"
+}

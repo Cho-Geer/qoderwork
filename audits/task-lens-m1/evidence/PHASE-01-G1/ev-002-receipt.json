@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-01",
+  "generation": 1,
+  "id": "EV-002",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun -e 'const sl=JSON.parse(await Bun.file(\"audits/task-lens-m1/scope-lock-PHASE-02.json\").text());sl.approval.actor_type=\"AGENT\";const tmp=\"/tmp/tl-freeze-negative-scope-lock.json\";await Bun.write(tmp,JSON.stringify(sl,null,2)+\"\\n\");const y=await Bun.file(tmp).json();if(y.approval.actor_type!==\"HUMAN\"){console.log(\"FAIL: actor_type is AGENT (as expected)\");process.exit(1)}console.log(\"PASS: unexpected\");process.exit(0)'",
+  "observed": "FAIL",
+  "requirement_id": "REQ-001",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-BAD-001",
+  "evidence_level": "component",
+  "repository_state_sha256": "99763739116b4dfbf16b34fcff66cdd7f54ac926b391c660f0737d2ed2e53392",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-01-G1/ev-002-output.txt",
+      "sha256": "6feaa1d90b70f3e7deb792c359f3decaf1d7a72850196b4f6a1741a14e69e431"
+    }
+  ],
+  "completed_at": "2026-07-24T04:19:12.199Z"
+}

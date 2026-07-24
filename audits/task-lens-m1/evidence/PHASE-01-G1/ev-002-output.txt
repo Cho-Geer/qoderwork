@@ -1,0 +1,1 @@
+FAIL: actor_type is AGENT (as expected)

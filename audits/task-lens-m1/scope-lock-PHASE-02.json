@@ -5,11 +5,11 @@
   "plan_sources": [
     {
       "path": "plans/task-lens-m1/00-plan-index.md",
-      "sha256": "eaf98fde9f6d941ecf0feebd844de89dadd9aac67c844daaa6371cd3294fdfbd"
+      "sha256": "bc22111d8a9254230d854b551661d216eedbc9fa15af2ec5a2dc1c4a8a47d33f"
     },
     {
       "path": "plans/task-lens-m1/02-phase-input-safety-diff.md",
-      "sha256": "c6367b8aa2506ff10ecce7d1546ebeea71c4f8cf45aa05a98b6c148207d91ced"
+      "sha256": "e0455854a796bb8a26ca4aee2368509abeac7768764e958be42e5a32baa34b32"
     }
   ],
   "scope": {
@@ -89,33 +89,33 @@
       "disposition": "IN_SCOPE",
       "requirement_id": "REQ-002",
       "source": "plans/task-lens-m1/02-phase-input-safety-diff.md#REQ-002",
+      "behavior": "working-tree/commit 输入固定快照：tracked diff+untracked full file 纳入模型；commit mode base 为 full SHA、head=current HEAD、worktree clean 否则拒绝；rename/delete 保留 old/new，纯删除写 DeletedRegion",
+      "oracle": "临时 Git repo fixture（initial commit + staged/unstaged/untracked/rename/delete）：working-tree 提取三类变更齐全；commit 提取要求 full SHA 且 current HEAD 且 worktree clean 否则 exit 10；DeletedRegion 含 hash/range/provenance=preimage-only。实现无关：用 git 原生命令独立复算 hunks 与 DeletedRegion 比对",
       "kind": "BEHAVIORAL",
-      "behavior": "working-tree/commit 输入固定快照与 rename/delete 保留",
       "required_evidence_level": "component",
-      "oracle_id": "ORACLE-001",
-      "oracle": "临时 Git repo fixture 独立复算 hunks/DeletedRegion 比对"
+      "oracle_id": "ORACLE-001"
     },
     {
       "plan_item_id": "PLAN-REQ-003",
       "disposition": "IN_SCOPE",
       "requirement_id": "REQ-003",
       "source": "plans/task-lens-m1/02-phase-input-safety-diff.md#REQ-003",
+      "behavior": "命令/CLI/config/path 输入安全：Bun.spawn 固定 argv、shell=false、最小 env；30s/5MiB/取消/非零分类；绝对路径+realpath/symlink 边界；固定 YAML schema，未知字段/正则/项目内 out 拒绝 exit 10",
+      "oracle": "spawn receipt 检查 argv 固定且 shell=false；timeout/limit 测试产出 exact ProcessFailure 且进程树已终止；realpath 测试 out 严格在 project 外，parent/symlink 不可读则 exit 10；parsed YAML exact schema 仅固定 keys/literals。实现无关：检查 Bun.spawnSync 调用参数与 exit code 分类表",
       "kind": "BEHAVIORAL",
-      "behavior": "命令/CLI/config/path 输入安全合同",
       "required_evidence_level": "component",
-      "oracle_id": "ORACLE-002",
-      "oracle": "spawn receipt argv/shell 检查 + exit code 分类表"
+      "oracle_id": "ORACLE-002"
     },
     {
       "plan_item_id": "PLAN-REQ-004",
       "disposition": "IN_SCOPE",
       "requirement_id": "REQ-004",
       "source": "plans/task-lens-m1/02-phase-input-safety-diff.md#REQ-004",
+      "behavior": "receipt/taskId 版本化：固定字段 canonical JSON 后 SHA-256 得 taskId；generatedAt 不参与 taskId；CLI generate/feedback/metrics summarize 语法，其余组合 exit 10",
+      "oracle": "两 receipt 同输入异 clock：taskId 哈希相等；argv matrix：唯一 subcommand grammar，未知组合 exit 10。实现无关：对 canonical JSON 独立 SHA-256 复算比对",
       "kind": "BEHAVIORAL",
-      "behavior": "receipt/taskId canonical hash 版本化与 CLI 语法",
       "required_evidence_level": "component",
-      "oracle_id": "ORACLE-003",
-      "oracle": "两 receipt 异 clock 同 taskId + argv matrix exit 10"
+      "oracle_id": "ORACLE-003"
     }
   ],
   "repository_scope": {

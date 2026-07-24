@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "lock_id": "TASK-LENS-M1-PHASE-03-20260724",
+  "created_at": "2026-07-24T03:40:00Z",
+  "plan_sources": [
+    {
+      "path": "plans/task-lens-m1/00-plan-index.md",
+      "sha256": "bc22111d8a9254230d854b551661d216eedbc9fa15af2ec5a2dc1c4a8a47d33f"
+    },
+    {
+      "path": "plans/task-lens-m1/03-phase-provider-graph-spine.md",
+      "sha256": "10db7ca47d49d3c5ea78cb00cd5bf125d163c3f87be9f3fca0dedf015cdcda91"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "2026-07-24T03:40:00Z",
+    "in_scope": [
+      "REQ-005",
+      "REQ-006",
+      "REQ-007"
+    ],
+    "out_of_scope": [
+      "M1.5/M2/M3 与多卡行为",
+      "work-one 写入",
+      "bun.lock 与新增依赖",
+      "scripts/_b1_live.ts TS2307 修复",
+      "coverage 读取（PHASE-04）",
+      "卡片/artifact/metrics 写入（PHASE-04/05）",
+      "codegraph sync/index/init（provider 只读）"
+    ],
+    "assumptions": [
+      {
+        "statement": "PHASE-03 的 7 个 allowed files 当前均不存在，实施为纯新增",
+        "disproof": "test -e scripts/task-lens/codegraph-provider.ts 命中则假设失效"
+      },
+      {
+        "statement": "typecheck 基线仅含 BASELINE-TS-001（_b1_live.ts TS2307），无其他诊断",
+        "disproof": "typecheck-after-PHASE-02.txt 中 error TS 行数不等于 1 则假设失效"
+      },
+      {
+        "statement": "work-one CodeGraph DB schema v8 可被 readonly 打开，CLI status up-to-date",
+        "disproof": "codegraph status 显示 pending 或 DB 打开失败则假设失效"
+      }
+    ],
+    "exit_criteria": [
+      "TL-PROBE/FALLBACK/SEED/EDGE-KIND/EDGE-META/GRAPH-BUDGET/SPINE/DISPLAY/TSC-DELTA 全 PASS",
+      "2 suites PASS（provider-graph.test.ts + spine.test.ts）",
+      "真实 SQLite provider 与真实 seed→graph→spine 路径各有覆盖",
+      "每个 fake 有 FAKE-INJECTION，单一 mutation 只失败一个 check",
+      "typecheck 零新增、bun.lock 无 diff、Allowed-file diff only"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-005",
+      "plan_item_id": "PLAN-REQ-005",
+      "kind": "BEHAVIORAL",
+      "source": "plans/task-lens-m1/03-phase-provider-graph-spine.md#REQ-005",
+      "behavior": "provider 启动：readonly 打开 .codegraph/codegraph.db 并 probe required tables/columns/version；DB capability 不足时固定 CLI fallback；双路不可用 exit 12",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-004",
+      "oracle": "临时 SQLite all-pass fixture（schema v8-like）：readonly PRAGMA/select 探测 required tables/columns/version receipt 完整；CLI fallback：固定命令/parse，唯一 rows；双路失败 exit 12。实现无关：用 bun:sqlite 独立 probe 比对 receipt 字段"
+    },
+    {
+      "id": "REQ-006",
+      "plan_item_id": "PLAN-REQ-006",
+      "kind": "BEHAVIORAL",
+      "source": "plans/task-lens-m1/03-phase-provider-graph-spine.md#REQ-006",
+      "behavior": "解析 seeds/edges：live hunks 与 current function/method range 求交；edges 仅 calls+function/method、无自环/无位置边；metadata 保留 confidence/resolvedBy；低置信度 static-low",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-005",
+      "oracle": "DiffModel fixture（add/modify/delete hunks）+ FunctionRange fixture：seed overlap 为 [newStart,newStart+newLines-1] inclusive 相交，newLines=0 不产生 seed；edge filter 顺序固定：kind calls → endpoint kinds → target file/range present → remove self-loop → stable dedup。实现无关：独立 interval join 复算 seeds 比对"
+    },
+    {
+      "id": "REQ-007",
+      "plan_item_id": "PLAN-REQ-007",
+      "kind": "BEHAVIORAL",
+      "source": "plans/task-lens-m1/03-phase-provider-graph-spine.md#REQ-007",
+      "behavior": "构图/展示：双向 BFS 搜索 maxNodes=200/maxEdges=500/maxFanout=50；entry precedence 与稳定 tie-break；单卡 SpineForest 显示≤20，余 seed 在 uncoveredSeeds；超限 exit 2",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-006",
+      "oracle": "deterministic node/edge set fixture（branches/cycle/low confidence）：BFS counters 不超限且 truncation 准确；SpineForest primaryPath 取最佳、branches 按 from/path/seedIds 排序加入直到 union display node=20；超限时 collapsedCount>0、truncation 含 MAX_DISPLAY_NODES、exit 2。实现无关：独立 BFS 复算 node/edge count 比对"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-005",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-005",
+      "source": "plans/task-lens-m1/03-phase-provider-graph-spine.md#REQ-005"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-006",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-006",
+      "source": "plans/task-lens-m1/03-phase-provider-graph-spine.md#REQ-006"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-007",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-007",
+      "source": "plans/task-lens-m1/03-phase-provider-graph-spine.md#REQ-007"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "scripts/task-lens/codegraph-provider.ts",
+      "scripts/task-lens/seed-resolver.ts",
+      "scripts/task-lens/graph-builder.ts",
+      "scripts/task-lens/spine.ts",
+      "scripts/task-lens/presets/work-one.yaml",
+      "scripts/task-lens/__tests__/provider-graph.test.ts",
+      "scripts/task-lens/__tests__/spine.test.ts"
+    ],
+    "forbidden_paths": [
+      "bun.lock",
+      "scripts/_b1_live.ts",
+      "/home/zhaoge/workspace/opencode/work-one",
+      "scripts/task-lens/types.ts",
+      "scripts/task-lens/cli.ts",
+      "scripts/task-lens/command-runner.ts",
+      "scripts/task-lens/config.ts",
+      "scripts/task-lens/diff-extractor.ts",
+      "scripts/task-lens/__tests__/input-diff.test.ts",
+      "scripts/task-lens/__tests__/command-security.test.ts",
+      "scripts/test-serve/**"
+    ]
+  },
+  "impact_analysis": {
+    "modified_functions": [],
+    "shared_functions": [
+      "runCommand",
+      "sha256Hex"
+    ],
+    "caller_scan_command": "rg -n --no-heading 'runCommand|sha256Hex' scripts/task-lens/ --glob '*.ts' 2>&1",
+    "caller_files": [
+      "scripts/task-lens/cli.ts",
+      "scripts/task-lens/command-runner.ts",
+      "scripts/task-lens/config.ts",
+      "scripts/task-lens/diff-extractor.ts",
+      "scripts/task-lens/__tests__/command-security.test.ts",
+      "scripts/task-lens/__tests__/input-diff.test.ts"
+    ],
+    "caller_tests": [
+      "scripts/task-lens/__tests__/command-security.test.ts",
+      "scripts/task-lens/__tests__/input-diff.test.ts"
+    ],
+    "scan_output_sha256": "10cc5b1f06a65ba5bb168f8948ee6d098c778d1a2b7eb581976b97e1f78c6006"
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "ChoGeer",
+    "approved_at": "2026-07-24T03:50:00Z",
+    "evidence": "Scope-lock for PHASE-03 (StructureProvider, calling graph, single-card SpineForest). Human reviewer (ChoGeer) approved via implicit authorization: when asked to approve, responded 'continue using your best judgment'. in_scope=REQ-005/006/007; 7 allowed paths; shared_functions=runCommand,sha256Hex; caller_tests=command-security+input-diff; P-02A validator exit 0 confirmed."
+  }
+}

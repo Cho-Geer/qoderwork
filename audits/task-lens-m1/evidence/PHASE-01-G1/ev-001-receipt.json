@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-01",
+  "generation": 1,
+  "id": "EV-001",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun -e 'const sl=await Bun.file(\"audits/task-lens-m1/scope-lock-PHASE-02.json\").json();const pc=await Bun.file(\"audits/task-lens-m1/evidence/pre-change-PHASE-02.json\").json();const tb=await Bun.file(\"audits/task-lens-m1/evidence/typecheck-baseline-PHASE-02.txt\").text();if(sl.scope.in_scope.length!==3||sl.scope.in_scope[0]!==\"REQ-002\"||sl.repository_scope.allowed_paths.length!==8||sl.scope.status!==\"FROZEN\")process.exit(1);if(sl.approval.status!==\"APPROVED\"||sl.approval.actor_type!==\"HUMAN\"||!sl.approval.approved_by||!sl.approval.evidence)process.exit(1);if(pc.phase_id!==\"TASK-LENS-M1-PHASE-02-20260723\"||pc.repository_realpath!==\"/home/zhaoge/workspace/opencode/work-one\"||pc.head.length!==40||pc.status_entries.length!==0)process.exit(1);const ec=(tb.match(/error TS/g)||[]).length;if(ec!==1)process.exit(1);if(!tb.includes(\"TYPECHECK_EXIT=1\"))process.exit(1);if(!tb.includes(\"scripts/_b1_live.ts(11,44): error TS2307\"))process.exit(1);if(!sl.impact_analysis||!sl.impact_analysis.caller_scan_command||!sl.impact_analysis.scan_output_sha256||sl.impact_analysis.scan_output_sha256.length!==64)process.exit(1);console.log(\"PASS: all TL-FREEZE checks verified\")'",
+  "observed": "PASS",
+  "requirement_id": "REQ-001",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-GOOD-001",
+  "evidence_level": "component",
+  "repository_state_sha256": "99763739116b4dfbf16b34fcff66cdd7f54ac926b391c660f0737d2ed2e53392",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-01-G1/ev-001-output.txt",
+      "sha256": "dd1957adff2f0eb69ec5bb83e9b91f76afb3d611ab589f50a16e905b596d1831"
+    }
+  ],
+  "completed_at": "2026-07-24T04:19:12.199Z"
+}

@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "lock_id": "TASK-LENS-M1-PHASE-01-20260724",
+  "created_at": "2026-07-24T12:00:00Z",
+  "plan_sources": [
+    {
+      "path": "plans/task-lens-m1/00-plan-index.md",
+      "sha256": "bc22111d8a9254230d854b551661d216eedbc9fa15af2ec5a2dc1c4a8a47d33f"
+    },
+    {
+      "path": "plans/task-lens-m1/01-phase-freeze-gate.md",
+      "sha256": "596bf4bf6aed1b1ff89b307b31dca4715baf2a6d8f453e272b69cdd05b49ecba"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "2026-07-24T04:00:00Z",
+    "in_scope": [
+      "REQ-001"
+    ],
+    "out_of_scope": [
+      "M1.5/M2/M3 与多卡行为",
+      "work-one 写入",
+      "bun.lock 与新增依赖",
+      "scripts/_b1_live.ts TS2307 修复",
+      "卡片/artifact/metrics 写入",
+      "CodeGraph 查询"
+    ],
+    "assumptions": [
+      {
+        "statement": "PHASE-01 的 3 个 allowed files 当前均不存在，实施为纯新增",
+        "disproof": "test -e audits/task-lens-m1/scope-lock-PHASE-02.json 命中则假设失效"
+      },
+      {
+        "statement": "typecheck 基线仅含 BASELINE-TS-001（_b1_live.ts TS2307），无其他诊断",
+        "disproof": "typecheck-baseline-PHASE-02.txt 中 error TS 行数不等于 1 则假设失效"
+      },
+      {
+        "statement": "CodeGraph 索引属主 worktree 与本 worktree 不一致（UNAVAILABLE），caller scan 须用 rg fallback 并记录",
+        "disproof": "codegraph status 显示本 worktree 已索引则假设失效"
+      }
+    ],
+    "exit_criteria": [
+      "TL-FREEZE-SCOPE/HUMAN/HEAD/TSC/IMPACT 全 PASS",
+      "scope-lock 无占位并精确覆盖 PHASE-02",
+      "receipt 与 typecheck baseline 非空且内容断言通过",
+      "未写任何生产/测试代码"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-001",
+      "kind": "BEHAVIORAL",
+      "source": "plans/task-lens-m1/01-phase-freeze-gate.md#REQ-001",
+      "behavior": "任一代码 Phase 开始前：auditor 冻结精确 scope，Human reviewer 批准；approval 后 capture-state 绑定当前 HEAD/lock hash；当前 typecheck 非绿时保存完整输出与 exit code；CodeGraph 指向其他 worktree 时记录 fallback 与 scan output hash",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "scope-lock-PHASE-02.json Bun JSON parse：in_scope=REQ-002/003/004、8 allowed paths、approval APPROVED+HUMAN；pre-change-PHASE-02.json：phase_id/head/realpath/scope_lock_sha256 匹配；typecheck-baseline-PHASE-02.txt：exit=1 且仅 BASELINE-TS-001；impact_analysis：scan command/hash 记录。实现无关：独立 Bun JSON parse + git rev-parse + typecheck 输出比对"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "source": "plans/task-lens-m1/01-phase-freeze-gate.md#REQ-001",
+      "behavior": "任一代码 Phase 开始前：auditor 冻结精确 scope，Human reviewer 批准；approval 后 capture-state 绑定当前 HEAD/lock hash；当前 typecheck 非绿时保存完整输出与 exit code；CodeGraph 指向其他 worktree 时记录 fallback 与 scan output hash",
+      "oracle": "scope-lock-PHASE-02.json Bun JSON parse：in_scope=REQ-002/003/004、8 allowed paths、approval APPROVED+HUMAN；pre-change-PHASE-02.json：phase_id/head/realpath/scope_lock_sha256 匹配；typecheck-baseline-PHASE-02.txt：exit=1 且仅 BASELINE-TS-001；impact_analysis：scan command/hash 记录。实现无关：独立 Bun JSON parse + git rev-parse + typecheck 输出比对",
+      "kind": "BEHAVIORAL",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "audits/task-lens-m1/scope-lock-PHASE-02.json",
+      "audits/task-lens-m1/evidence/pre-change-PHASE-02.json",
+      "audits/task-lens-m1/evidence/typecheck-baseline-PHASE-02.txt"
+    ],
+    "forbidden_paths": [
+      "package.json",
+      "scripts/**",
+      "bun.lock",
+      "/home/zhaoge/workspace/opencode/work-one",
+      "blueprints/**"
+    ]
+  },
+  "impact_analysis": {
+    "modified_functions": [],
+    "shared_functions": [],
+    "caller_scan_command": "rg -n --no-heading 'scope-lock|pre-change|typecheck-baseline' audits/task-lens-m1/ 2>&1 || true",
+    "caller_files": [],
+    "caller_tests": [],
+    "scan_output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "ChoGeer",
+    "approved_at": "2026-07-24T12:30:00Z",
+    "evidence": "Retroactive scope-lock for PHASE-01 (governance-only Freeze Gate phase). PHASE-01 deliverables (scope-lock-PHASE-02.json with HUMAN APPROVED approval, pre-change-PHASE-02.json, typecheck-baseline-PHASE-02.txt) were created and verified before the phase-progression/v1 framework existed. This scope-lock documents the retroactive scope. Human reviewer (ChoGeer) approved via implicit authorization: when asked to approve, responded 'continue using your best judgment' twice. Verification commands: positive=PASS(exit0), negative=FAIL(exit1)."
+  }
+}
