@@ -321,4 +321,57 @@ describe("validate-plan PLAN_SET mode", () => {
       expect(codes).toContain("PLAN_INDEX_LENGTH_EXCEEDED");
     });
   });
+
+  test("validates progression status fields when the schema is enabled", () => {
+    const index = `# Plan index
+**Plan mode**: \`PLAN_SET\`
+**Status**: READY-FOR-IMPLEMENTATION
+**Progression schema**: \`phase-progression/v1\`
+**Only implementation path**: fixed
+**Evidence ceiling**: NOT-RUN
+## 1. Input contract and source ledger
+## 2. Decisions, scope, and non-goals
+## 3. Verified current baseline
+## 4. End-to-end traceability
+## 5. File change inventory
+## 6. Phase manifest
+| Order | Phase ID | File | Depends on | Status |
+|---|---|---|---|---|
+| 1 | PHASE-01 | \`01-phase-baseline.md\` | NONE | NOT_STARTED |
+`;
+    const phase = phaseSetSource().replace(
+      "**Phase ID**: \`PHASE-01\`",
+      "**Phase ID**: \`PHASE-01\`\n**Progression status**: \`NOT_STARTED\`\n**Completion receipt**: NONE",
+    );
+    const codes = parse(runValidator(createPlanSet({ index, phases: { "01-phase-baseline.md": phase } }))).errors.map((item: { code: string }) => item.code);
+    expect(codes).not.toContain("PHASE_STATUS_MISMATCH");
+    expect(codes).not.toContain("TOP_LEVEL_STATUS_MISMATCH");
+  });
+
+  test("rejects progression status drift and ACCEPTED without a receipt", () => {
+    const index = `# Plan index
+**Plan mode**: \`PLAN_SET\`
+**Status**: READY-FOR-IMPLEMENTATION
+**Progression schema**: \`phase-progression/v1\`
+**Only implementation path**: fixed
+**Evidence ceiling**: NOT-RUN
+## 1. Input contract and source ledger
+## 2. Decisions, scope, and non-goals
+## 3. Verified current baseline
+## 4. End-to-end traceability
+## 5. File change inventory
+## 6. Phase manifest
+| Order | Phase ID | File | Depends on | Status |
+|---|---|---|---|---|
+| 1 | PHASE-01 | \`01-phase-baseline.md\` | NONE | ACCEPTED |
+`;
+    const phase = phaseSetSource().replace(
+      "**Phase ID**: \`PHASE-01\`",
+      "**Phase ID**: \`PHASE-01\`\n**Progression status**: \`IN_PROGRESS\`\n**Completion receipt**: NONE",
+    );
+    const codes = parse(runValidator(createPlanSet({ index, phases: { "01-phase-baseline.md": phase } }))).errors.map((item: { code: string }) => item.code);
+    expect(codes).toContain("PHASE_STATUS_MISMATCH");
+    expect(codes).toContain("PHASE_RECEIPT_MISSING");
+    expect(codes).toContain("TOP_LEVEL_STATUS_MISMATCH");
+  });
 });

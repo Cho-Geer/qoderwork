@@ -81,6 +81,27 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
     P-07. Violation makes the pre-change receipt fail `validate-audit.ts`
     (`DIRTY_PATH_OUTSIDE_SCOPE`), rendering the audit `INVALID`.
 
+13. **Progression contract.** A plan using `**Progression schema**: `phase-progression/v1``
+    MUST use only `NOT_STARTED`, `IN_PROGRESS`, `ACCEPTED`, `BLOCKED`, or `INVALID`
+    in manifest and phase progression fields. `DONE` is historical prose only.
+    `ACCEPTED` requires a checked completion gate and a readable completion receipt;
+    the index `**Status**` is derived as `COMPLETE`, `IN-PROGRESS`, `BLOCKED`, or
+    `READY-FOR-IMPLEMENTATION` from ordered manifest states. Plans explicitly marked
+    `progression_schema: legacy` remain readable but cannot admit a new v2.1 phase.
+
+14. **P-02A admission.** Before submitting a v2.1-required next-phase scope-lock for
+    human approval, run:
+
+    ```bash
+    cd <qoderwork-worktree>
+    /home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts <plan-dir> <next-phase-id>
+    ```
+
+    Exit 0 is mandatory. Any missing/duplicate/invalid status, unchecked ACCEPTED
+    gate, missing or mismatched receipt, non-ACCEPT audit, or dependency drift is
+    `INVALID`; stop before approval. `pre-flight-enforcement` may sequence this
+    command but cannot replace it or write cross-phase state.
+
 ## Output sizing contract
 
 Count Unicode code points with `[...source].length`; do not use `wc -w` for a

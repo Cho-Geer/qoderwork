@@ -17,6 +17,7 @@ risks/rollback, and final completion gate.
 **Plan mode**: `SINGLE_FILE`
 **ID**: <stable-plan-id>
 **Status**: `BLOCKED-BY-DECISION` | `READY-FOR-IMPLEMENTATION` | `IN-PROGRESS`
+**Progression schema**: `phase-progression/v1` | `legacy`
 **Only implementation path**: <one sentence>
 **Evidence ceiling**: <highest level actually executed; use NOT-RUN initially>
 
@@ -88,6 +89,9 @@ risks/rollback, and final completion gate.
 
 ### Phase 0: <name> `[ANALYSIS/VERIFICATION/OBSERVATION]`
 
+**Progression status**: `NOT_STARTED` | `IN_PROGRESS` | `ACCEPTED` | `BLOCKED` | `INVALID`
+**Completion receipt**: `<relative receipt path>` (required when status is `ACCEPTED`)
+
 #### Goal
 
 - `<one independently verifiable outcome>`
@@ -118,6 +122,8 @@ risks/rollback, and final completion gate.
 
 - API/signature: `<exact signature>`
 - Fields/states/check names: `<complete literal list>`
+- Progression states are exactly `NOT_STARTED`, `IN_PROGRESS`, `ACCEPTED`, `BLOCKED`, and `INVALID`; `DONE` is historical prose only.
+- For `SINGLE_FILE`, this Phase block is the phase registry; its progression fields are the state surface.
 - Error/missing evidence behavior: `<exact result>`
 - Current vs historical source: `<exact observation>`
 

@@ -38,6 +38,7 @@ Hard limits:
 **Plan mode**: `PLAN_SET`
 **ID**: <stable-plan-id>
 **Status**: `BLOCKED-BY-DECISION` | `READY-FOR-IMPLEMENTATION` | `IN-PROGRESS`
+**Progression schema**: `phase-progression/v1` | `legacy`
 **Only implementation path**: <one sentence>
 **Evidence ceiling**: <highest level actually executed; use NOT-RUN initially>
 
@@ -106,8 +107,8 @@ Hard limits:
 
 | Order | Phase ID | File | Depends on | Status |
 |---|---|---|---|---|
-| 1 | PHASE-01 | `01-phase-<semantic-name>.md` | NONE | `READY/BLOCKED/DONE` |
-| 2 | PHASE-02 | `02-phase-<semantic-name>.md` | PHASE-01 | `READY/BLOCKED/DONE` |
+| 1 | PHASE-01 | `01-phase-<semantic-name>.md` | NONE | `NOT_STARTED/IN_PROGRESS/ACCEPTED/BLOCKED/INVALID` |
+| 2 | PHASE-02 | `02-phase-<semantic-name>.md` | PHASE-01 | `NOT_STARTED/IN_PROGRESS/ACCEPTED/BLOCKED/INVALID` |
 ```
 
 Manifest rules:
@@ -127,6 +128,8 @@ Manifest rules:
 **Depends on**: NONE
 **Outcome**: <one independently verifiable result>
 **Evidence level**: <component/integration/runtime-smoke/live-E2E>
+**Progression status**: `NOT_STARTED` | `IN_PROGRESS` | `ACCEPTED` | `BLOCKED` | `INVALID`
+**Completion receipt**: `<relative receipt path>` (required when status is `ACCEPTED`)
 
 ## Goal
 

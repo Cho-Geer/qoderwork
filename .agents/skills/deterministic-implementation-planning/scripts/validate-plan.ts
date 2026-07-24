@@ -2,6 +2,14 @@
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join } from "node:path";
+import {
+  deriveTopLevelStatus,
+  isProgressionSchema,
+  isProgressionStatus,
+  parseManifest,
+  parseProgressionStatus,
+  validateManifestRows,
+} from "./phase-progression.ts";
 
 type Finding = { code: string; message: string };
 type Metrics = { unicodeChars: number; lines: number; phases: number; checkboxes: number };
@@ -213,28 +221,6 @@ function validateSingle(path: string) {
   return metrics(source);
 }
 
-type ManifestRow = { order: number; id: string; file: string; dependencies: string[] };
-
-function parseManifest(source: string): ManifestRow[] {
-  const lines = source.split(/\r?\n/);
-  const heading = lines.findIndex((line) => line.trim() === "## 6. Phase manifest");
-  if (heading < 0) return [];
-  const rows: ManifestRow[] = [];
-  for (const line of lines.slice(heading + 1)) {
-    if (/^##\s/.test(line)) break;
-    if (!line.trim().startsWith("|")) continue;
-    const cells = line.split("|").slice(1, -1).map((cell) => cell.trim().replaceAll("`", ""));
-    if (!/^\d+$/.test(cells[0] ?? "")) continue;
-    rows.push({
-      order: Number(cells[0]),
-      id: cells[1] ?? "",
-      file: cells[2] ?? "",
-      dependencies: (cells[3] ?? "").split(",").map((item) => item.trim()).filter((item) => item && item !== "NONE"),
-    });
-  }
-  return rows;
-}
-
 function validatePlanSet(directory: string) {
   const indexPath = join(directory, "00-plan-index.md");
   const finalPath = join(directory, "99-final-verification.md");
@@ -265,10 +251,19 @@ function validatePlanSet(directory: string) {
     "## 9. Final completion gate",
   ], "MISSING_FINAL_CONTRACT", "99-final-verification.md");
 
-  const manifest = parseManifest(indexSource);
+  const progressionEnabled = isProgressionSchema(indexSource);
+  const parsedManifest = parseManifest(indexSource);
+  const manifest = parsedManifest.rows;
   if (manifest.length === 0) finding(errors, "EMPTY_PHASE_MANIFEST", "00-plan-index.md has no phase rows");
   if (manifest.length > LIMITS.planSetPhases) {
     finding(errors, "PLAN_SET_TOO_MANY_PHASES", `phases=${manifest.length}/${LIMITS.planSetPhases}`);
+  }
+  if (progressionEnabled) {
+    for (const diagnostic of parsedManifest.diagnostics) finding(errors, diagnostic.code, diagnostic.message);
+    for (const diagnostic of validateManifestRows(manifest)) finding(errors, diagnostic.code, diagnostic.message);
+    const derived = deriveTopLevelStatus(manifest.map((row) => parseProgressionStatus(row.status)));
+    const declared = indexSource.match(/^\*\*Status\*\*:\s*`?([^`\n]+)`?/m)?.[1].trim() ?? "";
+    if (declared !== derived) finding(errors, "TOP_LEVEL_STATUS_MISMATCH", `declared=${declared}, derived=${derived}`);
   }
   const ids = new Set<string>();
   const files = new Set<string>();
@@ -324,6 +319,30 @@ function validatePlanSet(directory: string) {
     const expectedDependency = row.dependencies.length === 0 ? "NONE" : row.dependencies.join(", ");
     if (declaredDependency !== expectedDependency) {
       finding(errors, "PHASE_DEPENDENCY_MISMATCH", `${row.file}: declared=${declaredDependency}, manifest=${expectedDependency}`);
+    }
+    if (progressionEnabled) {
+      const manifestStatus = parseProgressionStatus(row.status);
+      if (!manifestStatus) {
+        finding(errors, "PHASE_STATUS_INVALID", `${row.id}: manifest Status=${row.status ?? "<missing>"}`);
+      }
+      const phaseStatusRaw = source.match(/^\*\*Progression status\*\*:\s*`?([^`\n]+)`?/m)?.[1].trim() ?? "";
+      const phaseStatus = parseProgressionStatus(phaseStatusRaw);
+      if (!phaseStatus) finding(errors, "PHASE_STATUS_MISSING", `${row.file}: **Progression status**`);
+      else if (manifestStatus && phaseStatus !== manifestStatus) finding(errors, "PHASE_STATUS_MISMATCH", `${row.id}: manifest=${manifestStatus}, phase=${phaseStatus}`);
+      const gateMatch = source.match(/^(?:####|##) Phase completion gate\s*\n([\s\S]*?)(?=^#{1,4}\s|$)/m);
+      const gateText = gateMatch?.[1] ?? "";
+      const gateBoxes = gateText.match(/- \[([ xX])\]/g) ?? [];
+      const checked = gateBoxes.filter((box) => /\[[xX]\]/.test(box)).length;
+      if (manifestStatus === "ACCEPTED" && gateBoxes.length > 0 && checked !== gateBoxes.length) {
+        finding(errors, "PHASE_COMPLETION_GATE_MISMATCH", `${row.id}: ACCEPTED requires every completion gate checkbox checked`);
+      }
+      if (manifestStatus && manifestStatus !== "ACCEPTED" && checked > 0) {
+        finding(errors, "PHASE_COMPLETION_GATE_MISMATCH", `${row.id}: ${manifestStatus} cannot have checked completion gate`);
+      }
+      if (manifestStatus === "ACCEPTED") {
+        const receipt = source.match(/^\*\*Completion receipt\*\*:\s*(.+)$/m)?.[1].trim() ?? "";
+        if (!receipt || receipt === "NONE" || receipt === "N/A") finding(errors, "PHASE_RECEIPT_MISSING", `${row.id}: Completion receipt`);
+      }
     }
     checkPhaseComplexity(source, row.file, {
       requirements: "## Local requirements",

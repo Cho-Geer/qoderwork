@@ -536,6 +536,14 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 - **违反判定**：实施已开始但 `evidence/pre-change-<PHASE-N>.json` 不存在或为空
 - **违反后果**：审计必须判定为 `INVALID`（不是 BLOCKED），因为实施流程违规导致审计合同无效
 
+### 规则 P-02A：依赖 phase progression admission
+
+- **约束主体**：实施者与 Freeze Gate 审批前检查者
+- **触发条件**：`provenance_level = v2.1-required` 的 plan 准备为下一个 phase 填写或提交 `scope-lock.json` 进行 human approval
+- **规则**：必须先运行 `validate-phase-progression.ts <plan-dir> <next-phase-id>`。validator 必须确认所有直接与传递依赖 phase 的签署 `ACCEPT` audit、phase ID、可读 progression receipt 与其哈希、completion checkbox、phase `Progression status`、manifest `Status`、顶层派生 `Status` 以及 next phase 的 `Starting state and dependency` 一致。exit 0 是提交 human approval 的前置条件。
+- **违反判定**：任一状态缺失/非法/重复、receipt 缺失或哈希不匹配、audit 非 `ACCEPT`、completion gate 与状态不一致、依赖未 `ACCEPTED` 或顶层状态无法由 manifest 派生
+- **违反后果**：Freeze Gate 判为 `INVALID`，禁止进入 human approval；不得使用 `--force`、手工 `ACCEPTED` 或只更新 manifest 的旁路。`pre-flight-enforcement` 只能约束本次步骤顺序，不替代该 admission validator 或写入跨 phase 状态。
+
 ### 规则 P-03：工具链强制（审计执行）
 
 - **约束主体**：审计者（使用 plan-audit-archiver skill 的 agent）
