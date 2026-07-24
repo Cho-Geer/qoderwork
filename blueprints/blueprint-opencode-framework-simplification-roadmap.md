@@ -1,7 +1,7 @@
 # Blueprint: OpenCode 框架 Official Native Agent + Skill/Hook 重构路线图
 
-> **版本**: v1.14.5
-> **日期**: 2026-07-13 (v1.14.5 更新：收口 L3-012 core live E2E，校准 safe_shell VerifiedCommandPlan / execFile / spawn 状态与剩余 live allow-path 边界)
+> **版本**: v1.14.7
+> **日期**: 2026-07-23 (v1.14.7 更新：交叉审核确认 plan->Meta-Planner P0 映射 bug 已修复)
 > **状态**: 实施中（Phase 0-1 完成；Phase 2-4 主体完成但仍有精确矩阵尾巴；Phase 5 完成）
 > **适用项目**: `/home/zhaoge/workspace/opencode/work-one`
 > **依据**: `documents/review/opencode-framework-architecture-assessment.md` 审核结论 + 当前 work-one 代码与配置核验
@@ -17,7 +17,7 @@
 | Handler 链 | ✅ 已收敛 | static/code | before 11 / after 7 / system 2；dispatcher map 与 order 对齐；`path-validate`、`tool-governance` 均在 active before 链 | 注释中仍有个别旧数字但不影响 runtime |
 | Skill-first | ✅ 完成 | **live LLM E2E** | `skill-summary` active 且 2026-07-11 真实 serve 24/24 session 命中注入；`preflight-lite` 14 步 + framework maintenance flow；watcher 契约与脚本存在；`e2e/skill-summary-keyword-regression.md` 已升级为**中英文双语 + live LLM E2E**（SID 见明细） | 双语不一致（4/12 行 CN≠EN，F1-F4）+ live 捕获漂移（F6）+ `dispatch/investigation/裸API` 未触发 keyword（待修） |
 | Native Task / DAG | 🟡 主体完成 | runtime smoke | runtime smoke T2/T3/T4 记录 no-DAG、lineage、explore 调研 | `dispatch_subagent` 仍作为兼容 wrapper 存在 |
-| Enforcement | 🟡 主体完成 | runtime smoke + component + direct tool smoke | question recovery smoke；framework maintenance tests 13/13 PASS；rule-disposition active；相关治理/path/codegraph/safe_shell 套件 104/104 PASS；`safe_shell` 已通过 `VerifiedCommandPlan` + `execFile`/`spawn`（`shell:false`）执行 direct `pwd` smoke | `isWriteAllowed` / `getAgentShellAllowlist` 等 per-agent caller 仍需收口；**`agent-identity.ts` DISPLAY_NAMES 残留 `plan: "Meta-Planner"` 映射，导致 plan agent 权限走 legacy fallback、opencode.json plan 配置被忽略（2026-07-13 发现，见修订日志）**；safe_shell live allow-path、资源上限、中断、进程树终止 E2E 待补 |
+| Enforcement | 🟡 主体完成 | runtime smoke + component + direct tool smoke | question recovery smoke；framework maintenance tests 13/13 PASS；rule-disposition active；相关治理/path/codegraph/safe_shell 套件 104/104 PASS；`safe_shell` 已通过 `VerifiedCommandPlan` + `execFile`/`spawn`（`shell:false`）执行 direct `pwd` smoke | `isWriteAllowed` / `getAgentShellAllowlist` 等 per-agent caller 仍需收口；~~`agent-identity.ts` DISPLAY_NAMES 残留 `plan: "Meta-Planner"` 映射~~ **已修复（2026-07-23 交叉审核：`toDisplayName("plan")="plan"`，`getAgentPermission("plan").safe_shell="deny"` 正确命中 opencode.json，bug 已消除）**；safe_shell live allow-path、资源上限、中断、进程树终止 E2E 待补 |
 | Tool Governance MVC | 🟡 core 收缩已闭合，矩阵未完成 | component + static/code + unit + import smoke + live LLM E2E | `service/tool-governance/**` 接入 `tool-governance` before handler；`codegraph.ts` 已移除 repo-op/GitHub write 主裁决（仅留证据适配器）；before-dispatcher import smoke PASS；L3-012 session `ses_0a66bc378ffelPj4R46sNeG0zR` 见证 `safe_shell gh issue create --repo ...` 被 `[REPO-OP] ... layer=repo-policy outcome=deny` 阻断，且无 `WORKTREE_BOUNDARY` / `CODEGRAPH-ENFORCE` | L3-012 证据包为最小包；`gh api -X POST/PATCH/DELETE`、`gh issue comment`、`gh pr create`、release/workflow/secret 等 remote_write 变体仍需 companion cases；Orchestrator -> build allow-path live E2E 未补 |
 | Minimal State | 🟡 主体完成 | runtime smoke + component | JSONL writer + emitters；只读 hot-path 零 DB 写；deprecated 表停写 | `/children` HTML/non-JSON 故障注入未见独立证据 |
 | Legacy 退役 | ✅ 完成（归档闭环） | **live LLM E2E** + static/code + component | `skill-summary.ts` 已删除 9 个 inactive blueprint agent 映射；V5.1-V5.9 全量矩阵已归档（`plans/opencode-framework-simplification-roadmap/06-phase5-legacy-retirement.md` §7）；23 弱模型回归 23/23 PASS（2026-07-11 live GOV/GUARD 探针将 #5/#16/#21/#23 升级至 live LLM E2E，`e2e/weak-model-23-regression.md`）；`dispatch_subagent` 决策已固化（`temporary-audits/dispatch_subagent-decision.md`）；A2 核查 N/A（active 链角色无关） |
@@ -118,7 +118,7 @@
 1. **Question enforcement 不是“只能 static PASS”**：代码层 `question` 已在 guidance gate、phase0 allowed tools、enforcement passthrough 中放行；smoke 已有 question tool call/reply 的 runtime 证据。准确状态是 **static PASS + partial runtime PASS**，未闭合的是 STOP 注入、Phase 1/2 guidance-delivered 和 Phase-0 controlled failure 的 full-runtime。
 2. **Phase-0 绕过是 question enforcement full-runtime 的关键前置，但不是全框架主链路 blocker**：dispatch privilege 主链路 v5 已通过。该任务应标为 question blueprint 的 P0，不能写成所有后续工作都被阻塞。
 3. **SSEWatcherFd WSL2 问题仍在通用测试 harness**：`scripts/lib/sse-watcher.ts` 默认小文件走 `SSEWatcherFd + fstatSync(fd)`；question E2E 当前用 `new SSEWatcher(SSE_FILE, 0)` 强制 tail 绕过。它是可重复 E2E 的 P0/P1，不是 work-one runtime 逻辑 blocker。
-4. **per-agent 检查层不是“12 处均待删”的同一状态**：`readDispatchAllowedTools` 已不存在；`isWriteAllowed` 零 runtime caller（`executeWriteAuditCheck` 已无 caller，after/audit.ts 已 retired，2026-07-13 复核）；`getAgentPermission/getAgentShellAllowlist` 仍影响 `safe_shell` allowlist；`PermissionIsolation` 已 deprecated 但仍有 test/export 链。应按 caller 替换，不应盲删。**2026-07-13 补充**：`agent-identity.ts` DISPLAY_NAMES 的 `plan: "Meta-Planner"` 是 active runtime 中的旧角色身份绑定（非 config/注释），导致 plan agent 权限解析错误走 legacy fallback——A2 核查漏检项，需 P0 修复。
+4. **per-agent 检查层不是“12 处均待删”的同一状态**：`readDispatchAllowedTools` 已不存在；`isWriteAllowed` 零 runtime caller（`executeWriteAuditCheck` 已无 caller，after/audit.ts 已 retired，2026-07-13 复核）；`getAgentPermission/getAgentShellAllowlist` 仍影响 `safe_shell` allowlist；`PermissionIsolation` 已 deprecated 但仍有 test/export 链。应按 caller 替换，不应盲删。**2026-07-13 补充**：`agent-identity.ts` DISPLAY_NAMES 的 `plan: "Meta-Planner"` 是 active runtime 中的旧角色身份绑定（非 config/注释），导致 plan agent 权限解析错误走 legacy fallback——A2 核查漏检项，需 P0 修复。**2026-07-23 交叉审核确认已修复**：`DISPLAY_NAMES` 不再有 `plan` key（`AGENTS.META_PLANNER="meta-planner"`），`toDisplayName("plan")="plan"`，`getAgentPermission("plan")` 正确读取 opencode.json（`safe_shell="deny"`）。
 5. **legacy dispatch validator 已隔离但未归档**：`dispatch-validate.ts` 与 `before/dispatch.ts` 不在 active before order，但仍 export/callable；移入 legacy 是 P1 quick win，不是主链路阻塞。
 6. **Scout 只具备路由名基础，不具备 live runtime 完成证据**：`agent-target.ts` 包含 `scout`，但当前 `opencode.json.agent` 没有 `scout`，`.opencode/agents/` 也没有 dedicated `scout.md`；Scout 子 agent live runtime 仍是 P1。
 7. **DB 表合并不应抢在 hot-path 统计前**：当前主 DB 45 张业务表 / 46 张含 `sqlite_sequence`，schema v34；表合并是 P1/P2 收尾，优先确认普通任务 DB touch 和 fallback 故障注入。
@@ -1104,7 +1104,7 @@ Plugin Hook 写 DB 的目标是“留下证据”，不是“复制业务流程�
 |--------|--------|------|
 | P0 | 修复/规避 `SSEWatcherFd` WSL2 监控缺陷 | 可重复 runtime E2E 依赖稳定事件采集；tail 模式可用但默认 watcher 仍有 fd/fstat 风险 |
 | P0 | Question enforcement full-runtime closure | ✅ runtime smoke 已闭环（T5 Question full-runtime 5 段：STOP/question 注入 + guidance 恢复）；STOP 注入与 guidance-delivered 由 T5 + D3（GOVERNANCE-BLOCK 后恢复）实证 |
-| **P0** | **修复 `plan -> Meta-Planner` stale 映射** | **`agent-identity.ts` DISPLAY_NAMES 残留 `plan: "Meta-Planner"`（P1-B 阶段旧重命名），导致 `toDisplayName("plan")="Meta-Planner"`，`getAgentPermission("plan")` 走 `LEGACY_AGENT_PERMISSIONS` fallback，opencode.json 的 plan permission block 完全被忽略。实测 plan 的 `safe_shell` 配置 `deny` 实际生效 `{"*":"allow"}`（全允许），`safe_edit`/`safe_delete` 等 configure `deny` 实际生效 legacy 允许列表。删除该映射经 codegraph impact（13 caller）+ bun 实测确认安全：5 active agent 中仅 plan 异常；`agent-target.ts` 走 `NATIVE_EXECUTOR_SET` 不经 `toDisplayName` 不受影响；`router.ts:235` 硬编码 `"Meta-Planner"` 不受影响；`agent_domain_map` 无 `plan` key，`resolveDomainIdForTool` 行为不变；测试无破坏。详见 2026-07-13 修订日志** |
+| ~~P0~~ ✅ DONE | **修复 `plan -> Meta-Planner` stale 映射** | **`agent-identity.ts` DISPLAY_NAMES 残留 `plan: "Meta-Planner"`（P1-B 阶段旧重命名），导致 `toDisplayName("plan")="Meta-Planner"`，`getAgentPermission("plan")` 走 `LEGACY_AGENT_PERMISSIONS` fallback，opencode.json 的 plan permission block 完全被忽略。实测 plan 的 `safe_shell` 配置 `deny` 实际生效 `{"*":"allow"}`（全允许），`safe_edit`/`safe_delete` 等 configure `deny` 实际生效 legacy 允许列表。删除该映射经 codegraph impact（13 caller）+ bun 实测确认安全：5 active agent 中仅 plan 异常；`agent-target.ts` 走 `NATIVE_EXECUTOR_SET` 不经 `toDisplayName` 不受影响；`router.ts:235` 硬编码 `"Meta-Planner"` 不受影响；`agent_domain_map` 无 `plan` key，`resolveDomainIdForTool` 行为不变；测试无破坏。详见 2026-07-13 修订日志。2026-07-23 交叉审核确认已修复：`DISPLAY_NAMES` 无 `plan` key，`toDisplayName("plan")="plan"`，`getAgentPermission("plan").safe_shell="deny"` 正确命中 opencode.json** |
 | P0/P1 | per-agent runtime caller 替换 | `readDispatchAllowedTools` 已无；`getAgentShellAllowlist` 仍有活跃 caller（3 个 active），需行为型替代后再删；`isWriteAllowed` 已零 caller（dead，仅 barrel re-export 待清理，2026-07-13 复核）；`legacy-agent-permissions.ts`（905 行硬编码 9 个 legacy agent 权限）是 deprecated fallback，待 per-agent caller 迁移后退役 |
 | P1 | legacy dispatch-validate 归档 | 不在 active order，但仍 export/callable，低成本降低误启用风险 |
 | P1 | MCP role filter 接线或废弃 | 当前未被 `tool-def-trimmer`/hook 调用，不能继续当作已落地能力 |
@@ -1270,3 +1270,18 @@ Plugin Hook 写 DB 的目标是“留下证据”，不是“复制业务流程�
 - `router.ts:235` auto_plan 路径仍硬编码 dispatch `"Meta-Planner"`（legacy 名）。当前 `auto_plan_enabled=false` 不执行，属 Phase 2 legacy dispatch 收口遗留项。
 - `project.config.json` 的 `agent_domain_map` 仍用 legacy PascalCase 名（Meta-Planner/Coder-BE 等），无 native agent 名（plan/build/general/explore），native agent domain 解析全返回 null。属 Phase 2/4 收口项。
 - Phase 3 §0 A2 核查结论「active before 链无旧角色名硬编码 caller」需修正：`agent-identity.ts` DISPLAY_NAMES 的 `plan: "Meta-Planner"` 是 active runtime 中的旧角色身份绑定，A2 漏检。
+
+### 2026-07-23 v1.14.7 交叉审核：plan->Meta-Planner P0 映射 bug 已修复确认
+
+**审核范围**：`work-one/.opencode/lib/agent-identity.ts`、`work-one/.opencode/service/permission/reader.ts`、`work-one/opencode.json`、`work-one/.opencode/project.config.json`。
+
+**结论**：v1.14.6 发现的 `plan: "Meta-Planner"` P0 映射 bug **已在代码中修复**。交叉审核证据：
+
+1. `DISPLAY_NAMES` 不再包含 `plan` key；`AGENTS.META_PLANNER = "meta-planner"`（legacy profile 专用），`DISPLAY_NAMES["meta-planner"] = "Meta-Planner"` 仅用于 legacy profile 查找。
+2. `toDisplayName("plan")` 返回 `"plan"`（非 `"Meta-Planner"`），`getAgentPermission("plan")` 正确命中 `opencode.json` 的 `plan` agent block。
+3. `getAgentPermission("plan").safe_shell = "deny"`、`safe_edit = "deny"`（与 opencode.json 配置一致，不再走 `LEGACY_AGENT_PERMISSIONS["Meta-Planner"]` fallback）。
+4. 5 个 active agent（Orchestrator/build/general/plan/explore）全部正确解析。
+
+**不影响项**：`legacy-agent-permissions.ts`（905 行）仍存在，`getAgentShellAllowlist`（3 个生产 caller）、`_hasAgentDangerousBypass`、`getAllowlist` 仍为 active caller——这些属于 permission template blueprint Phase 1/2 迁移范围，本节不改变其状态。
+
+**同时确认的框架指标**：TS 文件 386 个 / 78,341 行（轻微漂移）；DB schema v37 / 49 业务表 / 50 总表；active agent 5 个。
