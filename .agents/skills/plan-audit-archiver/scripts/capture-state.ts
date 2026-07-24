@@ -68,6 +68,15 @@ export function captureRepositoryState(options: {
     const scope = (lockContent as Record<string, unknown>).scope as Record<string, unknown>;
     scope.frozen_at = options.freezeAt;
     scope.status = "FROZEN";
+    // Auto-fill created_at and approval.approved_at when they are still placeholders
+    const lockObj = lockContent as Record<string, unknown>;
+    if (typeof lockObj.created_at !== "string" || (lockObj.created_at as string).includes("REPLACE")) {
+      lockObj.created_at = options.freezeAt;
+    }
+    const approval = lockObj.approval as Record<string, unknown> | undefined;
+    if (approval && (typeof approval.approved_at !== "string" || (approval.approved_at as string).includes("REPLACE"))) {
+      approval.approved_at = options.freezeAt;
+    }
     writeFileSync(options.scopeLockPath, JSON.stringify(lockContent, null, 2) + "\n");
   }
   const repositoryRealpath = realpathSync(options.repositoryRoot);

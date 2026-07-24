@@ -127,8 +127,15 @@ function requireEnum(value: string, allowed: Set<string>, path: string, errors: 
   if (value && !allowed.has(value)) issue(errors, "INVALID_ENUM", `${path} has invalid value ${value}`);
 }
 
-function requireIsoTimestamp(value: string, path: string, errors: AuditIssue[]) {
+function requireIsoTimestamp(value: string, path: string, errors: AuditIssue[], checkFuture = false) {
   if (value && Number.isNaN(Date.parse(value))) issue(errors, "INVALID_TIMESTAMP", `${path} must be an ISO-8601 timestamp`);
+  if (checkFuture && value && !Number.isNaN(Date.parse(value))) {
+    const now = Date.now();
+    const parsed = Date.parse(value);
+    if (parsed > now + 5 * 60 * 1000) {
+      issue(errors, "TIMESTAMP_IN_FUTURE", `${path} is ${new Date(parsed).toISOString()} but current time is ${new Date(now).toISOString()}; timestamps must be real UTC, not local time with Z suffix`, "Use new Date().toISOString() or capture-state.ts --freeze to generate real UTC timestamps. Do NOT hand-write local time with a Z suffix.");
+    }
+  }
 }
 
 function requireSha256(value: string, path: string, errors: AuditIssue[]) {
@@ -265,7 +272,7 @@ function checkEvidenceReceipts(value: unknown, verdictStateSha256: string, error
     for (const [artifactIndex, artifactValue] of artifacts.entries()) {
       checkFileReference(artifactValue, `${path}.artifacts[${artifactIndex}]`, errors);
     }
-    requireIsoTimestamp(stringAt(receipt.completed_at, `${path}.completed_at`, errors), `${path}.completed_at`, errors);
+    requireIsoTimestamp(stringAt(receipt.completed_at, `${path}.completed_at`, errors), `${path}.completed_at`, errors, true);
     if (id) {
       if (result.has(id)) issue(errors, "DUPLICATE_ID", `evidence_receipts[].id contains duplicate ${id}`);
       result.set(id, { id, path: receiptPath, sha256, command, observed, requirementId, polarity, oracleId, fixtureId, evidenceLevel, repositoryStateSha256, exitCode });
@@ -643,7 +650,7 @@ export function validateAuditSource(source: string, label = "audit.md"): AuditVa
   const provenanceLevel = stringAt(scope.provenance_level, "scope.provenance_level", errors);
   if (provenanceLevel && !PROVENANCE_LEVELS.has(provenanceLevel)) issue(errors, "INVALID_PROVENANCE_LEVEL", `scope.provenance_level=${provenanceLevel} (AGENTS.md §15 rule P-01)`);
   const frozenAt = stringAt(scope.frozen_at, "scope.frozen_at", errors);
-  requireIsoTimestamp(frozenAt, "scope.frozen_at", errors);
+  requireIsoTimestamp(frozenAt, "scope.frozen_at", errors, true);
   const inScope = stringArrayAt(scope.in_scope, "scope.in_scope", errors, true);
   requireUnique(inScope, "scope.in_scope", errors);
   inScope.forEach((id) => {
@@ -671,7 +678,7 @@ export function validateAuditSource(source: string, label = "audit.md"): AuditVa
   stringArrayAt(sweep.files_inspected, "sweep.files_inspected", errors, sweepStatus === "COMPLETE").forEach((file, index) => requireConcretePath(file, `sweep.files_inspected[${index}]`, errors));
   stringArrayAt(sweep.commands, "sweep.commands", errors, sweepStatus === "COMPLETE").forEach((command, index) => requireCommand(command, `sweep.commands[${index}]`, errors));
   const completedAt = stringAt(sweep.completed_at, "sweep.completed_at", errors);
-  requireIsoTimestamp(completedAt, "sweep.completed_at", errors);
+  requireIsoTimestamp(completedAt, "sweep.completed_at", errors, true);
   if (frozenAt && completedAt && !Number.isNaN(Date.parse(frozenAt)) && !Number.isNaN(Date.parse(completedAt)) && Date.parse(frozenAt) > Date.parse(completedAt)) {
     issue(errors, "FREEZE_AFTER_SWEEP", `scope.frozen_at must be at or before sweep.completed_at`, "Re-freeze the scope-lock before running the sweep, or correct scope.frozen_at to an earlier timestamp.");
   }
@@ -1167,6 +1174,7 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
     if (preChangeState.phase_id !== scopeLockId) issue(errors, "PRE_CHANGE_PHASE_MISMATCH", `pre-change receipt phase_id must equal scope_lock.lock_id`);
     if (preChangeState.scope_lock_sha256 !== scopeLockSha256) issue(errors, "PRE_CHANGE_SCOPE_LOCK_MISMATCH", `pre-change receipt is not bound to scope lock`);
     const preAt = typeof preChangeState.captured_at === "string" ? Date.parse(preChangeState.captured_at) : Number.NaN;
+    if (typeof preChangeState.captured_at === "string") requireIsoTimestamp(preChangeState.captured_at, "pre_change_receipt.captured_at", errors, true);
     if (Number.isNaN(preAt) || Number.isNaN(sweepCompletedAt) || preAt > sweepCompletedAt) issue(errors, "PRE_CHANGE_TIME_INVALID", `pre-change receipt must precede sweep completion`, "Recapture pre-change receipt BEFORE running the sweep (captured_at <= sweep.completed_at).");
   }
   if (verdictState) {
@@ -1176,6 +1184,7 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
     if (verdictState.scope_lock_sha256 !== scopeLockSha256) issue(errors, "VERDICT_STATE_SCOPE_LOCK_MISMATCH", `verdict-state receipt is not bound to scope lock`);
     if (JSON.stringify([...verdictMap.entries()].sort()) !== JSON.stringify([...actualStatus.entries()].sort())) issue(errors, "VERDICT_STATE_MISMATCH", `current git status differs from verdict-state receipt`);
     const verdictAt = typeof verdictState.captured_at === "string" ? Date.parse(verdictState.captured_at) : Number.NaN;
+    if (typeof verdictState.captured_at === "string") requireIsoTimestamp(verdictState.captured_at, "verdict_state_receipt.captured_at", errors, true);
     if (Number.isNaN(verdictAt) || Number.isNaN(sweepCompletedAt) || verdictAt < sweepCompletedAt) issue(errors, "VERDICT_STATE_TIME_INVALID", `verdict-state receipt must be captured after sweep completion`, "Recapture verdict-state receipt AFTER the sweep completes (captured_at >= sweep.completed_at).");
   }
 

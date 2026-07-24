@@ -266,7 +266,7 @@ export function buildAuditContract(opts: ContractOptions): JsonObject {
       requirement_ids: inScope,
       files_inspected: ["REPLACE_EXACT_FILE"],
       commands: ["REPLACE_COMMAND"],
-      completed_at: "REPLACE_ISO8601_TIMESTAMP",
+      completed_at: new Date().toISOString(),
     },
     findings: [],
     rework_package: { status: "NONE", finding_ids: [], items: [] },

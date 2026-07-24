@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "lock_id": "REPLACE_LOCK_ID",
-  "created_at": "REPLACE_ISO8601_TIMESTAMP",
+  "created_at": "REPLACE_UTC_TIMESTAMP_USE_capture_state_--freeze",
   "plan_sources": [
     {
       "path": "plans/REPLACE_PLAN_PATH.md",
@@ -11,7 +11,7 @@
   "scope": {
     "status": "FROZEN",
     "provenance_level": "v2.1-required",
-    "frozen_at": "REPLACE_ISO8601_TIMESTAMP",
+    "frozen_at": "REPLACE_UTC_TIMESTAMP_USE_capture_state_--freeze",
     "in_scope": [
       "REQ-001"
     ],
@@ -68,7 +68,7 @@
     "status": "APPROVED",
     "actor_type": "HUMAN",
     "approved_by": "REPLACE_HUMAN_REVIEWER",
-    "approved_at": "REPLACE_ISO8601_TIMESTAMP",
+    "approved_at": "REPLACE_UTC_TIMESTAMP_USE_capture_state_--freeze",
     "evidence": "REPLACE_APPROVAL_EVIDENCE"
   }
 }

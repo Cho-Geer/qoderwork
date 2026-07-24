@@ -794,6 +794,18 @@ describe("validate-audit closure and falsifiability", () => {
     expect(codes(contract)).toContain("FREEZE_AFTER_SWEEP");
   });
 
+  test("rejects scope.frozen_at in the future (timezone mislabeling)", () => {
+    const contract = baseContract();
+    contract.scope.frozen_at = new Date(Date.now() + 8 * 3600 * 1000).toISOString();
+    expect(codes(contract)).toContain("TIMESTAMP_IN_FUTURE");
+  });
+
+  test("accepts scope.frozen_at within 5-minute tolerance", () => {
+    const contract = baseContract();
+    contract.scope.frozen_at = new Date(Date.now() + 3 * 60 * 1000).toISOString();
+    expect(codes(contract)).not.toContain("TIMESTAMP_IN_FUTURE");
+  });
+
   test("rejects a requirement source that is absent from the authoritative plan ledger", () => {
     const contract = baseContract();
     contract.requirements[0].source = "logs/2026-07-19-example.md#invented-requirement";

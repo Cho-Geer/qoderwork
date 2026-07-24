@@ -111,6 +111,37 @@ describe("capture-state", () => {
     expect(receipt1.scope_lock_sha256).toBe(receipt2.scope_lock_sha256);
   });
 
+  test("--freeze auto-fills created_at and approval.approved_at when they are placeholders", () => {
+    const workspace = mkdtempSync(join(tmpdir(), "audit-freeze-ts-"));
+    roots.push(workspace);
+    const repository = join(workspace, "repository");
+    mkdirSync(repository, { recursive: true });
+    writeFileSync(join(repository, "init.ts"), "export const init = true;\n");
+    runGit(repository, ["init", "-q"]);
+    runGit(repository, ["add", "init.ts"]);
+    runGit(repository, ["-c", "user.name=Audit Test", "-c", "user.email=audit@example.invalid", "commit", "-qm", "fixture"]);
+    const scopeLock = join(workspace, "scope-lock.json");
+    writeFileSync(scopeLock, JSON.stringify({
+      lock_id: "LOCK-TS",
+      created_at: "REPLACE_UTC_TIMESTAMP_USE_capture_state_--freeze",
+      scope: { status: "UNFROZEN", provenance_level: "v2.1-required", frozen_at: "REPLACE_UTC_TIMESTAMP_USE_capture_state_--freeze" },
+      approval: { status: "APPROVED", actor_type: "HUMAN", approved_by: "tester", approved_at: "REPLACE_UTC_TIMESTAMP_USE_capture_state_--freeze", evidence: "test" },
+    }, null, 2) + "\n");
+
+    captureRepositoryState({
+      repositoryRoot: repository,
+      scopeLockPath: scopeLock,
+      phaseId: "LOCK-TS",
+      capturedAt: "2026-07-21T12:00:01Z",
+      freezeAt: "2026-07-21T12:00:00Z",
+    });
+
+    const updatedLock = JSON.parse(readFileSync(scopeLock, "utf8"));
+    expect(updatedLock.created_at).toBe("2026-07-21T12:00:00Z");
+    expect(updatedLock.scope.frozen_at).toBe("2026-07-21T12:00:00Z");
+    expect(updatedLock.approval.approved_at).toBe("2026-07-21T12:00:00Z");
+  });
+
   test("without --freeze, scope-lock file is not modified", () => {
     const workspace = mkdtempSync(join(tmpdir(), "audit-nofreeze-"));
     roots.push(workspace);
