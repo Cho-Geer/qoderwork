@@ -104,10 +104,22 @@ function optionalArgument(name: string): string | undefined {
 function main() {
   try {
     const outputPath = argument("--output");
+    const scopeLockPath = argument("--scope-lock");
+    const phaseId = argument("--phase-id");
+    // 防错警告：phase_id 应等于 scope-lock 的 lock_id（validator L1175 校验）
+    try {
+      const lockContent = JSON.parse(readFileSync(scopeLockPath, "utf8")) as Record<string, unknown>;
+      const lockId = typeof lockContent.lock_id === "string" ? lockContent.lock_id : "";
+      if (lockId && lockId !== phaseId) {
+        console.error(`WARNING: --phase-id "${phaseId}" does not match scope-lock lock_id "${lockId}". validator will reject with PRE_CHANGE_PHASE_MISMATCH. Use --phase-id "${lockId}" to match.`);
+      }
+    } catch {
+      // scope-lock 读取失败不阻断（可能尚未格式化好）
+    }
     const receipt = captureRepositoryState({
       repositoryRoot: argument("--repository-root"),
-      scopeLockPath: argument("--scope-lock"),
-      phaseId: argument("--phase-id"),
+      scopeLockPath,
+      phaseId,
       freezeAt: optionalArgument("--freeze"),
     });
     mkdirSync(dirname(outputPath), { recursive: true });

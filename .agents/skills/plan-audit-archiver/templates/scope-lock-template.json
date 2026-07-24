@@ -45,12 +45,7 @@
       "plan_item_id": "PLAN-REQ-001",
       "disposition": "IN_SCOPE",
       "requirement_id": "REQ-001",
-      "source": "plans/REPLACE_PLAN_PATH.md#REPLACE_EXACT_ANCHOR",
-      "kind": "BEHAVIORAL",
-      "behavior": "REPLACE_ONE_OBSERVABLE_BEHAVIOR",
-      "required_evidence_level": "component",
-      "oracle_id": "ORACLE-001",
-      "oracle": "REPLACE_IMPLEMENTATION_INDEPENDENT_ORACLE"
+      "source": "plans/REPLACE_PLAN_PATH.md#REPLACE_EXACT_ANCHOR"
     }
   ],
   "repository_scope": {

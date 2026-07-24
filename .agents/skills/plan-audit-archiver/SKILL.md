@@ -174,7 +174,7 @@ Confusing them is the most common cause of `INVALID` verdicts.
 - `schema_version`、`lock_id`、`created_at`、`plan_sources`
 - `scope`（含 `status`、`provenance_level`、`frozen_at`、`in_scope`、`out_of_scope`、`assumptions`、`exit_criteria`）
 - `requirements`（数组，每项含 `id`、`plan_item_id`、`kind`、`source`、`behavior`、`required_evidence_level`、`oracle_id`、`oracle`）
-- `plan_registry`（非空数组，每项含 `plan_item_id`、`disposition`、`requirement_id`、`source`、`kind`、`behavior`、`required_evidence_level`、`oracle_id`、`oracle`）
+- `plan_registry`（非空数组，每项含 `plan_item_id`、`disposition`、`requirement_id`、`source`；`kind`/`behavior`/`required_evidence_level`/`oracle_id`/`oracle` 不再重复，由 `requirements[]` 派生）
 - `repository_scope`（含 `allowed_paths`、`forbidden_paths`）
 - `approval`（含 `status`、`actor_type`、`approved_by`、`approved_at`、`evidence`）
 
@@ -319,6 +319,7 @@ cd /home/zhaoge/workspace/qoderwork
 # 推荐：--freeze 原子操作（设置 scope.frozen_at + scope.status=FROZEN，然后捕获 pre-change receipt）
 # scope_lock_sha256 绑定到 frozen_at 写入后的最终版本，消除循环依赖
 # --repository-root 必须是干净锚点（work-one），不是当前 worktree（见 §15 P-07）
+# --phase-id 必须与 scope-lock 的 lock_id 字段完全相同（validator L1175 校验 phase_id == lock_id）
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
   --repository-root /home/zhaoge/workspace/opencode/work-one \
   --scope-lock /absolute/path/to/audits/plan-name/scope-lock.json \
@@ -327,6 +328,7 @@ bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
   --output /absolute/path/to/audits/plan-name/evidence/pre-change.json
 
 # 兼容：不带 --freeze（scope-lock 必须已含 frozen_at 和 status=FROZEN）
+# --phase-id 同样必须等于 scope-lock 的 lock_id
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
   --repository-root /home/zhaoge/workspace/opencode/work-one \
   --scope-lock /absolute/path/to/audits/plan-name/scope-lock.json \
@@ -578,9 +580,12 @@ and a required-heading assertion.
 | `DOWNGRADE_DECLARATION_REQUIRED` | `provenance_level=v2.1-required` 且 `evidence_ceiling=component` 但 `downgrade_declaration=null` | 填写 `downgrade_declaration` 对象（含 4 项：降级理由、降级后上限、不影响范围、影响范围） |
 | `GIT_HEAD_MISMATCH` | `baseline.commit` 与 `git -C <repository_root> rev-parse HEAD` 不一致 | 用 `repository_root` 仓库的 HEAD，不是 `workspace_root` 的 |
 | `DIRTY_PATH_SET_MISMATCH` | `baseline.dirty_paths` 与 `git -C <repository_root> status --porcelain` 不一致 | 用 `repository_root` 仓库的 git status 输出 |
-| `PLAN_REGISTRY_MISSING` | scope-lock 文件 `plan_registry` 为空或缺失 | 填写 `plan_registry` 数组，每项含 `plan_item_id`、`disposition`、`requirement_id` 等字段 |
+| `PLAN_REGISTRY_MISSING` | scope-lock 文件 `plan_registry` 为空或缺失 | 填写 `plan_registry` 数组，每项含 `plan_item_id`、`disposition`、`requirement_id`、`source` |
+| `PLAN_REGISTRY_REQUIREMENT_MISMATCH` | plan_registry 的 `requirement_id` 或 `source` 与 `requirements[]` 对应项不一致 | 确保 plan_registry 的 `requirement_id` 和 `source` 与 requirements 对应项相同（kind/behavior 等不再重复） |
 | `PRE_CHANGE_HEAD_MISMATCH` | pre-change receipt 的 `head` 与 `baseline.implementation_base_commit` 不一致 | 用 `capture-state.ts --repository-root <X>` 重新捕获，X 必须与 audit contract 的 `repository_root` 一致 |
+| `PRE_CHANGE_PHASE_MISMATCH` | pre-change receipt 的 `phase_id` 与 `scope_lock.lock_id` 不一致 | `capture-state.ts --phase-id` 必须传 scope-lock 的 `lock_id` 值（不是 phase 简称），重做 receipt |
 | `VERDICT_STATE_HEAD_MISMATCH` | verdict-state receipt 的 `head` 与 `baseline.commit` 不一致 | 同上 |
+| `VERDICT_STATE_PHASE_MISMATCH` | verdict-state receipt 的 `phase_id` 与 `scope_lock.lock_id` 不一致 | 同 `PRE_CHANGE_PHASE_MISMATCH`，verdict-state 也用 `lock_id` 作 `--phase-id` |
 | `SCOPE_LOCK_NOT_HUMAN_APPROVED` | scope-lock 文件 `approval.status !== "APPROVED"` 或 `actor_type !== "HUMAN"` | 填写 `approval` 对象，`status: "APPROVED"`、`actor_type: "HUMAN"` |
 | `RECEIPT_EXIT_OBSERVATION_MISMATCH` | `observed: "PASS"` 但 `exit_code !== 0`，或 `observed: "FAIL"` 但 `exit_code === 0` | 检查 receipt 的 exit_code 与 observed 是否一致；若 command 实际 exit 0 但填了 FAIL，修正 observed 为 PASS |
 | `REWORK_FINDING_SET_MISMATCH` | REWORK 时 `rework_package.finding_ids` 与 open blockers 不完全相等 | 将所有 open blocker 的 finding_id 列入 `rework_package.finding_ids`，不能多也不能少 |

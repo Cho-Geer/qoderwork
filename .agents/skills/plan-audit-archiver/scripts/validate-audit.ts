@@ -949,27 +949,19 @@ function checkPlanRegistry(lock: JsonObject, contract: JsonObject, workspaceRoot
   for (const item of inScopeItems) {
     const requirement = requirements.find((candidate) => candidate.plan_item_id === item.plan_item_id);
     if (!requirement) continue;
+    // plan_registry only carries plan_item_id/disposition/requirement_id/source (+ EXCLUDED-only fields).
+    // kind/behavior/required_evidence_level/oracle_id/oracle are derived from requirements[] — no longer duplicated.
     const registryProjection = {
-      id: item.requirement_id,
       plan_item_id: item.plan_item_id,
-      kind: item.kind,
+      requirement_id: item.requirement_id,
       source: item.source,
-      behavior: item.behavior,
-      required_evidence_level: item.required_evidence_level,
-      oracle_id: item.oracle_id,
-      oracle: item.oracle,
     };
     const requirementProjection = {
-      id: requirement.id,
       plan_item_id: requirement.plan_item_id,
-      kind: requirement.kind,
+      requirement_id: requirement.id,
       source: requirement.source,
-      behavior: requirement.behavior,
-      required_evidence_level: requirement.required_evidence_level,
-      oracle_id: requirement.oracle_id,
-      oracle: requirement.oracle,
     };
-    if (JSON.stringify(registryProjection) !== JSON.stringify(requirementProjection)) issue(errors, "PLAN_REGISTRY_REQUIREMENT_MISMATCH", `${String(item.plan_item_id)} differs from audit requirement`, "Make plan_registry IN_SCOPE entry fields (kind/source/behavior/required_evidence_level/oracle_id/oracle) identical to the corresponding requirements[] entry.");
+    if (JSON.stringify(registryProjection) !== JSON.stringify(requirementProjection)) issue(errors, "PLAN_REGISTRY_REQUIREMENT_MISMATCH", `${String(item.plan_item_id)} differs from audit requirement`, "Ensure plan_registry entry's requirement_id and source match the corresponding requirements[] entry.");
   }
 }
 
