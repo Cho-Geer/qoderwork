@@ -4,6 +4,7 @@
 **Depends on**: PHASE-02
 **Outcome**: 从 live hunks 得到 calls-only bounded TaskGraph 与单一 SpineForest；不读取 coverage、不写卡片。
 **Evidence level**: component
+**Progression status**: `NOT_STARTED`
 
 ## Goal
 
@@ -17,12 +18,24 @@
 
 ## Local requirements
 
+### REQ-005
+
 | Requirement | Condition | Required behavior | Observable result |
 |---|---|---|---|
 | REQ-005-A | DB provider | readonly 打开目标 `.codegraph/codegraph.db` 并 probe | required tables/columns/version receipt 完整 |
 | REQ-005-B | DB capability 不足 | 固定 CLI fallback；歧义即 unavailable | 双路失败 exit 12、不出图 |
+
+### REQ-006
+
+| Requirement | Condition | Required behavior | Observable result |
+|---|---|---|---|
 | REQ-006-A | live hunks | 与 current function/method range 求交 | live seeds 稳定去重 |
 | REQ-006-B | edges | 仅 calls+function/method；无自环/无位置边 | metadata 保留，低置信度 static-low |
+
+### REQ-007
+
+| Requirement | Condition | Required behavior | Observable result |
+|---|---|---|---|
 | REQ-007-A | graph search | maxNodes=200/maxEdges=500/maxFanout=50 | 达限停止且记录具体 truncation |
 | REQ-007-B | single card spine | entry precedence 与稳定 tie-break | 显示≤20，余 seed 在 uncoveredSeeds |
 

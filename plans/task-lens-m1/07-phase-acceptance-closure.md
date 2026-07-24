@@ -4,6 +4,7 @@
 **Depends on**: PHASE-06
 **Outcome**: 10 个真实任务形成可信 feedback 数据；M1 按 metrics/test/audit 证据准确关闭或保持未解锁。
 **Evidence level**: integration + manual verification
+**Progression status**: `BLOCKED`
 
 ## Goal
 

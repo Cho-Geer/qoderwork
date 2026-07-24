@@ -4,6 +4,7 @@
 **Depends on**: PHASE-05
 **Outcome**: 完整 CLI 在 fixture、work-one、qoderwork-main 三类当前输入上产出可核验 artifact，两个真实目标无内容写入。
 **Evidence level**: integration
+**Progression status**: `BLOCKED`
 
 ## Goal
 

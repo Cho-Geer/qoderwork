@@ -4,6 +4,8 @@
 **Depends on**: PHASE-01
 **Outcome**: CLI 可安全冻结 working-tree/commit 输入，输出 canonical receipt 与完整 DiffModel，不构图、不写 artifact。
 **Evidence level**: component
+**Progression status**: `ACCEPTED`
+**Completion receipt**: `../../audits/task-lens-m1/evidence/progression-receipt-PHASE-02.json`
 
 ## Goal
 
@@ -17,13 +19,25 @@
 
 ## Local requirements
 
+### REQ-002
+
 | Requirement | Condition | Required behavior | Observable result |
 |---|---|---|---|
 | REQ-002-A | mode=working-tree | base/head=HEAD；tracked diff+untracked full file | staged/unstaged/untracked 均进入模型 |
 | REQ-002-B | mode=commit | base 为 full SHA、head=current HEAD、worktree clean | dirty/非 current head/`-` ref 拒绝 |
 | REQ-002-C | rename/delete | 保留 old/new；纯删除写 DeletedRegion | 不创建 deleted live seed |
+
+### REQ-003
+
+| Requirement | Condition | Required behavior | Observable result |
+|---|---|---|---|
 | REQ-003-A | 子进程 | `Bun.spawn` 固定 argv、shell=false、最小 env | 30s/5MiB/取消/非零均分类 |
 | REQ-003-B | 路径/config | 绝对路径+realpath/symlink 边界；固定 YAML | project 内 out/正则/未知字段拒绝 |
+
+### REQ-004
+
+| Requirement | Condition | Required behavior | Observable result |
+|---|---|---|---|
 | REQ-004-A | receipt/taskId | 固定字段 canonical JSON 后 SHA-256 | clock 不改变 taskId |
 | REQ-004-B | CLI | generate(default)/feedback/metrics summarize | 其余组合 exit 10 |
 
@@ -158,9 +172,9 @@ rg -n 'runCommand|extractDiff|createInputReceipt' scripts/task-lens --glob '*.ts
 
 ## Phase completion gate
 
-- [ ] Freeze Gate receipt 有效且 HEAD 未漂移。
-- [ ] REQ-002/003/004 的 checks、all-pass、单一 mutation 全通过。
-- [ ] 至少一个测试走真实 runCommand；所有 fake 有 FAKE-INJECTION 标注。
-- [ ] typecheck 相对 BASELINE-TS-001 零新增诊断，git diff check 通过。
-- [ ] 仅 8 个 Allowed files 有 diff，`bun.lock` 未变。
-- [ ] PHASE-03 在全部勾选前保持 BLOCKED。
+- [x] Freeze Gate receipt 有效且 HEAD 未漂移。
+- [x] REQ-002/003/004 的 checks、all-pass、单一 mutation 全通过。
+- [x] 至少一个测试走真实 runCommand；所有 fake 有 FAKE-INJECTION 标注。
+- [x] typecheck 相对 BASELINE-TS-001 零新增诊断，git diff check 通过。
+- [x] 仅 8 个 Allowed files 有 diff，`bun.lock` 未变。
+- [x] PHASE-03 在全部勾选前保持 BLOCKED。

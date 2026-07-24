@@ -4,6 +4,8 @@
 **Depends on**: NONE
 **Outcome**: PHASE-02 获得 human-approved scope-lock、HEAD-bound pre-change receipt 与可比较的 typecheck 基线。
 **Evidence level**: component（governance-only；仅证明 Freeze Gate 产物，不证明产品行为）
+**Progression status**: `ACCEPTED`
+**Completion receipt**: `../../audits/task-lens-m1/evidence/progression-receipt-PHASE-01.json`
 
 ## Goal
 
@@ -16,6 +18,8 @@
 - If absent: `BLOCKED`, do not continue。
 
 ## Local requirements
+
+### REQ-001
 
 | Requirement | Condition | Required behavior | Observable result |
 |---|---|---|---|
@@ -130,9 +134,9 @@ bun -e 'const x=await Bun.file("audits/task-lens-m1/evidence/pre-change-PHASE-02
 
 ## Phase completion gate
 
-- [ ] scope-lock 无占位并精确覆盖 PHASE-02。
-- [ ] Human reviewer approval 已真实填写。
-- [ ] TL-FREEZE-SCOPE/HUMAN/HEAD/TSC/IMPACT 全 PASS。
-- [ ] receipt 与 typecheck baseline 非空且内容断言通过。
-- [ ] 未写任何生产/测试代码。
-- [ ] PHASE-02 在全部勾选前保持 BLOCKED。
+- [x] scope-lock 无占位并精确覆盖 PHASE-02。
+- [x] Human reviewer approval 已真实填写。
+- [x] TL-FREEZE-SCOPE/HUMAN/HEAD/TSC/IMPACT 全 PASS。
+- [x] receipt 与 typecheck baseline 非空且内容断言通过。
+- [x] 未写任何生产/测试代码。
+- [x] PHASE-02 在全部勾选前保持 BLOCKED。

@@ -4,6 +4,7 @@
 **Depends on**: PHASE-04
 **Outcome**: generate/feedback/metrics summarize 全链可用；metrics 在并发与崩溃窗口下不重复、不丢失且可恢复。
 **Evidence level**: integration
+**Progression status**: `BLOCKED`
 
 ## Goal
 
