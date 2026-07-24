@@ -43,9 +43,9 @@
 
 4. For simple questions, keep the same structure but reduce PLAN / EVIDENCE / RESULT to the minimum necessary. Do not omit ID, TASK, CHECK, FINAL.
 
-5. Default to [MODE] SINGLE.
-Use [MODE] SUBAGENT only when a task has a clearly bounded subtask, a specialized skill need, or an independently verifiable deliverable.
-Use [MODE] MULTI-AGENT only when multiple subtasks are low-coupling, independently verifiable, and parallel execution will materially improve speed or quality.
+5. Default to [MODE] SUBAGENT or [MODE] MULTI-AGENT.
+Main agent handles reasoning, planning, auditing. Sub-agents handle execution.
+Use [MODE] SINGLE only when the task is too small to decompose or requires main agent's direct design judgment.
 
 6. Do not dispatch subagents for:
 - very small tasks requiring judgment (mechanical small tasks may be delegated to cheap sub-agents)

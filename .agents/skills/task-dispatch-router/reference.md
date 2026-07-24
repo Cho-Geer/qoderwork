@@ -8,21 +8,21 @@
 
 图例：C=文件耦合, R=推理深度, S=规格确定性
 
-| C | R | S | MODE | 角色 | 模型 tier | 原因 |
+| C | R | S | MODE | 角色 | 原因 |
 |:-:|:-:|:-:|:----:|------|----------|------|
-| 1 | 1 | 1 | SUBAGENT | Fullstack | cheap | 机械执行，主 agent token 贵，委托 cheap |
+| 1 | 1 | 1 | SUBAGENT | Fullstack | 机械执行，主 agent token 贵，委托子 agent |
 | 1 | 1 | 2 | SINGLE | — | — | spec 不完整，主 agent 补全更快 |
 | 1 | 1 | 3 | SINGLE | — | — | 需求模糊，需要主 agent 判断 |
-| 1 | 2 | 1 | SUBAGENT | Fullstack | cheap | spec 确定 + 中等推理 → 可委托 |
+| 1 | 2 | 1 | SUBAGENT | Fullstack | spec 确定 + 中等推理 → 可委托 |
 | 1 | 2 | 2 | SINGLE | — | — | spec 不完整 + 中等推理 → 主 agent 更稳 |
 | 1 | 2 | 3 | SINGLE | — | — | 需求模糊 + 中等推理 → 主 agent 判断 |
 | 1 | 3 | 1 | SINGLE | — | — | 设计判断不可委托 |
 | 1 | 3 | 2 | SINGLE | — | — | 设计判断不可委托 |
 | 1 | 3 | 3 | SINGLE | — | — | 设计判断不可委托 |
-| 2 | 1 | 1 | SUBAGENT | Fullstack | cheap | spec 确定 + 机械实现 → 可委托 |
+| 2 | 1 | 1 | SUBAGENT | Fullstack | spec 确定 + 机械实现 → 可委托 |
 | 2 | 1 | 2 | SINGLE | — | — | spec 不完整 + 多文件 → 主 agent 补全 |
 | 2 | 1 | 3 | SINGLE | — | — | 需求模糊 + 多文件 → 主 agent 判断 |
-| 2 | 2 | 1 | SUBAGENT | Fullstack | standard | spec 确定 + 中等推理 + 多文件 → 可委托 |
+| 2 | 2 | 1 | SUBAGENT | Fullstack | spec 确定 + 中等推理 + 多文件 → 可委托 |
 | 2 | 2 | 2 | SINGLE | — | — | spec 不完整 + 中等推理 + 多文件 → 主 agent 更稳 |
 | 2 | 2 | 3 | SINGLE | — | — | 需求模糊 + 中等推理 + 多文件 → 主 agent 判断 |
 | 2 | 3 | 1 | SINGLE | — | — | 设计判断不可委托 |
@@ -40,7 +40,7 @@
 
 **统计**：27 种组合中，SINGLE 22 种，SUBAGENT 5 种，MULTI-AGENT 0 种（需额外检查）。
 
-**SUBAGENT 触发条件总结**：S = 1 AND R ≤ 2 AND C ≤ 2。即「spec 确定 + 推理深度不高 + 文件耦合不高」时推荐委托。机械执行类任务（R=1, S=1）也委托给 cheap 子 agent 以节省主 agent token。
+**SUBAGENT 触发条件总结**：S = 1 AND R ≤ 2 AND C ≤ 2。即「spec 确定 + 推理深度不高 + 文件耦合不高」时推荐委托。机械执行类任务（R=1, S=1）也委托给子 agent 以节省主 agent token。
 
 ## 2. 禁止场景判定标准（AGENTS.md §12.3）
 
@@ -57,7 +57,7 @@
 | 需要理解上下文才能决定怎么改 | 格式化 / lint 修复（有明确规则） |
 
 **规则**：如果任务可以在不阅读超过 2 个文件的情况下完成：
-- **且无需判断**（有明确指令，执行即可）→ 判定为"很小但可委托"，按矩阵推荐 SUBAGENT + cheap
+- **且无需判断**（有明确指令，执行即可）→ 判定为"很小但可委托"，按矩阵推荐 SUBAGENT
 - **但需要判断**（需要理解、选择、评估）→ 判定为"很小且不可委托"，强制 SINGLE
 
 ### 2.2 "强顺序依赖"
@@ -112,7 +112,7 @@
 - Spec determinism: **1** — 用户明确指出了错误
 
 **Phase 2 决策**：
-- 矩阵：C=1, R=1, S=1 → SUBAGENT + cheap
+- 矩阵：C=1, R=1, S=1 → SUBAGENT
 - 禁止检查：§12.3.1 "任务很小且需要判断" → 不命中（机械执行，无需判断）
 - MULTI-AGENT 检查：不满足（单任务）
 
@@ -132,8 +132,6 @@
 **Dispatch Recommendation**:
 - MODE: SUBAGENT
 - Role: Fullstack Engineer
-- Model tier: cheap (per SDD: 1-2 files with complete spec, transcription+testing)
-- Handoff: SDD + Agent tool (model=haiku)
 ```
 
 ### 示例 2: 5 文件 feature 实施（有 plan + Fixed Contract）
@@ -146,7 +144,7 @@
 - Spec determinism: **1** — 有 plan + Fixed Contract + Check Registry
 
 **Phase 2 决策**：
-- 矩阵：C=2, R=2, S=1 → SUBAGENT + Fullstack Engineer + standard
+- 矩阵：C=2, R=2, S=1 → SUBAGENT + Fullstack Engineer
 - 禁止检查：全部 PASS
 - MULTI-AGENT 检查：不满足（单一连续实现路径）
 
@@ -166,8 +164,6 @@
 **Dispatch Recommendation**:
 - MODE: SUBAGENT
 - Role: Fullstack Engineer
-- Model tier: standard (per SDD Model Selection: multi-file with integration concerns)
-- Handoff: SDD + Agent tool (model=sonnet)
 ```
 
 ### 示例 3: 3 个独立 bug 修复
@@ -205,8 +201,6 @@
 **Dispatch Recommendation**:
 - MODE: MULTI-AGENT
 - Role: Fullstack Engineer (per subtask)
-- Model tier: cheap (per SDD: 1-2 files with complete spec)
-- Handoff: dispatching-parallel-agents + SDD (3 parallel Agent calls, model=haiku)
 ```
 
 ### 示例 4: 纯对话回答问题（小任务但需要判断）
@@ -238,7 +232,6 @@
 **Dispatch Recommendation**:
 - MODE: SINGLE
 - Role: —
-- Model tier: —
 - Handoff: direct
 ```
 
@@ -249,11 +242,11 @@
 | 问题 | 由谁回答 |
 |------|---------|
 | 这个任务要不要派子 agent？ | **task-dispatch-router**（Phase 2 决策矩阵） |
-| 派什么模型？ | **SDD Model Selection**（task-dispatch-router 引用其 tier，SDD 给出具体模型名） |
+| 派什么模型？ | 系统默认，不指定 |
 | implementer → reviewer 循环怎么跑？ | **SDD**（task-dispatch-router 不涉及执行循环） |
 | 子 agent BLOCKED 后怎么升级模型？ | **SDD Handling Implementer Status**（task-dispatch-router 只做前置决策） |
 
-**交接点**：task-dispatch-router 输出 "model tier: standard (per SDD)"，然后由 SDD 的 Model Selection 规则将 tier 映射到具体模型（如 sonnet）。
+**交接点**：task-dispatch-router 输出 MODE + 角色，然后交接给执行。
 
 ### 4.2 与 dispatching-parallel-agents 的边界
 
@@ -280,11 +273,11 @@
 ```
 用户: "实施 PHASE-03"
   ↓
-task-dispatch-router: C=2, R=2, S=1 → SUBAGENT + standard + SDD
+task-dispatch-router: C=2, R=2, S=1 → SUBAGENT
   ↓
 pre-flight-enforcement Phase -1: 选 opencode-framework-dev skill
   ↓
 pre-flight-enforcement Phase 0: pre-flight checklist
   ↓
-SDD: 派遣 implementer (model=sonnet) → reviewer → final review
+派遣 implementer → reviewer → final review
 ```

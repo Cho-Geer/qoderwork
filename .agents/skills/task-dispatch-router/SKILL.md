@@ -26,9 +26,9 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 
 ## 目的
 
-在任务执行前评估复杂度，输出结构化的派遣决策（MODE + 角色 + 模型 tier），然后交接给相应的执行 skill。本 skill 是前置路由器——只做决策，不做执行。
+在任务执行前评估复杂度，输出结构化的派遣决策（MODE + 角色），然后交接给相应的执行 skill。本 skill 是前置路由器——只做决策，不做执行。
 
-**核心原则**：不复制已有 skill 的功能。模型选择规则引用 `subagent-driven-development` (SDD) 的 Model Selection；并行/串行决策引用 `dispatching-parallel-agents`；skill 选择引用 `pre-flight-enforcement` Phase -1。
+**核心原则**：不复制已有 skill 的功能。并行/串行决策引用 `dispatching-parallel-agents`；skill 选择引用 `pre-flight-enforcement` Phase -1。
 
 ## 适用范围
 
@@ -59,7 +59,7 @@ Phase 2: 派遣决策 [ANALYSIS]
 
 Phase 3: 交接 [OBSERVATION]
   → SINGLE: 直接开始执行
-  → SUBAGENT: 引用 SDD Model Selection 确定模型，构造 dispatch prompt
+  → SUBAGENT: 构造 dispatch prompt
   → MULTI-AGENT: 引用 dispatching-parallel-agents 确定并行策略
 ```
 
@@ -97,31 +97,33 @@ Phase 3: 交接 [OBSERVATION]
 
 将 3 维分数代入矩阵，得到初始 MODE 推荐：
 
-| 文件耦合 | 推理深度 | 规格确定性 | MODE | 角色 | 模型 tier |
-|:-------:|:-------:|:---------:|:----:|------|----------|
-| 1 | 1 | 1 | SUBAGENT | Fullstack Engineer | cheap (引用 SDD) |
-| 1 | 1 | 2-3 | SINGLE | — | — |
-| 1 | 2 | 1 | SUBAGENT | Fullstack Engineer | cheap (引用 SDD) |
-| 1 | 2 | 2-3 | SINGLE | — | — |
-| 1 | 3 | * | SINGLE | — | — |
-| 2 | 1 | 1 | SUBAGENT | Fullstack Engineer | cheap (引用 SDD) |
-| 2 | 2 | 1 | SUBAGENT | Fullstack Engineer | standard (引用 SDD) |
-| 2 | 2 | 2-3 | SINGLE | — | — |
-| 2 | 3 | * | SINGLE | — | — |
-| 3 | * | * | SINGLE | — | — |
+| 文件耦合 | 推理深度 | 规格确定性 | MODE | 角色 |
+|:-------:|:-------:|:---------:|:----:|------|
+| 1 | 1 | 1 | SUBAGENT | Fullstack Engineer |
+| 1 | 1 | 2-3 | SUBAGENT | Fullstack Engineer |
+| 1 | 2 | 1 | SUBAGENT | Fullstack Engineer |
+| 1 | 2 | 2-3 | SUBAGENT | Fullstack Engineer |
+| 1 | 3 | * | SINGLE | — |
+| 2 | 1 | 1 | SUBAGENT | Fullstack Engineer |
+| 2 | 2 | 1 | SUBAGENT | Fullstack Engineer |
+| 2 | 2 | 2-3 | SUBAGENT | Fullstack Engineer |
+| 2 | 3 | * | SINGLE | — |
+| 3 | * | * | SUBAGENT | Fullstack Engineer |
 
 **矩阵设计原则**：
-- 机械执行类任务（R=1, S=1）→ SUBAGENT + cheap：主 agent 是强模型，token 贵，机械执行交给 cheap 子 agent 节省成本
+- 主 Agent 负责"脑力工作"（推理、评估、规划、审核），子 Agent 负责机械执行
+- 推理深度 1-2 → 全部 SUBAGENT：主 agent 提供 plan/spec 后子 agent 可独立执行
 - 推理深度 3（设计判断）→ 始终 SINGLE：设计判断不可委托，需要主 agent 的全局上下文
-- 规格确定性 2-3（缺 spec）→ 始终 SINGLE：子 agent 在 spec 不明确时容易偏离
-- 文件耦合 3（高频共享）→ 始终 SINGLE：AGENTS.md §12.3 禁止
+- 规格确定性 2-3 → 仍可 SUBAGENT：主 agent 补足 spec 上下文后子 agent 可执行
+- 文件耦合 3 → SUBAGENT：多文件任务仍可委托
+- 禁止场景（强顺序依赖、共享文件冲突）触发时强制 SINGLE（AGENTS.md §12.3）
 - SUBAGENT 在「spec 确定 + 推理深度 ≤ 2 + 文件耦合 ≤ 2」时推荐
 
 ### 禁止场景检查（AGENTS.md §12.3 强制）
 
 在输出 DispatchRecommendation 前，**必须**逐条检查以下 5 条规则。任一命中则强制 SINGLE：
 
-1. **任务很小且需要判断** — 纯对话、回答问题、选择方案等需要主 agent 判断力的小任务 → SINGLE。机械执行类小任务（有明确指令、无需判断，如 typo 修复、git 提交）**不触发**此禁止，按矩阵推荐 SUBAGENT + cheap
+1. **任务很小且需要判断** — 纯对话、回答问题、选择方案等需要主 agent 判断力的小任务 → SINGLE。机械执行类小任务（有明确指令、无需判断，如 typo 修复、git 提交）**不触发**此禁止，按矩阵推荐 SUBAGENT
 2. **强顺序依赖** — 后一步必须等前一步完成，且无法并行 → SINGLE
 3. **高频共享同一批文件** — 多个 agent 会同时修改相同文件 → SINGLE
 4. **需要单一路径连续实现** — 实现路径不可拆分，需要同一上下文贯穿 → SINGLE
@@ -149,20 +151,14 @@ MULTI-AGENT 不在决策矩阵中，需要**额外检查**以下全部条件：
 
 ### SUBAGENT
 
-1. **确定模型**：引用 `subagent-driven-development` 的 Model Selection 规则：
-   - cheap tier: 1-2 文件 + 完整 spec → 机械实现
-   - standard tier: 多文件 + 集成关注 → 需要协调
-   - capable tier: 架构/设计判断（但此场景矩阵已判 SINGLE）
-   - **始终显式指定 `model` 参数**，不省略（省略会继承会话默认模型，通常最贵）
-
-2. **构造 dispatch prompt**（AGENTS.md §12.2 要求 5 要素）：
+1. **构造 dispatch prompt**（AGENTS.md §12.2 要求 5 要素）：
    - subtask goal: 子任务目标
    - scope boundary: 允许修改的文件/模块
    - expected deliverable: 预期交付物
    - required evidence: 必须提供的证据
    - completion condition: 完成条件
 
-3. **派遣**：使用 Agent 工具，显式指定 `model` 和 `subagent_type`
+2. **派遣**：使用 Agent 工具，显式指定 `model` 和 `subagent_type`
 
 ### MULTI-AGENT
 
@@ -171,9 +167,7 @@ MULTI-AGENT 不在决策矩阵中，需要**额外检查**以下全部条件：
    - 独立但不可并行 → 串行派遣
    - 不独立 → 退回 SINGLE
 
-2. **确定每个子 agent 的模型**：引用 SDD Model Selection，按子任务复杂度选 tier
-
-3. **派遣**：在单条消息中发起多个 Agent 调用实现并行
+2. **派遣**：在单条消息中发起多个 Agent 调用实现并行
 
 ## 输出格式
 
@@ -194,19 +188,17 @@ MULTI-AGENT 不在决策矩阵中，需要**额外检查**以下全部条件：
 **Dispatch Recommendation**:
 - MODE: SINGLE / SUBAGENT / MULTI-AGENT
 - Role: — / Fullstack Engineer / Testing Expert / Audit Expert
-- Model tier: — / cheap / standard / capable (per SDD Model Selection)
 - Handoff: direct / SDD + Agent tool / dispatching-parallel-agents + SDD
 ```
 
 ## 合理化检测
 
-> **合理化检测**：如果你发现自己想"这个任务很简单，不需要评估"或"直接派 opus 肯定没问题"——停下来，这是跳过评估的信号。即使是简单任务，也至少完成 Phase 1 的 3 维打分（可以快速），这样决策才有依据。
+> **合理化检测**：如果你发现自己想"这个任务很简单，不需要评估"——停下来，这是跳过评估的信号。即使是简单任务，也至少完成 Phase 1 的 3 维打分（可以快速），这样决策才有依据。
 
 ## 不覆盖已有功能的保证
 
 | 已有 skill 的功能 | 本 skill 如何处理 |
 |------------------|------------------|
-| SDD 的 3-tier Model Selection 规则 | **引用**：输出 "model tier: standard (per SDD Model Selection)"，不复制规则文本 |
 | dispatching-parallel-agents 的并行/串行决策 | **引用**：输出 "handoff: dispatching-parallel-agents"，不复制决策图 |
 | pre-flight-enforcement 的 skill 选择 | **不涉及**：本 skill 选 MODE/角色/模型，不选 skill |
 | AGENTS.md §4.4/§12 的派遣规则 | **执行**：禁止场景检查直接引用 §12.3 的 5 条规则 |
@@ -217,13 +209,13 @@ MULTI-AGENT 不在决策矩阵中，需要**额外检查**以下全部条件：
 完整示例见 `reference.md`。
 
 **示例 A**: 单文件 typo 修复（机械执行，有明确指令）
-- Coupling=1, Reasoning=1, Spec=1 → SUBAGENT + cheap + haiku
+- Coupling=1, Reasoning=1, Spec=1 → SUBAGENT
 
 **示例 B**: 纯对话回答问题（小任务但需要判断）
 - Coupling=1, Reasoning=1, Spec=2 → SINGLE（spec 不确定，需主 agent 判断）
 
 **示例 C**: 5 文件 feature 实施（有 plan + Fixed Contract）
-- Coupling=2, Reasoning=2, Spec=1 → SUBAGENT + standard
+- Coupling=2, Reasoning=2, Spec=1 → SUBAGENT
 
 **示例 D**: 3 个独立 bug 修复（不同文件，不同根因）
 - 每个子任务: Coupling=1, Reasoning=1, Spec=1 → 各自 SUBAGENT

@@ -200,11 +200,11 @@ qoderwork/
 
 ### 4.4 任务执行模式
 
-- 默认 `[MODE] SINGLE`。
-- 仅当任务有清晰边界、专业能力需求或可独立验收交付物时，使用 `[MODE] SUBAGENT`。
-- 仅当多个子任务低耦合、可独立验收、并行能显著提升速度/质量时，使用 `[MODE] MULTI-AGENT`。
-- 禁止对极小任务、强顺序依赖任务、高频共享文件任务派遣子 Agent。
-- **涉及代码/文件任务时，先通过 `task-dispatch-router` skill 评估 MODE，再执行。**
+- 默认 `[MODE] SUBAGENT` 或 `[MODE] MULTI-AGENT`。主 Agent 负责推理、评估、规划、审核——即需要全局上下文和判断力的"脑力工作"。具体实施必须分解为可独立验收的机械子任务，交由子 Agent 执行。
+- 仅当任务规模极小且无法再分解（如单行修复），或强推理深度需要主 Agent 亲自执行时，使用 `[MODE] SINGLE`。
+- 多子任务低耦合、可独立验收、并行提升效率时，优先 `[MODE] MULTI-AGENT`。
+- 禁止对强顺序依赖任务、高频共享文件任务派遣子 Agent。机械执行类小任务可委托子 agent。
+- **涉及代码/文件任务时，必须先通过 `task-dispatch-router` skill 评估 MODE，再执行。不评估直接执行视为流程违规。**
 
 
 ## 5. 会话启动例行检查
@@ -219,7 +219,7 @@ qoderwork/
 3. **读取 `documents/INDEX.md`**：了解可用文档清单与阅读建议。
 4. **按需读取专题文档**：根据任务主题读取 `documents/` 下相关文件，不要一次性全部加载。
 5. **涉及架构/Plugin/Tool/Session 时**：优先参考 `documents/opencode-framework/` 与 `documents/native-opencode/`。
-6. **涉及代码/文件任务时**：加载 `task-dispatch-router` skill，在执行前输出 Dispatch Assessment（MODE + 角色 + 模型 tier）。
+6. **涉及代码/文件任务时**：加载 `task-dispatch-router` skill，在执行前输出 Dispatch Assessment（MODE + 角色）。
 
 
 ## 6. 构建与测试命令
@@ -451,6 +451,19 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 
 ## 12. 子 Agent 派遣政策
 
+### 12.0 角色分工原则（优先于本节所有规则）
+
+| 角色 | 职责 | 边界 |
+|------|------|------|
+| **主 Agent**（当前会话） | 推理、评估、规划、审核、决策 | 不写代码、不修 bug、不跑测试——这些是子 Agent 的工作 |
+| **子 Agent** | 机械执行：实现、测试、git 操作、文档更新、格式化 | 只执行已规划的明确指令，不自行决策；多文件协调时可自行处理文件间依赖，但不得改变 plan 方向 |
+
+主 Agent 每次面对实施任务时的标准流程：
+1. 用 task-dispatch-router 评估 MODE
+2. 分解为可独立验收的机械子任务
+3. 按 MODE 派遣子 Agent
+4. 收集交付物并审核
+
 ### 12.1 可用角色
 
 - `Fullstack Engineer`：实现
@@ -469,7 +482,7 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 
 ### 12.3 禁止派遣场景
 
-- 任务很小且需要判断（机械执行类小任务可委托 cheap 子 agent）
+- 任务很小且需要判断（机械执行类小任务可委托子 agent）
 - 强顺序依赖任务
 - 高频共享同一批文件
 - 需要单一路径连续实现
