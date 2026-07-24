@@ -8,12 +8,17 @@ description: >-
   MULTI-AGENT mode (dispatch multiple sub-agents in parallel). References
   subagent-driven-development for model-tier rules and dispatching-parallel-agents
   for parallel/sequential decisions — does not duplicate them. Trigger: any task
-  that involves code changes, multi-step work, or uncertainty about whether to
-  delegate. Not for: pure conversation, single-file reads, or tasks where MODE
-  is already obvious.
+  that involves code changes, file edits, git commit, multi-step work, or
+  uncertainty about whether to delegate. Also trigger: 提交文件, 修改代码, 实施计划,
+  运行测试, 创建文件. Not for: pure conversation, single-file reads, or tasks where
+  MODE is already obvious.
 ---
 
 # Task Dispatch Router
+
+## 阻断规则（优先于一切）
+
+收到任何非纯对话任务时，**必须**先输出 Dispatch Assessment 再执行。不得以"任务很简单"、"直接做更快"、"我知道该怎么做"为由跳过评估。如果发现自己已经开始执行但未输出 Dispatch Assessment，**立即停止**，补输出评估后再继续。
 
 ## Language / 语言
 

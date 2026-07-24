@@ -204,6 +204,7 @@ qoderwork/
 - 仅当任务有清晰边界、专业能力需求或可独立验收交付物时，使用 `[MODE] SUBAGENT`。
 - 仅当多个子任务低耦合、可独立验收、并行能显著提升速度/质量时，使用 `[MODE] MULTI-AGENT`。
 - 禁止对极小任务、强顺序依赖任务、高频共享文件任务派遣子 Agent。
+- **涉及代码/文件任务时，先通过 `task-dispatch-router` skill 评估 MODE，再执行。**
 
 
 ## 5. 会话启动例行检查
@@ -218,6 +219,7 @@ qoderwork/
 3. **读取 `documents/INDEX.md`**：了解可用文档清单与阅读建议。
 4. **按需读取专题文档**：根据任务主题读取 `documents/` 下相关文件，不要一次性全部加载。
 5. **涉及架构/Plugin/Tool/Session 时**：优先参考 `documents/opencode-framework/` 与 `documents/native-opencode/`。
+6. **涉及代码/文件任务时**：加载 `task-dispatch-router` skill，在执行前输出 Dispatch Assessment（MODE + 角色 + 模型 tier）。
 
 
 ## 6. 构建与测试命令
