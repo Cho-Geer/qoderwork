@@ -4,7 +4,7 @@
 **Depends on**: PHASE-03
 **Outcome**: TaskGraph 获得可信 observation/sideEffects，并一次性写出单一 card、graph、receipt；尚不写 metrics。
 **Evidence level**: component
-**Progression status**: `BLOCKED`
+**Progression status**: `NOT_STARTED`
 
 ## Goal
 

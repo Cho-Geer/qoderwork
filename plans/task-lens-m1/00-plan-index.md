@@ -126,8 +126,8 @@
 |---:|---|---|---|---|
 | 1 | PHASE-01 | `01-phase-freeze-gate.md` | NONE | ACCEPTED |
 | 2 | PHASE-02 | `02-phase-input-safety-diff.md` | PHASE-01 | ACCEPTED |
-| 3 | PHASE-03 | `03-phase-provider-graph-spine.md` | PHASE-02 | NOT_STARTED |
-| 4 | PHASE-04 | `04-phase-coverage-card-artifact.md` | PHASE-03 | BLOCKED |
+| 3 | PHASE-03 | `03-phase-provider-graph-spine.md` | PHASE-02 | ACCEPTED |
+| 4 | PHASE-04 | `04-phase-coverage-card-artifact.md` | PHASE-03 | NOT_STARTED |
 | 5 | PHASE-05 | `05-phase-metrics-feedback.md` | PHASE-04 | BLOCKED |
 | 6 | PHASE-06 | `06-phase-integration-zero-write.md` | PHASE-05 | BLOCKED |
 | 7 | PHASE-07 | `07-phase-acceptance-closure.md` | PHASE-06 | BLOCKED |

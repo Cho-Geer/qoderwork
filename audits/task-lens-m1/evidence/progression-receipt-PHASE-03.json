@@ -1,0 +1,13 @@
+{
+  "schema_version": "phase-progression/v1",
+  "plan_index_sha256": "0a7cb204ff38cd894fa0be9089f0837b7caf37f9c25f9462872ddd500e7d626a",
+  "phase_file_sha256": "d3f8e745368e68329be72fe114d4a7a6b2bfa9e979565ff48dd64e02070859db",
+  "audit_report_sha256": "77a0517c800d416740375b4a46b8b86bdde61391ed6551d0828a49eddb27d33f",
+  "validator_output_sha256": "0f51b6bc3ab7d8c8446ee3aa82355eb03fa0a9d024fe427c67d1aa9a0ee0517a",
+  "phase_id": "PHASE-03",
+  "previous_status": "NOT_STARTED",
+  "new_status": "ACCEPTED",
+  "audit_report_path": "../../audits/task-lens-m1/2026-07-24-phase-03-provider-graph-spine-audit.md",
+  "audit_verdict": "ACCEPT",
+  "audit_exit_code": 0
+}

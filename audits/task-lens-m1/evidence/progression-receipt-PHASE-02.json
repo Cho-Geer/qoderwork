@@ -1,0 +1,13 @@
+{
+  "schema_version": "phase-progression/v1",
+  "plan_index_sha256": "0a7cb204ff38cd894fa0be9089f0837b7caf37f9c25f9462872ddd500e7d626a",
+  "phase_file_sha256": "4b62c1ad93cddb8e6256282f5a001013c7eb042fc4e434f04421acf85002d5c1",
+  "audit_report_sha256": "7ddb87f515a4c7ca85a924f5cf9a3dd7ad25adfd243982532c7811aa75521de4",
+  "validator_output_sha256": "fd21b3f4876324ac2bddf10c61a7d1f99e7dfb61a7a15e1f0c7e0134f4898c08",
+  "phase_id": "PHASE-02",
+  "previous_status": "NOT_STARTED",
+  "new_status": "ACCEPTED",
+  "audit_report_path": "../../audits/task-lens-m1/2026-07-24-phase-02-input-safety-diff-audit.md",
+  "audit_verdict": "ACCEPT",
+  "audit_exit_code": 0
+}

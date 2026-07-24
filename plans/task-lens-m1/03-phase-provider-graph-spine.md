@@ -4,7 +4,8 @@
 **Depends on**: PHASE-02
 **Outcome**: 从 live hunks 得到 calls-only bounded TaskGraph 与单一 SpineForest；不读取 coverage、不写卡片。
 **Evidence level**: component
-**Progression status**: `NOT_STARTED`
+**Progression status**: `ACCEPTED`
+**Completion receipt**: `../../audits/task-lens-m1/evidence/progression-receipt-PHASE-03.json`
 
 ## Goal
 
@@ -169,9 +170,9 @@ rg -n 'FAKE-INJECTION' scripts/task-lens/__tests__/provider-graph.test.ts script
 
 ## Phase completion gate
 
-- [ ] PHASE-03 Freeze Gate 与 impact caller tests 完整。
-- [ ] TL-PROBE/FALLBACK/SEED/EDGE/BUDGET/SPINE/DISPLAY 全 PASS。
-- [ ] 真实 SQLite provider 与真实 seed→graph→spine 路径各有覆盖。
-- [ ] 每个 fake 有 FAKE-INJECTION，单一 mutation 只失败一个 check。
-- [ ] typecheck 零新增、bun.lock 无 diff、Allowed-file diff only。
-- [ ] PHASE-04 在全部勾选前保持 BLOCKED。
+- [x] PHASE-03 Freeze Gate 与 impact caller tests 完整。
+- [x] TL-PROBE/FALLBACK/SEED/EDGE/BUDGET/SPINE/DISPLAY 全 PASS。
+- [x] 真实 SQLite provider 与真实 seed→graph→spine 路径各有覆盖。
+- [x] 每个 fake 有 FAKE-INJECTION，单一 mutation 只失败一个 check。
+- [x] typecheck 零新增、bun.lock 无 diff、Allowed-file diff only。
+- [x] PHASE-04 在全部勾选前保持 BLOCKED。
