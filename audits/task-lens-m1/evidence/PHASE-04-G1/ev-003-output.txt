@@ -1,0 +1,25 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+
+scripts/task-lens/__tests__/coverage-render.test.ts:
+(pass) TL-EFFECT: side-effect detection > detects builtin DB token [0.16ms]
+(pass) TL-EFFECT: side-effect detection > detects multiple builtin types [4.60ms]
+(pass) TL-EFFECT: side-effect detection > detects config-side tokens [0.05ms]
+(pass) TL-EFFECT: side-effect detection > TL-C-304: source without fetch token → no NET fetch effect [0.02ms]
+(pass) TL-EFFECT: side-effect detection > deduplicates identical tokens [0.02ms]
+(pass) TL-CARD: card rendering > card has all five required Chinese headings [0.51ms]
+(pass) TL-CARD: card rendering > function row contains location, signature, observation [0.06ms]
+(pass) TL-CARD: card rendering > low confidence node (< 0.8) has static-low label [0.05ms]
+(pass) TL-CARD: card rendering > uncovered seeds appear in section 三 [0.11ms]
+(pass) TL-CARD: card rendering > TL-C-305: empty graph generates card with placeholder text [0.06ms]
+
+ 10 pass
+ 7 filtered out
+ 0 fail
+ 32 expect() calls
+Ran 10 tests across 1 file. [55.00ms]
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-04-AUDIT-20260724",
+  "generation": 1,
+  "id": "EV-001",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun test scripts/task-lens/__tests__/coverage-render.test.ts -t 'TL-COV-FN|TL-COV-DA' 2>&1",
+  "observed": "PASS",
+  "requirement_id": "REQ-008",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-007",
+  "fixture_id": "FIXTURE-GOOD-008",
+  "evidence_level": "component",
+  "repository_state_sha256": "a175eeb9c45777319f369793bf76353a938119567a63ff7d4152390c76664a81",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-04-G1/ev-001-output.txt",
+      "sha256": "a356c63639bf5a5095b7894802eeceaea0455af35a02e041c425a50435afbc3c"
+    }
+  ],
+  "completed_at": "2026-07-24T09:25:54.110Z"
+}

@@ -1,0 +1,21 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+
+scripts/task-lens/__tests__/coverage-render.test.ts:
+(pass) TL-COV-FN: FN/FNDA coverage parsing > positive: observed function with FNDA count > 0 [5.47ms]
+(pass) TL-COV-FN: FN/FNDA coverage parsing > not-observed: FNDA count = 0 [0.54ms]
+(pass) TL-COV-FN: FN/FNDA coverage parsing > TL-C-301: duplicate FN same name different lines → unknown [0.55ms]
+(pass) TL-COV-DA: DA line-level coverage fallback > observed: DA with count > 0 in function range [0.42ms]
+(pass) TL-COV-DA: DA line-level coverage fallback > not-observed: all DA counts = 0 in function range [0.50ms]
+(pass) TL-COV-DA: DA line-level coverage fallback > unknown: no DA in function range [0.47ms]
+
+ 6 pass
+ 11 filtered out
+ 0 fail
+ 11 expect() calls
+Ran 6 tests across 1 file. [65.00ms]
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

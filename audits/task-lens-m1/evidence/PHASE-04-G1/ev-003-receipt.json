@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-04-AUDIT-20260724",
+  "generation": 1,
+  "id": "EV-003",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun test scripts/task-lens/__tests__/coverage-render.test.ts -t 'TL-EFFECT|TL-CARD' 2>&1",
+  "observed": "PASS",
+  "requirement_id": "REQ-009",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-008",
+  "fixture_id": "FIXTURE-GOOD-009",
+  "evidence_level": "component",
+  "repository_state_sha256": "a175eeb9c45777319f369793bf76353a938119567a63ff7d4152390c76664a81",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-04-G1/ev-003-output.txt",
+      "sha256": "750db67c115a8d2dd86765fac8a28587bb6ab8d8208e88dda3921fd7d0ebaf7a"
+    }
+  ],
+  "completed_at": "2026-07-24T09:25:54.251Z"
+}

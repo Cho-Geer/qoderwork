@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-04-AUDIT-20260724",
+  "generation": 1,
+  "id": "EV-006",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun run /tmp/neg-req-010.ts 2>&1",
+  "observed": "FAIL",
+  "requirement_id": "REQ-010",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-009",
+  "fixture_id": "FIXTURE-BAD-010",
+  "evidence_level": "component",
+  "repository_state_sha256": "a175eeb9c45777319f369793bf76353a938119567a63ff7d4152390c76664a81",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-04-G1/ev-006-output.txt",
+      "sha256": "b1e5c7757c6db7d7b5636d02c5636f1acb77c4071df430f80a8f52de6f2b8939"
+    }
+  ],
+  "completed_at": "2026-07-24T09:25:54.449Z"
+}
