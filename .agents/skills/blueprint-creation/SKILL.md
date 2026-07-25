@@ -342,4 +342,4 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 
 9. **不要在 blueprint 完成后跳过子系统合规审计**。Phase 2 的 12 子系统合规检查清单是设计阶段的必要环节，不是可选的附加步骤。实际案例：某 dispatch 系统 blueprint 跳过了合规审计，实施后才发现三个缺陷——TOCTOU 并发漏洞（UPDATE 缺少 `AND status = 'pending'` 守卫）、before-hook 日志通道违规（在统一 writeLog 的框架中混用 `process.stderr.write`）、文件行数超标（router.ts 超过 400 行目标）。这些缺陷在设计阶段通过合规审计即可发现，实施后修复的成本远高于设计阶段调整。
 
-10. **验证计划不得与 AGENTS.md §15 provenance 要求冲突**。若 blueprint 的下游 plan 会含 `capture-state.ts --repository-root` 命令（v2.1-required plan），须遵循 AGENTS.md §15 P-07：`--repository-root` 必须指向干净锚点仓库（work-one），禁止指向审计工作区（qoderwork 主仓或其 `.worktrees/*` worktree）。违反会导致 `validate-audit.ts` 的 `DIRTY_PATH_OUTSIDE_SCOPE`，审计判定 `INVALID`。
+10. **验证计划不得与 provenance 规则冲突**。若 blueprint 的下游 plan 会含 `capture-state.ts --repository-root` 命令（v2.1-required plan），须遵循 `.agents/skills/plan-audit-archiver/provenance-rules.md` P-07：`--repository-root` 必须指向干净锚点仓库（work-one），禁止指向审计工作区（qoderwork 主仓或其 `.worktrees/*` worktree）。违反会导致 `validate-audit.ts` 的 `DIRTY_PATH_OUTSIDE_SCOPE`，审计判定 `INVALID`。

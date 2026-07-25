@@ -515,7 +515,7 @@ function checkInheritedBlockers(value: unknown, errors: AuditIssue[]): void {
 function checkDowngradeDeclaration(value: unknown, provenanceLevel: string | null, evidenceCeiling: string | null, errors: AuditIssue[]): void {
   if (provenanceLevel === "v2.1-required" && evidenceCeiling === "component") {
     if (value === null || value === undefined) {
-      issue(errors, "DOWNGRADE_DECLARATION_REQUIRED", `provenance_level=v2.1-required with evidence_ceiling=component requires non-null downgrade_declaration (AGENTS.md §15 rule P-05)`, "Add downgrade_declaration with 4 fields: reason, ceiling, unaffected_scope, affected_scope.");
+      issue(errors, "DOWNGRADE_DECLARATION_REQUIRED", `provenance_level=v2.1-required with evidence_ceiling=component requires non-null downgrade_declaration (provenance-rules.md rule P-05)`, "Add downgrade_declaration with 4 fields: reason, ceiling, unaffected_scope, affected_scope.");
       return;
     }
     const decl = objectAt(value, "downgrade_declaration", errors);
@@ -659,7 +659,7 @@ export function validateAuditSource(source: string, label = "audit.md"): AuditVa
   const scopeStatus = stringAt(scope.status, "scope.status", errors);
   if (scopeStatus && scopeStatus !== "FROZEN" && scopeStatus !== "UNFROZEN") issue(errors, "INVALID_SCOPE_STATUS", `scope.status=${scopeStatus}`);
   const provenanceLevel = stringAt(scope.provenance_level, "scope.provenance_level", errors);
-  if (provenanceLevel && !PROVENANCE_LEVELS.has(provenanceLevel)) issue(errors, "INVALID_PROVENANCE_LEVEL", `scope.provenance_level=${provenanceLevel} (AGENTS.md §15 rule P-01)`);
+  if (provenanceLevel && !PROVENANCE_LEVELS.has(provenanceLevel)) issue(errors, "INVALID_PROVENANCE_LEVEL", `scope.provenance_level=${provenanceLevel} (provenance-rules.md rule P-01)`);
   const frozenAt = stringAt(scope.frozen_at, "scope.frozen_at", errors);
   requireIsoTimestamp(frozenAt, "scope.frozen_at", errors, true);
   const inScope = stringArrayAt(scope.in_scope, "scope.in_scope", errors, true);
@@ -735,7 +735,7 @@ export function validateAuditSource(source: string, label = "audit.md"): AuditVa
     issue(errors, "EVIDENCE_CEILING_NOT_EXECUTABLE", `${verdictValue} cannot use evidence_ceiling=NOT-RUN`);
   }
   if (verdictValue === "ACCEPT" && provenanceLevel === "component-only") {
-    issue(errors, "COMPONENT_ONLY_ACCEPT_FORBIDDEN", `ACCEPT forbidden when scope.provenance_level=component-only (AGENTS.md §15 rule P-06)`, "Use verdict REWORK or BLOCKED for component-only plans; v2.1 ACCEPT requires provenance_level=v2.1-required.");
+    issue(errors, "COMPONENT_ONLY_ACCEPT_FORBIDDEN", `ACCEPT forbidden when scope.provenance_level=component-only (provenance-rules.md rule P-06)`, "Use verdict REWORK or BLOCKED for component-only plans; v2.1 ACCEPT requires provenance_level=v2.1-required.");
   }
   if ((verdictValue === "ACCEPT" || verdictValue === "REWORK") && !preChangeReceipt) issue(errors, "PRE_CHANGE_RECEIPT_REQUIRED", `${verdictValue} requires baseline.pre_change_receipt`);
   if ((verdictValue === "ACCEPT" || verdictValue === "REWORK") && !verdictStateReceipt) issue(errors, "VERDICT_STATE_RECEIPT_REQUIRED", `${verdictValue} requires baseline.verdict_state_receipt`);

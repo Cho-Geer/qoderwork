@@ -21,6 +21,14 @@ This skill cannot prove that no unknown defect exists. It must make the known
 acceptance boundary stable, test sensitivity visible, and every later scope
 change attributable and reviewable.
 
+## Canonical provenance rules
+
+The full P-01..P-07 provenance rules (four-element structure: 约束主体 + 触发条件
++ 违反判定 + 违反后果) live in `provenance-rules.md` (this directory) — migrated
+from AGENTS.md §15 on 2026-07-25. Read them before any v2.1-required audit or
+implementation Freeze Gate; AGENTS.md §15 keeps only the rule index and the
+mandatory trigger.
+
 ## Non-negotiable invariants
 
 1. **One authoritative root.** A plan or approved contract is required. Logs,
@@ -63,7 +71,7 @@ change attributable and reviewable.
     a green product suite alone are insufficient.
 
 14. **Pre-change receipt precondition.** When `provenance_level = v2.1-required`
-    (declared per AGENTS.md §15 rule P-01), Step 1 (Freeze) MUST verify that
+    (declared per provenance-rules.md rule P-01), Step 1 (Freeze) MUST verify that
     `evidence/pre-change-<PHASE-N>.json` exists and is non-empty before any
     implementation write. If the pre-change receipt is missing, the audit
     verdict MUST be `INVALID` (not `BLOCKED`), because the implementation
@@ -318,7 +326,7 @@ cd /home/zhaoge/workspace/qoderwork
 
 # 推荐：--freeze 原子操作（设置 scope.frozen_at + scope.status=FROZEN，然后捕获 pre-change receipt）
 # scope_lock_sha256 绑定到 frozen_at 写入后的最终版本，消除循环依赖
-# --repository-root 必须是干净锚点（work-one），不是当前 worktree（见 §15 P-07）
+# --repository-root 必须是干净锚点（work-one），不是当前 worktree（见 provenance-rules.md P-07）
 # --phase-id 必须与 scope-lock 的 lock_id 字段完全相同（validator L1175 校验 phase_id == lock_id）
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
   --repository-root /home/zhaoge/workspace/opencode/work-one \

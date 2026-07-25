@@ -299,7 +299,7 @@ Any blocking finding with `introduced_after_freeze: true` requires:
 Valid gates are `IN_SCOPE_REGRESSION`, `SAFETY_OR_DATA_LOSS`,
 `EVIDENCE_INVALIDATION`, and `AUDIT_MISS`.
 
-### Inherited blockers variant (AGENTS.md §15 rule P-04)
+### Inherited blockers variant (provenance-rules.md rule P-04)
 
 For `generation > 1`, every `BLOCKED` item from the previous audit MUST appear
 exactly once in `inherited_blockers` with one of three dispositions:
@@ -323,7 +323,7 @@ forward,附 reason and planned resolution time), and `REOPENED` (reopened,附
 new evidence). Silent omission of a prior `BLOCKED` item is MUST NOT; the
 report is `INVALID` if any prior blocker is missing from `inherited_blockers`.
 
-### Downgrade declaration variant (AGENTS.md §15 rule P-05)
+### Downgrade declaration variant (provenance-rules.md rule P-05)
 
 When the auditor uses an evidence standard lower than the plan's declared
 `provenance_level` (e.g., plan declares `v2.1-required` but auditor uses

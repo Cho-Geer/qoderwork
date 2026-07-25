@@ -38,8 +38,9 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
   implementation guidance.
 - Reference `plan-audit-archiver` for v2.1 provenance rules: any Fixed
   verification command containing `capture-state.ts --repository-root` must
-  follow AGENTS.md §15 P-07 (repository_root = clean anchor work-one, never
-  the audit workspace or current worktree).
+  follow `.agents/skills/plan-audit-archiver/provenance-rules.md` P-07
+  (repository_root = clean anchor work-one, never the audit workspace or
+  current worktree).
 - This skill does not implement code and does not mark product behavior PASS.
 
 ## Non-negotiable rules
@@ -77,8 +78,9 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
     `capture-state.ts --repository-root` or `generate-evidence-receipt.ts
     --repository-root` must set it to the clean anchor repository (work-one:
     `/home/zhaoge/workspace/opencode/work-one`), never the audit workspace
-    (qoderwork main repo or any `.worktrees/*` worktree). See AGENTS.md §15
-    P-07. Violation makes the pre-change receipt fail `validate-audit.ts`
+    (qoderwork main repo or any `.worktrees/*` worktree). See
+    `.agents/skills/plan-audit-archiver/provenance-rules.md` P-07. Violation
+    makes the pre-change receipt fail `validate-audit.ts`
     (`DIRTY_PATH_OUTSIDE_SCOPE`), rendering the audit `INVALID`.
 
 13. **Progression contract.** A plan using `**Progression schema**: `phase-progression/v1``
