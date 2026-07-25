@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "TASK-LENS-M1-PHASE-05-20260724-G1",
+  "generation": 1,
+  "id": "EV-001",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun test scripts/task-lens/__tests__/metrics.test.ts scripts/task-lens/__tests__/cli-integration.test.ts scripts/task-lens/__tests__/artifact-writer.test.ts scripts/task-lens/__tests__/input-diff.test.ts",
+  "observed": "PASS",
+  "requirement_id": "REQ-011",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-011",
+  "fixture_id": "metrics-all-pass",
+  "evidence_level": "component",
+  "repository_state_sha256": "278be310ce3f0dfef16dd33a01ce29a78006c5edca78373f354ddc4a9832eb86",
+  "exit_code": 0,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/task-lens-m1/evidence/PHASE-05-G1/ev-001-output.txt",
+      "sha256": "38005b430bb55c52fbaebb838156c29ed6f3755a05ac75685d2e4d222e08d9da"
+    }
+  ],
+  "completed_at": "2026-07-24T15:07:23.998Z"
+}

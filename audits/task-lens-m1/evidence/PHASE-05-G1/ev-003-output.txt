@@ -1,0 +1,23 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/task-lens/__tests__/cli-integration.test.ts:
+(pass) CLI integration > generate invalid mode exits 10 [52.50ms]
+(pass) CLI integration > metrics summarize on empty dir is INCOMPLETE (exit 2) [21.25ms]
+(pass) CLI integration > metrics summarize --json outputs JSON [21.33ms]
+(pass) CLI integration > feedback without generated exits non-zero [26.54ms]
+(pass) CLI integration > metrics summarize on corrupt JSONL exits non-zero [21.82ms]
+(pass) CLI integration > generate missing required flag exits 10 [21.61ms]
+(pass) CLI integration > generate non-absolute project exits 10 [21.89ms]
+(pass) CLI integration > feedback issues-guided > issues-found exits 10 [21.37ms]
+(pass) CLI integration > full flow: git repo generate + feedback + summarize [131.75ms]
+
+ 9 pass
+ 0 fail
+ 12 expect() calls
+Ran 9 tests across 1 file. [411.00ms]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

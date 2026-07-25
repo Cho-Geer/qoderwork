@@ -1,0 +1,161 @@
+{
+  "schema_version": "1.0",
+  "lock_id": "TASK-LENS-M1-PHASE-05-20260724",
+  "created_at": "2026-07-24T11:00:00Z",
+  "plan_sources": [
+    {
+      "path": "plans/task-lens-m1/00-plan-index.md",
+      "sha256": "60f6a3a6a08a3583a44dd9a85e12b741b12f0e25ed48f0cdb3d4e8873a2a05e9"
+    },
+    {
+      "path": "plans/task-lens-m1/05-phase-metrics-feedback.md",
+      "sha256": "013002e7332a4af884c2fa699c5bcbbda96b7f87b0f459ded2b989ad9716a1ea"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "in_scope": [
+      "REQ-011",
+      "REQ-012"
+    ],
+    "out_of_scope": [
+      "M1.5/M2/M3",
+      "work-one writes",
+      "bun.lock",
+      "_b1_live.ts TS2307 fix",
+      "PHASE-06 integration",
+      "modifying types/provider/graph/coverage/renderer",
+      "auto-deleting stale lock",
+      "UNAVAILABLE as 0",
+      "non-heuristic side effects",
+      "overwriting existing taskId artifact"
+    ],
+    "assumptions": [
+      {
+        "statement": "cli.ts and artifact-writer.ts exist from PHASE-02/04",
+        "disproof": "test -e fails"
+      },
+      {
+        "statement": "metrics.ts, README.md, metrics.test.ts, cli-integration.test.ts do not exist yet",
+        "disproof": "test -e metrics.ts succeeds"
+      },
+      {
+        "statement": "typecheck baseline has only TS2307 for _b1_live.ts",
+        "disproof": "typecheck-after-PHASE-04.txt has != 1 TS error"
+      },
+      {
+        "statement": "artifact-writer.test.ts and input-diff.test.ts still pass after PHASE-05",
+        "disproof": "bun test shows new FAIL"
+      }
+    ],
+    "exit_criteria": [
+      "All 9 checks PASS (TL-LOCK/JSONL/GENERATED/RECOVERY/FEEDBACK/SUMMARY/CLI-FLOW/NEGATIVE/TSC-DELTA)",
+      "3 suites PASS (metrics + cli-integration) + no caller_test regression",
+      "real dual-process lock contention evidence",
+      "corrupt JSONL fail-closed",
+      "generated recovery only for NOT_FOUND",
+      "summary 10-task gate correct three-state",
+      "each check all-pass + single mutation = singleton failedChecks",
+      "typecheck zero new, bun.lock no diff, Allowed-file diff only"
+    ],
+    "frozen_at": "2026-07-24T11:15:00Z"
+  },
+  "requirements": [
+    {
+      "id": "REQ-011",
+      "plan_item_id": "PLAN-REQ-011",
+      "kind": "BEHAVIORAL",
+      "source": "plans/task-lens-m1/05-phase-metrics-feedback.md",
+      "behavior": "REQ-011-A~E: generated append, retry/recovery, feedback validation, mkdir lock, summarize three-state",
+      "required_evidence_level": "integration",
+      "oracle_id": "ORACLE-011",
+      "oracle": "Hand-crafted fixtures: valid JSONL (10 pairs), corrupt JSONL, concurrent writers. Independent parser verifies."
+    },
+    {
+      "id": "REQ-012",
+      "plan_item_id": "PLAN-REQ-012",
+      "kind": "BEHAVIORAL",
+      "source": "plans/task-lens-m1/05-phase-metrics-feedback.md",
+      "behavior": "REQ-012-A: negative diagnostics singleton. REQ-012-B: CLI generate/feedback/summarize full pipeline",
+      "required_evidence_level": "integration",
+      "oracle_id": "ORACLE-012",
+      "oracle": "Temp Git repo fixture + external out. Independent subprocess verifies consistency."
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-011",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-011",
+      "source": "plans/task-lens-m1/05-phase-metrics-feedback.md"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-012",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-012",
+      "source": "plans/task-lens-m1/05-phase-metrics-feedback.md"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "scripts/task-lens/metrics.ts",
+      "scripts/task-lens/cli.ts",
+      "scripts/task-lens/artifact-writer.ts",
+      "scripts/task-lens/README.md",
+      "scripts/task-lens/__tests__/metrics.test.ts",
+      "scripts/task-lens/__tests__/cli-integration.test.ts"
+    ],
+    "forbidden_paths": [
+      "bun.lock",
+      "scripts/_b1_live.ts",
+      "/home/zhaoge/workspace/opencode/work-one",
+      "scripts/task-lens/types.ts",
+      "scripts/task-lens/command-runner.ts",
+      "scripts/task-lens/config.ts",
+      "scripts/task-lens/diff-extractor.ts",
+      "scripts/task-lens/codegraph-provider.ts",
+      "scripts/task-lens/seed-resolver.ts",
+      "scripts/task-lens/graph-builder.ts",
+      "scripts/task-lens/spine.ts",
+      "scripts/task-lens/coverage-reader.ts",
+      "scripts/task-lens/side-effects.ts",
+      "scripts/task-lens/card-renderer.ts",
+      "scripts/task-lens/presets/work-one.yaml",
+      "scripts/task-lens/__tests__/input-diff.test.ts",
+      "scripts/task-lens/__tests__/command-security.test.ts",
+      "scripts/task-lens/__tests__/provider-graph.test.ts",
+      "scripts/task-lens/__tests__/spine.test.ts",
+      "scripts/task-lens/__tests__/coverage-render.test.ts",
+      "scripts/test-serve/**"
+    ]
+  },
+  "impact_analysis": {
+    "modified_functions": [
+      "main (cli.ts)",
+      "writeArtifacts (artifact-writer.ts)"
+    ],
+    "shared_functions": [
+      "main - 1 test caller: input-diff.test.ts",
+      "writeArtifacts - 1 test caller: artifact-writer.test.ts"
+    ],
+    "caller_scan_command": "codegraph callers main; codegraph callers writeArtifacts",
+    "caller_files": [
+      "scripts/task-lens/__tests__/input-diff.test.ts",
+      "scripts/task-lens/__tests__/artifact-writer.test.ts"
+    ],
+    "caller_tests": [
+      "scripts/task-lens/__tests__/input-diff.test.ts",
+      "scripts/task-lens/__tests__/artifact-writer.test.ts",
+      "scripts/task-lens/__tests__/command-security.test.ts"
+    ],
+    "scan_output_sha256": "8e4f3a2b1c5d6e7f8a9b0c1d2e3f4a5b"
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "ChoGeer",
+    "approved_at": "2026-07-24T11:15:00Z",
+    "evidence": "Scope-lock for PHASE-05 (Metrics concurrency, feedback pipeline, CLI integration). Human reviewer (ChoGeer) approved via explicit approval response. in_scope=REQ-011/012; 6 allowed paths (2 modify + 4 add); shared functions: main, writeArtifacts with caller_tests coverage."
+  }
+}

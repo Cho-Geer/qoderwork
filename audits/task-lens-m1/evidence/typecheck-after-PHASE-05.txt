@@ -1,0 +1,3 @@
+$ tsc --noEmit --pretty false
+scripts/_b1_live.ts(11,44): error TS2307: Cannot find module '../../opencode/work-one/.opencode/plugin-handlers/system/skill-summary.ts' or its corresponding type declarations.
+error: script "typecheck" exited with code 1

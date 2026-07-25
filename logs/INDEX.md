@@ -8,7 +8,7 @@ Last updated: 2026-07-24
 
 | 日期 | 数量 | 日志 |
 |---|---:|---|
-| 2026-07-24 | 1 | [2026-07-24-phase-progression-bootstrap-waiver.md](2026-07-24-phase-progression-bootstrap-waiver.md) |
+| 2026-07-24 | 2 | [2026-07-24-phase-progression-bootstrap-waiver.md](2026-07-24-phase-progression-bootstrap-waiver.md), [2026-07-24-task-lens-phase05-scope-amendment.md](2026-07-24-task-lens-phase05-scope-amendment.md) |
 | 2026-07-23 | 4 | [2026-07-23-blueprint-plan-code-cross-audit.md](2026-07-23-blueprint-plan-code-cross-audit.md), [2026-07-23-task-lens-blueprint.md](2026-07-23-task-lens-blueprint.md), [2026-07-23-task-lens-m1-plan-set.md](2026-07-23-task-lens-m1-plan-set.md), [2026-07-23-impact-analysis-framework.md](2026-07-23-impact-analysis-framework.md) |
 | 2026-07-22 | 10 | [2026-07-22-p0-2-phase-05-runtime-test.md](2026-07-22-p0-2-phase-05-runtime-test.md), [2026-07-22-phase-06-cli-smoke-execution.md](2026-07-22-phase-06-cli-smoke-execution.md), [2026-07-22-phase-07-regression-execution.md](2026-07-22-phase-07-regression-execution.md), [2026-07-22-phase-07-runtime-supplement.md](2026-07-22-phase-07-runtime-supplement.md), [2026-07-22-typecheck-debt-fix.md](2026-07-22-typecheck-debt-fix.md), [2026-07-22-p0-2-closure.md](2026-07-22-p0-2-closure.md), [2026-07-22-p0-2-debt-status.md](2026-07-22-p0-2-debt-status.md), [2026-07-22-isolated-serve-blueprint-cross-audit.md](2026-07-22-isolated-serve-blueprint-cross-audit.md), [2026-07-22-p0-3-01-state-contract.md](2026-07-22-p0-3-01-state-contract.md), [2026-07-22-hotfix-transition-table.md](2026-07-22-hotfix-transition-table.md) |
 | 2026-07-21 | 2 | [2026-07-21-p0-2-phase-06a-audit-g2.md](2026-07-21-p0-2-phase-06a-audit-g2.md), [2026-07-21-p0-2-phase-04a-existsync-fix.md](2026-07-21-p0-2-phase-04a-existsync-fix.md) |
@@ -30,9 +30,10 @@ Last updated: 2026-07-24
 
 ## 按主题聚类
 
-### 审计与计划（85）
+### 审计与计划（86）
 
 - [2026-07-24-phase-progression-bootstrap-waiver.md](2026-07-24-phase-progression-bootstrap-waiver.md) — Phase Progression 治理框架 bootstrap 豁免与范围约束（10 行）
+- [2026-07-24-task-lens-phase05-scope-amendment.md](2026-07-24-task-lens-phase05-scope-amendment.md) — Task Lens PHASE-05 将 input-diff caller test 纳入新 amendment scope-lock（7 行）
 - [2026-07-23-blueprint-plan-code-cross-audit.md](2026-07-23-blueprint-plan-code-cross-audit.md) — 蓝图/计划与代码交叉审核（20 行）
 - [2026-07-23-task-lens-m1-plan-set.md](2026-07-23-task-lens-m1-plan-set.md) — Task Lens M1 七阶段确定性 PLAN_SET（17 行）
 - [2026-07-23-task-lens-blueprint.md](2026-07-23-task-lens-blueprint.md) — Task Lens M1 blueprint 创建与 v0.1.5 设计返工（20 行）

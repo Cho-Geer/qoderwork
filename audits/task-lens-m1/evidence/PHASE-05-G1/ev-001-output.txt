@@ -1,0 +1,75 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/task-lens/__tests__/cli-integration.test.ts:
+(pass) CLI integration > generate invalid mode exits 10 [62.92ms]
+(pass) CLI integration > metrics summarize on empty dir is INCOMPLETE (exit 2) [24.67ms]
+(pass) CLI integration > metrics summarize --json outputs JSON [26.48ms]
+(pass) CLI integration > feedback without generated exits non-zero [31.97ms]
+(pass) CLI integration > metrics summarize on corrupt JSONL exits non-zero [23.90ms]
+(pass) CLI integration > generate missing required flag exits 10 [26.00ms]
+(pass) CLI integration > generate non-absolute project exits 10 [24.25ms]
+(pass) CLI integration > feedback issues-guided > issues-found exits 10 [26.69ms]
+(pass) CLI integration > full flow: git repo generate + feedback + summarize [156.04ms]
+
+scripts/task-lens/__tests__/metrics.test.ts:
+(pass) withMetricsLock > acquire and release [5.34ms]
+(pass) JSONL scanner > valid event parses [8.81ms]
+(pass) JSONL scanner > corrupt JSONL is UNAVAILABLE [1.76ms]
+(pass) appendGenerated > appends [8.06ms]
+(pass) appendGenerated > generated events written as JSONL lines [14.91ms]
+(pass) appendFeedback > appends [17.01ms]
+(pass) appendFeedback > feedback requires generated event [15.12ms]
+(pass) appendFeedback > feedback writes correct fields [14.88ms]
+(pass) queryGeneratedEvent > NOT_FOUND for missing [0.73ms]
+(pass) queryGeneratedEvent > FOUND after append [6.57ms]
+(pass) queryGeneratedEvent > UNAVAILABLE on corrupt [0.23ms]
+(pass) summarizeMetrics > PASS: 10 pairs, 10 useful+reduced [1.49ms]
+(pass) summarizeMetrics > INCOMPLETE: <10 gen [0.86ms]
+(pass) summarizeMetrics > FAIL: 10 pairs, <7 useful+reduced [1.56ms]
+(pass) summarizeMetrics > INCOMPLETE: missing feedback [1.76ms]
+
+scripts/task-lens/__tests__/artifact-writer.test.ts:
+(pass) TL-CANON: stable canonical serialization > same graph produces identical hash across 3 serializations [0.67ms]
+(pass) TL-CANON: stable canonical serialization > TL-C-306: graph containing a Map rejects with ArtifactError [0.79ms]
+(pass) TL-CANON: stable canonical serialization > TL-C-306 variant: Set rejected by deep guard [0.47ms]
+(pass) TL-ATOMIC: real writeArtifacts > successful atomic write produces 3 files with correct receipt [21.04ms]
+(pass) TL-CONFLICT: conflict detection > TL-C-307: pre-existing taskId directory causes TL-CONFLICT [0.58ms]
+(pass) TL-CONFLICT: conflict detection > TL-C-308: second write with same taskId fails with TL-CONFLICT [16.71ms]
+(pass) FAKE-INJECTION: artifact writer with injected fault > deep guard catches undefined in graph [0.79ms]
+(pass) FAKE-INJECTION: artifact writer with injected fault > deep guard catches function in graph [0.52ms]
+
+scripts/task-lens/__tests__/input-diff.test.ts:
+(pass) TL-DIFF-WT working-tree extraction > all-pass: real runCommand, three change kinds present [29.94ms]
+(pass) TL-DIFF-WT working-tree extraction > TL-C-101 single-mutation: remove live file, keep deletion -> TL-DIFF-DELETE still singleton [42.89ms]
+(pass) TL-DIFF-COMMIT commit extraction > all-pass: full SHA + current HEAD + clean worktree [28.02ms]
+(pass) TL-DIFF-COMMIT commit extraction > TL-C-105 single-mutation: dirty worktree -> exit 10 [32.66ms]
+(pass) TL-DIFF-COMMIT commit extraction > commit mode with non-existent base ref -> ProcessFailure (exit 20), not NOT_FOUND [25.76ms]
+(pass) TL-DIFF-COMMIT commit extraction > commit mode with `-`-prefixed base -> exit 10 (not passed to git) [25.24ms]
+(pass) TL-DIFF-DELETE DeletedRegion parsing > all-pass: hash + range + provenance=preimage-only [23.43ms]
+(pass) TL-DIFF-DELETE DeletedRegion parsing > pure-deletion-only repo still extracts DeletedRegion (no live seed synthesized) [21.44ms]
+(pass) TL-DIFF-DELETE DeletedRegion parsing > empty diff -> EmptyDiffError exit 13 [18.15ms]
+(pass) TL-RECEIPT canonical taskId determinism > TL-C-106 single-mutation: change generatedAt only -> taskId unchanged [0.20ms]
+(pass) TL-RECEIPT canonical taskId determinism > any input field change -> taskId changes [0.18ms]
+(pass) TL-RECEIPT canonical taskId determinism > taskId independently recomputed from canonical JSON matches [0.18ms]
+(pass) TL-CLI parseCli grammar > all-pass: generate parses all flags [0.32ms]
+(pass) TL-CLI parseCli grammar > generate --mode commit requires full-SHA --base [0.05ms]
+(pass) TL-CLI parseCli grammar > feedback parses all flags [0.15ms]
+(pass) TL-CLI parseCli grammar > metrics summarize parses [0.07ms]
+(pass) TL-CLI parseCli grammar > TL-C-108 single-mutation: --base=-x -> exit 10 [0.07ms]
+(pass) TL-CLI parseCli grammar > unknown subcommand -> exit 10 [0.02ms]
+(pass) TL-CLI parseCli grammar > missing required flag -> exit 10 [0.02ms]
+(pass) TL-CLI parseCli grammar > non-absolute project -> exit 10 [0.02ms]
+(pass) TL-CLI parseCli grammar > generate with --base on working-tree mode -> exit 10 [0.03ms]
+(pass) TL-CLI parseCli grammar > issues_guided_by_card > issues_found -> exit 10 [0.06ms]
+(pass) TL-CLI parseCli grammar > metrics non-summarize action -> exit 10 [0.04ms]
+
+ 55 pass
+ 0 fail
+ 139 expect() calls
+Ran 55 tests across 4 files. [917.00ms]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

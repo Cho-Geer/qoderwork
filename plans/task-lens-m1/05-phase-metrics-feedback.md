@@ -13,7 +13,7 @@
 ## Starting state and dependency
 
 - Required status: PHASE-04 completion gate 全勾选。
-- Required evidence: Human-approved `scope-lock-PHASE-05.json`、HEAD-bound `pre-change-PHASE-05.json`；caller_tests 覆盖 artifact writer 与 CLI callers。
+- Required evidence: Human-approved `scope-lock-PHASE-05-G2.json`、HEAD-bound `pre-change-PHASE-05-G2.json`；caller_tests 必须明确覆盖 `artifact-writer.test.ts`、`input-diff.test.ts`、`command-security.test.ts`。
 - If absent: `BLOCKED`, do not continue。
 
 ## Local requirements
@@ -38,6 +38,7 @@
 | `scripts/task-lens/README.md` | add | CLI/config/artifact/exit contract |
 | `scripts/task-lens/__tests__/metrics.test.ts` | add | validation/lock/recovery/summary |
 | `scripts/task-lens/__tests__/cli-integration.test.ts` | add | end-to-end fixture CLI |
+| `scripts/task-lens/__tests__/input-diff.test.ts` | modify | `parseCli` return envelope 的 CLI caller expectations |
 
 ## Forbidden files and behaviors
 
@@ -85,7 +86,7 @@
 ## Implementation steps
 
 ```text
-1. 完成 PHASE-05 Freeze Gate；scope-lock caller_tests 至少列 artifact-writer.test.ts 与前序 CLI tests。
+1. 完成 PHASE-05 G2 Freeze Gate；scope-lock caller_tests 必须明确列 `artifact-writer.test.ts`、`input-diff.test.ts` 与 `command-security.test.ts`。
 2. 实现严格 JSONL scanner，返回 readable/querySucceeded/FOUND|NOT_FOUND|UNAVAILABLE 与 line diagnostics。
 3. 实现 mkdir lock、owner、timeout、append+fsync；finally 只删除本进程成功创建的 lock。
 4. 实现 generated/feedback schema validation、唯一性与 summary 三态。
@@ -137,8 +138,9 @@
 
 ```bash
 cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
-test -s audits/task-lens-m1/evidence/pre-change-PHASE-05.json
-bun test scripts/task-lens/__tests__/metrics.test.ts scripts/task-lens/__tests__/cli-integration.test.ts
+test -s audits/task-lens-m1/scope-lock-PHASE-05-G2.json
+test -s audits/task-lens-m1/evidence/pre-change-PHASE-05-G2.json
+bun test scripts/task-lens/__tests__/metrics.test.ts scripts/task-lens/__tests__/cli-integration.test.ts scripts/task-lens/__tests__/artifact-writer.test.ts scripts/task-lens/__tests__/input-diff.test.ts scripts/task-lens/__tests__/command-security.test.ts
 set +e
 bun run typecheck > audits/task-lens-m1/evidence/typecheck-after-PHASE-05.txt 2>&1
 typecheck_exit=$?
@@ -152,18 +154,18 @@ rg -n 'appendFile|fsync|\\.task-lens-metrics\\.lock|FOUND|NOT_FOUND|UNAVAILABLE'
 rg -n 'FAKE-INJECTION' scripts/task-lens/__tests__/metrics.test.ts scripts/task-lens/__tests__/cli-integration.test.ts
 ```
 
-- Required output/artifacts: 2 suites PASS、真实 multi-process lock evidence、valid/corrupt JSONL、recovery/summary outputs、typecheck delta。
+- Required output/artifacts: 上述 5 个 test files PASS、真实 multi-process lock evidence、valid/corrupt JSONL、recovery/summary outputs、typecheck delta。
 - Expected evidence level: integration（仅本地进程/fixture）；不等于两个真实目标项目验收。
 - On non-zero/missing evidence: `BLOCKED`; preserve evidence; do not advance。
 
 ## Rollback/failure convergence
 
-1. 仅撤销 6 个 Allowed files；保留 metrics/artifact failure fixture。
+1. 仅撤销 7 个 Allowed files；保留 metrics/artifact failure fixture。
 2. 锁残留时标 BLOCKED 并报告 owner；禁止 agent 自动删锁或 truncate metrics。
 
 ## Phase completion gate
 
-- [ ] PHASE-05 Freeze Gate 与 caller tests 完整。
+- [ ] PHASE-05 G2 Freeze Gate 与 caller tests 完整。
 - [ ] lock/JSONL/generated/recovery/feedback/summary/CLI checks 全 PASS。
 - [ ] 两独立进程真实竞争；坏 JSONL 与 duplicate 均 fail-closed。
 - [ ] 每个 check 有 all-pass+single mutation，failedChecks 精确 singleton。
