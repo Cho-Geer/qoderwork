@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0",
+  "lock_id": "AUDIT-GOV-PHASE-01-R2",
+  "created_at": "2026-07-25T13:57:35.785Z",
+  "plan_sources": [
+    {
+      "path": "plans/audit-governance-evidence-and-status-closure/00-plan-index.md",
+      "sha256": "176939bdb1b79480b8c740899e71f2177d25ca7a995884ec3e2806aab6c50bbc"
+    },
+    {
+      "path": "plans/audit-governance-evidence-and-status-closure/01-phase-plan-gate-semantics.md",
+      "sha256": "b011b4bf13b092e552a4aad3fe646f7e9e5ded3c98b2159e66268f714a5e0c78"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "2026-07-25T13:57:35.785Z",
+    "in_scope": [
+      "REQ-001"
+    ],
+    "out_of_scope": [
+      "phase-progression.ts modification",
+      "any plan under plans/task-lens-m1",
+      "bun.lock and new dependencies",
+      "work-one code",
+      "historical audit report repair",
+      "manual LATEST.md edits",
+      "shallow directory-scan receipt discovery",
+      "verdict defaulting or evidence-level promotion",
+      "--force or status-only bypass"
+    ],
+    "assumptions": [
+      {
+        "statement": "CodeGraph index belongs to the qoderwork main worktree rather than this worktree (UNAVAILABLE); the rg fallback caller scan is authoritative for this freeze.",
+        "disproof": "codegraph status shows a worktree-local index"
+      },
+      {
+        "statement": "checkEvidenceContracts has file-level callers only in validate-plan.ts and does not require shared-function caller-test expansion.",
+        "disproof": "the bounded caller scan finds a second caller file"
+      },
+      {
+        "statement": "The fixed command needs the explicit ./.agents path prefix under Bun 1.3.14; the prefix changes path interpretation only, not test selection.",
+        "disproof": "the revised fixed command does not execute validate-plan.test.ts or changes the named test set"
+      },
+      {
+        "statement": "P-07 requires repository_root=work-one, whose git status is always clean and cannot evidence qoderwork-side pre-write state; implementation_pre_write_hashes records the qoderwork worktree file hashes captured before any PHASE-01 edit.",
+        "disproof": "the implementation files differ from implementation_pre_write_hashes after the write phase"
+      }
+    ],
+    "exit_criteria": [
+      "scope-lock has no placeholder and covers only REQ-001 with the two allowed implementation files",
+      "pre-change-PHASE-01-r2.json exists, is nonempty, and matches the approved r2 scope-lock hash",
+      "approval is HUMAN and APPROVED with the direct user authorization recorded",
+      "the revised fixed test command executes the target test file rather than a Bun filter"
+    ],
+    "implementation_pre_write_hashes": {
+      ".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts": "503f08e398f2419a7c63e791795dd5dd76676b7d37da78fb177c4ef8ed915f83",
+      ".agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts": "cf4849e359725084ae5644426ee3bcb103c684b26dc375ea26e0bff48e300ba3"
+    }
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-001",
+      "kind": "BEHAVIORAL",
+      "source": "plans/audit-governance-evidence-and-status-closure/01-phase-plan-gate-semantics.md#local-requirements",
+      "behavior": "validate-plan.ts determines phase completion only from the Phase completion gate section and progression status: non-accepted gates are all unchecked; accepted gates are all checked with a nonempty completion receipt; unchecked boxes outside the section do not affect the result; 99-final-verification.md retains its own unfinished checklist requirement.",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "A temporary PLAN_SET fixture passes for a NOT_STARTED all-unchecked gate and an ACCEPTED all-checked gate with a nonempty receipt, while checked-not-started, unchecked-accepted, missing-receipt, and empty-gate mutations emit PHASE_COMPLETION_GATE_MISMATCH or PHASE_RECEIPT_MISSING through independent bun test assertions."
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "source": "plans/audit-governance-evidence-and-status-closure/01-phase-plan-gate-semantics.md#local-requirements"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      ".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts",
+      ".agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts"
+    ],
+    "forbidden_paths": [
+      ".agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts",
+      "plans/task-lens-m1/**",
+      "bun.lock",
+      "/home/zhaoge/workspace/opencode/work-one",
+      "audits/task-lens-m1/**",
+      "blueprints/**"
+    ]
+  },
+  "impact_analysis": {
+    "modified_functions": [
+      "checkEvidenceContracts",
+      "PLAN_SET progression gate branch"
+    ],
+    "shared_functions": [],
+    "caller_scan_command": "rg -n --no-heading 'checkEvidenceContracts|Phase completion gate' .agents/skills/deterministic-implementation-planning/scripts 2>&1 || true",
+    "caller_files": [
+      ".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts"
+    ],
+    "caller_tests": [],
+    "scan_output_sha256": "69a3ba35255014b54bf4359374e920919e9cb8b58539d14da580f38900a3a567"
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "ChoGeer",
+    "approved_at": "2026-07-25T13:57:35.785Z",
+    "evidence": "Direct user authorization in session 2026-07-25 (approved): recover PHASE-01 signability by restoring pre-write state, rebuilding scope-lock with a valid plan_registry anchor (#local-requirements), and capturing a genuine pre-change receipt before re-implementing. Anchor corrected from #REQ-001 (missing heading) to #local-requirements."
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "lock_id": "AUDIT-GOV-PHASE-01",
+  "created_at": "2026-07-25T13:14:29.987Z",
+  "plan_sources": [
+    {
+      "path": "plans/audit-governance-evidence-and-status-closure/00-plan-index.md",
+      "sha256": "176939bdb1b79480b8c740899e71f2177d25ca7a995884ec3e2806aab6c50bbc"
+    },
+    {
+      "path": "plans/audit-governance-evidence-and-status-closure/01-phase-plan-gate-semantics.md",
+      "sha256": "19402d708f319fd899178fd5f49da441dd930f4d637fc0275faf5e386eb39640"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v2.1-required",
+    "frozen_at": "2026-07-25T13:14:29.987Z",
+    "in_scope": [
+      "REQ-001"
+    ],
+    "out_of_scope": [
+      "phase-progression.ts 修改",
+      "plans/task-lens-m1 下任何 plan",
+      "bun.lock 与新增依赖",
+      "work-one 代码",
+      "历史 audit 报告修复",
+      "LATEST.md 手工编辑",
+      "shallow directory scan 收据发现",
+      "verdict 默认化 / evidence level 提升",
+      "--force 或 status-only bypass"
+    ],
+    "assumptions": [
+      {
+        "statement": "CodeGraph 索引属主为 qoderwork 主仓，非本 worktree（UNAVAILABLE），caller 分析以 rg fallback 为准",
+        "disproof": "codegraph status 显示本 worktree 已索引则假设失效"
+      },
+      {
+        "statement": "checkEvidenceContracts 为 validate-plan.ts 文件内私有函数（file 级 caller 仅 1 个文件），不触发跨文件共享函数审查的额外测试覆盖要求",
+        "disproof": "rg 命中第二个不同文件调用方则假设失效"
+      },
+      {
+        "statement": "validate-plan.ts 与 validate-plan.test.ts 存在的当前 HEAD 干净（work-one status 空）",
+        "disproof": "work-one git status --short 非空则假设失效"
+      }
+    ],
+    "exit_criteria": [
+      "scope-lock 无占位且精确覆盖 PHASE-01（REQ-001, allowed 两文件）",
+      "pre-change-PHASE-01.json 存在非空且 head/scope_lock_sha256 匹配",
+      "human approval 状态 APPROVED + HUMAN",
+      "未写任何生产/测试代码（Freeze Gate 仅产出锁与 receipt）"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-001",
+      "kind": "BEHAVIORAL",
+      "source": "plans/audit-governance-evidence-and-status-closure/01-phase-plan-gate-semantics.md#REQ-001",
+      "behavior": "validate-plan.ts 仅按 phase completion gate 区段与 progression status 判断完成；非接受 phase 的 gate 全为 [ ]，接受 phase 的 gate 全为 [x] 且 completion receipt 非空；区段外未勾选框不影响；99-final-verification.md 保留自身未完成任务清单要求",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "PLAN_SET 临时 fixture：NOT_STARTED phase gate 全 [ ] 通过；ACCEPTED phase gate 全 [x] + 非空 receipt 路径通过；mutations（勾选未开始 gate / 取消已接受 gate / 移除 receipt / 移除全部 gate）触发 PHASE_COMPLETION_GATE_MISMATCH 或 PHASE_RECEIPT_MISSING。实现无关：独立 bun test 断言精确诊断码"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-001",
+      "source": "plans/audit-governance-evidence-and-status-closure/01-phase-plan-gate-semantics.md#REQ-001",
+      "behavior": "validate-plan.ts 仅按 phase completion gate 区段与 progression status 判断完成；非接受 phase 的 gate 全为 [ ]，接受 phase 的 gate 全为 [x] 且 completion receipt 非空；区段外未勾选框不影响；99-final-verification.md 保留自身未完成任务清单要求",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "PLAN_SET 临时 fixture：NOT_STARTED phase gate 全 [ ] 通过；ACCEPTED phase gate 全 [x] + 非空 receipt 路径通过；mutations（勾选未开始 gate / 取消已接受 gate / 移除 receipt / 移除全部 gate）触发 PHASE_COMPLETION_GATE_MISMATCH 或 PHASE_RECEIPT_MISSING。实现无关：独立 bun test 断言精确诊断码"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      ".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts",
+      ".agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts"
+    ],
+    "forbidden_paths": [
+      ".agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts",
+      "plans/task-lens-m1/**",
+      "bun.lock",
+      "/home/zhaoge/workspace/opencode/work-one",
+      "audits/task-lens-m1/**",
+      "blueprints/**"
+    ]
+  },
+  "impact_analysis": {
+    "modified_functions": [
+      "checkEvidenceContracts",
+      "PLAN_SET progression gate branch"
+    ],
+    "shared_functions": [],
+    "caller_scan_command": "rg -n --no-heading 'checkEvidenceContracts|Phase completion gate' .agents/skills/deterministic-implementation-planning/scripts 2>&1 || true",
+    "caller_files": [
+      ".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts"
+    ],
+    "caller_tests": [],
+    "scan_output_sha256": "69a3ba35255014b54bf4359374e920919e9cb8b58539d14da580f38900a3a567"
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "ChoGeer",
+    "approved_at": "2026-07-25T13:14:29.987Z",
+    "evidence": "Human reviewer (ChoGeer) authorized '执行 Freeze Gate' for PHASE-01 via direct instruction in session. scope-lock covers REQ-001 with allowed paths = validate-plan.ts + validate-plan.test.ts, forbidden = phase-progression.ts / bun.lock / work-one / task-lens-m1 / blueprints. CodeGraph index belongs to a different working tree (UNAVAILABLE); rg fallback caller scan recorded (scan_output_sha256 69a3ba...)."
+  }
+}

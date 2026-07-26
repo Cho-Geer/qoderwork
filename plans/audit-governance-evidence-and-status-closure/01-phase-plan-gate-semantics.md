@@ -4,8 +4,8 @@
 **Depends on**: NONE
 **Outcome**: `validate-plan.ts` 只按 phase completion gate 和 progression status 判断完成状态，已接受 phase 不再需要无关未勾选框。
 **Evidence level**: component
-**Progression status**: `NOT_STARTED`
-**Completion receipt**: NONE
+**Progression status**: `ACCEPTED`
+**Completion receipt**: `../../audits/audit-governance-evidence-and-status-closure/evidence/PHASE-01-R2-ACCEPT-01/progression-PHASE-01.json`
 
 ## Goal
 
@@ -90,7 +90,7 @@
 
 ```bash
 cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
-bun test .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+bun test ./.agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
 bun run typecheck
 git diff --check
 git diff --name-only -- .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
@@ -108,8 +108,8 @@ git diff --exit-code -- bun.lock
 
 ## Phase completion gate
 
-- [ ] Freeze Gate artifacts are valid and HEAD is unchanged.
-- [ ] AGC-C-101 through AGC-C-104 pass with exact diagnostics.
-- [ ] A valid accepted phase passes without an unrelated unchecked checkbox.
-- [ ] Typecheck, diff check, and allowlist check pass.
-- [ ] PHASE-02 remains `NOT_STARTED` until this gate is fully checked and accepted.
+- [x] Freeze Gate artifacts are valid and HEAD is unchanged.
+- [x] AGC-C-101 through AGC-C-104 pass with exact diagnostics.
+- [x] A valid accepted phase passes without an unrelated unchecked checkbox.
+- [x] Typecheck, diff check, and allowlist check pass.
+- [x] PHASE-02 remains `NOT_STARTED` until this gate is fully checked and accepted.

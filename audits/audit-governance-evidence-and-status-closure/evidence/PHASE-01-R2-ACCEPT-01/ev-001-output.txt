@@ -1,0 +1,36 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+.agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts:
+(pass) validate-plan single-file mode > accepts a structurally complete closed-world plan [27.56ms]
+(pass) validate-plan single-file mode > rejects placeholders, missing phase contracts, and missing cwd [23.07ms]
+(pass) validate-plan single-file mode > rejects a negative claim without three-state evidence semantics [21.80ms]
+(pass) validate-plan single-file mode > accepts exactly 20000 Unicode characters and rejects 20001 [44.45ms]
+(pass) validate-plan single-file mode > accepts exactly 450 lines and rejects 451 [55.55ms]
+(pass) validate-plan single-file mode > requires PLAN_SET when a single file contains more than two phases [24.03ms]
+(pass) validate-plan PLAN_SET mode > accepts a complete one-phase plan set [22.02ms]
+(pass) validate-plan PLAN_SET mode > rejects a missing phase file [22.32ms]
+(pass) validate-plan PLAN_SET mode > reports stable errors for a missing index or final file [41.77ms]
+(pass) validate-plan PLAN_SET mode > rejects duplicate phase IDs and files [23.82ms]
+(pass) validate-plan PLAN_SET mode > rejects unknown and forward dependencies [22.36ms]
+(pass) validate-plan PLAN_SET mode > rejects a phase with more than twelve registered checks [22.94ms]
+(pass) validate-plan PLAN_SET mode > rejects a phase above the requirement and file complexity limits [23.94ms]
+(pass) validate-plan PLAN_SET mode > rejects an unregistered phase and a dependency mismatch [21.92ms]
+(pass) validate-plan PLAN_SET mode > rejects an index above 8000 Unicode characters [27.69ms]
+(pass) validate-plan PLAN_SET mode > validates progression status fields when the schema is enabled [23.00ms]
+(pass) validate-plan PLAN_SET mode > rejects progression status drift and ACCEPTED without a receipt [22.34ms]
+(pass) PHASE-01 plan completion gate semantics (REQ-001) > all-pass fixture: NOT_STARTED gate all unchecked and ACCEPTED gate all checked pass without unrelated boxes [22.30ms]
+(pass) PHASE-01 plan completion gate semantics (REQ-001) > AGC-C-101: checked box in a NOT_STARTED gate is rejected [23.98ms]
+(pass) PHASE-01 plan completion gate semantics (REQ-001) > AGC-C-102: unchecked box in an ACCEPTED gate is rejected [23.87ms]
+(pass) PHASE-01 plan completion gate semantics (REQ-001) > AGC-C-103: ACCEPTED phase with NONE receipt is rejected [23.20ms]
+(pass) PHASE-01 plan completion gate semantics (REQ-001) > AGC-C-104: zero gate checkboxes in a NOT_STARTED gate is rejected [21.74ms]
+
+ 22 pass
+ 0 fail
+ 42 expect() calls
+Ran 22 tests across 1 file. [603.00ms]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

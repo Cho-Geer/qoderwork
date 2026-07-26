@@ -1,0 +1,20 @@
+{
+  "valid": false,
+  "schemaVersion": "2.1",
+  "auditId": "AUDIT-GOV-PHASE-01-R2-ACCEPT-01",
+  "verdict": "ACCEPT",
+  "counts": {
+    "requirements": 1,
+    "findings": 0,
+    "openBlockers": 0,
+    "reopenRecords": 0
+  },
+  "errors": [
+    {
+      "code": "SCOPE_LOCK_CONTRACT_MISMATCH",
+      "message": "audit plan/scope/requirement contract differs from approved scope lock",
+      "fix": "Copy plan_sources, scope (in_scope/out_of_scope/assumptions/exit_criteria), and requirements verbatim from the scope-lock. Use prepare-audit.ts to generate the contract automatically."
+    }
+  ],
+  "warnings": []
+}

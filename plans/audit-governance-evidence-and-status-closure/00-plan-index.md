@@ -105,7 +105,7 @@
 
 | Order | Phase ID | File | Depends on | Status |
 |---:|---|---|---|---|
-| 1 | PHASE-01 | `01-phase-plan-gate-semantics.md` | NONE | NOT_STARTED |
+| 1 | PHASE-01 | `01-phase-plan-gate-semantics.md` | NONE | ACCEPTED |
 | 2 | PHASE-02 | `02-phase-contract-receipt-precheck.md` | PHASE-01 | NOT_STARTED |
 | 3 | PHASE-03 | `03-phase-evidence-ceiling-verdict.md` | PHASE-02 | NOT_STARTED |
 | 4 | PHASE-04 | `04-phase-canonical-publication.md` | PHASE-03 | NOT_STARTED |

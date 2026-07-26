@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "repository_realpath": "/home/zhaoge/workspace/opencode/work-one",
+  "phase_id": "AUDIT-GOV-PHASE-01-R2",
+  "captured_at": "2026-07-25T13:58:10.863Z",
+  "head": "64df828d56611ac121baccfaf666f147980aec85",
+  "scope_lock_sha256": "749a3dfd6b80cac4f362201a6688400b4fa153c40157a65dbd35c0e597e2e4a6",
+  "status_entries": []
+}

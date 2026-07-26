@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "AUDIT-GOV-PHASE-01-R2-ACCEPT-01",
+  "generation": 1,
+  "id": "EV-002",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts audits/audit-governance-evidence-and-status-closure/evidence/PHASE-01-R2-ACCEPT-01/fixtures/agc-c-101",
+  "observed": "FAIL",
+  "requirement_id": "REQ-001",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "AGC-C-101-CHECKED-NOT-STARTED",
+  "evidence_level": "component",
+  "repository_state_sha256": "9f74fa84d077dafc61b3003619a6134add5fb215ea2461e5d6887854899e4fb9",
+  "exit_code": 1,
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/audit-governance-evidence-and-status-closure/evidence/PHASE-01-R2-ACCEPT-01/ev-002-output.txt",
+      "sha256": "acbe15bb5b35edc12b501a7334a73c4b795bb8ec5b94d1369ed0b302235ca68c"
+    }
+  ],
+  "completed_at": "2026-07-25T15:41:30.011Z"
+}

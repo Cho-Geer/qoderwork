@@ -1,0 +1,13 @@
+{
+  "schema_version": "phase-progression/v1",
+  "phase_id": "PHASE-01",
+  "previous_status": "NOT_STARTED",
+  "new_status": "ACCEPTED",
+  "plan_index_sha256": "9245e14c42ac988a3bde67ff265d464482fce8ac99f4a68c4f313429d7617a9c",
+  "phase_file_sha256": "e2e5ad01e1c16c5183e46b573ebf6f6e8d0bf87b557030338c60c2e5ad507d1b",
+  "audit_report_sha256": "b56af5e618a99ca1b5f78741da42014f90364bf47647c814095756b08a2b38c0",
+  "validator_output_sha256": "edfb881c9d87ac3a214d28b997ba8b530fa179a4e3318a57257f369c0f498654",
+  "audit_report_path": "../../audits/audit-governance-evidence-and-status-closure/2026-07-26-audit.md",
+  "audit_verdict": "ACCEPT",
+  "audit_exit_code": 0
+}

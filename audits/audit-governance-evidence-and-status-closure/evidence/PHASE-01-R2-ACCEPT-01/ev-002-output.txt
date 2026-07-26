@@ -1,0 +1,46 @@
+=== STDOUT ===
+{
+  "ok": false,
+  "mode": "PLAN_SET",
+  "planPath": "audits/audit-governance-evidence-and-status-closure/evidence/PHASE-01-R2-ACCEPT-01/fixtures/agc-c-101",
+  "metrics": {
+    "index": {
+      "unicodeChars": 573,
+      "lines": 17,
+      "phases": 0,
+      "checkboxes": 0
+    },
+    "phases": {
+      "01-phase-ready.md": {
+        "unicodeChars": 828,
+        "lines": 37,
+        "phases": 0,
+        "checkboxes": 1
+      },
+      "02-phase-accepted.md": {
+        "unicodeChars": 880,
+        "lines": 37,
+        "phases": 0,
+        "checkboxes": 0
+      }
+    },
+    "final": {
+      "unicodeChars": 147,
+      "lines": 6,
+      "phases": 0,
+      "checkboxes": 1
+    }
+  },
+  "errors": [
+    {
+      "code": "PHASE_COMPLETION_GATE_MISMATCH",
+      "message": "PHASE-01: NOT_STARTED cannot have checked completion gate"
+    }
+  ],
+  "warnings": []
+}
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false
