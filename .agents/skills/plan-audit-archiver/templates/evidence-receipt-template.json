@@ -9,6 +9,7 @@
   "polarity": "POSITIVE",
   "oracle_id": "ORACLE-001",
   "fixture_id": "FIXTURE-GOOD-001",
+  "decision_case_id": "DC-001",
   "evidence_level": "component",
   "repository_state_sha256": "REPLACE_VERDICT_STATE_SHA256",
   "exit_code": 0,

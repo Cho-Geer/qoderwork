@@ -372,6 +372,8 @@ REQ-001 has an explicit gate.
 The validator command is recorded after execution.
 ## 12. Anti-Loop Answers
 The full scope, bad fixture, exact blocker set, reopen records, origin, and exit condition are recorded.
+## MODEL_REVIEW
+The model reviewed approved-boundary expression, observed-boundary equivalence, and exception scope.
 `;
 }
 
@@ -519,6 +521,11 @@ function materializeExternalBaseline(root: string, contract: Contract) {
 }
 
 describe("validate-audit closure and falsifiability", () => {
+  test("rejects boundary-contract/v1 without an immutable boundary matrix", () => {
+    const contract = baseContract() as Contract & { boundary_contract_version?: string };
+    contract.boundary_contract_version = "boundary-contract/v1";
+    expect(validateAuditSource(report(contract)).errors.map((item) => item.code)).toContain("BOUNDARY_MATRIX_REQUIRED");
+  });
   test("accepts a closed ACCEPT contract with positive and failing negative controls", () => {
     const result = validateAuditSource(report(baseContract()));
     expect(result.valid).toBeTrue();

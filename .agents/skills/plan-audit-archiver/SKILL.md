@@ -119,6 +119,7 @@ mandatory trigger.
 | Contract generator | `scripts/prepare-audit.ts` — assembles byte-exact contract + report skeleton from scope-lock, EV receipts, pre-change and verdict-state receipts |
 | Pre-check (gate 1) | `scripts/pre-check-evidence.ts` |
 | Validator (gate 2) | `scripts/validate-audit.ts` |
+| Formal-signature gate | `scripts/finalize-audit.ts` — reruns `validate-audit.ts`, then atomically creates the hash-bound `LATEST.md`; never overwrite a pointer |
 | Formal archive | `audits/<plan-name>/<YYYY-MM-DD>-audit[-N].md` |
 | Latest pointer | `audits/<plan-name>/LATEST.md` |
 | One-off investigation | `temporary-audits/`; do not use this skill's closure verdict |
@@ -127,6 +128,10 @@ Map a plan file to its filename without `.md`; map a plan directory to its
 directory name; replace spaces with `-`. Never overwrite a historical audit.
 
 ## Verdict state machine
+
+### Boundary-contract/v1 boundary
+
+For a v1 audit, run `audit-boundary-precheck.ts` before model review. Its immutable matrix must be `READY_FOR_LLM_REVIEW`, hash-bound in `AUDIT_CONTRACT`, and have one covered row per `DC-*`. The model records `MODEL_REVIEW` but cannot turn `BLOCKED` into `ACCEPT` or waive a nonzero `validate-audit.ts` result.
 
 Use only these verdicts:
 

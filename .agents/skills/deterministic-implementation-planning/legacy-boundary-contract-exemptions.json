@@ -1,0 +1,9 @@
+{
+  "schema_version": "legacy-boundary-contract-exemptions/v1",
+  "entries": [
+    { "path": "plans/task-lens-m1/00-plan-index.md", "sha256": "60f6a3a6a08a3583a44dd9a85e12b741b12f0e25ed48f0cdb3d4e8873a2a05e9" },
+    { "path": "plans/隔离 serve 测试基建待办/p0-2/00-plan-index.md", "sha256": "665bb51da78f1c2f70db3d7fc8a1a11158e42fb80579da2a9ee8aba1a917494b" },
+    { "path": "plans/隔离 serve 测试基建待办/p0-3/00-plan-index.md", "sha256": "c7f1e95e069cc31427da55c0228af4867f4bca311b6721622d6479cc886dcc1a" },
+    { "path": "plans/path-dynamic-resolution-m1/00-plan-index.md", "sha256": "9b07f03d14d10bafeed8dc0f553070953f853e4047ac96f9d478014ef7e59f7b" }
+  ]
+}

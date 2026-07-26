@@ -511,6 +511,13 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 
 ## 15. 审计与实施 provenance 流程约定
 
+### 15.1 边界契约 v1（新 Plan）
+
+- 新 Plan 使用 `boundary-contract/v1` 时，索引必须冻结 requirements contract 的路径和 SHA-256；执行证据必须以 `decision_case_id` 逐一绑定 `DC-*`。
+- `audit-boundary-precheck.ts` 只可输出 `READY_FOR_LLM_REVIEW` 或 `BLOCKED`，不得输出 `ACCEPT`、推导需求满足，或以测试绿灯代替边界裁决。
+- 脚本负责契约/范围哈希、fixture、oracle、观察值、禁止副作用和 case 覆盖的机械校验；`MODEL_REVIEW` 只判断批准边界表达、实际边界等价和例外越界。
+- 任何矩阵 `BLOCKED`、矩阵哈希漂移或 `validate-audit.ts` 非零均不可由模型解释或豁免；`ACCEPT` 还必须有完整 `MODEL_REVIEW`。
+
 P-01~P-07 规则全文已迁移至 `.agents/skills/plan-audit-archiver/provenance-rules.md`（唯一正本）。以下规则适用于 QoderWork 工作区内所有 plan 的所有 phase 实施与审计，无例外。
 
 **强制触发**：实施或审计任何 plan 的任何 phase 前，必须先 Read 上述文件；未读即开始视为流程违规（审计判定 `INVALID`）。

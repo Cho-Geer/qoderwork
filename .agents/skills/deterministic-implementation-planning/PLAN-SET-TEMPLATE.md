@@ -41,6 +41,9 @@ Hard limits:
 **Progression schema**: `phase-progression/v1` | `legacy`
 **Only implementation path**: <one sentence>
 **Evidence ceiling**: <highest level actually executed; use NOT-RUN initially>
+**Boundary contract version**: `boundary-contract/v1` | `legacy-exempt`
+**Requirements contract**: `<plan-relative requirements-contract.yaml>`
+**Requirements contract SHA-256**: `<64 lowercase hex>`
 
 ## 1. Input contract and source ledger
 

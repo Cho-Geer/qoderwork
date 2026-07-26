@@ -168,6 +168,10 @@ Phase 2: Post-Execution Audit
 
 ## 执行约束
 
+### boundary-contract/v1 审计顺序
+
+当任务使用 `boundary-contract/v1` 时，checklist 必须按以下顺序列出并执行：冻结 requirements contract 与哈希 → 运行 case 证据 → `audit-boundary-precheck.ts` → `MODEL_REVIEW` → `validate-audit.ts`。预检 `BLOCKED` 或 validator 非零时，停止签署；模型审阅只能给出语义裁决，不能修改机械状态。
+
 1. **顺序锁定**: pre-flight 输出后，必须按声明的步骤顺序执行，不得调换
 2. **不跳步**: 每个声明的步骤都必须执行，即使看似冗余
 3. **偏差记录**: 如果执行中遇到无法完成的步骤，记录原因并继续后续步骤，在 audit 中说明

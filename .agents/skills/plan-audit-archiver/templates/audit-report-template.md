@@ -17,6 +17,13 @@ pre-change state receipt。删除所有 `REPLACE_...` 值；不要删除必填�
 ```json
 {
   "schema_version": "2.1",
+  "boundary_contract_version": "boundary-contract/v1",
+  "model_review": {
+    "approved_boundary": "REPLACE_MODEL_APPROVED_BOUNDARY",
+    "observed_equivalence": "REPLACE_MODEL_OBSERVED_EQUIVALENCE",
+    "exceptions": "REPLACE_MODEL_EXCEPTIONS",
+    "classification": "ACCEPT"
+  },
   "audit_id": "REPLACE_AUDIT_ID",
   "generation": 1,
   "previous_audit": null,

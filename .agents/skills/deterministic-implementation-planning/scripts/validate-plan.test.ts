@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { mkdtempSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -213,6 +214,27 @@ describe("validate-plan single-file mode", () => {
 });
 
 describe("validate-plan PLAN_SET mode", () => {
+  test("boundary-contract/v1 requires a present, hash-bound requirements contract", () => {
+    const root = createPlanSet();
+    const contract = join(root, "requirements-contract.yaml");
+    writeFileSync(contract, "schema_version: boundary-contract/v1\nrequirements:\n  - id: R-001\n    decision_cases:\n      - id: DC-001\n        fixture: FX-GOOD\n        oracle: ORACLE-001\n        expected_result: SUCCESS\n        polarity: POSITIVE\n        must_not_happen: [later]\n      - id: DC-002\n        fixture: FX-BAD\n        oracle: ORACLE-001\n        expected_result: ERROR\n        polarity: NEGATIVE\n        must_not_happen: [later]\n");
+    const digest = createHash("sha256").update(readFileSync(contract)).digest("hex");
+    const index = readFileSync(join(root, "00-plan-index.md"), "utf8") + `\n**Boundary contract version**: \`boundary-contract/v1\`\n**Requirements contract**: \`requirements-contract.yaml\`\n**Requirements contract SHA-256**: \`${digest}\`\n`;
+    writeFileSync(join(root, "00-plan-index.md"), index);
+    expect(runValidator(root).exitCode).toBe(0);
+    writeFileSync(contract, "schema_version: boundary-contract/v1\nrequirements: []\n");
+    expect(parse(runValidator(root)).errors.map((item: { code: string }) => item.code)).toContain("BOUNDARY_CONTRACT_HASH_MISMATCH");
+    const invalid = "schema_version: boundary-contract/v1\nrequirements:\n  - id: R-001\n    decision_cases:\n      - id: DC-001\n        fixture: FX-GOOD\n        oracle: ORACLE-001\n        expected_result: SUCCESS\n        polarity: POSITIVE\n        must_not_happen: [later]\n      - id: DC-002\n        fixture: FX-BAD\n        oracle: ORACLE-001\n        expected_result: ERROR\n        polarity: NEGATIVE\n";
+    writeFileSync(contract, invalid); const repaired = readFileSync(join(root, "00-plan-index.md"), "utf8").replace(digest, createHash("sha256").update(invalid).digest("hex")); writeFileSync(join(root, "00-plan-index.md"), repaired);
+    expect(parse(runValidator(root)).errors.map((item: { code: string }) => item.code)).toContain("BOUNDARY_CONTRACT_INVALID");
+  });
+
+  test("legacy-exempt is rejected unless its path and hash are registered", () => {
+    const root = createPlanSet();
+    const index = readFileSync(join(root, "00-plan-index.md"), "utf8") + "\n**Boundary contract version**: `legacy-exempt`\n";
+    writeFileSync(join(root, "00-plan-index.md"), index);
+    expect(parse(runValidator(root)).errors.map((item: { code: string }) => item.code)).toContain("LEGACY_BOUNDARY_EXEMPTION_MISMATCH");
+  });
   test("accepts a complete one-phase plan set", () => {
     const result = runValidator(createPlanSet());
     expect(result.exitCode).toBe(0);
@@ -373,5 +395,190 @@ describe("validate-plan PLAN_SET mode", () => {
     expect(codes).toContain("PHASE_STATUS_MISMATCH");
     expect(codes).toContain("PHASE_RECEIPT_MISSING");
     expect(codes).toContain("TOP_LEVEL_STATUS_MISMATCH");
+  });
+});
+
+describe("PHASE-01 plan completion gate semantics (REQ-001)", () => {
+  function progressionIndex(rows: string, status = "READY-FOR-IMPLEMENTATION") {
+    return `# Plan index
+**Plan mode**: \`PLAN_SET\`
+**Status**: ${status}
+**Progression schema**: \`phase-progression/v1\`
+**Only implementation path**: fixed
+**Evidence ceiling**: NOT-RUN
+## 1. Input contract and source ledger
+## 2. Decisions, scope, and non-goals
+## 3. Verified current baseline
+## 4. End-to-end traceability
+## 5. File change inventory
+## 6. Phase manifest
+${rows}`;
+  }
+
+  function readyPhase(file: string, id = "PHASE-01") {
+    return `# Phase ${id}: ready [ANALYSIS → VERIFICATION]
+**Phase ID**: \`${id}\`
+**Progression status**: \`NOT_STARTED\`
+**Completion receipt**: NONE
+**Depends on**: NONE
+**Outcome**: fixed result
+**Evidence level**: component
+## Goal
+## Starting state and dependency
+## Local requirements
+| Requirement | Contract |
+|---|---|
+| REQ-001 | fixed |
+## Allowed files
+| Exact path | Change | Anchor |
+|---|---|---|
+| src/a.ts | modify | run |
+## Forbidden files and behaviors
+## Fixed contract
+Exact failure result and failedChecks. FOUND / NOT_FOUND / UNAVAILABLE.
+## Implementation steps
+## Check Registry
+| Check name | PASS |
+|---|---|
+| checkA | true |
+## All-pass Fixture
+## Single-failure Matrix
+## Fixed verification
+\`\`\`bash
+cd /repo
+bun test
+\`\`\`
+## Rollback/failure convergence
+## Phase completion gate
+- [ ] ready-a
+- [ ] ready-b
+`;
+  }
+
+  function acceptedPhase(file: string, id = "PHASE-02", receipt = "/tmp/evidence/PHASE-02-completion-receipt.json") {
+    return `# Phase ${id}: accepted [ANALYSIS → VERIFICATION]
+**Phase ID**: \`${id}\`
+**Progression status**: \`ACCEPTED\`
+**Completion receipt**: ${receipt}
+**Depends on**: PHASE-01
+**Outcome**: fixed result
+**Evidence level**: component
+## Goal
+## Starting state and dependency
+## Local requirements
+| Requirement | Contract |
+|---|---|
+| REQ-001 | fixed |
+## Allowed files
+| Exact path | Change | Anchor |
+|---|---|---|
+| src/a.ts | modify | run |
+## Forbidden files and behaviors
+## Fixed contract
+Exact failure result and failedChecks. FOUND / NOT_FOUND / UNAVAILABLE.
+## Implementation steps
+## Check Registry
+| Check name | PASS |
+|---|---|
+| checkA | true |
+## All-pass Fixture
+## Single-failure Matrix
+## Fixed verification
+\`\`\`bash
+cd /repo
+bun test
+\`\`\`
+## Rollback/failure convergence
+## Phase completion gate
+- [x] accepted-a
+- [x] accepted-b
+`;
+  }
+
+  function gateSuite(rows: string, phases: Record<string, string>) {
+    return createPlanSet({ index: progressionIndex(rows), phases });
+  }
+
+  test("all-pass fixture: NOT_STARTED gate all unchecked and ACCEPTED gate all checked pass without unrelated boxes", () => {
+    const phases = {
+      "01-phase-ready.md": readyPhase("01-phase-ready.md"),
+      "02-phase-accepted.md": acceptedPhase("02-phase-accepted.md"),
+    };
+    const rows = `| Order | Phase ID | File | Depends on | Status |
+|---|---|---|---|---|
+| 1 | PHASE-01 | \`01-phase-ready.md\` | NONE | NOT_STARTED |
+| 2 | PHASE-02 | \`02-phase-accepted.md\` | PHASE-01 | ACCEPTED |
+`;
+    const codes = parse(runValidator(gateSuite(rows, phases))).errors.map((item: { code: string }) => item.code);
+    expect(codes).not.toContain("PHASE_COMPLETION_GATE_MISMATCH");
+    expect(codes).not.toContain("PHASE_RECEIPT_MISSING");
+    expect(codes).not.toContain("TOP_LEVEL_STATUS_MISMATCH");
+  });
+
+  test("AGC-C-101: checked box in a NOT_STARTED gate is rejected", () => {
+    const ready = readyPhase("01-phase-ready.md").replace("- [ ] ready-a", "- [x] ready-a");
+    const phases = {
+      "01-phase-ready.md": ready,
+      "02-phase-accepted.md": acceptedPhase("02-phase-accepted.md"),
+    };
+    const rows = `| Order | Phase ID | File | Depends on | Status |
+|---|---|---|---|---|
+| 1 | PHASE-01 | \`01-phase-ready.md\` | NONE | NOT_STARTED |
+| 2 | PHASE-02 | \`02-phase-accepted.md\` | PHASE-01 | ACCEPTED |
+`;
+    const errors = parse(runValidator(gateSuite(rows, phases))).errors;
+    const mismatch = errors.filter((item: { code: string }) => item.code === "PHASE_COMPLETION_GATE_MISMATCH");
+    expect(mismatch.map((item: { code: string; message: string }) => item.message)).toContain("PHASE-01: NOT_STARTED cannot have checked completion gate");
+    expect(mismatch).toHaveLength(1);
+  });
+
+  test("AGC-C-102: unchecked box in an ACCEPTED gate is rejected", () => {
+    const accepted = acceptedPhase("02-phase-accepted.md").replace("- [x] accepted-a", "- [ ] accepted-a");
+    const phases = {
+      "01-phase-ready.md": readyPhase("01-phase-ready.md"),
+      "02-phase-accepted.md": accepted,
+    };
+    const rows = `| Order | Phase ID | File | Depends on | Status |
+|---|---|---|---|---|
+| 1 | PHASE-01 | \`01-phase-ready.md\` | NONE | NOT_STARTED |
+| 2 | PHASE-02 | \`02-phase-accepted.md\` | PHASE-01 | ACCEPTED |
+`;
+    const errors = parse(runValidator(gateSuite(rows, phases))).errors;
+    const mismatch = errors.filter((item: { code: string }) => item.code === "PHASE_COMPLETION_GATE_MISMATCH");
+    expect(mismatch.map((item: { code: string; message: string }) => item.message)).toContain("PHASE-02: ACCEPTED requires every completion gate checkbox checked");
+    expect(mismatch).toHaveLength(1);
+  });
+
+  test("AGC-C-103: ACCEPTED phase with NONE receipt is rejected", () => {
+    const accepted = acceptedPhase("02-phase-accepted.md", "PHASE-02", "NONE");
+    const phases = {
+      "01-phase-ready.md": readyPhase("01-phase-ready.md"),
+      "02-phase-accepted.md": accepted,
+    };
+    const rows = `| Order | Phase ID | File | Depends on | Status |
+|---|---|---|---|---|
+| 1 | PHASE-01 | \`01-phase-ready.md\` | NONE | NOT_STARTED |
+| 2 | PHASE-02 | \`02-phase-accepted.md\` | PHASE-01 | ACCEPTED |
+`;
+    const codes = parse(runValidator(gateSuite(rows, phases))).errors.map((item: { code: string }) => item.code);
+    expect(codes).toContain("PHASE_RECEIPT_MISSING");
+    expect(codes).not.toContain("PHASE_COMPLETION_GATE_MISMATCH");
+  });
+
+  test("AGC-C-104: zero gate checkboxes in a NOT_STARTED gate is rejected", () => {
+    const ready = readyPhase("01-phase-ready.md").replace(/## Phase completion gate\n- \[ \] ready-a\n- \[ \] ready-b\n/, "## Phase completion gate\n");
+    const phases = {
+      "01-phase-ready.md": ready,
+      "02-phase-accepted.md": acceptedPhase("02-phase-accepted.md"),
+    };
+    const rows = `| Order | Phase ID | File | Depends on | Status |
+|---|---|---|---|---|
+| 1 | PHASE-01 | \`01-phase-ready.md\` | NONE | NOT_STARTED |
+| 2 | PHASE-02 | \`02-phase-accepted.md\` | PHASE-01 | ACCEPTED |
+`;
+    const errors = parse(runValidator(gateSuite(rows, phases))).errors;
+    const mismatch = errors.filter((item: { code: string }) => item.code === "PHASE_COMPLETION_GATE_MISMATCH");
+    expect(mismatch.map((item: { code: string; message: string }) => item.message)).toContain("PHASE-01: completion gate requires at least one checkbox");
+    expect(mismatch).toHaveLength(1);
   });
 });

@@ -1,0 +1,25 @@
+#!/usr/bin/env bun
+/** Mechanical boundary precheck. It never issues an audit verdict. */
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+type Obj = Record<string, unknown>;
+const hash = (path: string) => createHash("sha256").update(readFileSync(path)).digest("hex");
+const obj = (value: unknown): Obj => value && typeof value === "object" && !Array.isArray(value) ? value as Obj : {};
+const array = (value: unknown): unknown[] => Array.isArray(value) ? value : [];
+export function precheckBoundary(scopeLockPath: string, contractPath: string, evidenceDir: string) {
+  const blockers: string[] = []; const contract = obj(Bun.YAML.parse(readFileSync(contractPath, "utf8")));
+  if (contract.schema_version !== "boundary-contract/v1") blockers.push("CONTRACT_SCHEMA_INVALID");
+  if (!existsSync(scopeLockPath)) blockers.push("SCOPE_LOCK_NOT_FOUND"); else if (String(contract.scope_lock_sha256 ?? "") !== hash(scopeLockPath)) blockers.push("SCOPE_LOCK_HASH_MISMATCH");
+  const cases: Array<Obj & { requirement: string }> = array(contract.requirements).flatMap(raw =>
+    array(obj(raw).decision_cases).map(entry => ({ requirement: String(obj(raw).id ?? ""), ...obj(entry) })),
+  );
+  const ids = new Set<string>(); for (const item of cases) { const id = String(item.id ?? ""); if (!/^DC-\d+$/.test(id) || ids.has(id) || !/^FX-/.test(String(item.fixture ?? "")) || !String(item.oracle ?? "") || !["SUCCESS", "ERROR"].includes(String(item.expected_result ?? "")) || !Array.isArray(item.must_not_happen) || !item.must_not_happen.length) blockers.push(`CONTRACT_CASE_INVALID:${id || "UNKNOWN"}`); ids.add(id); }
+  if (!cases.some(x => x.polarity === "POSITIVE") || !cases.some(x => x.polarity === "NEGATIVE")) blockers.push("CONTRACT_POLARITY_INCOMPLETE");
+  const receipts: Array<Obj & { path: string; sha256: string }> = []; if (!existsSync(evidenceDir)) blockers.push("EVIDENCE_DIR_NOT_FOUND"); else for (const name of readdirSync(evidenceDir, { recursive: true })) { const file = join(evidenceDir, String(name)); if (file.endsWith(".json") && statSync(file).isFile()) try { receipts.push({ ...obj(JSON.parse(readFileSync(file, "utf8"))), path: file, sha256: hash(file) }); } catch { blockers.push(`EVIDENCE_UNAVAILABLE:${name}`); } }
+  for (const receipt of receipts) if (!ids.has(String(receipt.decision_case_id ?? ""))) blockers.push(`EVIDENCE_CASE_OUT_OF_SCOPE:${String(receipt.decision_case_id ?? "UNKNOWN")}`);
+  const rows = cases.map(item => { const matches = receipts.filter(r => r.decision_case_id === item.id); let reason = matches.length === 1 ? "" : matches.length ? "DUPLICATE_CASE_EVIDENCE" : "CASE_EVIDENCE_MISSING"; const receipt = matches[0]; if (!reason && (receipt.fixture_id !== item.fixture || receipt.oracle_id !== item.oracle)) reason = "FIXTURE_OR_ORACLE_MISMATCH"; if (!reason && (receipt.observed_result !== item.expected_result || (item.expected_error_code && receipt.error_code !== item.expected_error_code))) reason = "OBSERVATION_MISMATCH"; if (!reason && (!Array.isArray(receipt.must_not_happen) || JSON.stringify(receipt.must_not_happen) !== JSON.stringify(item.must_not_happen))) reason = "SIDE_EFFECT_EVIDENCE_MISMATCH"; if (reason) blockers.push(`${reason}:${String(item.id)}`); return { requirement_id: item.requirement, decision_case_id: item.id, expected_result: item.expected_result, expected_error_code: item.expected_error_code ?? null, fixture: item.fixture, oracle: item.oracle, must_not_happen: item.must_not_happen ?? [], observed_result: receipt?.observed_result ?? null, error_code: receipt?.error_code ?? null, evidence_receipt: receipt?.id ?? null, evidence_path: receipt?.path ?? null, evidence_sha256: receipt?.sha256 ?? null, coverage: reason ? "BLOCKED" : "COVERED", blocker_reason: reason || null }; });
+  return { schema_version: "audit-boundary-matrix/v1", status: blockers.length ? "BLOCKED" : "READY_FOR_LLM_REVIEW", scope_lock_sha256: existsSync(scopeLockPath) ? hash(scopeLockPath) : null, contract_sha256: hash(contractPath), rows, blockers: [...new Set(blockers)] };
+}
+function main() { const args = process.argv.slice(2), get = (name: string) => args[args.indexOf(name) + 1]; const scope = get("--scope-lock"), contract = get("--contract"), evidence = get("--evidence-dir"), output = get("--output"); if (!scope || !contract || !evidence || !output || args.length !== 8) { console.error("usage: audit-boundary-precheck.ts --scope-lock <file> --contract <yaml> --evidence-dir <dir> --output <matrix.json>"); process.exit(2); } if (existsSync(output)) { console.error("OUTPUT_ALREADY_EXISTS"); process.exit(2); } const matrix = precheckBoundary(resolve(scope), resolve(contract), resolve(evidence)); mkdirSync(dirname(resolve(output)), { recursive: true }); writeFileSync(resolve(output), `${JSON.stringify(matrix, null, 2)}\n`, { flag: "wx" }); console.log(JSON.stringify(matrix, null, 2)); process.exit(matrix.status === "READY_FOR_LLM_REVIEW" ? 0 : 1); }
+if (import.meta.main) main();

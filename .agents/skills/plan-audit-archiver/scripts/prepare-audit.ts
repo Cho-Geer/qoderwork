@@ -63,6 +63,9 @@ type ContractOptions = {
   verdict: string;
   evidenceCeiling: string;
   supplementalSources: Array<{ path: string; sha256: string; role: string }>;
+  boundaryMatrix?: { path: string; sha256: string };
+  boundaryPrecheckInputs?: { scope_lock_sha256: string; contract_sha256: string };
+  boundaryContractVersion?: string;
 };
 
 // ─── 工具函数 ───
@@ -261,6 +264,10 @@ export function buildAuditContract(opts: ContractOptions): JsonObject {
     scope,
     requirements,
     evidence_receipts: evidenceReceipts,
+    audit_boundary_matrix: opts.boundaryMatrix ?? null,
+    boundary_precheck_inputs: opts.boundaryPrecheckInputs ?? null,
+    boundary_contract_version: opts.boundaryContractVersion,
+    model_review: opts.boundaryContractVersion === "boundary-contract/v1" ? { approved_boundary: "REPLACE_MODEL_APPROVED_BOUNDARY", observed_equivalence: "REPLACE_MODEL_OBSERVED_EQUIVALENCE", exceptions: "REPLACE_MODEL_EXCEPTIONS", classification: "REPLACE_MODEL_VERDICT" } : undefined,
     sweep: {
       status: "COMPLETE",
       requirement_ids: inScope,
@@ -468,6 +475,13 @@ export function buildReportMarkdown(contract: JsonObject): string {
   // Section 11
   lines.push("## 11. Validator Evidence");
   lines.push("");
+  lines.push("## MODEL_REVIEW");
+  lines.push("");
+  lines.push("- Approved boundary correctly expressed: REPLACE_MODEL_BOUNDARY_EXPRESSION");
+  lines.push("- Observed boundary equals approved boundary: REPLACE_MODEL_BOUNDARY_EQUIVALENCE");
+  lines.push("- Exceptions are in scope: REPLACE_MODEL_EXCEPTION_REVIEW");
+  lines.push("- Model classification: REPLACE_MODEL_VERDICT");
+  lines.push("");
   lines.push("```");
   lines.push("bun run .agents/skills/plan-audit-archiver/scripts/validate-audit.ts REPLACE_THIS_FILE_PATH");
   lines.push("REPLACE_VALIDATOR_OUTPUT");
@@ -556,6 +570,9 @@ function main() {
   const supplementalArg = optionalArgument("--supplemental");
   const auditIdFilter = optionalArgument("--audit-id");
   const receiptPrefix = optionalArgument("--receipt-prefix");
+  const boundaryMatrixArg = optionalArgument("--boundary-matrix");
+  const boundaryContractVersionArg = optionalArgument("--boundary-contract-version");
+  if (boundaryContractVersionArg && boundaryContractVersionArg !== "boundary-contract/v1") fail("--boundary-contract-version must be boundary-contract/v1");
 
   // 验证 workspace root
   if (!isAbsolute(workspaceRootArg)) fail("--workspace-root must be absolute");
@@ -589,6 +606,8 @@ function main() {
     if (rel.startsWith("..") || isAbsolute(rel)) fail(`${label} is outside workspace-root: ${abs}`);
     return rel;
   };
+  const boundaryMatrix = boundaryMatrixArg ? (() => { const abs = resolvePath(boundaryMatrixArg); return { path: toRel(abs, "--boundary-matrix"), sha256: sha256File(abs) }; })() : undefined;
+  const boundaryPrecheckInputs = boundaryMatrixArg ? (() => { const matrix = readJson(resolvePath(boundaryMatrixArg)); return { scope_lock_sha256: String(matrix.scope_lock_sha256 ?? ""), contract_sha256: String(matrix.contract_sha256 ?? "") }; })() : undefined;
 
   const scopeLockRelPath = toRel(scopeLockAbs, "--scope-lock");
   const preChangeRelPath = toRel(preChangeAbs, "--pre-change");
@@ -643,6 +662,9 @@ function main() {
     verdict: verdictArg,
     evidenceCeiling: evidenceCeilingArg,
     supplementalSources,
+    boundaryMatrix,
+    boundaryPrecheckInputs,
+    boundaryContractVersion: boundaryContractVersionArg,
   });
 
   // 生成报告

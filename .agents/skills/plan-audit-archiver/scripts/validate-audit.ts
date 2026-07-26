@@ -44,6 +44,7 @@ const REQUIRED_HEADINGS = [
   "## 10. Verdict",
   "## 11. Validator Evidence",
   "## 12. Anti-Loop Answers",
+  "## MODEL_REVIEW",
 ] as const;
 
 const VERDICTS = new Set(["ACCEPT", "REWORK", "BLOCKED", "INVALID"]);
@@ -654,8 +655,32 @@ export function validateAuditSource(source: string, label = "audit.md"): AuditVa
   const preChangeReceipt = checkFileReference(baseline.pre_change_receipt, "baseline.pre_change_receipt", errors, true);
   const verdictStateReceipt = checkFileReference(baseline.verdict_state_receipt, "baseline.verdict_state_receipt", errors, true);
   const planPaths = checkSources(baseline, errors);
+  const matrix = contract.audit_boundary_matrix;
+  if (matrix !== null && matrix !== undefined) {
+    const reference = checkFileReference(matrix, "audit_boundary_matrix", errors);
+    if (reference && !reference.path.endsWith(".json")) issue(errors, "BOUNDARY_MATRIX_PATH_INVALID", "audit_boundary_matrix.path must be JSON");
+  }
 
   const scope = objectAt(contract.scope, "scope", errors);
+  const boundaryContractVersion = contract.boundary_contract_version;
+  if (boundaryContractVersion !== undefined && boundaryContractVersion !== "boundary-contract/v1") issue(errors, "BOUNDARY_CONTRACT_VERSION_INVALID", "boundary_contract_version must be boundary-contract/v1 when present");
+  if (boundaryContractVersion === "boundary-contract/v1" && !isObject(contract.audit_boundary_matrix)) {
+    issue(errors, "BOUNDARY_MATRIX_REQUIRED", "boundary-contract/v1 requires audit_boundary_matrix with immutable path and sha256");
+  }
+  if (boundaryContractVersion === "boundary-contract/v1") {
+    const inputs = objectAt(contract.boundary_precheck_inputs, "boundary_precheck_inputs", errors);
+    const scopeHash = stringAt(inputs.scope_lock_sha256, "boundary_precheck_inputs.scope_lock_sha256", errors);
+    const contractHash = stringAt(inputs.contract_sha256, "boundary_precheck_inputs.contract_sha256", errors);
+    if (!/^[a-f0-9]{64}$/.test(scopeHash) || !/^[a-f0-9]{64}$/.test(contractHash)) issue(errors, "BOUNDARY_PRECHECK_INPUT_HASH_INVALID", "v1 precheck input hashes must be SHA-256");
+  }
+  if (boundaryContractVersion === "boundary-contract/v1") {
+    const review = objectAt(contract.model_review, "model_review", errors);
+    stringAt(review.approved_boundary, "model_review.approved_boundary", errors);
+    stringAt(review.observed_equivalence, "model_review.observed_equivalence", errors);
+    stringAt(review.exceptions, "model_review.exceptions", errors);
+    const classification = stringAt(review.classification, "model_review.classification", errors);
+    requireEnum(classification, VERDICTS, "model_review.classification", errors);
+  }
   const scopeStatus = stringAt(scope.status, "scope.status", errors);
   if (scopeStatus && scopeStatus !== "FROZEN" && scopeStatus !== "UNFROZEN") issue(errors, "INVALID_SCOPE_STATUS", `scope.status=${scopeStatus}`);
   const provenanceLevel = stringAt(scope.provenance_level, "scope.provenance_level", errors);
@@ -1041,6 +1066,21 @@ function verifyExternalTruth(source: string, inputPath: string, errors: AuditIss
     verifyLedgerEntries(baseline.plan_sources, canonicalWorkspace, "baseline.plan_sources", errors);
     verifyLedgerEntries(baseline.supplemental_sources, canonicalWorkspace, "baseline.supplemental_sources", errors);
     verifyLedgerEntries(contract.evidence_receipts, canonicalWorkspace, "evidence_receipts", errors, "EVIDENCE_HASH_MISMATCH");
+    if (contract.audit_boundary_matrix !== null && contract.audit_boundary_matrix !== undefined) {
+      const matrix = verifyJsonReference(canonicalWorkspace, contract.audit_boundary_matrix, "audit_boundary_matrix", "BOUNDARY_MATRIX_HASH_MISMATCH", errors);
+      if (matrix) {
+        if (matrix.schema_version !== "audit-boundary-matrix/v1") issue(errors, "BOUNDARY_MATRIX_SCHEMA_INVALID", "audit_boundary_matrix has an invalid schema_version");
+        if (matrix.status !== "READY_FOR_LLM_REVIEW") issue(errors, "BOUNDARY_MATRIX_NOT_READY", "mechanical boundary precheck must be READY_FOR_LLM_REVIEW");
+        if (contract.boundary_contract_version === "boundary-contract/v1" && isObject(contract.boundary_precheck_inputs) && (matrix.scope_lock_sha256 !== contract.boundary_precheck_inputs.scope_lock_sha256 || matrix.contract_sha256 !== contract.boundary_precheck_inputs.contract_sha256)) issue(errors, "BOUNDARY_PRECHECK_INPUT_HASH_MISMATCH", "AUDIT_CONTRACT input hashes must equal immutable boundary matrix inputs");
+        const rows = Array.isArray(matrix.rows) ? matrix.rows : [];
+        if (rows.length === 0 || rows.some((row) => !isObject(row) || row.coverage !== "COVERED" || typeof row.decision_case_id !== "string")) issue(errors, "BOUNDARY_MATRIX_CASE_INCOMPLETE", "every decision case requires one covered boundary-matrix row");
+        if (contract.boundary_contract_version === "boundary-contract/v1") {
+          const matrixCases = rows.filter(isObject).map((row) => String(row.decision_case_id ?? ""));
+          const receiptCases = (Array.isArray(contract.evidence_receipts) ? contract.evidence_receipts : []).filter(isObject).map((receipt) => String(receipt.decision_case_id ?? ""));
+          if (receiptCases.some((id) => !/^DC-\d+$/.test(id)) || new Set(receiptCases).size !== receiptCases.length || !sameSet(matrixCases, receiptCases)) issue(errors, "BOUNDARY_DECISION_CASE_BINDING_INVALID", "v1 evidence receipts must bind each matrix DC exactly once");
+        }
+      }
+    }
 
     verifiedLock = verifyJsonReference(canonicalWorkspace, contract.scope_lock, "scope_lock", "SCOPE_LOCK_HASH_MISMATCH", errors);
     if (verifiedLock) {

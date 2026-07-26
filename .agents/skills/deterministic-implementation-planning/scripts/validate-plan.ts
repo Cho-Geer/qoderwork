@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
+import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { basename, join } from "node:path";
+import { basename, join, resolve } from "node:path";
 import {
   deriveTopLevelStatus,
   isProgressionSchema,
@@ -127,7 +128,7 @@ function checkPhaseComplexity(source: string, label: string, headings: { require
   }
 }
 
-function checkEvidenceContracts(source: string, label: string) {
+function checkEvidenceContracts(source: string, label: string, isPlanSetPhase = false) {
   if (!source.includes("failedChecks") && !source.includes("Exact failure result")) {
     finding(errors, "NO_DIAGNOSTIC_CONTRACT", `${label}: no explicit failure diagnostic contract found`);
   }
@@ -139,7 +140,51 @@ function checkEvidenceContracts(source: string, label: string) {
     finding(errors, "NO_EVIDENCE_LEVEL", `${label}: no explicit evidence level found`);
   }
   if (!source.includes("cd ")) finding(errors, "COMMAND_CWD_MISSING", `${label}: verification commands must specify cwd`);
-  if (!source.includes("- [ ]")) finding(errors, "NO_COMPLETION_CHECKBOX", `${label}: completion gate requires unchecked boxes`);
+  // PLAN_SET phase files defer completion-gate checkbox rules to the progression
+  // branch (extractGateTokens), which inspects only the `## Phase completion gate`
+  // section. Whole-document `- [ ]` is not required there (REQ-001-D); `99-final`
+  // and SINGLE_FILE plans keep the requirement.
+  if (!isPlanSetPhase && !source.includes("- [ ]")) finding(errors, "NO_COMPLETION_CHECKBOX", `${label}: completion gate requires unchecked boxes`);
+}
+
+function checkBoundaryContract(indexSource: string, planRoot: string) {
+  const version = indexSource.match(/^\*\*Boundary contract version\*\*:\s*`?([^`\n]+)`?/m)?.[1].trim();
+  if (!version) return;
+  if (version === "legacy-exempt") {
+    const indexPath = join(planRoot, "00-plan-index.md");
+    const relativePath = indexPath.slice(resolve(process.cwd()).length + 1);
+    const actual = createHash("sha256").update(readFileSync(indexPath)).digest("hex");
+    try {
+      const registry = JSON.parse(readFileSync(join(import.meta.dir, "..", "legacy-boundary-contract-exemptions.json"), "utf8")) as { entries?: Array<{ path?: string; sha256?: string }> };
+      if (!registry.entries?.some((entry) => entry.path === relativePath && entry.sha256 === actual)) finding(errors, "LEGACY_BOUNDARY_EXEMPTION_MISMATCH", relativePath);
+    } catch { finding(errors, "LEGACY_BOUNDARY_EXEMPTION_UNAVAILABLE", "legacy-boundary-contract-exemptions.json"); }
+    return;
+  }
+  if (version !== "boundary-contract/v1") { finding(errors, "BOUNDARY_CONTRACT_VERSION_INVALID", `00-plan-index.md: ${version}`); return; }
+  const path = indexSource.match(/^\*\*Requirements contract\*\*:\s*`?([^`\n]+)`?/m)?.[1].trim() ?? "";
+  const expected = indexSource.match(/^\*\*Requirements contract SHA-256\*\*:\s*`?([a-f0-9]{64})`?/mi)?.[1] ?? "";
+  if (!path || !expected) { finding(errors, "BOUNDARY_CONTRACT_REFERENCE_MISSING", "00-plan-index.md requires contract path and SHA-256"); return; }
+  const absolute = resolve(planRoot, path);
+  if (!absolute.startsWith(resolve(planRoot) + "/") || !existsSync(absolute)) { finding(errors, "BOUNDARY_CONTRACT_NOT_FOUND", path); return; }
+  const actual = createHash("sha256").update(readFileSync(absolute)).digest("hex");
+  if (actual !== expected) finding(errors, "BOUNDARY_CONTRACT_HASH_MISMATCH", path);
+  let contract: Record<string, unknown> = {};
+  try { contract = Bun.YAML.parse(readFileSync(absolute, "utf8")) as Record<string, unknown>; } catch { finding(errors, "BOUNDARY_CONTRACT_PARSE_FAILED", path); return; }
+  const requirements = Array.isArray(contract.requirements) ? contract.requirements as Record<string, unknown>[] : [];
+  if (contract.schema_version !== "boundary-contract/v1" || requirements.length === 0) { finding(errors, "BOUNDARY_CONTRACT_INVALID", path); return; }
+  const cases = requirements.flatMap((requirement) => (Array.isArray(requirement.decision_cases) ? requirement.decision_cases : []).map((item) => item as Record<string, unknown>));
+  if (requirements.some((requirement) => !/^R-\d+$/.test(String(requirement.id ?? ""))) || cases.length === 0 || cases.some((item) => !/^DC-\d+$/.test(String(item.id ?? "")) || !/^FX-/.test(String(item.fixture ?? "")) || !String(item.oracle ?? "") || !["SUCCESS", "ERROR"].includes(String(item.expected_result ?? "")) || !["POSITIVE", "NEGATIVE"].includes(String(item.polarity ?? "")) || !Array.isArray(item.must_not_happen))) finding(errors, "BOUNDARY_CONTRACT_INVALID", path);
+  if (!cases.some((item) => item.polarity === "POSITIVE") || !cases.some((item) => item.polarity === "NEGATIVE") || new Set(cases.map((item) => String(item.id))).size !== cases.length) finding(errors, "BOUNDARY_CONTRACT_CASE_COVERAGE_INVALID", path);
+}
+
+// Extracts checkbox tokens only from the `## Phase completion gate` section.
+// Returns gate token count and checked count; ignores unrelated Markdown.
+function extractGateTokens(source: string): { total: number; checked: number } {
+  const match = source.match(/^(?:####|##) Phase completion gate\s*\n([\s\S]*?)(?=^#{1,4}\s|$)/m);
+  const text = match?.[1] ?? "";
+  const boxes = text.match(/- \[([ xX])\]/g) ?? [];
+  const checked = boxes.filter((box) => /\[[xX]\]/.test(box)).length;
+  return { total: boxes.length, checked };
 }
 
 const singleTopLevel = [
@@ -230,6 +275,7 @@ function validatePlanSet(directory: string) {
     return { index: null, phases: {}, final: null };
   }
   const indexSource = read(indexPath);
+  checkBoundaryContract(indexSource, directory);
   const finalSource = read(finalPath);
   enforceBudget(indexSource, "00-plan-index.md", LIMITS.index, "PLAN_INDEX_LENGTH_EXCEEDED");
   enforceBudget(finalSource, "99-final-verification.md", LIMITS.final, "FINAL_VERIFICATION_LENGTH_EXCEEDED");
@@ -329,15 +375,15 @@ function validatePlanSet(directory: string) {
       const phaseStatus = parseProgressionStatus(phaseStatusRaw);
       if (!phaseStatus) finding(errors, "PHASE_STATUS_MISSING", `${row.file}: **Progression status**`);
       else if (manifestStatus && phaseStatus !== manifestStatus) finding(errors, "PHASE_STATUS_MISMATCH", `${row.id}: manifest=${manifestStatus}, phase=${phaseStatus}`);
-      const gateMatch = source.match(/^(?:####|##) Phase completion gate\s*\n([\s\S]*?)(?=^#{1,4}\s|$)/m);
-      const gateText = gateMatch?.[1] ?? "";
-      const gateBoxes = gateText.match(/- \[([ xX])\]/g) ?? [];
-      const checked = gateBoxes.filter((box) => /\[[xX]\]/.test(box)).length;
-      if (manifestStatus === "ACCEPTED" && gateBoxes.length > 0 && checked !== gateBoxes.length) {
-        finding(errors, "PHASE_COMPLETION_GATE_MISMATCH", `${row.id}: ACCEPTED requires every completion gate checkbox checked`);
-      }
-      if (manifestStatus && manifestStatus !== "ACCEPTED" && checked > 0) {
-        finding(errors, "PHASE_COMPLETION_GATE_MISMATCH", `${row.id}: ${manifestStatus} cannot have checked completion gate`);
+      const gate = extractGateTokens(source);
+      if (manifestStatus) {
+        if (gate.total === 0) {
+          finding(errors, "PHASE_COMPLETION_GATE_MISMATCH", `${row.id}: completion gate requires at least one checkbox`);
+        } else if (manifestStatus === "ACCEPTED" && gate.checked !== gate.total) {
+          finding(errors, "PHASE_COMPLETION_GATE_MISMATCH", `${row.id}: ACCEPTED requires every completion gate checkbox checked`);
+        } else if (manifestStatus !== "ACCEPTED" && gate.checked > 0) {
+          finding(errors, "PHASE_COMPLETION_GATE_MISMATCH", `${row.id}: ${manifestStatus} cannot have checked completion gate`);
+        }
       }
       if (manifestStatus === "ACCEPTED") {
         const receipt = source.match(/^\*\*Completion receipt\*\*:\s*(.+)$/m)?.[1].trim() ?? "";
@@ -350,7 +396,7 @@ function validatePlanSet(directory: string) {
       checks: "## Check Registry",
     });
     checkUnresolvedAndAmbiguous(source, row.file);
-    checkEvidenceContracts(source, row.file);
+    checkEvidenceContracts(source, row.file, true);
     phaseMetrics[row.file] = metrics(source);
   }
   checkUnresolvedAndAmbiguous(indexSource, "00-plan-index.md");

@@ -1,0 +1,8 @@
+import { expect, test } from "bun:test";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { finalizeAudit } from "../finalize-audit.ts";
+test("publishes a hash-bound LATEST pointer only after a valid audit", () => { const root = mkdtempSync(join(tmpdir(), "finalize-")), report = join(root, "audit.md"), latest = join(root, "LATEST.md"); writeFileSync(report, "report"); const result = finalizeAudit(report, latest, () => ({ valid: true })); expect(readFileSync(latest, "utf8")).toContain(result.sha256); expect(readFileSync(latest, "utf8")).toContain("audit.md"); rmSync(root, { recursive: true, force: true }); });
+test("does not publish when the audit validator fails", () => { const root = mkdtempSync(join(tmpdir(), "finalize-")), report = join(root, "audit.md"), latest = join(root, "LATEST.md"); writeFileSync(report, "report"); expect(() => finalizeAudit(report, latest, () => ({ valid: false }))).toThrow("AUDIT_VALIDATION_FAILED"); expect(() => readFileSync(latest, "utf8")).toThrow(); rmSync(root, { recursive: true, force: true }); });
+test("does not overwrite an existing LATEST pointer", () => { const root = mkdtempSync(join(tmpdir(), "finalize-")), report = join(root, "audit.md"), latest = join(root, "LATEST.md"); writeFileSync(report, "report"); writeFileSync(latest, "old pointer"); expect(() => finalizeAudit(report, latest, () => ({ valid: true }))).toThrow("LATEST_POINTER_CONFLICT"); expect(readFileSync(latest, "utf8")).toBe("old pointer"); rmSync(root, { recursive: true, force: true }); });

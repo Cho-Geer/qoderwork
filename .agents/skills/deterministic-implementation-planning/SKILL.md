@@ -104,6 +104,8 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
     `INVALID`; stop before approval. `pre-flight-enforcement` may sequence this
     command but cannot replace it or write cross-phase state.
 
+15. **Boundary-contract/v1.** A new v1 PLAN_SET index MUST declare the requirements-contract path and SHA-256. Each `R-*` requires one or more `DC-*` entries with a unique expected result, runnable oracle, fixture, polarity, and prohibited side effects. Historical plans may remain outside this contract only through an explicit path-plus-SHA-256 compatibility entry; do not infer exemption from age.
+
 ## Output sizing contract
 
 Count Unicode code points with `[...source].length`; do not use `wc -w` for a
