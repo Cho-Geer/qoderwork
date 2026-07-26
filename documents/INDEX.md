@@ -2,7 +2,9 @@
 
 > 本文件由 QoderWork Session Startup 自动扫描。新增文档时请同步更新此索引。
 >
-> **最近更新**: 2026-07-25 - 新增路径动态化 M1 PLAN_SET：冻结范围、解析器与 test-serve 临界路径均有阶段合同、负例和 provenance gate；产品实现尚未开始。
+> **最近更新**: 2026-07-26 - 复核路径动态化蓝图与 M1：实现仍未开始，Phase 02 被 Phase 01 admission 阻断；当前扫描为 1,805 处/467 文件，且 CodeGraph 当前 worktree 索引与两个路径热点调用链已验证，待 Phase 01 重建分类清单。
+>
+> **历史更新**: 2026-07-25 - 新增路径动态化 M1 PLAN_SET：冻结范围、解析器与 test-serve 临界路径均有阶段合同、负例和 provenance gate；产品实现尚未开始。
 >
 > **历史更新**: 2026-07-25 - 审计并重写路径动态化蓝图：以当前扫描、Bun/CLI 实测和客户端适配 gate 取代失实统计与未证实 IDE 假设；尚未实施。
 >
@@ -30,8 +32,8 @@
 |------|------|------|------|
 | **opencode-framework/opencode-cognitive-map.md** | **框架认知地图（全景架构）** | **四层架构总览（元认知→编排执行→验证→运维）、39 Plugin / 70+ Tool / 51 Lib / 12 MCP Server 全景、Agent 角色定义、数据流图、故障排查手册。是理解整体设计的第一入口。** | **~694** |
 | **blueprints/2026-07-12-framework-deprecated-content-audit-blueprint.md** | **框架废弃内容审计与清理蓝图** | **严格审计 work-one 中过时/废弃/兼容尾巴：AGENTS 启动文档漂移、Scout 残留、legacy role 与 permission fallback、旧 DAG/pre-execution 脚本、handler 状态混乱、enforcement mode 兼容 shim、dispatch_context stub，并给出分阶段清理计划。** | **~403** |
-| **blueprints/blueprint-dynamic-path-resolution.md** | **路径动态化与跨平台配置收敛** | **以当前 1,758 处路径扫描、受校验解析契约、IDE 适配 gate 与负例矩阵，指导运行时路径迁移；尚未实施。** | **~250** |
-| **plans/path-dynamic-resolution-m1/00-plan-index.md** | **路径动态化 M1 确定性实施计划** | **以冻结清单、解析器、test-serve 消费点和后续计划交接收敛首批路径迁移；每个 Phase 均可单独执行和验证。** | **~116（入口）** |
+| **blueprints/blueprint-dynamic-path-resolution.md** | **路径动态化与跨平台配置收敛** | **以 2026-07-25 历史快照、2026-07-26 的 1,805 处/467 文件复核及 CodeGraph 调用链边界、受校验解析契约、IDE 适配 gate 与负例矩阵，指导运行时路径迁移；尚未实施。** | **~251** |
+| **plans/path-dynamic-resolution-m1/00-plan-index.md** | **路径动态化 M1 确定性实施计划** | **以冻结清单、解析器、test-serve 消费点和后续计划交接收敛首批路径迁移；当前仍等待 Phase 01，Phase 02 未获准进入。** | **~119（入口）** |
 | **blueprints/blueprint-isolated-serve-test-infrastructure.md** | **隔离 Serve 测试基建与测试专用 Skill** | **定义测试运行单元的 worktree、显式脏改动 overlay、framework/SDK 双 DB、SSE、进程生命周期、grant bootstrap、H2 授权、scripts 收口与证据契约；P0-3 六阶段计划负责状态机、真实 runner、reviewer live 证据与旧 launcher 收口。** | **~380** |
 | **blueprints/blueprint-phase-progression-audit-gate.md** | **Phase Progression 审计回写与 Freeze Gate** | **将审计 ACCEPT、计划状态受控回写、哈希 receipt 与下一 phase admission 串成单一机器闸门，并以 P0-2 漂移为回填夹具。面向 plan/audit skill 实施与治理复核。** | **~296** |
 | **blueprints/blueprint-task-lens-m1.md** | **Task Lens M1 确定性任务透镜蓝图** | **定义项目外只读输入、working-tree/commit 差异语义、TaskGraphV1/SpineForest、DA coverage、反馈闭环、安全边界、12 子系统审计与 v2.1-required Freeze Gate；v0.1.5 已完成设计返工，尚未实施。** | **~487** |

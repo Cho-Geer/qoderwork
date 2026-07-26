@@ -242,9 +242,10 @@ rg --hidden -l -F '/home/zhaoge/' \
 - Bun 1.3.14 临时 `.env` 自动加载及绝对动态 import 实测；`bootstrap-import-source.test.ts` 组件测试 2/2 PASS。
 - 本机 `qodercli mcp --help`、`qodercli mcp add --help`、`qodercli mcp add-json --help`、Kimi/CodeBuddy CLI help；Trae WSL shim 的 Windows-host 限制。
 - [Bun 环境变量文档](https://bun.sh/docs/runtime/environment-variables)、[Kimi MCP 文档](https://www.kimi.com/code/docs/en/kimi-code-cli/customization/mcp.html)、[Qoder MCP 文档](https://docs.qoder.com/en/cli/mcp-servers)、[ZCode MCP 文档](https://zcode.z.ai/en/docs/mcp-services)。
+- 2026-07-26 复核：同一全量扫描得到 467 个文件、1,805 处匹配；分类表仍由 Phase 0 清单重建，不能只替换合计。`workspace-paths.ts` 及其 Phase 2 测试仍不存在，`getDefaultPrimaryWorktree()` 与 `SSE_DAEMON_PATH` 仍为固定路径；`bootstrap-import-source.test.ts` 重新运行 2/2 PASS。CodeGraph 当前索引属于本 worktree 且为最新：`getDefaultPrimaryWorktree()` 的函数调用方为 `isolated-serve.ts` 与 `_b_pt_wm_00r2_live.ts`，`SSE_DAEMON_PATH` 仅由 `startRunProcesses()` 使用；PHASE-02 admission 因 PHASE-01 `NOT_STARTED` 被拒绝。
 
 ### 6.2 证据等级
 
-- 本蓝图的“当前路径分布”和“代码热点”是静态 source/CodeGraph 证据。
+- 2026-07-25 的“当前路径分布”和“代码热点”是历史静态 source/CodeGraph 证据；2026-07-26 复核以当前 worktree 的 source/Git/Bun/CodeGraph 证据补强，调用图结论仅覆盖已查询的两个路径热点。
 - Bun `.env` 与动态 import 是当前 Linux/Bun 的组件级运行证据。
 - IDE 支持状态除上述本机 CLI/官方文档外，仍须逐客户端 runtime 验收；未执行的项不得标为完成。

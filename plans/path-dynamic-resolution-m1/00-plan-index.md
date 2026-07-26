@@ -15,7 +15,8 @@
 | `blueprint-dynamic-path-resolution.md` | v1.1.0 | §1–§4 | requirements | current |
 | `AGENTS.md` | 2026-07-25 | §4/8/9/11/15 | safety | current |
 | `provenance-rules.md` | P-01–P-07 | P-01/02/02A/07 | provenance | current |
-| inspection | 2026-07-25 | graph/source/Git/Bun | baseline | current |
+| inspection | 2026-07-25 | graph/source/Git/Bun | baseline | historical |
+| recheck | 2026-07-26 | source/Git/Bun/validator | baseline | current |
 
 ### Atomic requirements
 
@@ -70,13 +71,16 @@
 
 | Claim | Status | Evidence/command | Result |
 |---|---|---|---|
-| CodeGraph | CONFLICT | status | main index; `rg` fallback |
+| CodeGraph | VERIFIED | `codegraph status/explore/callers` | current worktree index is up to date; primary root has two function callers and SSE path one |
+| path scan | VERIFIED | `rg --hidden -n/-l -F '/home/zhaoge/'` | 1,805 matches in 467 files; Phase 01 must classify the drift |
 | primary | VERIFIED | source | fixed work-one path |
 | SSE | VERIFIED | source | fixed qoderwork path |
-| bootstrap | VERIFIED | Bun test | 2 pass/component |
+| bootstrap | VERIFIED | `bun test scripts/test-serve/__tests__/bootstrap-import-source.test.ts` | 2 pass/component |
 | IDE config | VERIFIED | ls-files | four tracked |
 | local ignore | VERIFIED | check-ignore | NOT_FOUND |
 | work-one | VERIFIED | Git status | empty |
+| Phase 02 admission | BLOCKED | `validate-phase-progression.ts … PHASE-02` | PHASE-01 is `NOT_STARTED` |
+| Phase 02 resolver/tests | NOT_FOUND | target paths and fixed test command | resolver and both target tests are absent; no Phase 02 component result |
 
 ## 4. End-to-end traceability
 

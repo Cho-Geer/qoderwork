@@ -8,7 +8,7 @@ Last updated: 2026-07-26
 
 | 日期 | 数量 | 日志 |
 |---|---:|---|
-| 2026-07-26 | 2 | [2026-07-26-audit-boundary-contract-inventory.md](2026-07-26-audit-boundary-contract-inventory.md), [2026-07-26-boundary-contract-v1-implementation.md](2026-07-26-boundary-contract-v1-implementation.md) |
+| 2026-07-26 | 3 | [2026-07-26-audit-boundary-contract-inventory.md](2026-07-26-audit-boundary-contract-inventory.md), [2026-07-26-boundary-contract-v1-implementation.md](2026-07-26-boundary-contract-v1-implementation.md), [2026-07-26-path-dynamic-resolution-recheck.md](2026-07-26-path-dynamic-resolution-recheck.md) |
 | 2026-07-25 | 4 | [2026-07-25-agents-md-trim-provenance-externalize.md](2026-07-25-agents-md-trim-provenance-externalize.md), [2026-07-25-audit-gov-phase01-gate-semantics.md](2026-07-25-audit-gov-phase01-gate-semantics.md), [2026-07-25-dynamic-path-blueprint-audit.md](2026-07-25-dynamic-path-blueprint-audit.md), [2026-07-25-dynamic-path-m1-plan.md](2026-07-25-dynamic-path-m1-plan.md) |
 | 2026-07-24 | 4 | [2026-07-24-phase-04-implementation.md](2026-07-24-phase-04-implementation.md), [2026-07-24-phase-progression-bootstrap-waiver.md](2026-07-24-phase-progression-bootstrap-waiver.md), [2026-07-24-task-lens-m1-phase03-implementation.md](2026-07-24-task-lens-m1-phase03-implementation.md), [2026-07-24-task-lens-phase05-scope-amendment.md](2026-07-24-task-lens-phase05-scope-amendment.md) |
 | 2026-07-23 | 6 | [2026-07-23-blueprint-plan-code-cross-audit.md](2026-07-23-blueprint-plan-code-cross-audit.md), [2026-07-23-fix-worktree-repository-root.md](2026-07-23-fix-worktree-repository-root.md), [2026-07-23-impact-analysis-framework.md](2026-07-23-impact-analysis-framework.md), [2026-07-23-task-lens-blueprint.md](2026-07-23-task-lens-blueprint.md), [2026-07-23-task-lens-m1-phase02-implementation.md](2026-07-23-task-lens-m1-phase02-implementation.md), [2026-07-23-task-lens-m1-plan-set.md](2026-07-23-task-lens-m1-plan-set.md) |
@@ -30,10 +30,11 @@ Last updated: 2026-07-26
 
 ## 按主题聚类
 
-### 审计与计划（101）
+### 审计与计划（102）
 
 - [2026-07-26-audit-boundary-contract-inventory.md](2026-07-26-audit-boundary-contract-inventory.md) — 审计边界与 Plan 契约更新清单（17 行）
 - [2026-07-26-boundary-contract-v1-implementation.md](2026-07-26-boundary-contract-v1-implementation.md) — boundary-contract/v1 入口、矩阵和模型审阅实施（7 行）
+- [2026-07-26-path-dynamic-resolution-recheck.md](2026-07-26-path-dynamic-resolution-recheck.md) — 路径动态化蓝图、M1 基线及 CodeGraph 调用链复核（7 行）
 - [2026-07-25-audit-gov-phase01-gate-semantics.md](2026-07-25-audit-gov-phase01-gate-semantics.md) — 审计治理 PHASE-01 completion gate 语义实施（20 行）
 - [2026-07-24-phase-04-implementation.md](2026-07-24-phase-04-implementation.md) — Task Lens PHASE-04 coverage、卡片与原子产物实施（46 行）
 - [2026-07-24-task-lens-m1-phase03-implementation.md](2026-07-24-task-lens-m1-phase03-implementation.md) — Task Lens PHASE-03 实施与 phase progression 治理迁移（44 行）
