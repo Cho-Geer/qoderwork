@@ -1,0 +1,39 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "AGV3-AUDIT-20260727",
+  "generation": 1,
+  "id": "EV-003",
+  "decision_case_id": "DC-007",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test ./.agents/skills/plan-audit-archiver/scripts/__tests__/audit-boundary-precheck.test.ts",
+  "requirement_id": "REQ-004",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-007",
+  "fixture_id": "FX-007",
+  "evidence_level": "integration",
+  "repository_state_sha256": "5521216c78378b5ca258163a0da725f10ca3f4aab9c6e006534bb5ab62b5c1bb",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [
+    "directory_discovery_as_evidence"
+  ],
+  "projection_sha256": "2e1eb139d6747088c2b3f7752d6b4eb1d0ebb572000fadd025b940d9495db37b",
+  "canonical_sha256": "dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3",
+  "artifacts": [
+    {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/evidence/AGV3-AUDIT-20260727/EV-003-artifact.txt",
+      "sha256": "cf0f47eb903a3f367d816f5cfc2a7c4bd1dd5baec19649e48474097425073908"
+    }
+  ],
+  "completed_at": "2026-07-27T14:46:13.515Z",
+  "observed": "PASS"
+}

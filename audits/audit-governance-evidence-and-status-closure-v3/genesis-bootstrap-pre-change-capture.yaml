@@ -1,0 +1,87 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-receipt
+receipt_id: AGV3-GENESIS-BOOTSTRAP-PRECHANGE-20260726
+receipt_kind: pre-change-capture
+document_status: CAPTURED
+immutable: true
+created_at: '2026-07-26T11:16:00Z'
+
+authority_binding:
+  scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-lock.yaml
+    sha256: 98f22e0d2dc3c2e339cbe64787e93d8a354c70e146a87d4fd291c148fec961f6
+  scope_approval:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-approval.json
+    sha256: 04df8701fc7d7c66a2e269746417d7e0371534605eeebeae786a7c304948e9be
+    decision: APPROVED
+    approved_by: HUMAN_USER
+    bootstrap_state_transition: DRAFT->HUMAN_APPROVED
+  genesis_admission:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-admission.yaml
+    sha256: 20bf4624e58919f932c00d9ba083954389ba483658001df1da842debc7ce7ff3
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  work_one_repository_root: /home/zhaoge/workspace/opencode/work-one
+  work_one_head: 64df828d56611ac121baccfaf666f147980aec85
+  work_one_status: CLEAN
+  pre_capture_git_status_canonical_json: |-
+    [{"path":"logs/INDEX.md","status":"MODIFIED"},{"path":"audits/audit-governance-evidence-and-status-closure-v3/","status":"UNTRACKED"},{"path":"blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md","status":"UNTRACKED"},{"path":"logs/2026-07-26-audit-governance-v3-bootstrap-contract.md","status":"UNTRACKED"},{"path":"logs/2026-07-26-audit-governance-v3-bootstrap-scope-submission.md","status":"UNTRACKED"},{"path":"logs/2026-07-26-audit-governance-v3-conformance-gate.md","status":"UNTRACKED"},{"path":"logs/2026-07-26-audit-governance-v3-rebaseline.md","status":"UNTRACKED"},{"path":"plans/audit-governance-evidence-and-status-closure-v3/","status":"UNTRACKED"}]
+  pre_capture_git_status_canonical_json_sha256: 1de437c35a983833e59566bcf7fc99506b60a070c92acf8355f40dd8474e0043
+
+allowlist_target_baseline:
+  - path: scripts/lib/audit-governance-schema-v3.ts
+    observed: NOT_FOUND
+  - path: scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    observed: NOT_FOUND
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    sha256: c1622ad6efdef62d84dce41e2904129582aba5c3f12ee9f87a8764125e0a176c
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    sha256: fb68ec6358c9f0e70330a14c75ea0c61a33feb7d6cea8fe8b622ec67eb06d207
+  - path: .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    sha256: 7cef84557cb4e6e48640f89a5b5273f3b896fdefc0dbd2e217b3986bd19e99d2
+
+execution:
+  observed:
+    - check_id: PRE-001
+      command: sha256sum approved_scope_lock
+      result: FOUND
+      value: 98f22e0d2dc3c2e339cbe64787e93d8a354c70e146a87d4fd291c148fec961f6
+    - check_id: PRE-002
+      command: git status --porcelain filtered_for_code_and_test_extensions
+      result: NOT_FOUND
+      value: no_changed_or_untracked_ts_tsx_js_mjs_cjs_paths
+    - check_id: PRE-003
+      command: git -C work-one status --porcelain
+      result: FOUND
+      value: CLEAN
+    - check_id: PRE-004
+      command: sha256sum_each_allowlist_target
+      result: FOUND
+      value: exact_target_baseline_recorded
+  domain_observation:
+    bootstrap_state: HUMAN_APPROVED
+    implementation_state: NOT_STARTED
+    code_or_test_change: NOT_FOUND
+    phase_accept: NOT_FOUND
+    audit_report: NOT_FOUND
+    latest_pointer: NOT_FOUND
+
+transition_guard:
+  capture_does_not_start_implementation: true
+  next_transition: HUMAN_APPROVED->IMPLEMENTING
+  allowed_only_when:
+    - scope_lock_hash_still_matches
+    - scope_approval_hash_still_matches
+    - all_allowlist_targets_match_this_baseline_before_the_first_write
+    - no_out_of_scope_code_or_test_change_exists
+  implementation_boundary:
+    allowed_paths_only:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+      - .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    prohibited_effects: [phase_accept, audit_report_write, latest_pointer_write, compatibility_entry, generic_bypass]
+  failure_convergence: BLOCKED

@@ -1,0 +1,176 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-scope-lock
+scope_lock_id: AGV3-GENESIS-BOOTSTRAP-VALIDATOR-PATH-FIX-20260726
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+created_at: '2026-07-26T14:20:00Z'
+
+purpose: >-
+  Freeze one narrow correction to the v3 PLAN_SET admission validator: resolve the
+  trusted authority documents (canonical contract and approval decision) against an
+  explicitly provided governance worktree root, while preserving the path guard for
+  receipt/evidence paths and preserving every existing sha256, schema-pair, and
+  HUMAN_USER APPROVED binding check. This scope lock is not a PLAN_SET, not a phase
+  scope lock, not a phase ACCEPT, not an audit report, and not a LATEST pointer.
+
+root_cause:
+  diagnosis: >-
+    validate-plan.ts resolveInput passes the PLAN_SET directory as the root to
+    guardRelativePath for canonical and approval paths. guardRelativePath correctly
+    rejects any path escaping that root. But the canonical contract and approval
+    decision are trusted authority documents that live outside the PLAN_SET directory
+    by design (canonical hash_direction and blueprint section 2.2). The two contracts
+    are therefore mutually unsatisfiable and no formal v3 PLAN_SET referencing the real
+    external canonical can be admitted.
+  guard_disposition: >-
+    guardRelativePath itself is correct and remains required for receipt/evidence path
+    escape protection (REQ-004 nested_within_evidence_root). The shared parser
+    scripts/lib/audit-governance-schema-v3.ts is NOT modified by this scope lock.
+  observed_failure:
+    command: bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set
+    exit_code: 1
+    errors: [ERR_PATH_GUARD on Canonical contract, ERR_PATH_GUARD on Approval decision]
+
+fix_contract:
+  required_behavior:
+    - validator accepts an explicit governance worktree root (second positional argument; required when the index references authority documents outside the PLAN_SET directory)
+    - canonical contract and approval decision relative paths resolve against the governance worktree root, not the PLAN_SET directory
+    - absolute authority paths, NUL bytes, and paths escaping the governance worktree root remain rejected with ERR_PATH_GUARD
+    - sha256 comparison, schema-pair validation, and HUMAN_USER APPROVED binding checks are unchanged
+    - receipt/evidence path guard semantics are unchanged
+  forbidden:
+    - any change to scripts/lib/audit-governance-schema-v3.ts
+    - any change to the SCHEMA_PAIRS registry or discriminator semantics
+    - weakening or removing guardRelativePath
+    - accepting absolute authority paths or paths escaping the governance root
+    - pre-v3 input, compatibility entry, generic bypass, phase ACCEPT, report, or LATEST publication
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  closure_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-scope-lock.yaml
+    sha256: 0bc91c02c7c9742b58e7dbbbf65df58a719d33cf1ed2538f1a0c03da0dbe87e4
+    relation: this_fix_unblocks_closure_CLOS-POS-003
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  repository_root: /home/zhaoge/workspace/opencode/work-one
+  repository_head: 64df828d56611ac121baccfaf666f147980aec85
+  repository_status_at_design: CLEAN
+  recheck_required_before_capture: true
+
+codegraph_impact:
+  command: codegraph callers resolveInput
+  shared_function: resolveInput
+  callers:
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts:56
+  parser_callers_unchanged:
+    command: codegraph callers parseAuditGovernanceV3Document
+    callers:
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts:44
+      - scripts/lib/__tests__/audit-governance-schema-v3.test.ts:1
+  fix_effect: >-
+    Only resolveInput inside validate-plan.ts changes. The shared parser and its caller
+    set are untouched. validate-plan.test.ts is the regression guard for the validator.
+
+effective_allowlist:
+  modified_paths:
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/01-phase-surface-conformance.md
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/99-final-verification.md
+    - logs/INDEX.md
+  added_paths:
+    - logs/2026-07-26-audit-governance-v3-validator-path-fix.md
+  exact_path_count: 7
+  other_paths_allowed: false
+  shared_parser_writable: false
+  formal_plan_set_note: >-
+    The formal-plan-set files were created under the approved closure allowlist and are
+    a BLOCKED closure scene. They are listed here only to correct their authority path
+    references to governance-root-relative form so the corrected validator can admit
+    them. No lifecycle status, REQ/DC selection, or phase content changes beyond path
+    reference correction are in scope.
+
+fixed_verification:
+  - check_id: VPF-POS-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    level: unit
+    pass_condition: discovered_4_tests_pass_parser_unchanged
+  - check_id: VPF-POS-002
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test ./.agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_with_governance_root_resolution
+  - check_id: VPF-POS-003
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+    level: component
+    pass_condition: exit_0_and_stdout_ok_true
+  - check_id: VPF-NEG-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts /tmp/audit-governance-v3-vpf-abs-probe /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+    level: component
+    expected_exit: 1
+    pass_condition: absolute_authority_path_rejected_with_ERR_PATH_GUARD
+  - check_id: VPF-NEG-002
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts /tmp/audit-governance-v3-vpf-drift-probe /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+    level: component
+    expected_exit: 1
+    pass_condition: canonical_hash_drift_rejected_with_ERR_APPROVAL_BINDING
+  - check_id: VPF-NEG-003
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts /tmp/audit-governance-v3-vpf-escape-probe /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+    level: component
+    expected_exit: 1
+    pass_condition: governance_root_escape_rejected_with_ERR_PATH_GUARD
+  - check_id: VPF-TYPECHECK
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run typecheck
+    level: component
+    pass_condition: exit_0
+  - check_id: VPF-PARSER-CALLERS
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && codegraph sync && codegraph callers parseAuditGovernanceV3Document
+    level: static-architecture
+    pass_condition: validator_remains_a_caller_and_parser_unchanged
+  - check_id: VPF-SCOPE-DIFF
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && git status --porcelain
+    level: static
+    pass_condition: only_the_seven_allowlist_paths_changed_since_vpf_pre_change_capture
+
+failure_convergence:
+  any_named_test_absent_or_failed: BLOCKED
+  formal_plan_set_still_not_admitted: BLOCKED
+  parser_or_schema_registry_changed: BLOCKED
+  guard_weakened_or_absolute_path_accepted: BLOCKED
+  scope_or_hash_drift: BLOCKED
+  model_explanation_can_override: false
+
+prohibited_effects:
+  - phase_accept
+  - audit_report_write
+  - latest_pointer_write
+  - compatibility_entry
+  - generic_bypass
+  - second_genesis_attempt
+  - shared_parser_code_change
+
+rollback:
+  on_block: >-
+    Stop. Preserve the validator and probes as BLOCKED evidence. Revert only the seven
+    allowlist writes; never delete bootstrap artifacts, never overwrite an approval
+    document, and never publish a report or LATEST pointer.
+  convergence: BLOCKED
+
+new_pre_change_capture:
+  required: true
+  required_after: exact_vpf_scope_lock_hash_has_HUMAN_USER_approval
+  required_before: any_vpf_write
+  must_bind: [this_vpf_scope_lock, vpf_scope_approval, current_hashes_of_all_seven_allowlist_paths, current_worktree_git_status, work_one_clean_status]
+  historical_capture_reuse_allowed: false
+
+next_required_transition:
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-validator-path-fix-approval.json
+  then_required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-validator-path-fix-pre-change-capture.yaml
+  no_implementation_before_both_artifacts: true

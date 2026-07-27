@@ -87,4 +87,4 @@ Use explicit markers:
 Use TestContainers only when real containerized dependencies are required.
 > 完整验证层级定义（含 component/runtime-smoke/live-LLM-E2E）详见 AGENTS.md §4.3。
 
-11. For `boundary-contract/v1` audits, report the mechanical precheck state separately from the model decision. Required order: frozen contract → case evidence → `audit-boundary-precheck` → `MODEL_REVIEW` → `validate-audit`. A `BLOCKED` matrix or nonzero validator is never overridable by model prose.
+11. For `boundary-contract/v1` audits（**2026-07-28 更新**：v1 已迁移至 `audit-boundary-matrix/v3`），report the mechanical precheck state separately from the model decision. Required order: frozen contract → case evidence → `audit-boundary-precheck` → `MODEL_REVIEW` → `validate-audit`. A `BLOCKED` matrix or nonzero validator is never overridable by model prose.

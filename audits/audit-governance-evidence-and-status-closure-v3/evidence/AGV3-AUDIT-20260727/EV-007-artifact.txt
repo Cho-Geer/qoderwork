@@ -1,0 +1,22 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+.agents/skills/plan-audit-archiver/scripts/__tests__/finalize-audit.test.ts:
+(fail) publishes a hash-bound LATEST pointer only after a valid audit [1.11ms]
+  ^ this test timed out after 1ms.
+(pass) does not publish when the audit validator fails [0.37ms]
+(pass) does not overwrite an existing LATEST pointer [0.37ms]
+(pass) published LATEST pointer parses as audit-governance-latest/v3::latest-pointer and binds report sha256 [0.36ms]
+(pass) produced report parses as audit-governance-report/v3::audit-report [0.24ms]
+(pass) failure-mutation matrix: every mutation blocks publication and preserves any prior pointer [0.45ms]
+(pass) helper builds a parseable v3 latest-pointer document [0.05ms]
+
+ 6 pass
+ 1 fail
+ 18 expect() calls
+Ran 7 tests across 1 file. [26.00ms]
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

@@ -1,0 +1,94 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-receipt
+receipt_id: AGV3-GENESIS-BOOTSTRAP-REPLACEMENT-PRECHANGE-20260726
+receipt_kind: replacement-pre-change-capture
+document_status: CAPTURED
+immutable: true
+created_at: '2026-07-26T11:41:07Z'
+
+authority_binding:
+  replacement_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-replacement.yaml
+    sha256: 828a01c747cb7fe12f857d97726d46cf7603a528b89b573050c7b048ec81dd89
+  replacement_scope_approval:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-replacement-approval.json
+    sha256: 53e617784329a3ca2829e543cb9ad7a36d0a4012a26e2c68bd6fcb272594ee7f
+    decision: APPROVED
+    approved_by: HUMAN_USER
+  prior_pre_change_capture:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-pre-change-capture.yaml
+    sha256: 860ac2b7cca833d7bc11c29a1352c150979d14ced447c4f13f8fd675a838b5d2
+    reusable_for_this_scope: false
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  work_one_repository_root: /home/zhaoge/workspace/opencode/work-one
+  work_one_head: 64df828d56611ac121baccfaf666f147980aec85
+  work_one_status: CLEAN
+  pre_capture_git_status_canonical_json: |-
+    [{"path":"logs/INDEX.md","status":"MODIFIED"},{"path":"audits/audit-governance-evidence-and-status-closure-v3/","status":"UNTRACKED"},{"path":"blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md","status":"UNTRACKED"},{"path":"logs/2026-07-26-audit-governance-v3-bootstrap-contract.md","status":"UNTRACKED"},{"path":"logs/2026-07-26-audit-governance-v3-bootstrap-scope-submission.md","status":"UNTRACKED"},{"path":"logs/2026-07-26-audit-governance-v3-conformance-gate.md","status":"UNTRACKED"},{"path":"logs/2026-07-26-audit-governance-v3-rebaseline.md","status":"UNTRACKED"},{"path":"plans/audit-governance-evidence-and-status-closure-v3/","status":"UNTRACKED"}]
+  pre_capture_git_status_canonical_json_sha256: 1de437c35a983833e59566bcf7fc99506b60a070c92acf8355f40dd8474e0043
+
+seven_path_target_baseline:
+  - path: scripts/lib/audit-governance-schema-v3.ts
+    observed: NOT_FOUND
+  - path: scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    observed: NOT_FOUND
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    sha256: c1622ad6efdef62d84dce41e2904129582aba5c3f12ee9f87a8764125e0a176c
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    sha256: fb68ec6358c9f0e70330a14c75ea0c61a33feb7d6cea8fe8b622ec67eb06d207
+  - path: .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    sha256: 7cef84557cb4e6e48640f89a5b5273f3b896fdefc0dbd2e217b3986bd19e99d2
+  - path: logs/2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md
+    observed: NOT_FOUND
+  - path: logs/INDEX.md
+    sha256: 017e673b80aa386e739314ba435c7c940f4a18013715b6949b7acc69c5c66aaa
+
+execution:
+  observed:
+    - check_id: RPRE-001
+      command: sha256sum approved_replacement_scope_lock
+      result: FOUND
+      value: 828a01c747cb7fe12f857d97726d46cf7603a528b89b573050c7b048ec81dd89
+    - check_id: RPRE-002
+      command: git status --porcelain filtered_for_code_and_test_extensions
+      result: NOT_FOUND
+      value: no_changed_or_untracked_ts_tsx_js_mjs_cjs_paths
+    - check_id: RPRE-003
+      command: git -C work-one status --porcelain
+      result: FOUND
+      value: CLEAN
+    - check_id: RPRE-004
+      command: sha256sum_each_seven_path_target
+      result: FOUND
+      value: exact_target_baseline_recorded
+  domain_observation:
+    bootstrap_state: HUMAN_APPROVED
+    implementation_state: NOT_STARTED
+    code_or_test_change: NOT_FOUND
+    implementation_log: NOT_FOUND
+    phase_accept: NOT_FOUND
+    audit_report: NOT_FOUND
+    latest_pointer: NOT_FOUND
+
+transition_guard:
+  capture_does_not_start_implementation: true
+  next_transition: HUMAN_APPROVED->IMPLEMENTING
+  allowed_only_when:
+    - replacement_scope_lock_hash_still_matches
+    - replacement_scope_approval_hash_still_matches
+    - all_seven_paths_match_this_baseline_before_the_first_write
+    - no_out_of_scope_code_or_test_change_exists
+  implementation_boundary:
+    allowed_paths_only:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+      - .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+      - logs/2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md
+      - logs/INDEX.md
+    prohibited_effects: [phase_accept, audit_report_write, latest_pointer_write, compatibility_entry, generic_bypass]
+  failure_convergence: BLOCKED

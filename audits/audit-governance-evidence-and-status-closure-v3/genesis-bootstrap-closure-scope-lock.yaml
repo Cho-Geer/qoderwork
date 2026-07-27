@@ -1,0 +1,180 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-scope-lock
+scope_lock_id: AGV3-GENESIS-BOOTSTRAP-CLOSURE-20260726
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+created_at: '2026-07-26T13:30:00Z'
+
+purpose: >-
+  Freeze the one-time Stage G closure work: posthoc v3 validation of every bootstrap
+  artifact by the new shared v3 parser, admission of one fresh formal v3 PLAN_SET, and
+  the admission state transition to CLOSED. This scope lock is not a PLAN_SET, not a
+  phase scope lock, not a phase ACCEPT, not an audit report, and not a LATEST pointer.
+  It authorizes only the closure writes listed in the effective allowlist below.
+
+closure_contract:
+  bootstrap_admission:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-admission.yaml
+    current_document_status: DRAFT
+    required_state_machine: DRAFT->HUMAN_APPROVED->IMPLEMENTING->POSTHOC_V3_VALIDATED->CLOSED
+    closure_target_status: CLOSED
+    closure_rule: >-
+      CLOSED is reachable only after the new shared v3 parser posthoc-validates every
+      bootstrap artifact and the v3 PLAN_SET admission command admits one fresh formal
+      v3 PLAN_SET. CLOSED is not ACCEPT, publishes no report or LATEST pointer, and is
+      not reusable as approval, waiver, or compatibility input.
+  replaced_repair_scopes:
+    repair_v4_scope_lock:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4.yaml
+      sha256: 99040763bd67628959c7a73e8da811507d0d592509866eec7a56655c65f3a908
+      effect: implementation_already_completed_under_repair_v4
+    repair_v4_approval:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4-approval.json
+      sha256: dfef79ad15694ca675a00e0e68d3a2ef2dafb5c9609f41aa37fe9deab6c663f3
+      decision: APPROVED
+      approved_by: HUMAN_USER
+    repair_v4_pre_change_capture:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4-pre-change-capture.yaml
+      sha256: 81604ccac7e8315fa905b9b013b395ee1b27655c6843ddfb7feaed7029003d26
+      effect: historical_only
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  approval_decision:
+    path: audits/audit-governance-evidence-and-status-closure-v3/approval-decision-bootstrap-amendment.json
+    sha256: d6b35ae702648a488402a8b62f1327aa0c115681074ee947653080c189809350
+    decision: APPROVED
+    approved_by: HUMAN_USER
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  repository_root: /home/zhaoge/workspace/opencode/work-one
+  repository_head: 64df828d56611ac121baccfaf666f147980aec85
+  repository_status_at_design: CLEAN
+  recheck_required_before_capture: true
+
+codegraph_impact:
+  command: codegraph callers parseAuditGovernanceV3Document
+  shared_function: parseAuditGovernanceV3Document
+  callers:
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts:44
+    - scripts/lib/__tests__/audit-governance-schema-v3.test.ts:1
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts:1
+  closure_effect: >-
+    Closure writes do not modify the shared parser or the validator. They only add
+    artifacts that the existing parser and validator consume. No shared-function code
+    change is in scope; caller tests remain the regression guard.
+
+effective_allowlist:
+  added_paths:
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/01-phase-surface-conformance.md
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/99-final-verification.md
+    - audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-receipt.yaml
+    - logs/2026-07-26-audit-governance-v3-genesis-bootstrap-closure.md
+  modified_paths:
+    - audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-admission.yaml
+    - logs/INDEX.md
+  exact_path_count: 7
+  other_paths_allowed: false
+  parser_and_validator_writable: false
+
+formal_plan_set_contract:
+  directory: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set
+  index_requirements:
+    plan_mode: PLAN_SET
+    schema_version: audit-plan-set/v3
+    document_kind: plan-set-index
+    status: NOT_STARTED
+    provenance_level: v3-required
+    canonical_binding: exact_path_and_sha256_of_canonical_contract
+    approval_binding: exact_path_and_sha256_of_approval_decision_bootstrap_amendment
+  phase_graph:
+    first_executable_phase: PHASE-01 surface and conformance infrastructure
+    rule: >-
+      The formal PLAN_SET declares the A-D phase graph only. It authorizes no code
+      write. Each phase requires its own approved v3 phase scope lock before any write.
+  must_not_contain: [pre_v3_profile, pre_v3_plan_path, compatibility_entry, generic_bypass, phase_accept, report_publication, latest_pointer]
+
+fixed_verification:
+  - check_id: CLOS-POS-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    level: unit
+    pass_condition: discovered_4_tests_pass
+  - check_id: CLOS-POS-002
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test ./.agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    level: component
+    pass_condition: discovered_5_named_tests_pass
+  - check_id: CLOS-POS-003
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set
+    level: component
+    pass_condition: exit_0_and_stdout_ok_true
+  - check_id: CLOS-POSTHOC-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun -e 'import("./scripts/lib/audit-governance-schema-v3.ts").then(async (m) => { const Y = Bun.YAML; const fs = await import("node:fs"); const files = ["audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-admission.yaml","audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4.yaml","audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4-pre-change-capture.yaml"]; for (const f of files) { const r = m.parseAuditGovernanceV3Document(Y.parse(fs.readFileSync(f,"utf8"))); if (!r.ok) { console.error("FAIL", f, r.error); process.exit(1);} console.log("OK", f, r.value.document_kind);} })'
+    level: component
+    pass_condition: every_bootstrap_artifact_parses_under_its_exact_schema_pair
+  - check_id: CLOS-NEG-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts /tmp/audit-governance-v3-closure-nonv3-probe
+    level: component
+    expected_exit: 1
+    pass_condition: non_v3_input_rejected_with_ERR_PLAN_SCHEMA_UNSUPPORTED
+  - check_id: CLOS-NEG-002
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts /tmp/audit-governance-v3-closure-drift-probe
+    level: component
+    expected_exit: 1
+    pass_condition: canonical_hash_drift_rejected_with_ERR_APPROVAL_BINDING
+  - check_id: CLOS-NEG-003
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && rg -n 'legacy-exempt|boundary-contract/v1|pre-v3-profile' plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-receipt.yaml
+    level: static
+    expected_exit: 1
+    pass_condition: no_pre_v3_or_compatibility_entry_in_closure_artifacts
+  - check_id: CLOS-TYPECHECK
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run typecheck
+    level: component
+    pass_condition: exit_0
+  - check_id: CLOS-SCOPE-DIFF
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && git status --porcelain
+    level: static
+    pass_condition: only_the_seven_allowlist_paths_changed_since_closure_pre_change_capture
+
+failure_convergence:
+  any_named_test_absent_or_failed: BLOCKED
+  formal_plan_set_not_admitted: BLOCKED
+  posthoc_parser_rejects_any_bootstrap_artifact: BLOCKED
+  admission_state_not_CLOSED_after_posthoc: BLOCKED
+  scope_or_hash_drift: BLOCKED
+  publication_side_effect_observed: BLOCKED
+  model_explanation_can_override: false
+
+prohibited_effects:
+  - phase_accept
+  - audit_report_write
+  - latest_pointer_write
+  - compatibility_entry
+  - generic_bypass
+  - second_genesis_attempt
+  - parser_or_validator_code_change
+
+rollback:
+  on_block: >-
+    Stop. Preserve the closure receipt and probes as BLOCKED evidence. Revert only the
+    closure allowlist writes; never delete bootstrap artifacts, never overwrite an
+    approval document, and never publish a report or LATEST pointer.
+  convergence: BLOCKED
+
+new_pre_change_capture:
+  required: true
+  required_after: exact_closure_scope_lock_hash_has_HUMAN_USER_approval
+  required_before: any_closure_write
+  must_bind: [this_closure_scope_lock, closure_scope_approval, current_hashes_of_all_seven_allowlist_paths, current_worktree_git_status, work_one_clean_status]
+  historical_capture_reuse_allowed: false
+
+next_required_transition:
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-approval.json
+  then_required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-pre-change-capture.yaml
+  no_implementation_before_both_artifacts: true

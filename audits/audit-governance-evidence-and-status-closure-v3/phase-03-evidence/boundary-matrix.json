@@ -1,0 +1,127 @@
+{
+  "schema_version": "audit-boundary-matrix/v3",
+  "document_kind": "boundary-matrix",
+  "status": "READY_FOR_LLM_REVIEW",
+  "projection_path": "/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3/audits/audit-governance-evidence-and-status-closure-v3/phase-03-evidence/projection.json",
+  "projection_sha256": "2eff82f5d6b10b39c295c5cc7e4a09b3b4eb0bc6cf959e7759cb39c53170bf42",
+  "rows": [
+    {
+      "requirement_id": "REQ-003",
+      "decision_case_id": "DC-005",
+      "expected_result": "SUCCESS",
+      "expected_error_code": null,
+      "fixture_id": "FX-005",
+      "oracle_id": "ORACLE-005",
+      "must_not_happen": [
+        "future_scope_hash_in_canonical"
+      ],
+      "receipt_path": "receipt-DC-005.json",
+      "receipt_sha256": "ce95043856eef977afe655740adbc18a419858b30006e3c1169730ca193abda7",
+      "observed_execution": "PASS",
+      "observed_domain_result": "SUCCESS",
+      "observed_domain_error_code": null,
+      "forbidden_side_effects_observed": [
+        "future_scope_hash_in_canonical"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    },
+    {
+      "requirement_id": "REQ-003",
+      "decision_case_id": "DC-006",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_CASE_SELECTION",
+      "fixture_id": "FX-006",
+      "oracle_id": "ORACLE-006",
+      "must_not_happen": [
+        "receipt_acceptance",
+        "model_review",
+        "audit_publication"
+      ],
+      "receipt_path": "receipt-DC-006.json",
+      "receipt_sha256": "177878fef3daf58279b07bf10e3a2e5195c6143a83d92df56af96e5c4a13aee5",
+      "observed_execution": "FAIL",
+      "observed_domain_result": "ERROR",
+      "observed_domain_error_code": "ERR_CASE_SELECTION",
+      "forbidden_side_effects_observed": [
+        "audit_publication",
+        "model_review",
+        "receipt_acceptance"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    },
+    {
+      "requirement_id": "REQ-004",
+      "decision_case_id": "DC-007",
+      "expected_result": "SUCCESS",
+      "expected_error_code": null,
+      "fixture_id": "FX-007",
+      "oracle_id": "ORACLE-007",
+      "must_not_happen": [
+        "directory_discovery_as_evidence"
+      ],
+      "receipt_path": "receipt-DC-007.json",
+      "receipt_sha256": "744c1ffb880978da09d47e4c8e3e66f5269c2d04f33900e0a0af4b01a76de9b0",
+      "observed_execution": "PASS",
+      "observed_domain_result": "SUCCESS",
+      "observed_domain_error_code": null,
+      "forbidden_side_effects_observed": [
+        "directory_discovery_as_evidence"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    },
+    {
+      "requirement_id": "REQ-004",
+      "decision_case_id": "DC-008",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_RECEIPT_PATH",
+      "fixture_id": "FX-008",
+      "oracle_id": "ORACLE-008",
+      "must_not_happen": [
+        "model_review",
+        "audit_acceptance",
+        "report_publication"
+      ],
+      "receipt_path": "receipt-DC-008.json",
+      "receipt_sha256": "5de2de10a418e6ca73f8d1c60c8cd8bc55b05b8b223ce37f9389adeccf7a32a8",
+      "observed_execution": "FAIL",
+      "observed_domain_result": "ERROR",
+      "observed_domain_error_code": "ERR_RECEIPT_PATH",
+      "forbidden_side_effects_observed": [
+        "audit_acceptance",
+        "model_review",
+        "report_publication"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    },
+    {
+      "requirement_id": "REQ-004",
+      "decision_case_id": "DC-009",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_RECEIPT_NOT_FOUND",
+      "fixture_id": "FX-009",
+      "oracle_id": "ORACLE-009",
+      "must_not_happen": [
+        "model_review",
+        "audit_acceptance",
+        "report_publication"
+      ],
+      "receipt_path": "receipt-DC-009.json",
+      "receipt_sha256": "8a9f1e93e582c04610bb0d80782bcfa832ef0f7c46d7d1f3d09d29c5bbee058c",
+      "observed_execution": "FAIL",
+      "observed_domain_result": "ERROR",
+      "observed_domain_error_code": "ERR_RECEIPT_NOT_FOUND",
+      "forbidden_side_effects_observed": [
+        "audit_acceptance",
+        "model_review",
+        "report_publication"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    }
+  ],
+  "blockers": []
+}

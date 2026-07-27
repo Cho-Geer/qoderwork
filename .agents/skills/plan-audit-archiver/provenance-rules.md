@@ -5,18 +5,20 @@
 
 本文件规则适用于 QoderWork 工作区内所有 plan 的所有 phase 实施与审计，无例外。规则采用四要素结构：约束主体 + 触发条件 + 违反判定 + 违反后果。强约束关键词遵循 RFC 2119 语义：必须（MUST）、禁止（MUST NOT）、当且仅当（IF AND ONLY IF）、不得（MUST NOT）。
 
+**2026-07-28 v3 升级注**：原 `v2.1-required` 已升级为 `v3-required`，原 `boundary-contract/v1` 已迁移至 `audit-boundary-matrix/v3`（详见 `phase-04-scope-lock.yaml`、`phase-05-scope-lock.yaml` 的 `v3-required` 声明）。本文件中 `v2.1` 字面保留作为历史引用，但实际生效集合为 `{v3-required, component-only}`。
+
 ## 规则 P-01：Provenance 级别声明（前置条件）
 
 - **约束主体**：每个 plan 的索引文件（`00-plan-index.md` 或等价文件）
 - **触发条件**：plan 创建时
-- **规则**：plan 索引必须声明 `provenance_level`，取值限定为 `v2.1-required` 或 `component-only`，二者必居其一。未声明的 plan，实施禁止开始。
-- **违反判定**：plan 索引中无 `provenance_level` 字段，或取值不在 `{v2.1-required, component-only}` 集合内
+- **规则**：plan 索引必须声明 `provenance_level`，取值限定为 `v3-required` 或 `component-only`，二者必居其一。未声明的 plan，实施禁止开始。
+- **违反判定**：plan 索引中无 `provenance_level` 字段，或取值不在 `{v3-required, component-only}` 集合内
 - **违反后果**：实施者必须暂停，补声明后方可继续
 
 ## 规则 P-02：Pre-Implementation Freeze Gate（实施前冻结）
 
 - **约束主体**：实施者（任何开始 phase 实施的 agent）
-- **触发条件**：`provenance_level = v2.1-required` 的 plan 的任何 phase，在实施代码写入之前
+- **触发条件**：`provenance_level = v3-required` 的 plan 的任何 phase，在实施代码写入之前
 - **规则**：实施者必须按以下顺序完成 Freeze Gate，且禁止跳步：
   1. 审计者填写 `scope-lock.json`（覆盖本 phase 的 REQ/Check Registry/oracle）
   2. Human reviewer 批准 `scope-lock.json`（agent 不得自批准）
@@ -28,7 +30,7 @@
 ## 规则 P-02A：依赖 phase progression admission
 
 - **约束主体**：实施者与 Freeze Gate 审批前检查者
-- **触发条件**：`provenance_level = v2.1-required` 的 plan 准备为下一个 phase 填写或提交 `scope-lock.json` 进行 human approval
+- **触发条件**：`provenance_level = v3-required` 的 plan 准备为下一个 phase 填写或提交 `scope-lock.json` 进行 human approval
 - **规则**：必须先运行 `validate-phase-progression.ts <plan-dir> <next-phase-id>`。validator 必须确认所有直接与传递依赖 phase 的签署 `ACCEPT` audit、phase ID、可读 progression receipt 与其哈希、completion checkbox、phase `Progression status`、manifest `Status`、顶层派生 `Status` 以及 next phase 的 `Starting state and dependency` 一致。exit 0 是提交 human approval 的前置条件。
 - **违反判定**：任一状态缺失/非法/重复、receipt 缺失或哈希不匹配、audit 非 `ACCEPT`、completion gate 与状态不一致、依赖未 `ACCEPTED` 或顶层状态无法由 manifest 派生
 - **违反后果**：Freeze Gate 判为 `INVALID`，禁止进入 human approval；不得使用 `--force`、手工 `ACCEPTED` 或只更新 manifest 的旁路。`pre-flight-enforcement` 只能约束本次步骤顺序，不替代该 admission validator 或写入跨 phase 状态。
@@ -36,12 +38,12 @@
 ## 规则 P-03：工具链强制（审计执行）
 
 - **约束主体**：审计者（使用 plan-audit-archiver skill 的 agent）
-- **触发条件**：`provenance_level = v2.1-required` 的 plan 的审计执行
+- **触发条件**：`provenance_level = v3-required` 的 plan 的审计执行
 - **规则**：
   1. 每个 `[VERIFICATION]` 步骤必须调用 `capture-state.ts` 生成 immutable receipt（EV-NNN），receipt 必须绑定 `audit_id`/`requirement_id`/`polarity`/`oracle_id`/`fixture_id`/`command`/`exit_code`/`observed_result`/`artifact_hashes`
   2. `Verified-by:` 文字证据行仅作为 receipt 的人类可读摘要，禁止替代 receipt
   3. 审计报告签署前必须运行 `validate-audit.ts`，`exit 0` 是签署 `ACCEPT` 或 `REWORK` 的必要条件
-- **违反判定**：审计报告声明 v2.1 ACCEPT 但无对应 EV-NNN receipt；或 `validate-audit.ts` 未运行；或 `validate-audit.ts` exit 非 0
+- **违反判定**：审计报告声明 v3 ACCEPT 但无对应 EV-NNN receipt；或 `validate-audit.ts` 未运行；或 `validate-audit.ts` exit 非 0
 - **违反后果**：审计报告不可签署；已签署的判定为 `INVALID`
 
 ## 规则 P-04：BLOCKED 继承（审计连续性）
@@ -58,7 +60,7 @@
 ## 规则 P-05：降级声明（标准一致性）
 
 - **约束主体**：审计者
-- **触发条件**：审计者选择的证据标准低于 plan 声明的 `provenance_level`（如 plan 声明 `v2.1-required` 但审计者用 component 级证据签署）
+- **触发条件**：审计者选择的证据标准低于 plan 声明的 `provenance_level`（如 plan 声明 `v3-required` 但审计者用 component 级证据签署）
 - **规则**：审计者必须在审计报告 §1 开头显式声明降级，声明内容必须包含以下 4 项，缺一不可：
   1. 降级理由（具体、可验证）
   2. 降级后的证据上限
@@ -71,8 +73,8 @@
 
 - **约束主体**：审计者
 - **触发条件**：`provenance_level = component-only` 的 plan 的审计
-- **规则**：审计报告必须在 §1 显式标注「证据上限：component」，且禁止签署 v2.1 正式 ACCEPT
-- **违反判定**：component-only plan 的审计报告签署 v2.1 ACCEPT，或未标注证据上限
+- **规则**：审计报告必须在 §1 显式标注「证据上限：component」，且禁止签署 v3 正式 ACCEPT
+- **违反判定**：component-only plan 的审计报告签署 v3 ACCEPT，或未标注证据上限
 - **违反后果**：审计报告判定为 `INVALID`
 
 ## 规则 P-07：repository_root 干净锚点（worktree 感知）

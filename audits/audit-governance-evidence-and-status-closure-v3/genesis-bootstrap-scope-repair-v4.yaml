@@ -1,0 +1,136 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-scope-lock
+scope_lock_id: AGV3-GENESIS-BOOTSTRAP-SCOPE-REPAIR-V4-20260726
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+created_at: '2026-07-26T12:37:00Z'
+
+repair_contract:
+  replaces_for_future_implementation_only:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v3.yaml
+    sha256: 74b61e3e587a684fd507375bdd5760aebab9f0aae3b57a305d3d6ef38ecbb1d2
+    prior_approval:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v3-approval.json
+      sha256: 690c29a66af5cedea45f7a8c8a2dc3c46080701fcc0ad5c6976a0495abd45ffd
+      effect: historical_only_for_typecheck_blocked_scope
+    prior_pre_change_capture:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v3-pre-change-capture.yaml
+      sha256: 37c89c5728b565b5a70df2305d5a04703a2d2e79388977f8ffdbc90d3a6f970c
+      effect: not_reusable_for_this_repair
+  only_effective_differences_from_replaced_scope:
+    - fix_strict_undefined_access_in_validate_plan_component_test
+    - replace_worktree_fragile_static_B1_handler_import_with_explicit_OPENCODE_ROOT_dynamic_load
+    - add_pure_B1_module_path_resolution_unit_test
+  approval:
+    status: PENDING
+    required_from: HUMAN_USER
+    fresh_approval_required: true
+    no_further_write_before: exact_repair_v4_hash_has_HUMAN_USER_approval_and_repair_v4_pre_change_capture
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  inherited_repair_scope:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v3.yaml
+    sha256: 74b61e3e587a684fd507375bdd5760aebab9f0aae3b57a305d3d6ef38ecbb1d2
+    preserves: [corrected_17_pair_schema_registry, GPOS-001, GPOS-002, GNEG-001, GNEG-002, GNEG-003, GNEG-004, GNEG-005, GNEG-006, GNEG-007, GNEG-008, zero_test_execution_block]
+
+typecheck_root_cause:
+  in_scope:
+    path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    diagnostic: TS18048_result_stdout_and_stderr_possibly_undefined
+    required_fix: null_safe_stdout_and_stderr_observation_without_changing_assertion_semantics
+  worktree_sensitive:
+    path: scripts/_b1_live.ts
+    diagnostic: TS2307_static_relative_import_resolves_to_nonexistent_qoderwork_opencode_path_inside_nested_worktree
+    verified_handler:
+      path: /home/zhaoge/workspace/opencode/work-one/.opencode/plugin-handlers/system/skill-summary.ts
+      sha256: 48c863e9ad3b063282a54676ec12d2f24d488d99239083d0d6af2d9c962a9b51
+    required_fix: explicit_OPENCODE_ROOT_dynamic_module_load_with_no_static_worktree_relative_handler_import
+
+effective_allowlist:
+  inherited_paths:
+    - scripts/lib/audit-governance-schema-v3.ts
+    - scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    - .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    - logs/2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md
+    - logs/INDEX.md
+  added_paths:
+    - scripts/_b1_live.ts
+    - scripts/__tests__/_b1_live.test.ts
+  exact_path_count: 9
+  other_paths_allowed: false
+
+fixed_B1_contract:
+  exported_helper: resolveSkillSummaryModulePath
+  input: explicit_absolute_opencode_root
+  output: absolute_path_under_input_root_to_.opencode/plugin-handlers/system/skill-summary.ts
+  dynamic_load: main_loads_the_returned_path_only_after_OPENCODE_ROOT_is_present
+  static_import_forbidden: ../../opencode/work-one/.opencode/plugin-handlers/system/skill-summary.ts
+  failure_contract:
+    missing_OPENCODE_ROOT: explicit_error_before_handler_execution
+    relative_or_empty_root: explicit_error_before_dynamic_import
+    module_load_failure: propagated_nonzero_failure
+  must_not_happen: [static_worktree_relative_import, implicit_main_worktree_path, handler_execution_before_root_validation]
+
+fixed_verification:
+  - check_id: B1_PATH_UNIT
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/__tests__/_b1_live.test.ts
+    level: unit
+    required_cases:
+      - explicit_work_one_root_resolves_exact_handler_path
+      - empty_or_relative_root_rejected_before_dynamic_import
+      - resolved_path_has_no_worktree_relative_dependency
+    pass_condition: test_file_discovered_and_all_named_cases_pass
+  - check_id: GPOS-002_GNEG-004_TO_GNEG-008_UNIT
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    level: unit
+    pass_condition: discovered_4_tests_pass
+  - check_id: GPOS-001_GNEG-001_TO_GNEG-004_COMPONENT
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test ./.agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    level: component
+    pass_condition: discovered_5_named_tests_pass
+  - check_id: GLOBAL_TYPECHECK
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run typecheck
+    level: component
+    pass_condition: exit_0
+  - check_id: SHARED_PARSER_CALL_EDGE
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && codegraph sync && codegraph callers parseAuditGovernanceV3Document
+    level: static-architecture
+    pass_condition: validator_is_a_caller
+  - check_id: OLD_ENTRY_ZERO
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && rg -n 'legacy-exempt|boundary-contract/v1' scripts/lib/audit-governance-schema-v3.ts scripts/lib/__tests__/audit-governance-schema-v3.test.ts .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    level: static-architecture
+    expected_exit: 1
+  - check_id: B1_STATIC_IMPORT_ZERO
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && rg -n 'from "../../opencode/work-one/.opencode/plugin-handlers/system/skill-summary.ts"' scripts/_b1_live.ts
+    level: static
+    expected_exit: 1
+  - check_id: SCOPE_DIFF
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && git diff --check
+    level: static
+    pass_condition: exit_0_and_only_nine_allowed_paths_changed_since_repair_v4_capture
+
+failure_convergence:
+  any_named_test_absent_or_failed: BLOCKED
+  global_typecheck_nonzero: BLOCKED
+  B1_static_import_present: BLOCKED
+  scope_or_hash_drift: BLOCKED
+  model_explanation_can_override: false
+
+new_pre_change_capture:
+  required: true
+  required_after: exact_repair_v4_hash_has_HUMAN_USER_approval
+  required_before: any_further_write
+  must_bind: [this_repair_scope_lock, repair_v4_scope_approval, current_hashes_of_all_in_scope_unaccepted_paths, all_nine_effective_allowlist_paths]
+  historical_capture_reuse_allowed: false
+
+next_required_transition:
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4-approval.json
+  then_required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4-pre-change-capture.yaml
+  no_implementation_before_both_artifacts: true

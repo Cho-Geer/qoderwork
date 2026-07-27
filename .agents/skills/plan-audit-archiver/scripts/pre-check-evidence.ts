@@ -3,6 +3,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
+import { parseAuditGovernanceV3Document } from "../../../../scripts/lib/audit-governance-schema-v3.ts";
 
 type JsonObject = Record<string, unknown>;
 const EVIDENCE_LEVELS = new Map([
@@ -80,8 +81,13 @@ export function precheckContract(contractPath: string): { issues: string[]; warn
     if (receipt.id !== id || receipt.audit_id !== contract.audit_id || receipt.generation !== contract.generation) {
       issues.push("EVIDENCE_RECEIPT_AUDIT_MISMATCH");
     }
-    const { path: _path, sha256: _hash, audit_id: _audit, generation: _generation, ...ledgerPayload } = entry;
-    const { schema_version: _schema, audit_id: _receiptAudit, generation: _receiptGeneration, ...receiptPayload } = receipt;
+    const receiptParse = parseAuditGovernanceV3Document(receipt);
+    if (!receiptParse.ok) {
+      issues.push("EVIDENCE_RECEIPT_SCHEMA_INVALID");
+      continue;
+    }
+    const { path: _path, sha256: _hash, schema_version: _ledgerSchema, audit_id: _audit, generation: _generation, ...ledgerPayload } = entry;
+    const { schema_version: _omitSchema, audit_id: _receiptAudit, generation: _receiptGeneration, ...receiptPayload } = receipt;
     if (JSON.stringify(ledgerPayload) !== JSON.stringify(receiptPayload)) issues.push("EVIDENCE_RECEIPT_PAYLOAD_MISMATCH");
     if (receiptIds.has(id)) issues.push("DUPLICATE_ID");
     receiptIds.add(id);

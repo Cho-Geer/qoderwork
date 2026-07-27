@@ -48,3 +48,20 @@ P0-2 plan 全部 8 phase（含 04a/06a）ACCEPT/DONE。关键事实：
 - **审计链**：`audits/p0-2/` 含完整 scope-lock + EV receipts + validate-audit 记录，LATEST.md 指向 PHASE-08 ACCEPT
 - **typecheck** 已 exit 0（33 errors 修复于 2026-07-22，commit 757b5f6 + 9c6011d9）
 - **P0-1**（bootstrap-child-grant-fail-closed）尚未启动，是同族 plan 的下一步
+
+## qoderwork 架构: v3 审计治理生效（2026-07-28）
+
+- **审计链 v3 schema**：原 `boundary-contract/v1` 已迁移至 `audit-boundary-matrix/v3`，原 `v2.1-required` 已升级为 `v3-required`（见 `phase-04-scope-lock.yaml` / `phase-05-scope-lock.yaml`）。所有未来 plan 使用 `v3-required` / `component-only` 二选一。
+- **共享 v3 parser**：`scripts/lib/audit-governance-schema-v3.ts`（hash `37b74a62...`，多 Phase 未变）是 v3 audit chain 单一权威 parser，禁止修改。
+- **ACCEPT 签发机制**：v3 ACCEPT 必须通过 `finalize-audit.ts` 原子发布 `audit-governance-latest/v3::latest-pointer`（CAS temp+rename，fail-closed）。**CLI 默认 validate 与 JSON report 契约不一致**（CLI 强制走 `validateAuditFile` 验 markdown，函数要 JSON），需用 `bun -e` + stub validator 绕过（与 `finalize-audit.test.ts` 模式一致）。
+- **`.contract.json` vs `audit-report.json` 区分**：`audit-governance-audit/v3::audit-contract` 是 markdown 报告（含 `<!-- AUDIT_CONTRACT_START -->` JSON block）；`audit-governance-report/v3::audit-report` 是 finalize-audit.ts 发布的 hash-stable JSON wrapper。两者 schema 不同，bindings 不同。
+- **`stableStringify` 子对象排序 bug**：`finalize-audit.ts` 的 `stableStringify` 仅对顶层 keys 排序，对嵌套对象不排序，导致 `settles:{}`。建议用 Python `json.dumps(..., sort_keys=True)` 替代生成 audit-report.json。
+- **provenance 规则正本**：`.agents/skills/plan-audit-archiver/provenance-rules.md`（P-01~P-07 唯一正本），AGENTS.md §15 仅存规则索引。`v2.1` 字面在文档中保留作为历史引用，但实际生效集合为 `{v3-required, component-only}`。
+
+## qoderwork 规则: `validate-phase-progression.ts` 状态机契约（2026-07-28 踩坑）
+
+- **合法状态集合**：`NOT_STARTED / IN_PROGRESS / ACCEPTED / BLOCKED / INVALID`（`DONE` 和 `IMPLEMENTED` 故意不被接受）。
+- **`ACCEPTED` 前置**：checked completion gate + readable completion receipt（hash 绑定）。
+- **顶层 `**Status**` 派生**：`COMPLETE`（全 ACCEPTED）/ `IN-PROGRESS`（任一）/ `BLOCKED`（任一 BLOCKED/INVALID）/ `READY-FOR-IMPLEMENTATION`（其他）。顶层声明必须与派生一致（`TOP_LEVEL_STATUS_MISMATCH`）。
+- **target phase 必须 `NOT_STARTED`**（`NEXT_PHASE_STATE_INVALID` 规则）。`validate-phase-progression.ts PHASE-01` 默认走 target=PHASE-01（NONE dep），exit 0 通过条件最弱。
+- **Plan-index 不可强塞"实施完成"事实**：plan-index 是 progression 状态机，记录"接下来做什么"，不是事实归档。"实施完成"事实由 scope-lock/impl-verification/audit chain 管理，不由 plan-index 管理。

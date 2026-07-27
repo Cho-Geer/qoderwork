@@ -1,0 +1,163 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-scope-lock
+scope_lock_id: AGV3-GENESIS-BOOTSTRAP-SCOPE-REPLACEMENT-V2-20260726
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+created_at: '2026-07-26T11:47:10Z'
+
+replacement_contract:
+  replaces_for_future_implementation_only:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-replacement.yaml
+    sha256: 828a01c747cb7fe12f857d97726d46cf7603a528b89b573050c7b048ec81dd89
+    prior_approval:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-replacement-approval.json
+      sha256: 53e617784329a3ca2829e543cb9ad7a36d0a4012a26e2c68bd6fcb272594ee7f
+      effect: historical_only_for_schema_conflicted_scope
+    prior_pre_change_capture:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-replacement-pre-change-capture.yaml
+      sha256: e17ee92dc5831bfe9fc4fb5efa42fa3bfac64802a48fa56e4b88727283f1d388
+      effect: not_reusable_for_this_replacement
+  only_effective_differences_from_replaced_scope:
+    - replace_the_schema_registry_with_the_canonical_schema_family
+  preserved_by_exact_parent_hash:
+    - seven_effective_allowlist_paths
+    - REQ_DC_oracle_mapping
+    - GPOS-001
+    - GPOS-002
+    - GNEG-001
+    - GNEG-002
+    - GNEG-003
+    - GNEG-004
+    - GNEG-005
+    - GNEG-006
+    - GNEG-007
+    - GNEG-008
+    - fixed_verification_commands
+    - failure_convergence
+    - forbidden_effects
+  approval:
+    status: PENDING
+    required_from: HUMAN_USER
+    fresh_approval_required: true
+    no_code_or_test_write_before: exact_v2_hash_has_HUMAN_USER_approval_and_v2_pre_change_capture
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  design_approval_decision:
+    path: audits/audit-governance-evidence-and-status-closure-v3/approval-decision-bootstrap-amendment.json
+    sha256: d6b35ae702648a488402a8b62f1327aa0c115681074ee947653080c189809350
+    decision: APPROVED
+  genesis_admission:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-admission.yaml
+    sha256: 20bf4624e58919f932c00d9ba083954389ba483658001df1da842debc7ce7ff3
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  work_one_repository_root: /home/zhaoge/workspace/opencode/work-one
+  work_one_head: 64df828d56611ac121baccfaf666f147980aec85
+  work_one_status: CLEAN
+  source_code_or_test_change_before_v2: NOT_FOUND
+
+corrected_schema_registry:
+  authority: canonical_contract.schema_family
+  discriminator_rule: schema_version_and_document_kind_must_both_match_exactly
+  exact_known_pairs:
+    - audit-governance/v3::canonical-requirements
+    - audit-phase-projection/v3::phase-projection
+    - audit-evidence-receipt/v3::evidence-receipt
+    - audit-boundary-matrix/v3::boundary-matrix
+    - audit-governance-approval/v3::approval-decision
+    - audit-governance-approval-request/v3::approval-request
+    - audit-scope-lock/v3::phase-scope-lock
+    - audit-plan-set/v3::plan-set-index
+    - audit-phase-progression/v3::phase-progression-receipt
+    - audit-governance-audit/v3::audit-contract
+    - audit-governance-report/v3::audit-report
+    - audit-governance-latest/v3::latest-pointer
+    - audit-governance-surface/v3::governance-surface-manifest
+    - audit-governance-conformance/v3::contract-conformance-report
+    - audit-governance-bootstrap/v3::genesis-bootstrap-admission
+    - audit-governance-bootstrap/v3::genesis-bootstrap-scope-lock
+    - audit-governance-bootstrap/v3::genesis-bootstrap-receipt
+  rejection_contract:
+    unknown_or_mismatched_pair: ERR_SCHEMA_DISCRIMINATOR
+    no_field_shape_inference: true
+    consumer_local_schema_parse: ERR_SHARED_PARSER_REQUIRED
+  correction_evidence:
+    corrected_pairs:
+      - document_kind: approval-request
+        prior_scope_value: audit-governance-approval/v3
+        canonical_value: audit-governance-approval-request/v3
+      - document_kind: audit-contract
+        prior_scope_value: audit-contract/v3
+        canonical_value: audit-governance-audit/v3
+      - document_kind: audit-report
+        prior_scope_value: audit-report/v3
+        canonical_value: audit-governance-report/v3
+      - document_kind: latest-pointer
+        prior_scope_value: audit-latest-pointer/v3
+        canonical_value: audit-governance-latest/v3
+
+effective_allowlist:
+  exact_paths:
+    - scripts/lib/audit-governance-schema-v3.ts
+    - scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    - .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    - logs/2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md
+    - logs/INDEX.md
+  exact_path_count: 7
+  other_paths_allowed: false
+
+unchanged_hard_gates:
+  required_canonical_cases: [DC-001, DC-002, DC-003, DC-004, DC-017, DC-018, DC-019]
+  fixed_positive_check: inherited_GPOS-001_and_GPOS-002
+  fixed_negative_checks: [GNEG-001, GNEG-002, GNEG-003, GNEG-004, GNEG-005, GNEG-006, GNEG-007, GNEG-008]
+  forbidden_effects: [phase_accept, audit_report_write, latest_pointer_write, pre_v3_input, compatibility_entry, generic_bypass]
+  model_explanation_can_override: false
+
+v2_specific_checks:
+  - check_id: V2-001
+    operation: parse_canonical_schema_family_and_compare_all_17_pairs
+    pass: corrected_schema_registry.exact_known_pairs_equals_canonical_schema_family_in_order
+    fail: BLOCKED
+  - check_id: V2-002
+    operation: compare_v2_effective_allowlist_to_replaced_scope
+    pass: exact_same_seven_paths
+    fail: BLOCKED
+  - check_id: V2-003
+    operation: inspect_git_status_for_code_and_test_extensions
+    pass: NOT_FOUND_before_v2_pre_change_capture
+    fail: BLOCKED
+  - check_id: V2-004
+    operation: verify_prior_approval_and_pre_change_capture_hashes
+    pass: historical_records_match_but_are_not_reused
+    fail: BLOCKED
+
+new_pre_change_capture:
+  required: true
+  required_after: exact_v2_hash_has_HUMAN_USER_approval
+  required_before: first_code_test_log_or_index_write
+  must_bind: [this_v2_scope_lock, v2_scope_approval, governance_head, all_seven_effective_allowlist_paths]
+  historical_capture_reuse_allowed: false
+
+prohibited_before_new_capture:
+  - code_write
+  - test_write
+  - implementation_log_write
+  - logs_index_write
+  - phase_accept
+  - audit_report_write
+  - latest_pointer_write
+
+next_required_transition:
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-replacement-v2-approval.json
+  required_fields: [scope_lock_path, scope_lock_sha256, decision, approved_by, approved_at]
+  then_required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-replacement-v2-pre-change-capture.yaml
+  no_implementation_before_both_artifacts: true

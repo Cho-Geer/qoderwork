@@ -1,0 +1,10 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "repository_realpath": "/home/zhaoge/workspace/opencode/work-one",
+  "phase_id": "AGV3-AUDIT-20260727-SCOPE-LOCK",
+  "captured_at": "2026-07-27T15:25:48.110Z",
+  "head": "64df828d56611ac121baccfaf666f147980aec85",
+  "scope_lock_sha256": "02cb460439ef1f5e8183654bfcf8ca0f4bc9079cb7b944eebed9b2dca818ef5b",
+  "status_entries": []
+}

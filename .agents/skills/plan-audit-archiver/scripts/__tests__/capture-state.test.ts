@@ -35,6 +35,8 @@ describe("capture-state", () => {
       phaseId: "LOCK-001",
       capturedAt: "2026-07-19T09:00:00+09:00",
     });
+    expect(clean.schema_version).toBe("audit-evidence-receipt/v3");
+    expect(clean.document_kind).toBe("evidence-receipt");
     expect(clean.status_entries).toEqual([]);
     expect(clean.scope_lock_sha256).toMatch(/^[a-f0-9]{64}$/);
 

@@ -1,0 +1,12 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "approval_id": "AGV3-PHASE-04-APPROVAL-20260727",
+  "phase_id": "PHASE-04",
+  "approved_scope_lock_path": "audits/audit-governance-evidence-and-status-closure-v3/phase-04-scope-lock.yaml",
+  "approved_scope_lock_sha256": "1c5abfab73ace7a8c591991ecd13bf59d19af65389a26525dc974a746844700d",
+  "approver_role": "HUMAN_USER",
+  "approved_at": "2026-07-27T01:05:00Z",
+  "provenance_level": "v3-required",
+  "note": "Frozen approval of exact PHASE-04 scope-lock SHA-256. No implementation may begin before phase-04-pre-change-capture.yaml is written and verified."
+}

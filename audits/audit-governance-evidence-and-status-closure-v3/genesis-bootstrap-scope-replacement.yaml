@@ -1,0 +1,134 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-scope-lock
+scope_lock_id: AGV3-GENESIS-BOOTSTRAP-SCOPE-REPLACEMENT-20260726
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+created_at: '2026-07-26T11:34:54Z'
+
+replacement_contract:
+  replaces_for_future_implementation_only:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-lock.yaml
+    sha256: 98f22e0d2dc3c2e339cbe64787e93d8a354c70e146a87d4fd291c148fec961f6
+    prior_approval:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-approval.json
+      sha256: 04df8701fc7d7c66a2e269746417d7e0371534605eeebeae786a7c304948e9be
+    prior_pre_change_capture:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-pre-change-capture.yaml
+      sha256: 860ac2b7cca833d7bc11c29a1352c150979d14ced447c4f13f8fd675a838b5d2
+      effect: historical_only_not_valid_for_this_replacement
+  inheritance_rule: >-
+    Every authority binding, baseline commit, CodeGraph impact record, canonical
+    REQ/DC/oracle mapping, schema discriminator contract, positive check, eight
+    single-mutation negatives, fixed verification command, failure convergence,
+    and prohibited implementation behavior from the replaced scope lock remains
+    byte-for-byte authoritative by the exact parent hash above. This replacement
+    changes only the effective allowlist stated below.
+  approval:
+    status: PENDING
+    required_from: HUMAN_USER
+    fresh_approval_required: true
+    no_code_or_test_write_before: exact_replacement_hash_has_HUMAN_USER_approval_and_new_pre_change_capture
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  design_approval_decision:
+    path: audits/audit-governance-evidence-and-status-closure-v3/approval-decision-bootstrap-amendment.json
+    sha256: d6b35ae702648a488402a8b62f1327aa0c115681074ee947653080c189809350
+    decision: APPROVED
+  genesis_admission:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-admission.yaml
+    sha256: 20bf4624e58919f932c00d9ba083954389ba483658001df1da842debc7ce7ff3
+    activation_probe: RETAINED_UNSUPPORTED_V3
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  work_one_repository_root: /home/zhaoge/workspace/opencode/work-one
+  work_one_head: 64df828d56611ac121baccfaf666f147980aec85
+  work_one_status: CLEAN
+  codegraph_impact_source: inherited_from_replaced_scope_lock_by_exact_hash
+  source_code_or_test_change_before_replacement: NOT_FOUND
+
+effective_allowlist:
+  inherited_implementation_paths:
+    - path: scripts/lib/audit-governance-schema-v3.ts
+      change: CREATE
+      required_content: strict schema-pair registry, parser, path guard, SHA-256 identity comparator, and evidence-level comparator
+    - path: scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+      change: CREATE
+      required_content: unit coverage for every known discriminator pair and each bootstrap guard mutation
+    - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+      change: MODIFY
+      required_content: v3-only PLAN_SET admission through the shared parser; reject unsupported schema, missing approval, and approval-hash drift before phase admission
+    - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+      change: MODIFY
+      required_content: replace pre-v3 fixtures with v3-only fixtures and cover fixed positive plus single-mutation failures
+    - path: .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+      change: MODIFY
+      required_content: v3-only index, approved decision binding, canonical hash binding, and no compatibility-facing input
+  added_required_governance_paths:
+    - path: logs/2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md
+      change: CREATE
+      required_content: no more than 20 lines; purpose, exact implementation files, fixed commands, observed results, and unresolved findings
+      reason: mandatory code-change log
+    - path: logs/INDEX.md
+      change: MODIFY
+      required_content: add the new implementation log exactly once; update the 2026-07-26 count and Framework/Governance category count
+      reason: mandatory log-index synchronization
+  exact_path_count: 7
+  other_paths_allowed: false
+
+unchanged_hard_gates:
+  required_canonical_cases: [DC-001, DC-002, DC-003, DC-004, DC-017, DC-018, DC-019]
+  fixed_positive_check: inherited_GPOS-001_and_GPOS-002
+  fixed_negative_checks: [GNEG-001, GNEG-002, GNEG-003, GNEG-004, GNEG-005, GNEG-006, GNEG-007, GNEG-008]
+  forbidden_effects: [phase_accept, audit_report_write, latest_pointer_write, pre_v3_input, compatibility_entry, generic_bypass]
+  model_explanation_can_override: false
+  postwrite_requirements: >-
+    The shared parser, v3 PLAN_SET admission, all fixed tests, static architecture
+    checks, independent audit, posthoc bootstrap validation, and a fresh formal v3
+    PLAN_SET remain mandatory. This replacement supplies none of those results.
+
+replacement_specific_checks:
+  - check_id: RPL-001
+    operation: compare_replaced_and_replacement_effective_allowlists
+    pass: exactly_two_added_paths_and_the_original_five_paths_are_identical
+    fail: BLOCKED
+  - check_id: RPL-002
+    operation: hash_replaced_scope_approval_and_pre_change_capture
+    pass: every_historical_binding_matches_its_recorded_SHA-256
+    fail: BLOCKED
+  - check_id: RPL-003
+    operation: inspect_git_status_for_code_and_test_extensions
+    pass: NOT_FOUND_before_new_pre_change_capture
+    fail: BLOCKED
+  - check_id: RPL-004
+    operation: verify_new_log_and_index_after_implementation
+    pass: log_is_nonempty_at_most_20_lines_and_index_lists_it_once
+    fail: BLOCKED
+
+new_pre_change_capture:
+  required: true
+  required_after: exact_replacement_hash_has_HUMAN_USER_approval
+  required_before: first_code_or_test_write
+  must_bind: [this_replacement_scope_lock, replacement_scope_approval, governance_head, all_seven_effective_allowlist_paths]
+  historical_capture_reuse_allowed: false
+
+prohibited_before_new_capture:
+  - code_write
+  - test_write
+  - implementation_log_write
+  - logs_index_write
+  - phase_accept
+  - audit_report_write
+  - latest_pointer_write
+
+next_required_transition:
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-replacement-approval.json
+  required_fields: [scope_lock_path, scope_lock_sha256, decision, approved_by, approved_at]
+  then_required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-replacement-pre-change-capture.yaml
+  no_implementation_before_both_artifacts: true

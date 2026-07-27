@@ -1,0 +1,144 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-scope-lock
+scope_lock_id: AGV3-GENESIS-BOOTSTRAP-PROGRESSION-LABELS-20260726
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+created_at: '2026-07-26T15:20:00Z'
+
+purpose: >-
+  Freeze one narrow correction to the formal v3 PLAN_SET instance so it satisfies the
+  live P-02A phase progression admission gate (validate-phase-progression.ts exit 0).
+  The v3 PLAN_SET template dropped the active progression marker that the older
+  template carries; this scope lock adds the three missing progression labels to the
+  formal PLAN_SET instance only. It changes no code, no validator, and no shared
+  parser. The template defect itself is recorded as a PHASE-01 finding to be surfaced
+  and fixed by the surface/conformance work, not silently repaired here.
+
+root_cause:
+  diagnosis: >-
+    validate-phase-progression.ts requires the plan index to declare
+    progression_schema phase-progression/v1, requires the index top-level Status to
+    equal the derived value, and requires each phase file to carry a Progression
+    status. The formal v3 PLAN_SET, generated from the v3 PLAN-SET-TEMPLATE.md, lacks
+    all three because that template omitted the active progression contract that
+    PLAN-TEMPLATE.md prescribes.
+  disposition: >-
+    phase-progression/v1 is the live progression contract (used by three active plans
+    and prescribed by PLAN-TEMPLATE.md), not a pre-v3 Plan, profile, bypass, receipt,
+    or compatibility entry. audit-phase-progression/v3 is a future v3 schema-family
+    receipt kind with no consumer yet; v3-ifying the progression validator is phase-2
+    work and is not touched here.
+  observed_failure:
+    command: bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set PHASE-01
+    exit_code: 1
+    errors: [PROGRESSION_SCHEMA_REQUIRED]
+
+fix_contract:
+  required_edits:
+    - file: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+      change: add a Progression schema metadata line declaring phase-progression/v1
+    - file: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+      change: set top-level Status from NOT_STARTED to the derived value READY-FOR-IMPLEMENTATION
+    - file: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/01-phase-surface-conformance.md
+      change: add a Progression status metadata line declaring NOT_STARTED
+  required_outcome:
+    command: bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set PHASE-01
+    pass_condition: exit_0_and_stdout_ok_true
+  forbidden:
+    - any change to validate-phase-progression.ts or phase-progression.ts
+    - any change to scripts/lib/audit-governance-schema-v3.ts
+    - any change to PLAN-SET-TEMPLATE.md or PLAN-TEMPLATE.md (template fix deferred to PHASE-01)
+    - changing REQ/DC selection, phase content, lifecycle authorization, or evidence level beyond the three progression labels
+    - pre-v3 input, compatibility entry, generic bypass, phase ACCEPT, report, or LATEST publication
+
+deferred_finding:
+  finding_id: F-PHASE01-TEMPLATE-PROGRESSION-MARKER
+  classification: cross_component_contract_inconsistency
+  description: >-
+    The v3 PLAN-SET-TEMPLATE.md omits the active progression marker that
+    PLAN-TEMPLATE.md prescribes, so PLAN_SETs generated from the v3 template fail the
+    live P-02A progression gate. This is a REQ-006/REQ-007 surface/conformance finding
+    to be surfaced, retained, and closed by PHASE-01, not repaired under this scope.
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  closure_receipt:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-receipt.yaml
+    sha256: dece719a6b36a20278388448bdbf291c2a7baf69c122aa42ba659c503080d2ec
+    relation: this_fix_prepares_the_admitted_formal_plan_set_for_phase_admission
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  repository_root: /home/zhaoge/workspace/opencode/work-one
+  repository_head: 64df828d56611ac121baccfaf666f147980aec85
+  repository_status_at_design: CLEAN
+  recheck_required_before_capture: true
+
+effective_allowlist:
+  modified_paths:
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/01-phase-surface-conformance.md
+    - logs/INDEX.md
+  added_paths:
+    - logs/2026-07-26-audit-governance-v3-progression-labels.md
+  exact_path_count: 4
+  other_paths_allowed: false
+  code_writable: false
+  template_writable: false
+
+fixed_verification:
+  - check_id: PROG-POS-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set PHASE-01
+    level: component
+    pass_condition: exit_0_and_stdout_ok_true
+  - check_id: PROG-POS-002
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+    level: component
+    pass_condition: exit_0_and_stdout_ok_true_still_admitted
+  - check_id: PROG-STATIC-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && rg -n 'Progression schema|Progression status|READY-FOR-IMPLEMENTATION' plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set
+    level: static
+    pass_condition: all_three_progression_labels_present
+  - check_id: PROG-SCOPE-DIFF
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && git status --porcelain
+    level: static
+    pass_condition: only_the_four_allowlist_paths_changed_since_prog_pre_change_capture
+
+failure_convergence:
+  progression_gate_still_nonzero: BLOCKED
+  v3_admission_regressed: BLOCKED
+  code_or_template_or_validator_changed: BLOCKED
+  scope_or_hash_drift: BLOCKED
+  model_explanation_can_override: false
+
+prohibited_effects:
+  - phase_accept
+  - audit_report_write
+  - latest_pointer_write
+  - compatibility_entry
+  - generic_bypass
+  - code_change
+  - template_change
+
+rollback:
+  on_block: >-
+    Stop. Preserve the formal PLAN_SET as BLOCKED evidence. Revert only the four
+    allowlist writes; never modify code, validators, or templates under this scope.
+  convergence: BLOCKED
+
+new_pre_change_capture:
+  required: true
+  required_after: exact_prog_scope_lock_hash_has_HUMAN_USER_approval
+  required_before: any_prog_write
+  must_bind: [this_prog_scope_lock, prog_scope_approval, current_hashes_of_all_four_allowlist_paths, current_worktree_git_status, work_one_clean_status]
+  historical_capture_reuse_allowed: false
+
+next_required_transition:
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-progression-labels-approval.json
+  then_required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-progression-labels-pre-change-capture.yaml
+  no_implementation_before_both_artifacts: true

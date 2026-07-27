@@ -1,0 +1,202 @@
+schema_version: audit-scope-lock/v3
+document_kind: phase-scope-lock
+scope_lock_id: AGV3-PHASE-05-FINALIZE-AUDIT-V3-SCOPE-LOCK-20260727
+phase_id: PHASE-05
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+provenance_level: v3-required
+created_at: '2026-07-27T02:00:00Z'
+
+purpose: >-
+  Freeze PHASE-05: complete the v3 audit publication chain. v3-ify finalize-audit.ts so it
+  emits an immutable audit-governance-report/v3::audit-report and an atomic hash-bound
+  audit-governance-latest/v3::latest-pointer (CAS via temp+rename), keeping fail-closed
+  behavior (no publish on validation failure, no overwrite on conflict). v3-ify
+  scope-lock-template.json to audit-scope-lock/v3 + v3-required. Sync the governance surface
+  manifest so all active assets are registered with v3 discriminators and ZERO open findings remain.
+  Closes the final 2 OPEN findings (scope-lock-template.json:pre-v3-schema_version,
+  scope-lock-template.json:provenance-exposure), bringing the surface scanner to NO_OPEN_FINDINGS.
+
+scope_decision:
+  chosen: finalize_audit_v3_publication_plus_template_v3_closing_final_findings
+  deferred: []
+  rationale: >-
+    PHASE-04 built the v3 audit machinery (validate-audit/pre-check-evidence/prepare-audit).
+    PHASE-05 is the publication step it lacked: immutable report + CAS LATEST pointer, plus the
+    last template v3-ification. After PHASE-05 the surface has zero open findings and the chain
+    can publish a v3 report + pointer. Formal phase ACCEPT for PHASE-03/04 still requires the
+    independent audit (P-03..P-07) with EV receipts and MODEL_REVIEW; this scope lock authorizes
+    PUBLICATION of a report/pointer but not a self-issued phase ACCEPT verdict.
+
+requirements_selection:
+  selected:
+    - requirement_id: REQ-005
+      title: audit verdict and publication remain fail-closed and immutable
+      decision_cases: [DC-010, DC-011]
+      evidence_level: file-integration
+  unselected_cases_are_out_of_scope: true
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  phase_04_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/phase-04-scope-lock.yaml
+    sha256: 1c5abfab73ace7a8c591991ecd13bf59d19af65389a26525dc974a746844700d
+  phase_04_scope_approval:
+    path: audits/audit-governance-evidence-and-status-closure-v3/phase-04-scope-approval.json
+    sha256: 6cc9f9f9e6c4f5643aebd84567a9347829f4ec775ad43d4d0d1c10a0173ba0a9
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  repository_root: /home/zhaoge/workspace/opencode/work-one
+  repository_head: 64df828d56611ac121baccfaf666f147980aec85
+  repository_status_at_design: CLEAN
+  recheck_required_before_capture: true
+
+fix_contract:
+  finalize_audit_v3:
+    target: .agents/skills/plan-audit-archiver/scripts/finalize-audit.ts
+    change: >-
+      Import the shared parser. Validate the input report is a parseable audit-governance-report/v3::audit-report
+      (reject other schema kinds). Emit the LATEST pointer as audit-governance-latest/v3::latest-pointer
+      (not plain markdown), binding the report path + report sha256 + the canonical/scope-lock hashes it settles.
+      Keep atomic CAS (temp write + rename), keep AUDIT_VALIDATION_FAILED and LATEST_POINTER_CONFLICT fail-closed paths.
+      Add a helper that produces the immutable report content (hash-stable, parseable v3 doc) so the report file itself
+      is a valid audit-governance-report/v3 document, not arbitrary markdown.
+  finalize_audit_tests:
+    target: .agents/skills/plan-audit-archiver/scripts/__tests__/finalize-audit.test.ts
+    change: >-
+      Assert the published LATEST pointer parses as audit-governance-latest/v3::latest-pointer; assert the report file
+      parses as audit-governance-report/v3::audit-report; keep the two fail-closed regressions
+      (validator fail -> no publish, existing pointer -> no overwrite). Add a failure-mutation matrix test: for each
+      mutation (report hash drift, wrong schema kind, missing canonical binding) the pointer is NOT published and the
+      prior pointer (if any) is unchanged.
+  scope_lock_template_v3:
+    target: .agents/skills/plan-audit-archiver/templates/scope-lock-template.json
+    change: >-
+      Replace schema_version "1.0" with audit-scope-lock/v3 and provenance_level "v2.1-required" with "v3-required",
+      matching the actual phase-scope-lock.yaml shape. Closes the final 2 OPEN findings
+      (scope-lock-template.json:pre-v3-schema_version, scope-lock-template.json:provenance-exposure).
+  manifest_sync:
+    target: scripts/lib/governance-surface-manifest.yaml
+    change: >-
+      Register finalize-audit.ts as a consumer of audit-governance-report/v3 and audit-governance-latest/v3; update
+      sha256 of finalize-audit.ts, scope-lock-template.json after edits; confirm ZERO open findings (NO_OPEN_FINDINGS).
+  conformance_extension:
+    targets:
+      - scripts/lib/run-conformance.ts
+      - scripts/lib/conformance-corpus/corpus.json
+    change: >-
+      Declare finalize-audit.ts discriminators (report/latest v3) as consumers; extend corpus with a v3 latest-pointer
+      sample and a mismatch probe asserting the gate rejects non-v3 report/latest kinds.
+  tests_v3:
+    targets:
+      - scripts/lib/__tests__/run-conformance.test.ts
+      - scripts/lib/__tests__/scan-governance-surface.test.ts
+    change: >-
+      Update assertions to reflect NO_OPEN_FINDINGS and the new finalize-audit consumer.
+
+findings_disposition:
+  closes:
+    - F-CONSUMER-LOCAL:scope-lock-template.json:pre-v3-schema_version
+    - F-CONSUMER-LOCAL:scope-lock-template.json:provenance-exposure
+  stays_open: []
+  closure_requires_receipt_evidence: true
+
+effective_allowlist:
+  added_paths:
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/05-phase-finalize-audit-v3.md
+    - audits/audit-governance-evidence-and-status-closure-v3/phase-05-evidence/
+  modified_paths:
+    - .agents/skills/plan-audit-archiver/scripts/finalize-audit.ts
+    - .agents/skills/plan-audit-archiver/scripts/__tests__/finalize-audit.test.ts
+    - .agents/skills/plan-audit-archiver/templates/scope-lock-template.json
+    - scripts/lib/governance-surface-manifest.yaml
+    - scripts/lib/run-conformance.ts
+    - scripts/lib/conformance-corpus/corpus.json
+    - scripts/lib/__tests__/run-conformance.test.ts
+    - scripts/lib/__tests__/scan-governance-surface.test.ts
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+    - logs/INDEX.md
+  directory_roots_note: >-
+    phase-05-evidence/ is a directory root; only files created under it for this phase are allowed.
+  other_paths_allowed: false
+  shared_parser_writable: false
+  phase03_04_scripts_writable: false
+  consistency_note: >-
+    fix_contract targets are fully enumerated in effective_allowlist.modified_paths; no unlisted path may change.
+
+fixed_verification:
+  - check_id: P05-FIN-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test .agents/skills/plan-audit-archiver/scripts/__tests__/finalize-audit.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_v3_report_and_latest_plus_failure_mutation_matrix
+  - check_id: P05-SCAN-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run scripts/lib/scan-governance-surface.ts scripts/lib/governance-surface-manifest.yaml
+    level: file-integration
+    pass_condition: NO_OPEN_FINDINGS_no_illegal_reference_no_hash_drift
+  - check_id: P05-CONF-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/run-conformance.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_including_finalize_audit_consumers_and_v3_reject_probe
+  - check_id: P05-POS-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    level: unit
+    pass_condition: parser_unchanged_4_tests_pass
+  - check_id: P05-TYPECHECK
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run typecheck
+    level: component
+    pass_condition: exit_0
+  - check_id: P05-PARSER-CALLERS
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && codegraph sync && codegraph callers parseAuditGovernanceV3Document
+    level: static-architecture
+    pass_condition: finalize_audit_is_caller_and_parser_unchanged
+  - check_id: P05-SCOPE-DIFF
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && git status --porcelain
+    level: static
+    pass_condition: only_allowlist_paths_and_phase_05_evidence_root_changed_since_pre_change_capture
+
+failure_convergence:
+  any_named_test_absent_or_failed: BLOCKED
+  finalize_audit_publishes_non_v3_report_or_pointer: BLOCKED
+  finalize_audit_overwrites_existing_pointer: BLOCKED
+  finalize_audit_publishes_on_validation_failure: BLOCKED
+  scope_lock_template_still_pre_v3: BLOCKED
+  parser_or_phase3_4_scripts_changed: BLOCKED
+  scope_or_hash_drift: BLOCKED
+  model_explanation_can_override: false
+
+prohibited_effects:
+  - self_issued_phase_accept_verdict
+  - compatibility_entry
+  - generic_bypass
+  - shared_parser_code_change
+  - phase3_4_script_change
+  - quarantined_content_read
+
+rollback:
+  on_block: >-
+    Stop. Preserve the v3-ified finalize-audit, template, corpus, manifest, and findings as BLOCKED evidence.
+    Revert only the PHASE-05 allowlist writes; never delete evidence, never close a finding without receipt
+    evidence, never publish a report/pointer if blocked.
+  convergence: BLOCKED
+
+new_pre_change_capture:
+  required: true
+  required_after: exact_phase_05_scope_lock_hash_has_HUMAN_USER_approval
+  required_before: any_phase_05_write
+  must_bind: [this_phase_05_scope_lock, phase_05_scope_approval, current_hashes_of_allowlist_modified_paths, current_worktree_git_status, work_one_clean_status]
+  historical_capture_reuse_allowed: false
+
+next_required_transition:
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/phase-05-scope-approval.json
+  then_required_artifact: audits/audit-governance-evidence-and-status-closure-v3/phase-05-pre-change-capture.yaml
+  no_implementation_before_both_artifacts: true
+  implementation_then_audit: >-
+    After implementation, PHASE-05 requires an independent audit (P-03 to P-07) with EV receipts, MODEL_REVIEW where
+    eligible, and validate-audit exit 0 before any phase ACCEPT. PHASE-05 authorizes publication of a v3 report and CAS
+    LATEST pointer; it does NOT authorize a self-issued phase ACCEPT verdict (that remains the independent auditor's call).

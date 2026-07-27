@@ -25,9 +25,11 @@ change attributable and reviewable.
 
 The full P-01..P-07 provenance rules (four-element structure: 约束主体 + 触发条件
 + 违反判定 + 违反后果) live in `provenance-rules.md` (this directory) — migrated
-from AGENTS.md §15 on 2026-07-25. Read them before any v2.1-required audit or
+from AGENTS.md §15 on 2026-07-25. Read them before any `v3-required` audit or
 implementation Freeze Gate; AGENTS.md §15 keeps only the rule index and the
 mandatory trigger.
+
+> **2026-07-28 v3 升级注**：原 `v2.1-required` 已升级为 `v3-required`（见 `phase-04-scope-lock.yaml`、`phase-05-scope-lock.yaml` 的 `provenance_level: v3-required`）。本文件中 `v2.1` 字面保留作为历史引用，但实际生效集合为 `{v3-required, component-only}`。
 
 ## Non-negotiable invariants
 
@@ -70,7 +72,7 @@ mandatory trigger.
     artifacts, and the previous-audit chain. In-memory structure validation and
     a green product suite alone are insufficient.
 
-14. **Pre-change receipt precondition.** When `provenance_level = v2.1-required`
+14. **Pre-change receipt precondition.** When `provenance_level = v3-required`
     (declared per provenance-rules.md rule P-01), Step 1 (Freeze) MUST verify that
     `evidence/pre-change-<PHASE-N>.json` exists and is non-empty before any
     implementation write. If the pre-change receipt is missing, the audit
@@ -86,7 +88,7 @@ mandatory trigger.
     state receipts (pre-change and verdict-state) only; it does not generate
     execution receipts. `Verified-by:` text evidence lines are human-readable
     summaries of receipts, not receipts themselves. Substituting text evidence
-    lines for immutable receipts to sign v2.1 ACCEPT is MUST NOT.
+    lines for immutable receipts to sign v3 ACCEPT is MUST NOT.
 
 16. **validate-audit.ts machine gate necessity.** Step 9 (Validate)
     `validate-audit.ts` `exit 0` is a necessary condition for signing `ACCEPT`
@@ -180,7 +182,7 @@ Confusing them is the most common cause of `INVALID` verdicts.
 | scope-lock 文件顶层 `scope.status` | `scope.status` | `FROZEN` \| `UNFROZEN` | 表示冻结状态。`APPROVED` 不是合法值 |
 | scope-lock 文件顶层 `approval.status` | `approval.status` | `APPROVED` \| `PENDING` | 表示人类审批状态。`FROZEN` 不是合法值 |
 | audit contract 内 `scope.status` | `scope.status` | `FROZEN` \| `UNFROZEN` | 与 scope-lock 文件的 `scope.status` 同语义，但字段位于 audit report JSON contract 中 |
-| audit contract 内 `scope.provenance_level` | `scope.provenance_level` | `v2.1-required` \| `component-only` | 必须与 scope-lock 文件的 `scope.provenance_level` 一致 |
+| audit contract 内 `scope.provenance_level` | `scope.provenance_level` | `v3-required` \| `component-only` | 必须与 scope-lock 文件的 `scope.provenance_level` 一致（2026-07-28 v3 升级） |
 
 **scope-lock 文件必填顶层字段**（缺任一项触发 `PLAN_REGISTRY_MISSING` / `INVALID_PLAN_ITEM_ID` 等）：
 
@@ -590,7 +592,7 @@ and a required-heading assertion.
 | `STATIC_NEGATIVE_CONTRACT` | STATIC req 的 `applicability !== "NOT_APPLICABLE_STATIC"` 或 command/method/expected/observed 非 "N/A" | 改 `applicability` 为 `NOT_APPLICABLE_STATIC`，其他 4 字段全为 `"N/A"` |
 | `INVALID_PLAN_ITEM_ID` | `plan_item_id` 不匹配 `^PLAN-REQ-\d{3}$` | 改为 `PLAN-REQ-001` 格式（3 位数字，无 phase 前缀） |
 | `EVIDENCE_RECEIPT_PAYLOAD_MISMATCH` | contract ledger 与 receipt 文件 payload 不一致 | 从 receipt 文件逐字符复制所有字段到 contract ledger，禁止修剪重定向/空格 |
-| `DOWNGRADE_DECLARATION_REQUIRED` | `provenance_level=v2.1-required` 且 `evidence_ceiling=component` 但 `downgrade_declaration=null` | 填写 `downgrade_declaration` 对象（含 4 项：降级理由、降级后上限、不影响范围、影响范围） |
+| `DOWNGRADE_DECLARATION_REQUIRED` | `provenance_level=v3-required` 且 `evidence_ceiling=component` 但 `downgrade_declaration=null` | 填写 `downgrade_declaration` 对象（含 4 项：降级理由、降级后上限、不影响范围、影响范围） |
 | `GIT_HEAD_MISMATCH` | `baseline.commit` 与 `git -C <repository_root> rev-parse HEAD` 不一致 | 用 `repository_root` 仓库的 HEAD，不是 `workspace_root` 的 |
 | `DIRTY_PATH_SET_MISMATCH` | `baseline.dirty_paths` 与 `git -C <repository_root> status --porcelain` 不一致 | 用 `repository_root` 仓库的 git status 输出 |
 | `PLAN_REGISTRY_MISSING` | scope-lock 文件 `plan_registry` 为空或缺失 | 填写 `plan_registry` 数组，每项含 `plan_item_id`、`disposition`、`requirement_id`、`source` |

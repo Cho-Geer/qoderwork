@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "audit-scope-lock/v3",
   "lock_id": "REPLACE_LOCK_ID",
   "created_at": "REPLACE_UTC_TIMESTAMP_USE_capture_state_--freeze",
   "plan_sources": [
@@ -10,7 +10,7 @@
   ],
   "scope": {
     "status": "FROZEN",
-    "provenance_level": "v2.1-required",
+    "provenance_level": "v3-required",
     "frozen_at": "REPLACE_UTC_TIMESTAMP_USE_capture_state_--freeze",
     "in_scope": [
       "REQ-001"

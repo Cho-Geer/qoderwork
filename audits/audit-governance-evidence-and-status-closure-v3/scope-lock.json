@@ -1,0 +1,129 @@
+{
+  "schema_version": "audit-scope-lock/v3",
+  "lock_id": "AGV3-AUDIT-20260727-SCOPE-LOCK",
+  "created_at": "2026-07-27T12:58:32Z",
+  "plan_sources": [
+    {
+      "path": "plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml",
+      "sha256": "dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748"
+    },
+    {
+      "path": "plans/audit-governance-evidence-and-status-closure-v3/requirements-anchors.md",
+      "sha256": "fa65dd8417a49d5a593036628311ef338740de8c14b817b100b80aedf100ab2d"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v3-required",
+    "frozen_at": "2026-07-27T15:20:00Z",
+    "in_scope": [
+      "REQ-003",
+      "REQ-004",
+      "REQ-005"
+    ],
+    "out_of_scope": [
+      "REQ-001",
+      "REQ-002",
+      "REQ-006",
+      "legacy Phase1/2 bootstrap (historical)"
+    ],
+    "assumptions": [
+      {
+        "statement": "Phase 3 PHASE-03 implementation is observable only through the rewired audit-boundary-precheck.ts / generate-evidence-receipt.ts / capture-state.ts and the new generate-phase-projection.ts; the audited delta is anchored to work-one HEAD as clean baseline.",
+        "disproof": "Diffing .agents/skills/plan-audit-archiver/scripts/ against work-one HEAD shows files that exist only on the qoderwork audit-governance-v3 worktree; baseline assumption fails if PHASE-03 produced a side-effect on work-one HEAD (verifiable via git -C work-one diff 64df828d56611ac121baccfaf666f147980aec85..HEAD returning non-empty)."
+      },
+      {
+        "statement": "All EV receipts point to artifacts reachable from within audits/.../evidence/AGV3-AUDIT-20260727/ and no receipt escapes the declared evidence root (no symlink, no path traversal).",
+        "disproof": "Running audit-boundary-precheck.ts with a deliberately escaped --evidence-root produces BLOCKED; receipt escapes can be detected by the same matrix emission."
+      },
+      {
+        "statement": "finalize-audit.ts publishes the LATEST pointer only after validate-audit.ts exit 0; fail-closed semantics are preserved (no overwrite of an existing pointer).",
+        "disproof": "Running finalize-audit.ts against a report whose contract fails validate-audit.ts does not advance the LATEST pointer, and the prior pointer remains in place (verifiable via stat mtime unchanged)."
+      }
+    ],
+    "exit_criteria": [
+      "all in-scope REQ PASS with positive+negative EV receipts bound to AGV3-AUDIT-20260727",
+      "validate-audit.ts exit 0 against 2026-07-27-audit-accept-v2.md",
+      "boundary-matrix.json status READY_FOR_LLM_REVIEW with no BLOCKED rows",
+      "finalize-audit.ts completes and creates LATEST.md with verdict ACCEPT"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-003",
+      "plan_item_id": "PLAN-REQ-003",
+      "kind": "BEHAVIORAL",
+      "source": "plans/audit-governance-evidence-and-status-closure-v3/requirements-anchors.md#REQ-003",
+      "behavior": "Phase projection is generated deterministically from canonical+scope-lock and rejects drifted scope (duplicate/unselected case or wrong scope hash).",
+      "required_evidence_level": "integration",
+      "oracle_id": "ORACLE-005",
+      "oracle": "Projection generator exits 0 and writes audit-phase-projection/v3 with selected_cases bound to canonical+scope-lock sha256."
+    },
+    {
+      "id": "REQ-004",
+      "plan_item_id": "PLAN-REQ-004",
+      "kind": "BEHAVIORAL",
+      "source": "plans/audit-governance-evidence-and-status-closure-v3/requirements-anchors.md#REQ-004",
+      "behavior": "Boundary precheck verifies receipt bindings and refuses escaped or missing receipt paths (BLOCKED), never advancing to model review or acceptance.",
+      "required_evidence_level": "integration",
+      "oracle_id": "ORACLE-007",
+      "oracle": "Precheck exits 0 and emits audit-boundary-matrix/v3 with status READY_FOR_LLM_REVIEW and blockers empty."
+    },
+    {
+      "id": "REQ-005",
+      "plan_item_id": "PLAN-REQ-005",
+      "kind": "BEHAVIORAL",
+      "source": "plans/audit-governance-evidence-and-status-closure-v3/requirements-anchors.md#REQ-005",
+      "behavior": "finalizeAudit publishes a hash-bound LATEST pointer only after a valid audit and never publishes when the validator fails (fail-closed).",
+      "required_evidence_level": "integration",
+      "oracle_id": "ORACLE-010",
+      "oracle": "finalize-audit.test.ts passes (7/7) including the fail-closed regression: does not publish when the audit validator fails."
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-003",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-003",
+      "source": "plans/audit-governance-evidence-and-status-closure-v3/requirements-anchors.md#REQ-003"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-004",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-004",
+      "source": "plans/audit-governance-evidence-and-status-closure-v3/requirements-anchors.md#REQ-004"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-005",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-005",
+      "source": "plans/audit-governance-evidence-and-status-closure-v3/requirements-anchors.md#REQ-005"
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      ".agents/skills/plan-audit-archiver/",
+      "scripts/lib/",
+      "plans/audit-governance-evidence-and-status-closure-v3/requirements-anchors.md",
+      "audits/audit-governance-evidence-and-status-closure-v3/"
+    ],
+    "forbidden_paths": [
+      "/home/zhaoge/workspace/opencode/work-one/"
+    ]
+  },
+  "impact_analysis": {
+    "modified_functions": [],
+    "shared_functions": [],
+    "caller_scan_command": "",
+    "caller_files": [],
+    "caller_tests": [],
+    "scan_output_sha256": ""
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "zhaoge",
+    "approved_at": "2026-07-27T13:07:34Z",
+    "evidence": "handoff/2026-07-27-phase-0-1-decision-repository-root.md"
+  }
+}

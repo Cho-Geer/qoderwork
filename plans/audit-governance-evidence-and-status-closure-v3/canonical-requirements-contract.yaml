@@ -1,0 +1,496 @@
+schema_version: audit-governance/v3
+document_kind: canonical-requirements
+contract_id: AUDIT-GOVERNANCE-EVIDENCE-STATUS-CLOSURE-V3-REQS-20260726-BOOTSTRAP-REVISION
+title: 审计治理证据与状态闭环 v3 canonical requirements contract
+document_status: AWAITING_EXTERNAL_HUMAN_APPROVAL
+purpose: >-
+  Define the only approved semantic source for v3 governance. This document is
+  immutable after external approval and is never a phase projection or evidence receipt.
+
+authority:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  handoff:
+    path: handoff/2026-07-26-audit-boundary-and-plan-contract.md
+    role: methodology_and_role_boundary
+  provenance_rules:
+    path: .agents/skills/plan-audit-archiver/provenance-rules.md
+    role: mandatory_process_constraints
+
+approval_binding:
+  required_schema_version: audit-governance-approval/v3
+  decision_record_path: audits/audit-governance-evidence-and-status-closure-v3/approval-decision-bootstrap-amendment.json
+  status_source: external_hash_bound_decision_record_only
+  required_fields:
+    - decision
+    - approved_by
+    - approved_at
+    - approved_artifacts.blueprint.path
+    - approved_artifacts.blueprint.sha256
+    - approved_artifacts.canonical_contract.path
+    - approved_artifacts.canonical_contract.sha256
+  supersedes_immutable_decision:
+    path: audits/audit-governance-evidence-and-status-closure-v3/approval-decision.json
+    sha256: 65d13645477666f75a0e2dbd7fe651181c0a0cf0f9287c2972d685e707bcb36b
+    effect: historical_design_approval_only
+  rule: >-
+    No PLAN_SET, scope-lock, pre-change receipt, code change, phase audit, report,
+    or LATEST publication is allowed before an APPROVED external decision binds this
+    file and its Blueprint by exact SHA-256. That approval alone never authorizes a
+    code write: the only initialization transition is the separately human-approved
+    genesis bootstrap scope lock defined below; all other code writes require a
+    standard v3 phase scope lock.
+
+scope:
+  included:
+    - v3 Plan admission and completion-gate validation
+    - v3 canonical-to-projection-to-receipt-to-matrix audit boundary
+    - v3 audit validation and immutable report publication
+    - shared schema parser, surface manifest/validator, conformance corpus/runner, templates, tests, and governance logs
+  excluded:
+    - any pre-v3 Plan, profile, bypass record, receipt, audit report, or status text
+    - compatibility, migration, adapter, reader, fixture, or regression support for pre-v3 Plans
+    - work-one product code, database schema, serve lifecycle, LLM permissions, npm dependencies
+
+schema_family:
+  canonical_contract:
+    schema_version: audit-governance/v3
+    document_kind: canonical-requirements
+  phase_projection:
+    schema_version: audit-phase-projection/v3
+    document_kind: phase-projection
+  evidence_receipt:
+    schema_version: audit-evidence-receipt/v3
+    document_kind: evidence-receipt
+  boundary_matrix:
+    schema_version: audit-boundary-matrix/v3
+    document_kind: boundary-matrix
+  approval_decision:
+    schema_version: audit-governance-approval/v3
+    document_kind: approval-decision
+  approval_request:
+    schema_version: audit-governance-approval-request/v3
+    document_kind: approval-request
+  phase_scope_lock:
+    schema_version: audit-scope-lock/v3
+    document_kind: phase-scope-lock
+  plan_set_index:
+    schema_version: audit-plan-set/v3
+    document_kind: plan-set-index
+  phase_progression_receipt:
+    schema_version: audit-phase-progression/v3
+    document_kind: phase-progression-receipt
+  audit_contract:
+    schema_version: audit-governance-audit/v3
+    document_kind: audit-contract
+  audit_report:
+    schema_version: audit-governance-report/v3
+    document_kind: audit-report
+  latest_pointer:
+    schema_version: audit-governance-latest/v3
+    document_kind: latest-pointer
+  surface_manifest:
+    schema_version: audit-governance-surface/v3
+    document_kind: governance-surface-manifest
+  conformance_report:
+    schema_version: audit-governance-conformance/v3
+    document_kind: contract-conformance-report
+  genesis_bootstrap_admission:
+    schema_version: audit-governance-bootstrap/v3
+    document_kind: genesis-bootstrap-admission
+  genesis_bootstrap_scope_lock:
+    schema_version: audit-governance-bootstrap/v3
+    document_kind: genesis-bootstrap-scope-lock
+  genesis_bootstrap_receipt:
+    schema_version: audit-governance-bootstrap/v3
+    document_kind: genesis-bootstrap-receipt
+  discriminator_rule: >-
+    schema_version and document_kind must both match exactly. A parser must reject
+    every unknown pair and must not infer a document type from field shape.
+
+provenance_contract:
+  v3_plan_provenance_level: v3-required
+  rule: >-
+    A v3 PLAN_SET is admissible only with provenance_level v3-required. Evidence
+    level remains per requirement; pre-v3 provenance values are historical only and
+    must not be accepted, adapted, or displayed as v3 choices.
+
+genesis_bootstrap_contract:
+  purpose: >-
+    Establish the first v3 shared parser and v3 PLAN_SET admission without reducing
+    any substantive A-D control. It is a one-time initialization state transition,
+    not a provenance level, compatibility mode, reusable waiver, CLI flag, or
+    environment switch.
+  activation_precondition:
+    required: >-
+      A retained minimal v3-only probe, bound to this canonical hash, exits nonzero
+      through the current admission command with an unsupported-v3-schema result.
+    forbidden: >-
+      Any pre-v3 input, compatibility reader, migration path, generic bypass token,
+      profile display, or second genesis attempt.
+  required_prewrite_artifacts:
+    - genesis-bootstrap-admission with this Blueprint/canonical approval binding and probe hash
+    - genesis-bootstrap-scope-lock with baseline commit, exact allowlist, CodeGraph impact, fixed commands, positive fixture, single-mutation negatives, rollback, and human approval
+    - pre-change capture bound to the scope-lock and baseline commit
+  allowed_implementation_outcome: >-
+    Only the shared v3 schema/parser, v3 PLAN_SET admission, indispensable v3 Plan
+    templates, and their tests. The exact files are limited by the approved bootstrap
+    scope lock; surface scanning, conformance completion, audit publication, and all
+    other A-D work remain ordinary v3 PLAN_SET phases.
+  required_postwrite_controls:
+    - new v3 parser/validator validates every bootstrap artifact's schema pair, path, hash, identity, and state order
+    - new v3 validator admits a fresh formal v3 PLAN_SET and rejects non-v3 input, pre-v3 input, missing approval, hash drift, consumer-local parsing, and bootstrap reuse
+    - independent audit verifies fixed commands, allowlist, shared-parser call edges, and absence of forbidden publication side effects
+  state_machine:
+    allowed: [DRAFT, HUMAN_APPROVED, IMPLEMENTING, POSTHOC_V3_VALIDATED, CLOSED, BLOCKED]
+    transitions: DRAFT->HUMAN_APPROVED->IMPLEMENTING->POSTHOC_V3_VALIDATED->CLOSED
+    failure_transition: any_state->BLOCKED
+    closure_effect: >-
+      CLOSED is not ACCEPT, cannot satisfy a later phase gate, cannot be used as an
+      input to a PLAN_SET, and cannot publish a report or LATEST pointer.
+  single_use: >-
+    Exactly one admission may exist for this canonical revision. Any later attempt is
+    BLOCKED and a future canonical revision must be designed and human-approved anew.
+
+hash_direction:
+  canonical_contract: human-approved immutable semantic source; contains no future scope-lock hash
+  phase_projection: binds canonical path/hash, scope-lock path/hash, selected REQ/DC, and exact receipts
+  boundary_matrix: binds the phase projection path/hash and each covered receipt path/hash
+  audit_contract: binds canonical, projection, scope-lock, matrix, MODEL_REVIEW, and receipt ledger hashes
+  publication: creates an immutable report then atomically compare-and-swaps a hash-bound LATEST pointer
+  forbidden: no reverse hash dependency, directory-discovered evidence, mutable status-only authorization, or pre-v3 input
+
+global_invariants:
+  - Only v3 schema-family documents may enter a v3 active workflow.
+  - Every active consumer must use the shared v3 parser and must not duplicate schema interpretation.
+  - A phase projection selects exact REQ/DC identities; an unselected, duplicate, or mutated identity is BLOCKED.
+  - Receipt paths are explicit and may be nested only inside the approved evidence root; FOUND is the only accepting lookup state.
+  - execution.observed is distinct from domain_observation.result and neither may be inferred from prose.
+  - audit-boundary-precheck may output only READY_FOR_LLM_REVIEW or BLOCKED.
+  - A matrix BLOCKED result, matrix hash drift, missing MODEL_REVIEW, evidence-ceiling failure, or validate-audit nonzero exit is never overridable.
+  - A failed publication retains the old LATEST pointer and the failed candidate artifacts.
+  - P-07 repository_root remains the clean work-one anchor; qoderwork scope is checked separately.
+  - Every active governance asset appears exactly once in the hash-bound surface manifest with an owner and allowed reference edges.
+  - Surface scanning completes after every candidate asset is checked and emits a stable finding for every mismatch; absence of a finding is not a default result.
+  - NO_OPEN_FINDINGS is legal only when manifest coverage, executed checks, retained findings, and their closures are all verified.
+  - A hash-bound independent conformance corpus exercises every consumer; consumer agreement covers normalized result, state, error code, forbidden side effects, and output hash.
+  - Only the shared v3 parser may interpret schema discriminator, field shape, or contract enums; a consumer-local interpretation is a blocking architecture violation.
+  - Genesis bootstrap is legal only when its activation precondition, prewrite artifacts, exact human-approved scope lock, and required postwrite controls all hold; it never relaxes an A-D acceptance criterion.
+  - A genesis bootstrap artifact is not a PLAN_SET, phase scope lock, phase receipt, phase ACCEPT, audit report, or LATEST pointer and cannot be coerced into one.
+
+requirements:
+  - requirement_id: REQ-001
+    title: v3 Plan admission has no pre-v3 or compatibility input
+    boundary:
+      success: A PLAN_SET is admissible only when its index declares audit-plan-set/v3, it binds an audit-governance/v3 canonical contract, and an APPROVED external decision has matching hashes.
+      failure: Unknown schema pairs, missing approval, mismatched hashes, any pre-v3 bypass declaration, or a non-v3 profile are rejected before phase admission.
+      invariant: No active template, validator help, test fixture, or Plan input exposes a pre-v3 or compatibility path.
+      evidence_level: component
+    contract:
+      input:
+        plan_schema: audit-plan-set/v3 | non_v3
+        canonical_hash: matching | mismatched
+        approval_decision: approved_matching | absent_or_nonmatching
+      output:
+        result: PASS | FAIL
+        error_code: ERR_PLAN_SCHEMA_UNSUPPORTED | ERR_APPROVAL_MISSING | ERR_APPROVAL_BINDING | null
+      forbidden_side_effects_on_fail: [phase_admission, scope_lock_creation, implementation_start]
+    decision_cases:
+      - decision_case_id: DC-001
+        category: positive
+        fixture:
+          id: FX-001
+          input: { plan_schema: audit-plan-set/v3, canonical_hash: matching, approval_decision: approved_matching }
+        expected: { result: PASS, error_code: null, observable: v3_plan_admitted }
+        oracle: { id: ORACLE-001, pass_condition: exact PLAN_SET admission succeeds, evidence_level: component }
+        must_not_happen: [pre_v3_profile_parse, phase_admission_without_approval]
+      - decision_case_id: DC-002
+        category: negative
+        fixture:
+          id: FX-002
+          input: { plan_schema: non_v3, canonical_hash: mismatched, approval_decision: absent_or_nonmatching }
+        expected: { result: FAIL, error_code: ERR_PLAN_SCHEMA_UNSUPPORTED, observable: non_v3_input_rejected }
+        oracle: { id: ORACLE-002, pass_condition: validator rejects before any phase action, evidence_level: component }
+        must_not_happen: [pre_v3_adapter, phase_admission, scope_lock_creation]
+
+  - requirement_id: REQ-002
+    title: schema-family documents are unambiguous and share one parser
+    boundary:
+      success: Each v3 document validates only under its exact schema_version/document_kind pair through the shared parser.
+      failure: A missing, mismatched, or guessed discriminator is rejected; consumer-local schema parsing is rejected by test.
+      invariant: A canonical contract cannot be used as a phase projection, receipt, or matrix.
+      evidence_level: component
+    contract:
+      input:
+        schema_pair: exact_known_pair | mismatched_or_unknown_pair
+        parser_origin: shared_v3_parser | consumer_local_parser
+      output:
+        result: PASS | FAIL
+        error_code: ERR_SCHEMA_DISCRIMINATOR | ERR_SHARED_PARSER_REQUIRED | null
+      forbidden_side_effects_on_fail: [projection_generation, receipt_acceptance, matrix_write]
+    decision_cases:
+      - decision_case_id: DC-003
+        category: positive
+        fixture:
+          id: FX-003
+          input: { schema_pair: exact_known_pair, parser_origin: shared_v3_parser }
+        expected: { result: PASS, error_code: null, observable: typed_document_accepted }
+        oracle: { id: ORACLE-003, pass_condition: parser returns the declared document type, evidence_level: component }
+        must_not_happen: [field_shape_inference]
+      - decision_case_id: DC-004
+        category: negative
+        fixture:
+          id: FX-004
+          input: { schema_pair: mismatched_or_unknown_pair, parser_origin: consumer_local_parser }
+        expected: { result: FAIL, error_code: ERR_SCHEMA_DISCRIMINATOR, observable: ambiguous_document_rejected }
+        oracle: { id: ORACLE-004, pass_condition: no projection or matrix is produced, evidence_level: component }
+        must_not_happen: [type_guessing, projection_generation, matrix_write]
+
+  - requirement_id: REQ-003
+    title: phase projection binds exact canonical, scope, and selected cases
+    boundary:
+      success: A phase projection binds the approved canonical hash, its own scope-lock hash, selected REQ/DC identities, fixture/oracle IDs, and explicit receipt declarations.
+      failure: Missing, duplicate, unselected, or mutated REQ/DC, fixture, oracle, canonical hash, or scope-lock hash is BLOCKED.
+      invariant: Canonical documents never contain future phase scope-lock hashes.
+      evidence_level: file-integration
+    contract:
+      input:
+        canonical_binding: exact | drifted
+        scope_lock_binding: exact | drifted
+        selected_cases: unique_and_selected | duplicate_or_unselected
+      output:
+        result: READY | BLOCKED
+        error_code: ERR_CANONICAL_HASH | ERR_SCOPE_LOCK_HASH | ERR_CASE_SELECTION | null
+      forbidden_side_effects_on_fail: [receipt_acceptance, model_review, audit_publication]
+    decision_cases:
+      - decision_case_id: DC-005
+        category: positive
+        fixture:
+          id: FX-005
+          input: { canonical_binding: exact, scope_lock_binding: exact, selected_cases: unique_and_selected }
+        expected: { result: READY, error_code: null, observable: phase_projection_generated }
+        oracle: { id: ORACLE-005, pass_condition: generated projection has exact hash bindings and selections, evidence_level: file-integration }
+        must_not_happen: [future_scope_hash_in_canonical]
+      - decision_case_id: DC-006
+        category: negative
+        fixture:
+          id: FX-006
+          input: { canonical_binding: drifted, scope_lock_binding: drifted, selected_cases: duplicate_or_unselected }
+        expected: { result: BLOCKED, error_code: ERR_CASE_SELECTION, observable: projection_rejected }
+        oracle: { id: ORACLE-006, pass_condition: no receipt or matrix is accepted, evidence_level: component }
+        must_not_happen: [receipt_acceptance, model_review, audit_publication]
+
+  - requirement_id: REQ-004
+    title: receipt and precheck use explicit evidence with dual observations
+    boundary:
+      success: Every selected DC has exactly one explicit nested receipt path whose hash, REQ/DC identity, fixture, oracle, execution observation, domain observation, error code, and forbidden side-effect observation match the projection.
+      failure: Escaped, missing, unavailable, duplicate, hash-drifted, mismatched, or side-effect-violating receipt produces BLOCKED before model review.
+      invariant: Directory enumeration may report an orphan warning but never satisfies or replaces a declared receipt.
+      evidence_level: file-integration
+    contract:
+      input:
+        receipt_lookup: FOUND | NOT_FOUND | UNAVAILABLE
+        receipt_path: nested_within_evidence_root | escaped
+        receipt_identity: exact | mismatched
+        observation: exact | mismatch_or_forbidden_effect
+      output:
+        result: READY_FOR_LLM_REVIEW | BLOCKED
+        error_code: ERR_RECEIPT_PATH | ERR_RECEIPT_NOT_FOUND | ERR_RECEIPT_UNAVAILABLE | ERR_RECEIPT_IDENTITY | ERR_RECEIPT_OBSERVATION | null
+      forbidden_side_effects_on_fail: [model_review, audit_acceptance, report_publication, latest_pointer_update]
+    decision_cases:
+      - decision_case_id: DC-007
+        category: positive
+        fixture:
+          id: FX-007
+          input: { receipt_lookup: FOUND, receipt_path: nested_within_evidence_root, receipt_identity: exact, observation: exact }
+        expected: { result: READY_FOR_LLM_REVIEW, error_code: null, observable: covered_matrix_row }
+        oracle: { id: ORACLE-007, pass_condition: one exact covered row contains receipt path and hash, evidence_level: file-integration }
+        must_not_happen: [directory_discovery_as_evidence]
+      - decision_case_id: DC-008
+        category: negative
+        fixture:
+          id: FX-008
+          input: { receipt_lookup: FOUND, receipt_path: escaped, receipt_identity: exact, observation: exact }
+        expected: { result: BLOCKED, error_code: ERR_RECEIPT_PATH, observable: path_rejected_before_open }
+        oracle: { id: ORACLE-008, pass_condition: no escaped file is opened or accepted, evidence_level: component }
+        must_not_happen: [model_review, audit_acceptance, report_publication]
+      - decision_case_id: DC-009
+        category: negative
+        fixture:
+          id: FX-009
+          input: { receipt_lookup: NOT_FOUND, receipt_path: nested_within_evidence_root, receipt_identity: mismatched, observation: mismatch_or_forbidden_effect }
+        expected: { result: BLOCKED, error_code: ERR_RECEIPT_NOT_FOUND, observable: missing_evidence_rejected }
+        oracle: { id: ORACLE-009, pass_condition: missing evidence cannot produce a matrix cover row, evidence_level: component }
+        must_not_happen: [model_review, audit_acceptance, report_publication]
+
+  - requirement_id: REQ-005
+    title: audit verdict and publication remain fail-closed and immutable
+    boundary:
+      success: A READY matrix with complete MODEL_REVIEW, sufficient evidence, zero audit validator, and a new report path produces one immutable report and an atomic hash-bound pointer update.
+      failure: BLOCKED/drifted matrix, missing review, insufficient evidence, validator nonzero, report collision, render failure, or CAS conflict publishes nothing and preserves the prior pointer.
+      invariant: Model prose cannot change a mechanical result and no report may be overwritten.
+      evidence_level: file-integration
+    contract:
+      input:
+        matrix: ready_and_hash_bound | blocked_or_drifted
+        model_review: complete | absent
+        audit_validator: zero | nonzero
+        publication: new_report_and_cas | collision_or_failure
+      output:
+        result: PUBLISHED | BLOCKED
+        error_code: ERR_MATRIX | ERR_MODEL_REVIEW | ERR_EVIDENCE_CEILING | ERR_AUDIT_VALIDATOR | ERR_REPORT_IMMUTABLE | ERR_POINTER_CAS | null
+      forbidden_side_effects_on_fail: [report_overwrite, latest_pointer_update, accepted_phase_status]
+    decision_cases:
+      - decision_case_id: DC-010
+        category: positive
+        fixture:
+          id: FX-010
+          input: { matrix: ready_and_hash_bound, model_review: complete, audit_validator: zero, publication: new_report_and_cas }
+        expected: { result: PUBLISHED, error_code: null, observable: immutable_report_and_new_pointer }
+        oracle: { id: ORACLE-010, pass_condition: report and pointer hashes bind exactly, evidence_level: file-integration }
+        must_not_happen: [report_overwrite, mutable_pointer]
+      - decision_case_id: DC-011
+        category: negative
+        fixture:
+          id: FX-011
+          input: { matrix: blocked_or_drifted, model_review: absent, audit_validator: nonzero, publication: collision_or_failure }
+        expected: { result: BLOCKED, error_code: ERR_MATRIX, observable: prior_pointer_preserved }
+        oracle: { id: ORACLE-011, pass_condition: no new report or pointer update is visible, evidence_level: file-integration }
+        must_not_happen: [report_publication, latest_pointer_update, accepted_phase_status]
+
+  - requirement_id: REQ-006
+    title: active governance surface is manifest-bound and findings-first
+    boundary:
+      success: Every active rule, document, Skill, script, template, test, CLI-help surface, and index/log interface appears once in a hash-bound manifest with owner and allowed references; a full scan retains every discovered mismatch as a stable finding.
+      failure: An unregistered, duplicate, hash-drifted, illegally referenced, pre-v3-exposing, or consumer-local-schema asset produces a blocking finding; the scan must continue to its complete finding set.
+      invariant: Historical or quarantined paths may be classified by path only and are never opened, parsed, migrated, displayed as a compatibility choice, or used as v3 input.
+      evidence_level: file-integration
+    contract:
+      input:
+        manifest_coverage: complete_unique_hashed | missing_duplicate_or_drifted
+        active_reference: allowed_v3_only | illegal_or_pre_v3_exposing
+        scan_completion: complete_finding_set | stopped_or_unproven
+      output:
+        result: PASS | FAIL
+        error_code: ERR_SURFACE_MANIFEST | ERR_SURFACE_REFERENCE | ERR_SURFACE_SCAN_INCOMPLETE | null
+      forbidden_side_effects_on_fail: [plan_admission, conformance_pass, implementation_start, no_open_findings_claim]
+    decision_cases:
+      - decision_case_id: DC-012
+        category: positive
+        fixture:
+          id: FX-012
+          input: { manifest_coverage: complete_unique_hashed, active_reference: allowed_v3_only, scan_completion: complete_finding_set }
+        expected: { result: PASS, error_code: null, observable: manifest_coverage_and_findings_retained }
+        oracle: { id: ORACLE-012, pass_condition: surface report lists every active asset and has only closed findings, evidence_level: file-integration }
+        must_not_happen: [quarantined_content_read, unregistered_active_asset, no_open_findings_without_coverage]
+      - decision_case_id: DC-013
+        category: negative
+        fixture:
+          id: FX-013
+          input: { manifest_coverage: missing_duplicate_or_drifted, active_reference: illegal_or_pre_v3_exposing, scan_completion: stopped_or_unproven }
+        expected: { result: FAIL, error_code: ERR_SURFACE_MANIFEST, observable: complete_blocking_finding_set }
+        oracle: { id: ORACLE-013, pass_condition: scanner exits nonzero after reporting all discovered mismatches, evidence_level: file-integration }
+        must_not_happen: [plan_admission, no_open_findings_claim, quarantined_content_read]
+
+  - requirement_id: REQ-007
+    title: every consumer conforms to one independent v3 contract corpus
+    boundary:
+      success: The same hash-bound corpus is accepted or rejected consistently by every declared v3 consumer, with matching normalized result, state, error code, forbidden-side-effect observation, and output hash.
+      failure: Any consumer disagreement, template round-trip drift, schema guessing, consumer-local parser, orphan-evidence substitution, dual-observation conflation, or CAS semantic mismatch is a blocking finding.
+      invariant: The conformance corpus is an independent approved oracle and is not generated by the parser or a consumer under test.
+      evidence_level: file-integration
+    contract:
+      input:
+        corpus: approved_common_corpus | mutated_or_unapproved
+        consumer_results: all_equivalent | disagreement_or_private_interpretation
+        mismatch_probe: rejected_by_gate | not_detected
+      output:
+        result: PASS | FAIL
+        error_code: ERR_CONFORMANCE_DISAGREEMENT | ERR_CONFORMANCE_ORACLE | ERR_CONFORMANCE_SENSITIVITY | null
+      forbidden_side_effects_on_fail: [plan_admission, audit_acceptance, report_publication, latest_pointer_update]
+    decision_cases:
+      - decision_case_id: DC-014
+        category: positive
+        fixture:
+          id: FX-014
+          input: { corpus: approved_common_corpus, consumer_results: all_equivalent, mismatch_probe: rejected_by_gate }
+        expected: { result: PASS, error_code: null, observable: all_consumers_agree_and_kill_tests_fail }
+        oracle: { id: ORACLE-014, pass_condition: conformance report records matching normalized outputs and failing intentional mismatch probes, evidence_level: file-integration }
+        must_not_happen: [consumer_local_parser, private_fixture_only, false_no_conflict_claim]
+      - decision_case_id: DC-015
+        category: negative
+        fixture:
+          id: FX-015
+          input: { corpus: mutated_or_unapproved, consumer_results: disagreement_or_private_interpretation, mismatch_probe: not_detected }
+        expected: { result: FAIL, error_code: ERR_CONFORMANCE_DISAGREEMENT, observable: disagreement_blocks_active_chain }
+        oracle: { id: ORACLE-015, pass_condition: no consumer disagreement can produce a conformance pass or publication, evidence_level: file-integration }
+        must_not_happen: [plan_admission, audit_acceptance, report_publication, latest_pointer_update]
+
+  - requirement_id: REQ-008
+    title: genesis bootstrap initializes v3 admission without reducing A-D controls
+    boundary:
+      success: A single human-approved genesis admission may establish v3 schema/parser and v3 PLAN_SET admission only after a retained unsupported-v3 probe, exact bootstrap scope lock, pre-change capture, fixed positive/negative checks, independent audit, and posthoc validation by the new v3 validator.
+      failure: A missing probe, broad or drifted scope, missing human approval, forbidden pre-v3 input, generic bypass, second bootstrap, missing posthoc validation, failed formal v3 PLAN_SET admission, or publication side effect is BLOCKED.
+      invariant: Genesis never grants phase ACCEPT, never publishes a report or LATEST pointer, and never removes a substantive A-D check.
+      evidence_level: file-integration
+    contract:
+      input:
+        activation_probe: retained_unsupported_v3 | absent_or_accepting
+        bootstrap_scope: exact_human_approved | missing_broad_or_drifted
+        posthoc_v3_validation: complete_with_formal_plan_set | absent_or_failed
+        reuse_or_side_effect: none | reuse_or_publication
+      output:
+        result: CLOSED | BLOCKED
+        error_code: ERR_BOOTSTRAP_PRECONDITION | ERR_BOOTSTRAP_SCOPE | ERR_BOOTSTRAP_APPROVAL | ERR_BOOTSTRAP_POSTHOC_VALIDATION | ERR_BOOTSTRAP_REUSE | ERR_BOOTSTRAP_SIDE_EFFECT | null
+      forbidden_side_effects_on_fail: [implementation_start, phase_accept, report_publication, latest_pointer_update, compatibility_entry]
+    decision_cases:
+      - decision_case_id: DC-016
+        category: positive
+        fixture:
+          id: FX-016
+          input: { activation_probe: retained_unsupported_v3, bootstrap_scope: exact_human_approved, posthoc_v3_validation: complete_with_formal_plan_set, reuse_or_side_effect: none }
+        expected: { result: CLOSED, error_code: null, observable: one_time_bootstrap_closed_without_phase_accept }
+        oracle: { id: ORACLE-016, pass_condition: posthoc validator verifies all bootstrap artifacts and a fresh formal v3 PLAN_SET, evidence_level: file-integration }
+        must_not_happen: [phase_accept, report_publication, latest_pointer_update, compatibility_entry]
+      - decision_case_id: DC-017
+        category: negative
+        fixture:
+          id: FX-017
+          input: { activation_probe: absent_or_accepting, bootstrap_scope: missing_broad_or_drifted, posthoc_v3_validation: absent_or_failed, reuse_or_side_effect: none }
+        expected: { result: BLOCKED, error_code: ERR_BOOTSTRAP_PRECONDITION, observable: bootstrap_rejected_before_write }
+        oracle: { id: ORACLE-017, pass_condition: no code write starts without every prewrite control, evidence_level: component }
+        must_not_happen: [implementation_start, phase_accept, compatibility_entry]
+      - decision_case_id: DC-018
+        category: negative
+        fixture:
+          id: FX-018
+          input: { activation_probe: retained_unsupported_v3, bootstrap_scope: exact_human_approved, posthoc_v3_validation: complete_with_formal_plan_set, reuse_or_side_effect: reuse_or_publication }
+        expected: { result: BLOCKED, error_code: ERR_BOOTSTRAP_REUSE, observable: second_bootstrap_or_publication_rejected }
+        oracle: { id: ORACLE-018, pass_condition: an existing CLOSED admission prevents reuse and no publication occurs, evidence_level: component }
+        must_not_happen: [implementation_start, report_publication, latest_pointer_update]
+      - decision_case_id: DC-019
+        category: negative
+        fixture:
+          id: FX-019
+          input: { activation_probe: retained_unsupported_v3, bootstrap_scope: exact_human_approved, posthoc_v3_validation: absent_or_failed, reuse_or_side_effect: none }
+        expected: { result: BLOCKED, error_code: ERR_BOOTSTRAP_POSTHOC_VALIDATION, observable: bootstrap_cannot_close_without_formal_v3_plan_set }
+        oracle: { id: ORACLE-019, pass_condition: no bootstrap receipt can close before new validator admits a formal v3 PLAN_SET, evidence_level: file-integration }
+        must_not_happen: [phase_accept, report_publication, latest_pointer_update]
+
+completion_definition:
+  design_ready_when: >-
+    An APPROVED audit-governance-approval/v3 record binds this exact canonical contract
+    and its Blueprint by SHA-256.
+  plan_ready_when: >-
+    A v3-only PLAN_SET validates against the approved canonical contract and approval record.
+  implementation_ready_when: >-
+    A code write is allowed only when either the genesis bootstrap contract is active
+    with every required prewrite artifact and exact human-approved scope lock, or a
+    normal v3 phase independently satisfies P-02/P-02A before code writes.
+  governance_complete_when: >-
+    Every selected DC has retained exact evidence, every hard gate passes, MODEL_REVIEW
+    is complete where eligible, validate-audit exits zero, surface scanning has a complete
+    closed finding set, the independent conformance corpus and mismatch probes pass, and
+    immutable publication succeeds. If genesis bootstrap was used, it is CLOSED only
+    after posthoc v3 validation and a fresh formal v3 PLAN_SET admission.

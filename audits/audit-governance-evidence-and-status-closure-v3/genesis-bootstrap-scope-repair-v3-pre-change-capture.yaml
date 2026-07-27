@@ -1,0 +1,83 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-receipt
+receipt_id: AGV3-GENESIS-BOOTSTRAP-SCOPE-REPAIR-V3-PRECHANGE-20260726
+receipt_kind: repair-v3-pre-change-capture
+document_status: CAPTURED
+immutable: true
+created_at: '2026-07-26T12:31:20Z'
+
+authority_binding:
+  repair_v3_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v3.yaml
+    sha256: 74b61e3e587a684fd507375bdd5760aebab9f0aae3b57a305d3d6ef38ecbb1d2
+  repair_v3_scope_approval:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v3-approval.json
+    sha256: 690c29a66af5cedea45f7a8c8a2dc3c46080701fcc0ad5c6976a0495abd45ffd
+    decision: APPROVED
+    approved_by: HUMAN_USER
+  prior_v2_pre_change_capture:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-replacement-v2-pre-change-capture.yaml
+    sha256: 32d9f2986ed8163620d027550f94cb2a69aa207db9ca506aea9b80bbdda22baa
+    reusable_for_this_scope: false
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  work_one_repository_root: /home/zhaoge/workspace/opencode/work-one
+  work_one_head: 64df828d56611ac121baccfaf666f147980aec85
+  work_one_status: CLEAN
+  pre_capture_git_status_canonical_json: |-
+    [{"path":".agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md","status":" M"},{"path":".agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts","status":" M"},{"path":".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts","status":" M"},{"path":"logs/INDEX.md","status":" M"},{"path":"audits/audit-governance-evidence-and-status-closure-v3/","status":"??"},{"path":"blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-bootstrap-contract.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-bootstrap-scope-submission.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-conformance-gate.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-rebaseline.md","status":"??"},{"path":"plans/audit-governance-evidence-and-status-closure-v3/","status":"??"},{"path":"scripts/lib/__tests__/","status":"??"},{"path":"scripts/lib/audit-governance-schema-v3.ts","status":"??"}]
+  pre_capture_git_status_canonical_json_sha256: a7095ad60e8e01c4afe932a5dfe2082b186f4a307931740fe1db89092f718180
+
+seven_path_target_baseline:
+  - path: scripts/lib/audit-governance-schema-v3.ts
+    sha256: 37b74a621bd31b3e2f254dd9c1638626a57c1d4afa339ab2e3cc1960a92ea7e5
+    state: IN_SCOPE_UNACCEPTED_REWORK
+  - path: scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    sha256: 501fdea5bb3ccad8e81200ad268fd10c39f1290313eb8cc3b62cd6814b9fe9cb
+    state: IN_SCOPE_UNACCEPTED_REWORK
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    sha256: 7c866d5eb633d272ea5136d5abd613d10d9f84daa886d5aafd7cad8b474dbd77
+    state: IN_SCOPE_UNACCEPTED_REWORK
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    sha256: 3d4700d289bc3e60e962b9c2dabc0f02ddc9ee072d39932ec99b4c6e1d63145a
+    state: IN_SCOPE_UNACCEPTED_REWORK
+  - path: .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    sha256: 9f7743143bc7e25e892881d9d8312627791dce8c6d345b8ff45eaae6a8a8ad11
+    state: IN_SCOPE_UNACCEPTED_REWORK
+  - path: logs/2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md
+    observed: NOT_FOUND
+  - path: logs/INDEX.md
+    sha256: 017e673b80aa386e739314ba435c7c940f4a18013715b6949b7acc69c5c66aaa
+
+execution:
+  observed:
+    - check_id: RV3PRE-001
+      command: sha256sum approved_repair_v3_scope_lock
+      result: FOUND
+      value: 74b61e3e587a684fd507375bdd5760aebab9f0aae3b57a305d3d6ef38ecbb1d2
+    - check_id: RV3PRE-002
+      command: sha256sum_each_current_unaccepted_implementation_path
+      result: FOUND
+      value: five_exact_in_scope_rework_hashes_recorded
+    - check_id: RV3PRE-003
+      command: git -C work-one status --porcelain
+      result: FOUND
+      value: CLEAN
+    - check_id: RV3PRE-004
+      command: git status --porcelain normalized_to_canonical_json
+      result: FOUND
+      value: exact_worktree_state_recorded
+  domain_observation:
+    bootstrap_state: HUMAN_APPROVED
+    implementation_state: IN_SCOPE_UNACCEPTED_REWORK
+    phase_accept: NOT_FOUND
+    audit_report: NOT_FOUND
+    latest_pointer: NOT_FOUND
+
+transition_guard:
+  capture_does_not_accept_existing_changes: true
+  allowed_next_actions: [run_repair_v3_fixed_verification, modify_only_the_seven_allowlist_paths_if_a_named_test_fails, create_approved_implementation_log_after_all_checks_pass, update_logs_index_after_log_integrity_passes]
+  prohibited_effects: [phase_accept, audit_report_write, latest_pointer_write, compatibility_entry, generic_bypass]
+  failure_convergence: BLOCKED

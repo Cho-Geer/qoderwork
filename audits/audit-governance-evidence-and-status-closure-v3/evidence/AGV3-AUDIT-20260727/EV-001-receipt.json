@@ -1,0 +1,39 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "AGV3-AUDIT-20260727",
+  "generation": 1,
+  "id": "EV-001",
+  "decision_case_id": "DC-005",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/plan-audit-archiver/scripts/generate-phase-projection.ts --canonical plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml --canonical-sha256 dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748 --scope-lock audits/audit-governance-evidence-and-status-closure-v3/scope-lock.json --scope-lock-sha256 02cb460439ef1f5e8183654bfcf8ca0f4bc9079cb7b944eebed9b2dca818ef5b --phase-id AGV3-AUDIT-20260727 --cases audits/audit-governance-evidence-and-status-closure-v3/phase-03-evidence/cases.json --output audits/audit-governance-evidence-and-status-closure-v3/phase-03-evidence/projection.json",
+  "requirement_id": "REQ-003",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-005",
+  "fixture_id": "FX-005",
+  "evidence_level": "integration",
+  "repository_state_sha256": "5521216c78378b5ca258163a0da725f10ca3f4aab9c6e006534bb5ab62b5c1bb",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [
+    "future_scope_hash_in_canonical"
+  ],
+  "projection_sha256": "2e1eb139d6747088c2b3f7752d6b4eb1d0ebb572000fadd025b940d9495db37b",
+  "canonical_sha256": "dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3",
+  "artifacts": [
+    {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/evidence/AGV3-AUDIT-20260727/EV-001-artifact.txt",
+      "sha256": "14b480daafe0306a8bf153f9110f95f0bec56570dce3b12886b2ff2604a985a6"
+    }
+  ],
+  "completed_at": "2026-07-27T14:45:13.387Z",
+  "observed": "PASS"
+}

@@ -1,0 +1,244 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-scope-lock
+scope_lock_id: AGV3-GENESIS-BOOTSTRAP-SCOPE-20260726
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+created_at: '2026-07-26T11:08:00Z'
+
+scope:
+  status: FROZEN
+  approval_status: PENDING
+  approval_required_from: HUMAN_USER
+  approval_rule: >-
+    No governance source-code or test file may be written until the HUMAN_USER has
+    approved this exact file SHA-256 in an immutable scope-approval decision.
+  pre_change_capture:
+    status: NOT_CREATED
+    allowed_only_after: exact_scope_lock_hash_has_HUMAN_USER_approval
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  design_approval_decision:
+    path: audits/audit-governance-evidence-and-status-closure-v3/approval-decision-bootstrap-amendment.json
+    sha256: d6b35ae702648a488402a8b62f1327aa0c115681074ee947653080c189809350
+    decision: APPROVED
+  genesis_admission:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-admission.yaml
+    sha256: 20bf4624e58919f932c00d9ba083954389ba483658001df1da842debc7ce7ff3
+    activation_probe: RETAINED_UNSUPPORTED_V3
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  work_one_repository_root: /home/zhaoge/workspace/opencode/work-one
+  work_one_head: 64df828d56611ac121baccfaf666f147980aec85
+  work_one_status: CLEAN
+  codegraph:
+    index_root: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+    indexed_at_state: UP_TO_DATE
+    impact_summary_canonical_json: |-
+      {"caller_files":[".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts"],"caller_tests":[".agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts"],"commands":["codegraph callers validatePlanSet","codegraph callers checkBoundaryContract","codegraph callers validateSingle","codegraph impact validatePlanSet"],"modified_functions":[".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts::checkBoundaryContract",".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts::validatePlanSet",".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts::validateSingle"],"shared_functions":[]}
+    impact_summary_sha256: 7e63e60cd194dcf719e6490e6d66733115c5804e08a5b0d42ed3af7dce19b97e
+    modified_functions:
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts::checkBoundaryContract
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts::validatePlanSet
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts::validateSingle
+    shared_functions: []
+    caller_files:
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    caller_tests:
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    commands_executed:
+      - codegraph callers validatePlanSet
+      - codegraph callers checkBoundaryContract
+      - codegraph callers validateSingle
+      - codegraph impact validatePlanSet
+
+implementation_goal: >-
+  Establish the shared audit-governance v3 parser, path guard, hash/identity and
+  evidence-level comparators, then make PLAN_SET admission consume that shared
+  implementation. This is the bootstrap-only prerequisite for a later formal v3
+  PLAN_SET; it neither admits a phase nor implements any later governance surface.
+
+canonical_requirements_traceability:
+  - requirement: REQ-001
+    decision_case: DC-001
+    controls: [GPOS-001, GNEG-002, GNEG-003]
+    oracle: exact_v3_plan_admission_with_matching_approval_binding
+  - requirement: REQ-001
+    decision_case: DC-002
+    controls: [GNEG-001]
+    oracle: non_v3_input_rejected_before_phase_admission
+  - requirement: REQ-002
+    decision_case: DC-003
+    controls: [GPOS-002]
+    oracle: every_known_schema_pair_is_parsed_only_by_the_shared_parser
+  - requirement: REQ-002
+    decision_case: DC-004
+    controls: [GNEG-004]
+    oracle: mismatched_schema_pair_is_rejected_before_any_consumer_action
+  - requirement: REQ-008
+    decision_case: DC-017
+    controls: [GNEG-006, GNEG-008]
+    oracle: missing_or_hash_mismatched_human_scope_approval_blocks_before_write
+  - requirement: REQ-008
+    decision_case: DC-018
+    controls: [GNEG-005]
+    oracle: second_genesis_identity_is_rejected_without_publication
+  - requirement: REQ-008
+    decision_case: DC-019
+    controls: [GNEG-007]
+    oracle: bootstrap_cannot_close_without_posthoc_v3_plan_set_admission
+
+allowlist:
+  - path: scripts/lib/audit-governance-schema-v3.ts
+    change: CREATE
+    required_content: strict schema-pair registry, parser, path guard, SHA-256 identity comparator, and evidence-level comparator
+  - path: scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    change: CREATE
+    required_content: unit coverage for every known discriminator pair and each bootstrap guard mutation
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    change: MODIFY
+    required_content: v3-only PLAN_SET admission through the shared parser; reject unsupported schema, missing approval, and approval-hash drift before phase admission
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    change: MODIFY
+    required_content: replace pre-v3 fixtures with v3-only fixtures and cover fixed positive plus single-mutation failures
+  - path: .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    change: MODIFY
+    required_content: v3-only index, approved decision binding, canonical hash binding, and no compatibility-facing input
+
+explicitly_forbidden:
+  - any_path_not_in_allowlist
+  - work_one_product_code_or_configuration
+  - phase_progression_script_or_template
+  - audit_precheck_validator_or_publication_script
+  - governance_surface_validator_or_conformance_runner
+  - approval_decision_mutation
+  - genesis_admission_mutation
+  - genesis_scope_lock_mutation_after_approval
+  - pre_v3_plan_or_profile_input
+  - compatibility_reader_adapter_or_display_entry
+  - generic_exemption_or_bypass
+  - phase_accept_audit_report_or_latest_pointer
+
+fixed_contract:
+  schema_registry:
+    exact_known_pairs:
+      - audit-governance/v3::canonical-requirements
+      - audit-phase-projection/v3::phase-projection
+      - audit-evidence-receipt/v3::evidence-receipt
+      - audit-boundary-matrix/v3::boundary-matrix
+      - audit-governance-approval/v3::approval-decision
+      - audit-governance-approval/v3::approval-request
+      - audit-scope-lock/v3::phase-scope-lock
+      - audit-plan-set/v3::plan-set-index
+      - audit-phase-progression/v3::phase-progression-receipt
+      - audit-contract/v3::audit-contract
+      - audit-report/v3::audit-report
+      - audit-latest-pointer/v3::latest-pointer
+      - audit-governance-surface/v3::governance-surface-manifest
+      - audit-governance-conformance/v3::contract-conformance-report
+      - audit-governance-bootstrap/v3::genesis-bootstrap-admission
+      - audit-governance-bootstrap/v3::genesis-bootstrap-scope-lock
+      - audit-governance-bootstrap/v3::genesis-bootstrap-receipt
+    rejection_contract:
+      unknown_or_mismatched_pair: ERR_SCHEMA_DISCRIMINATOR
+      non_v3_plan_input: ERR_PLAN_SCHEMA_UNSUPPORTED
+      absent_or_nonapproved_decision: ERR_APPROVAL_MISSING
+      canonical_or_approval_hash_drift: ERR_APPROVAL_BINDING
+      escaped_path: ERR_PATH_GUARD
+      duplicate_or_second_genesis_identity: ERR_BOOTSTRAP_REUSE
+      unapproved_scope_or_missing_pre_change_capture: ERR_BOOTSTRAP_PRECONDITION
+      scope_approval_hash_mismatch: ERR_BOOTSTRAP_APPROVAL
+      closed_without_posthoc_v3_plan_set: ERR_BOOTSTRAP_POSTHOC_VALIDATION
+  plan_admission:
+    required_index_pair: audit-plan-set/v3::plan-set-index
+    required_canonical_pair: audit-governance/v3::canonical-requirements
+    required_decision: exact_hash_bound_HUMAN_USER_APPROVED_approval_decision
+    admission_success: PASS
+    admission_failure_side_effects_forbidden: [phase_admission, scope_lock_creation, implementation_start, receipt_write, audit_report_write, latest_pointer_write]
+  bootstrap_state_order:
+    allowed: DRAFT->HUMAN_APPROVED->IMPLEMENTING->POSTHOC_V3_VALIDATED->CLOSED
+    blocked_on_any_failure: true
+
+fixed_positive_check:
+  check_id: GPOS-001
+  fixture: >-
+    A fresh temporary PLAN_SET with an audit-plan-set/v3 index, the approved
+    audit-governance/v3 canonical path and SHA-256, and an exact HUMAN_USER
+    approval decision binding the same hashes.
+  expected: { result: PASS, phase_admission: false, implementation_start: false }
+  oracle: PLAN_SET structural admission succeeds and no lifecycle artifact is written
+  additional_check:
+    check_id: GPOS-002
+    fixture: one source object for each of the seventeen exact schema/document-kind pairs
+    expected: { result: PASS, parser_origin: shared_v3_parser }
+    oracle: each known pair is parsed by the shared parser without field-shape inference
+
+single_mutation_negatives:
+  - check_id: GNEG-001
+    mutation: replace only the plan schema pair with a non-v3 pair
+    expected_error: ERR_PLAN_SCHEMA_UNSUPPORTED
+    must_not_happen: [phase_admission, scope_lock_creation, implementation_start]
+  - check_id: GNEG-002
+    mutation: change only the canonical SHA-256 while retaining the v3 document pairs
+    expected_error: ERR_APPROVAL_BINDING
+    must_not_happen: [phase_admission, receipt_write, audit_report_write]
+  - check_id: GNEG-003
+    mutation: remove only the approval decision binding
+    expected_error: ERR_APPROVAL_MISSING
+    must_not_happen: [phase_admission, scope_lock_creation, implementation_start]
+  - check_id: GNEG-004
+    mutation: replace only one known schema/document-kind discriminator pair with a mismatched pair
+    expected_error: ERR_SCHEMA_DISCRIMINATOR
+    must_not_happen: [plan_admission, projection_generation, matrix_write]
+  - check_id: GNEG-005
+    mutation: attempt a second genesis identity after the first identity is recorded
+    expected_error: ERR_BOOTSTRAP_REUSE
+    must_not_happen: [implementation_start, phase_accept, audit_report_write, latest_pointer_write]
+  - check_id: GNEG-006
+    mutation: create a bootstrap receipt state before a hash-approved scope decision
+    expected_error: ERR_BOOTSTRAP_PRECONDITION
+    must_not_happen: [implementation_start, phase_accept, audit_report_write, latest_pointer_write]
+  - check_id: GNEG-007
+    mutation: attempt to close bootstrap without a fresh formal v3 PLAN_SET admission
+    expected_error: ERR_BOOTSTRAP_POSTHOC_VALIDATION
+    must_not_happen: [phase_accept, audit_report_write, latest_pointer_write]
+  - check_id: GNEG-008
+    mutation: retain an approval decision whose scope-lock SHA-256 differs from this frozen scope lock
+    expected_error: ERR_BOOTSTRAP_APPROVAL
+    must_not_happen: [pre_change_capture, implementation_start, phase_accept]
+
+fixed_verification:
+  - command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    level: unit
+  - command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    level: component
+  - command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run typecheck
+    level: component
+  - command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && codegraph sync && codegraph callers parseAuditGovernanceV3Document
+    level: static-architecture
+    expected_callers: [.agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts]
+  - command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && rg -n 'legacy-exempt|boundary-contract/v1' scripts/lib/audit-governance-schema-v3.ts scripts/lib/__tests__/audit-governance-schema-v3.test.ts .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    level: static-architecture
+    expected_exit: 1
+
+failure_convergence:
+  any_nonzero_fixed_command: BLOCKED
+  allowlist_violation: BLOCKED
+  scope_hash_drift: BLOCKED
+  missing_pre_change_capture: BLOCKED
+  forbidden_side_effect: BLOCKED
+  model_explanation_can_override: false
+
+next_required_transition:
+  transition: FROZEN_PENDING_HUMAN_APPROVAL->HUMAN_APPROVED
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-approval.json
+  required_fields: [scope_lock_path, scope_lock_sha256, decision, approved_by, approved_at, bootstrap_state_transition]
+  required_bootstrap_state_transition: DRAFT->HUMAN_APPROVED
+  following_transition: HUMAN_APPROVED->IMPLEMENTING only after a valid pre-change capture binds this approved scope decision
+  prohibited_before_transition: [pre_change_capture, code_write, test_write]

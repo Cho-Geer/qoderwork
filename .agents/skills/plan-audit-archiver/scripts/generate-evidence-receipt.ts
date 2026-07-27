@@ -1,24 +1,34 @@
 #!/usr/bin/env bun
-// generate-evidence-receipt.ts — EV-NNN execution receipt 生成器
+// generate-evidence-receipt.ts — EV-NNN execution receipt 生成器 (v3)
 //
-// 用途: 真实执行一条验证命令，捕获 stdout/stderr/exitCode，按 evidence-receipt-template.json
-// schema 生成 immutable receipt JSON + artifact 文件。observed 由 exit_code 推导，
-// 不接受手动覆盖为 PASS/FAIL，杜绝"模拟执行"蒙混。
+// 用途: 真实执行一条验证命令，捕获 stdout/stderr/exitCode，按 v3 evidence-receipt
+// schema 生成 immutable receipt JSON + artifact 文件。
+//
+// v3 升级:
+//   - schema_version: "audit-evidence-receipt/v3", document_kind: "evidence-receipt"
+//   - 双观察: execution.observed (由 exit_code 推导) 与 domain_observation.result (由 --domain-result 提供)
+//   - 新增 decision_case_id, forbidden_side_effects_observed, projection/canonical hash 绑定
+//   - execution.observed 与 domain_observation.result 必须区分，二者均不得从 prose 推断
 //
 // 设计原则:
 //   1. command 真实执行（Bun.spawnSync），exit_code/observed/artifact 均来自真实运行
-//   2. observed 仅由 exit_code 推导（0→PASS, 非0→FAIL）；--observed-override 仅限 BLOCKED/NOT_RUN/N/A
-//   3. artifact 内容 = 真实 stdout + stderr 合并，不接受手动提供
-//   4. flag "wx" 禁止覆盖已有 receipt/artifact 文件
-//   5. 写前全参数校验；写入失败时回滚（删除已写文件）
-//   6. cwd 必须在 workspace-root 或 repository-root 之内
+//   2. execution.observed 仅由 exit_code 推导（0→PASS, 非0→FAIL）；--observed-override 仅限 BLOCKED/NOT_RUN/N/A
+//   3. domain_observation.result 由 --domain-result 显式提供，不从 prose 推断
+//   4. artifact 内容 = 真实 stdout + stderr 合并，不接受手动提供
+//   5. flag "wx" 禁止覆盖已有 receipt/artifact 文件
+//   6. 写前全参数校验；写入失败时回滚（删除已写文件）
+//   7. cwd 必须在 workspace-root 或 repository-root 之内
 //
 // 用法:
 //   bun run .agents/skills/plan-audit-archiver/scripts/generate-evidence-receipt.ts \
 //     --audit-id <string> --generation <number> --receipt-id EV-001 \
-//     --requirement-id REQ-001 --polarity POSITIVE --oracle-id ORACLE-001 \
+//     --requirement-id REQ-001 --decision-case-id DC-001 \
+//     --polarity POSITIVE --oracle-id ORACLE-001 \
 //     --fixture-id FIXTURE-GOOD-001 --evidence-level component \
 //     --verdict-state-sha256 <64hex> \
+//     --domain-result SUCCESS --domain-error-code <code|null> \
+//     --forbidden-side-effects '["effect1"]' \
+//     --projection-sha256 <64hex> --canonical-sha256 <64hex> \
 //     --cwd <absolute-path> --command "cd <cwd> && <cmd>" \
 //     --receipt-path <path> --artifact-path <path> \
 //     --workspace-root <path> --repository-root <path> \
@@ -31,6 +41,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
+import { parseAuditGovernanceV3Document } from "../../../../scripts/lib/audit-governance-schema-v3.ts";
 
 const ALLOWED_POLARITIES = new Set(["POSITIVE", "NEGATIVE", "POST_FIX"]);
 const ALLOWED_OBSERVED_OVERRIDE = new Set(["BLOCKED", "NOT_RUN", "N/A"]);
@@ -74,11 +85,17 @@ type ValidatedArgs = {
   generation: number;
   receiptId: string;
   requirementId: string;
+  decisionCaseId: string;
   polarity: string;
   oracleId: string;
   fixtureId: string;
   evidenceLevel: string;
   verdictStateSha256: string;
+  domainResult: string;
+  domainErrorCode: string | null;
+  forbiddenSideEffects: string[];
+  projectionSha256: string;
+  canonicalSha256: string;
   cwd: string;
   command: string;
   receiptPath: string;
@@ -101,6 +118,9 @@ function validateArguments(): ValidatedArgs {
   const requirementId = requiredArgument("--requirement-id");
   if (requirementId.length === 0) fail("--requirement-id must not be empty");
 
+  const decisionCaseId = requiredArgument("--decision-case-id");
+  if (!/^DC-\d+$/.test(decisionCaseId)) fail(`--decision-case-id must match DC-NNN, got: ${decisionCaseId}`);
+
   const polarity = requiredArgument("--polarity");
   if (!ALLOWED_POLARITIES.has(polarity)) fail(`--polarity must be one of ${[...ALLOWED_POLARITIES].join("/")}, got: ${polarity}`);
 
@@ -115,6 +135,31 @@ function validateArguments(): ValidatedArgs {
 
   const verdictStateSha256 = requiredArgument("--verdict-state-sha256");
   if (!SHA256_RE.test(verdictStateSha256)) fail(`--verdict-state-sha256 must be 64 hex chars, got: ${verdictStateSha256}`);
+
+  const domainResult = requiredArgument("--domain-result");
+  if (domainResult.length === 0) fail("--domain-result must not be empty");
+
+  const domainErrorCodeRaw = optionalArgument("--domain-error-code");
+  const domainErrorCode = domainErrorCodeRaw === "null" || domainErrorCodeRaw === undefined ? null : domainErrorCodeRaw;
+
+  const forbiddenSideEffectsRaw = optionalArgument("--forbidden-side-effects");
+  let forbiddenSideEffects: string[] = [];
+  if (forbiddenSideEffectsRaw !== undefined) {
+    try {
+      const parsed = JSON.parse(forbiddenSideEffectsRaw);
+      if (!Array.isArray(parsed)) fail("--forbidden-side-effects must be a JSON array");
+      forbiddenSideEffects = parsed.map(String);
+    } catch (err) {
+      if (err instanceof Error && err.message.startsWith("--")) throw err;
+      fail(`--forbidden-side-effects must be valid JSON array: ${err}`);
+    }
+  }
+
+  const projectionSha256 = requiredArgument("--projection-sha256");
+  if (!SHA256_RE.test(projectionSha256)) fail(`--projection-sha256 must be 64 hex chars, got: ${projectionSha256}`);
+
+  const canonicalSha256 = requiredArgument("--canonical-sha256");
+  if (!SHA256_RE.test(canonicalSha256)) fail(`--canonical-sha256 must be 64 hex chars, got: ${canonicalSha256}`);
 
   const cwd = requiredArgument("--cwd");
   if (!isAbsolute(cwd)) fail(`--cwd must be absolute, got: ${cwd}`);
@@ -161,7 +206,7 @@ function validateArguments(): ValidatedArgs {
     if (!Number.isInteger(timeoutMs) || timeoutMs < 1) fail(`--timeout must be a positive integer (ms), got: ${timeoutRaw}`);
   }
 
-  return { auditId, generation, receiptId, requirementId, polarity, oracleId, fixtureId, evidenceLevel, verdictStateSha256, cwd, command, receiptPath, artifactPath, workspaceRoot, repositoryRoot, observedOverride, timeoutMs };
+  return { auditId, generation, receiptId, requirementId, decisionCaseId, polarity, oracleId, fixtureId, evidenceLevel, verdictStateSha256, domainResult, domainErrorCode, forbiddenSideEffects, projectionSha256, canonicalSha256, cwd, command, receiptPath, artifactPath, workspaceRoot, repositoryRoot, observedOverride, timeoutMs };
 }
 
 type ExecutionResult = {
@@ -229,12 +274,13 @@ function writeArtifactAndReceipt(args: ValidatedArgs, result: ExecutionResult, o
 
     const completedAt = new Date().toISOString();
     const receiptPayload = {
-      schema_version: "1.0",
+      schema_version: "audit-evidence-receipt/v3",
+      document_kind: "evidence-receipt",
       audit_id: args.auditId,
       generation: args.generation,
       id: args.receiptId,
+      decision_case_id: args.decisionCaseId,
       command: args.command,
-      observed,
       requirement_id: args.requirementId,
       polarity: args.polarity,
       oracle_id: args.oracleId,
@@ -242,10 +288,29 @@ function writeArtifactAndReceipt(args: ValidatedArgs, result: ExecutionResult, o
       evidence_level: args.evidenceLevel,
       repository_state_sha256: args.verdictStateSha256,
       exit_code: result.exitCode,
+      execution: {
+        observed,
+        exit_code: result.exitCode,
+        timed_out: result.timedOut,
+      },
+      domain_observation: {
+        result: args.domainResult,
+        error_code: args.domainErrorCode,
+      },
+      forbidden_side_effects_observed: args.forbiddenSideEffects,
+      projection_sha256: args.projectionSha256,
+      canonical_sha256: args.canonicalSha256,
       cwd: args.cwd,
       artifacts: [{ path: artifactRelPath, sha256: artifactSha256 }],
       completed_at: completedAt,
     };
+
+    // Validate receipt through shared parser before writing
+    const receiptValidation = parseAuditGovernanceV3Document(receiptPayload);
+    if (!receiptValidation.ok) {
+      throw new Error(`receipt failed shared parser validation: ${receiptValidation.error} — ${receiptValidation.message}`);
+    }
+
     const receiptContent = `${JSON.stringify(receiptPayload, null, 2)}\n`;
 
     ensureParentDir(args.receiptPath);

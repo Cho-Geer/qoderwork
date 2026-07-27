@@ -1,0 +1,102 @@
+schema_version: audit-evidence-receipt/v3
+document_kind: evidence-receipt
+receipt_id: AGV3-PHASE-02-PRECHANGE-20260726
+receipt_kind: phase-02-pre-change-capture
+document_status: CAPTURED
+immutable: true
+created_at: '2026-07-26T16:55:00Z'
+
+authority_binding:
+  phase_02_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/phase-02-scope-lock.yaml
+    sha256: 859d72148060f107c922259a93a96261972b6346edc45111615a74661e9c8c76
+  phase_02_scope_approval:
+    path: audits/audit-governance-evidence-and-status-closure-v3/phase-02-scope-approval.json
+    sha256: 412e9c7c370b1f20bccd002bb7ff129f8ed15db3d2956fe098e16bce0829fa4b
+    decision: APPROVED
+    approved_by: HUMAN_USER
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  work_one_repository_root: /home/zhaoge/workspace/opencode/work-one
+  work_one_head: 64df828d56611ac121baccfaf666f147980aec85
+  work_one_status: CLEAN
+  pre_capture_git_status_canonical_json_sha256: 01ec18d40b7569a074d530620322cf1bb2c6b25ed3376dd79002014e88b52f4f
+
+modified_path_baseline:
+  - path: .agents/skills/deterministic-implementation-planning/scripts/phase-progression.ts
+    sha256: 2cbc51a0f52f61fea6df87259a939adebb59527ad96be3683380a2c07c083d65
+    state: IN_SCOPE_PENDING_RECEIPT_DISCRIMINATION_V3
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts
+    sha256: 84b2e9d2fee2775a3cce7eaf98548d2e469d55ac72235fd63b8748f465f27b11
+    state: IN_SCOPE_PENDING_RECEIPT_CALL_PATH
+  - path: .agents/skills/deterministic-implementation-planning/scripts/phase-progression.test.ts
+    sha256: 97db80417a5cd3fcb368d591aaedd356cb29405227d6b942a99ee84fbacd219f
+    state: IN_SCOPE_PENDING_FIXTURE_V3
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.test.ts
+    sha256: 6f1ca815847fb59241cb71311d1991b8452d637fdbc5cd820c3c5f4a5f0179df
+    state: IN_SCOPE_PENDING_FIXTURE_V3
+  - path: .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    sha256: 9f7743143bc7e25e892881d9d8312627791dce8c6d345b8ff45eaae6a8a8ad11
+    state: IN_SCOPE_PENDING_PROGRESSION_TEMPLATE_FIX
+  - path: .agents/skills/deterministic-implementation-planning/SKILL.md
+    sha256: 0df8237804c3df0f348bdcafe1fb19541e6413c9dfdf8dd94b0d05261a78cbe8
+    state: IN_SCOPE_PENDING_PROGRESSION_CONTRACT_DOC_UPDATE
+  - path: scripts/lib/scan-governance-surface.ts
+    sha256: 0669db9acf6e1d3a41248a2496e2abeb1eef246ca5297f2f65d5b405b381509e
+    state: IN_SCOPE_PENDING_SCANNER_REFINEMENT
+  - path: scripts/lib/__tests__/scan-governance-surface.test.ts
+    sha256: e7b064c17e94b324d2ef631e39f6fb7dc682eaf58c27f5e41dd196d95d9b2d97
+    state: IN_SCOPE_PENDING_SCANNER_TEST_UPDATE
+  - path: scripts/lib/governance-surface-manifest.yaml
+    sha256: b5f28a7903569997f0f124004cafccb0b357916e8991f37ef02e5b2939800ca4
+    state: IN_SCOPE_PENDING_MANIFEST_SYNC
+  - path: logs/INDEX.md
+    sha256: cda986c85587e2853025962771dfde65c8beda49296749265629bdb06431e918
+    state: IN_SCOPE_PENDING_LOG_INDEX_UPDATE
+
+added_path_baseline:
+  - path: audits/audit-governance-evidence-and-status-closure-v3/phase-02-evidence/
+    observed: NOT_FOUND
+  - path: logs/2026-07-26-audit-governance-v3-phase-02-progression-v3.md
+    observed: NOT_FOUND
+
+execution:
+  observed:
+    - check_id: P02PRE-001
+      command: sha256sum_approved_phase_02_scope_lock
+      result: FOUND
+      value: 859d72148060f107c922259a93a96261972b6346edc45111615a74661e9c8c76
+    - check_id: P02PRE-002
+      command: sha256sum_phase_02_scope_approval
+      result: FOUND
+      value: 412e9c7c370b1f20bccd002bb7ff129f8ed15db3d2956fe098e16bce0829fa4b
+    - check_id: P02PRE-003
+      command: sha256sum_each_modified_path_and_record_added_not_found
+      result: FOUND
+      value: ten_modified_hashes_and_two_added_not_found_recorded
+    - check_id: P02PRE-004
+      command: git_status_porcelain_normalized_to_canonical_json
+      result: FOUND
+      value: exact_worktree_state_recorded
+    - check_id: P02PRE-005
+      command: git_C_work_one_status_porcelain
+      result: FOUND
+      value: CLEAN
+  domain_observation:
+    phase_state: NOT_STARTED
+    receipt_discrimination: CONSUMER_LOCAL_PHASE_PROGRESSION_V1
+    progression_marker: PHASE_PROGRESSION_V1_UNCHANGED
+    phase_accept: NOT_FOUND
+    audit_report: NOT_FOUND
+    latest_pointer: NOT_FOUND
+
+transition_guard:
+  capture_does_not_accept_existing_changes: true
+  allowed_next_actions: [v3ify_receipt_discrimination_via_shared_parser, update_progression_tests, fix_plan_set_template_progression_markers, update_skill_doc, refine_scanner_detection, update_scanner_tests, sync_surface_manifest, add_phase_02_log, update_logs_index, run_phase_02_fixed_verification]
+  prohibited_effects: [phase_accept, audit_report_write, latest_pointer_write, compatibility_entry, generic_bypass, shared_parser_code_change, plan_index_marker_migration, not_started_gate_change, audit_report_binding_tightening, quarantined_content_read]
+  failure_convergence: BLOCKED

@@ -1,0 +1,7 @@
+schema_version: audit-governance-latest/v3
+document_kind: latest-pointer
+report_filename: audit-report.json
+report_sha256: 537e1dcb83c75bce8fc55db6a49ba6132e1beb3ea02e287999219a3d9ff43f8b
+settles:
+  canonical_contract_sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  scope_lock_sha256: 02cb460439ef1f5e8183654bfcf8ca0f4bc9079cb7b944eebed9b2dca818ef5b

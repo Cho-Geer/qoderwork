@@ -1,0 +1,286 @@
+schema_version: audit-scope-lock/v3
+document_kind: phase-scope-lock
+scope_lock_id: AGV3-PHASE-03-RECEIPT-PROJECTION-PRECHECK-SCOPE-LOCK-20260727
+phase_id: PHASE-03
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+provenance_level: v3-required
+created_at: '2026-07-27T00:10:00Z'
+
+purpose: >-
+  Freeze PHASE-03: v3-ify the audit evidence chain. Add a phase-projection generator,
+  rewrite the boundary precheck to consume projection-declared explicit receipt paths
+  (no directory enumeration) and emit a v3 boundary matrix, upgrade the evidence
+  receipt generator and template to the dual-observation v3 contract, v3-ify the
+  capture-state receipt discrimination, and synchronize the surface manifest and
+  conformance set. The precheck remains mechanical and never issues a verdict; it
+  outputs only READY_FOR_LLM_REVIEW or BLOCKED. Formal phase ACCEPT remains out of
+  scope and depends on the phase 4 audit chain.
+
+scope_decision:
+  chosen: projection_generator_plus_receipt_precheck_v3_plus_capture_state_v3
+  capture_state_classification: >-
+    The capture-state repository-state receipt is classified as
+    audit-evidence-receipt/v3::evidence-receipt because the shared parser SCHEMA_PAIRS
+    has no dedicated state-receipt kind and the parser is not writable; this matches the
+    classification already used for pre-change captures in this plan.
+  deferred:
+    - scope-lock-template.json pre-v3 schema_version and provenance-exposure findings (not core to the evidence chain; remain OPEN)
+    - prepare-audit.ts, pre-check-evidence.ts, validate-audit.ts v3-ification (phase 4)
+  rationale: >-
+    Phase 3 builds the projection/receipt/matrix evidence chain that the phase 4 audit
+    chain consumes. It does not depend on phase 4 because the precheck outputs only
+    READY_FOR_LLM_REVIEW or BLOCKED and never consumes an audit contract.
+
+requirements_selection:
+  selected:
+    - requirement_id: REQ-003
+      title: phase projection binds exact canonical, scope, and selected cases
+      decision_cases: [DC-005, DC-006]
+      evidence_level: file-integration
+    - requirement_id: REQ-004
+      title: receipt and precheck use explicit evidence with dual observations
+      decision_cases: [DC-007, DC-008, DC-009]
+      evidence_level: file-integration
+  unselected_cases_are_out_of_scope: true
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  formal_plan_set_index:
+    path: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+  phase_02_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/phase-02-scope-lock.yaml
+    sha256: 859d72148060f107c922259a93a96261972b6346edc45111615a74661e9c8c76
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  repository_root: /home/zhaoge/workspace/opencode/work-one
+  repository_head: 64df828d56611ac121baccfaf666f147980aec85
+  repository_status_at_design: CLEAN
+  recheck_required_before_capture: true
+
+fix_contract:
+  projection_generator:
+    target: .agents/skills/plan-audit-archiver/scripts/generate-phase-projection.ts
+    change: >-
+      New script. Generate a phase projection (audit-phase-projection/v3::phase-projection)
+      that binds the approved canonical path/hash, its own phase scope-lock path/hash, the
+      selected REQ/DC identities, fixture/oracle IDs, and explicit receipt path declarations.
+      Missing, duplicate, unselected, or mutated REQ/DC, fixture, oracle, canonical hash, or
+      scope-lock hash is BLOCKED (ERR_CANONICAL_HASH / ERR_SCOPE_LOCK_HASH / ERR_CASE_SELECTION).
+      Must use the shared parser. Satisfies REQ-003 DC-005 (READY) and DC-006 (BLOCKED).
+  boundary_precheck:
+    target: .agents/skills/plan-audit-archiver/scripts/audit-boundary-precheck.ts
+    change: >-
+      Replace the boundary-contract/v1 input and the recursive evidence-directory enumeration
+      with consumption of a v3 phase projection that declares explicit receipt paths. Validate
+      each declared receipt path is nested within the approved evidence root (reject path escape
+      and symlink escape with ERR_RECEIPT_PATH), exists (ERR_RECEIPT_NOT_FOUND), and matches its
+      declared hash, REQ/DC identity, fixture, oracle, dual observation, and forbidden-side-effect
+      observation. Emit a v3 boundary matrix (audit-boundary-matrix/v3::boundary-matrix) binding
+      the projection path/hash and each covered receipt path/hash. Output only
+      READY_FOR_LLM_REVIEW or BLOCKED. Must use the shared parser. Satisfies REQ-004 DC-007/008/009.
+    preserved: the precheck never issues an audit verdict.
+  receipt_generator:
+    target: .agents/skills/plan-audit-archiver/scripts/generate-evidence-receipt.ts
+    change: >-
+      Upgrade the receipt to audit-evidence-receipt/v3::evidence-receipt via the shared parser.
+      Add decision_case_id, the nested execution.observed (PASS/FAIL consistent with the real
+      exit_code), domain_observation.result (exact comparison against the DC expected.result),
+      domain_observation.error_code, forbidden_side_effects_observed, and projection/canonical
+      hash binding. Preserve the trusted-runner guarantees: observed derived only from exit_code,
+      override limited to BLOCKED/NOT_RUN/N/A, EV-NNN/ORACLE-NNN validation, cd-prefix command
+      rule, trivial-command rejection, cwd containment, write-once protection, and rollback on
+      write failure. execution.observed and domain_observation.result remain distinct and neither
+      is inferred from prose.
+  receipt_template:
+    target: .agents/skills/plan-audit-archiver/templates/evidence-receipt-template.json
+    change: >-
+      Upgrade to audit-evidence-receipt/v3 with the dual-observation fields and decision_case_id,
+      eliminating the prior generator/template decision_case_id drift.
+  capture_state:
+    target: .agents/skills/plan-audit-archiver/scripts/capture-state.ts
+    change: >-
+      Discriminate the repository-state receipt as audit-evidence-receipt/v3::evidence-receipt via
+      the shared parser, replacing the consumer-local schema_version 1.0. Preserve the git
+      porcelain capture, per-path content_sha256, scope-lock binding, freeze behavior, and
+      canonical_sha256 stability.
+  manifest_sync:
+    target: scripts/lib/governance-surface-manifest.yaml
+    change: >-
+      Add a registered entry for generate-phase-projection.ts; add scripts/lib/audit-governance-schema-v3.ts
+      to the allowed_references of audit-boundary-precheck.ts, generate-evidence-receipt.ts, and
+      capture-state.ts; and update the sha256 of every modified or added registered asset so the
+      surface scan does not self-flag an illegal reference or hash drift.
+  conformance_extension:
+    targets:
+      - scripts/lib/run-conformance.ts
+      - scripts/lib/conformance-corpus/corpus.json
+    change: >-
+      Declare the rewired audit-boundary-precheck.ts, generate-evidence-receipt.ts, capture-state.ts,
+      and the new generate-phase-projection.ts as v3 consumers in the conformance runner, and extend
+      the independent corpus with field-level legal and single-mutation samples plus dual-observation,
+      orphan-receipt, and path-escape mismatch probes for the projection/receipt/matrix kinds. The
+      corpus remains an independent oracle not generated by the parser or any consumer under test.
+  formal_plan_set_phase_row:
+    target: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+    change: >-
+      Add the PHASE-03 manifest row (depends on PHASE-01, Status NOT_STARTED) and the corresponding
+      03-phase-receipt-projection-precheck.md phase file, keeping validate-phase-progression exit 0.
+
+findings_disposition:
+  closes:
+    - F-CONSUMER-LOCAL:audit-boundary-precheck.ts:boundary-contract/v1
+    - F-CONSUMER-LOCAL:capture-state.ts:schema_version
+    - F-CONSUMER-LOCAL:generate-evidence-receipt.ts:schema_version
+    - F-CONSUMER-LOCAL:evidence-receipt-template.json:pre-v3-schema_version
+  stays_open:
+    - F-CONSUMER-LOCAL:validate-audit.ts:schema_version-2.1
+    - F-CONSUMER-LOCAL:validate-audit.ts:audit-boundary-matrix/v1
+    - F-CONSUMER-LOCAL:prepare-audit.ts:schema_version
+    - F-CONSUMER-LOCAL:pre-check-evidence.ts:schema_version
+    - F-CONSUMER-LOCAL:scope-lock-template.json:pre-v3-schema_version
+    - F-CONSUMER-LOCAL:scope-lock-template.json:provenance-exposure
+  closure_requires_receipt_evidence: true
+
+effective_allowlist:
+  added_paths:
+    - .agents/skills/plan-audit-archiver/scripts/generate-phase-projection.ts
+    - .agents/skills/plan-audit-archiver/scripts/__tests__/generate-phase-projection.test.ts
+    - .agents/skills/plan-audit-archiver/templates/phase-projection-template.json
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/03-phase-receipt-projection-precheck.md
+    - audits/audit-governance-evidence-and-status-closure-v3/phase-03-pre-change-capture.yaml
+    - audits/audit-governance-evidence-and-status-closure-v3/phase-03-evidence/
+    - logs/2026-07-27-audit-governance-v3-phase-03-receipt-projection-precheck.md
+  modified_paths:
+    - .agents/skills/plan-audit-archiver/scripts/audit-boundary-precheck.ts
+    - .agents/skills/plan-audit-archiver/scripts/generate-evidence-receipt.ts
+    - .agents/skills/plan-audit-archiver/scripts/capture-state.ts
+    - .agents/skills/plan-audit-archiver/templates/evidence-receipt-template.json
+    - .agents/skills/plan-audit-archiver/scripts/__tests__/audit-boundary-precheck.test.ts
+    - .agents/skills/plan-audit-archiver/scripts/__tests__/generate-evidence-receipt.test.ts
+    - .agents/skills/plan-audit-archiver/scripts/__tests__/capture-state.test.ts
+    - scripts/lib/governance-surface-manifest.yaml
+    - scripts/lib/run-conformance.ts
+    - scripts/lib/conformance-corpus/corpus.json
+    - scripts/lib/__tests__/scan-governance-surface.test.ts
+    - scripts/lib/__tests__/run-conformance.test.ts
+    - plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+    - logs/INDEX.md
+  directory_roots_note: >-
+    phase-03-evidence/ is a directory root; only files created under it for this phase are
+    allowed. No file outside the listed paths and this root may be created or modified.
+  other_paths_allowed: false
+  shared_parser_writable: false
+  phase4_scripts_writable: false
+  consistency_note: >-
+    Every file mandated by fix_contract (including run-conformance.ts and corpus.json under
+    conformance_extension) is enumerated above; fix_contract and effective_allowlist are consistent.
+
+fixed_verification:
+  - check_id: P03-PROJ-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test .agents/skills/plan-audit-archiver/scripts/__tests__/generate-phase-projection.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_projection_ready_and_blocked
+    covers: [DC-005, DC-006]
+  - check_id: P03-PRECHECK-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test .agents/skills/plan-audit-archiver/scripts/__tests__/audit-boundary-precheck.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_projection_driven_dual_observation_and_escape_rejection
+    covers: [DC-007, DC-008, DC-009]
+  - check_id: P03-RECEIPT-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test .agents/skills/plan-audit-archiver/scripts/__tests__/generate-evidence-receipt.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_dual_observation_and_trusted_runner_guarantees
+    covers: [DC-007]
+  - check_id: P03-CAPTURE-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test .agents/skills/plan-audit-archiver/scripts/__tests__/capture-state.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_v3_discrimination_and_capture_stability
+  - check_id: P03-CHAIN-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/plan-audit-archiver/scripts/audit-boundary-precheck.ts --projection <phase-03-evidence projection> --evidence-root <phase-03-evidence> --output <phase-03-evidence matrix>
+    level: file-integration
+    pass_condition: legal_chain_READY_FOR_LLM_REVIEW_and_negative_chain_BLOCKED_with_explicit_receipt_paths_only
+    covers: [DC-005, DC-006, DC-007, DC-008, DC-009]
+  - check_id: P03-SCAN-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run scripts/lib/scan-governance-surface.ts scripts/lib/governance-surface-manifest.yaml
+    level: file-integration
+    pass_condition: four_findings_closed_six_open_no_illegal_reference_no_hash_drift
+  - check_id: P03-CONF-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/run-conformance.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_including_new_consumers_and_mismatch_probes
+  - check_id: P03-CONF-002
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run scripts/lib/run-conformance.ts scripts/lib/conformance-corpus
+    level: file-integration
+    pass_condition: declared_v3_consumers_agree_and_mismatch_probes_rejected
+  - check_id: P03-PROG-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set PHASE-01
+    level: component
+    pass_condition: exit_0_progression_gate_intact
+  - check_id: P03-POS-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    level: unit
+    pass_condition: discovered_4_tests_pass_parser_unchanged
+  - check_id: P03-TYPECHECK
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run typecheck
+    level: component
+    pass_condition: exit_0
+  - check_id: P03-PARSER-CALLERS
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && codegraph sync && codegraph callers parseAuditGovernanceV3Document
+    level: static-architecture
+    pass_condition: precheck_receipt_capture_projection_are_callers_and_parser_unchanged
+  - check_id: P03-SCOPE-DIFF
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && git status --porcelain
+    level: static
+    pass_condition: only_allowlist_paths_and_root_changed_since_phase_03_pre_change_capture
+
+failure_convergence:
+  any_named_test_absent_or_failed: BLOCKED
+  precheck_uses_directory_enumeration: BLOCKED
+  precheck_outputs_anything_other_than_READY_or_BLOCKED: BLOCKED
+  receipt_observed_inferred_from_prose_or_override_forged: BLOCKED
+  execution_and_domain_observation_conflated: BLOCKED
+  consumer_local_finding_silently_closed_without_receipt: BLOCKED
+  parser_or_phase4_script_changed: BLOCKED
+  scope_or_hash_drift: BLOCKED
+  model_explanation_can_override: false
+
+prohibited_effects:
+  - phase_accept_before_independent_audit
+  - audit_report_write
+  - latest_pointer_write
+  - compatibility_entry
+  - generic_bypass
+  - shared_parser_code_change
+  - phase4_script_change
+  - directory_discovery_as_evidence
+  - quarantined_content_read
+
+rollback:
+  on_block: >-
+    Stop. Preserve the projection generator, rewired precheck/receipt/capture, corpus, manifest,
+    and findings as BLOCKED evidence. Revert only the PHASE-03 allowlist writes; never delete
+    evidence, never close a finding without receipt evidence, never publish a report or LATEST pointer.
+  convergence: BLOCKED
+
+new_pre_change_capture:
+  required: true
+  required_after: exact_phase_03_scope_lock_hash_has_HUMAN_USER_approval
+  required_before: any_phase_03_write
+  must_bind: [this_phase_03_scope_lock, phase_03_scope_approval, current_hashes_of_allowlist_modified_paths, current_worktree_git_status, work_one_clean_status]
+  historical_capture_reuse_allowed: false
+
+next_required_transition:
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/phase-03-scope-approval.json
+  then_required_artifact: audits/audit-governance-evidence-and-status-closure-v3/phase-03-pre-change-capture.yaml
+  no_implementation_before_both_artifacts: true
+  implementation_then_audit: >-
+    After implementation, PHASE-03 requires an independent audit (P-03 to P-07) with EV receipts,
+    MODEL_REVIEW where eligible, and validate-audit exit 0 before any phase ACCEPT. The v3 audit
+    chain is phase 4 work; this scope lock does not authorize the audit verdict.

@@ -1,0 +1,35 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "approval_kind": "genesis-bootstrap-scope-repair-v4-approval",
+  "decision_id": "AGV3-GENESIS-BOOTSTRAP-SCOPE-REPAIR-V4-APPROVAL-20260726",
+  "decision": "APPROVED",
+  "approved_by": "HUMAN_USER",
+  "approved_at": "2026-07-26T12:40:00Z",
+  "approved_artifacts": {
+    "repair_v4_scope_lock": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4.yaml",
+      "sha256": "99040763bd67628959c7a73e8da811507d0d592509866eec7a56655c65f3a908"
+    },
+    "repair_v3_scope_lock": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v3.yaml",
+      "sha256": "74b61e3e587a684fd507375bdd5760aebab9f0aae3b57a305d3d6ef38ecbb1d2",
+      "effect": "historical_only_for_typecheck_blocked_scope"
+    },
+    "canonical_contract": {
+      "path": "plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml",
+      "sha256": "dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748"
+    }
+  },
+  "authorized_next_artifact": {
+    "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4-pre-change-capture.yaml",
+    "schema_version": "audit-governance-bootstrap/v3",
+    "document_kind": "genesis-bootstrap-receipt",
+    "purpose": "repair v4 pre-change capture only"
+  },
+  "limitations": [
+    "This approval does not authorize a further implementation write before a valid repair v4 pre-change capture binds this decision, current hashes of all nine effective allowlist paths, and the current worktree state.",
+    "After the repair v4 pre-change capture is verified, writes remain limited to exactly the nine paths in the approved repair v4 scope lock.",
+    "No pre-v3 input, compatibility entry, generic bypass, phase ACCEPT, report publication, or LATEST update is authorized."
+  ]
+}

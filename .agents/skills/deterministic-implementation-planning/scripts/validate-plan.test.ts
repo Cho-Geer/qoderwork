@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 const roots: string[] = [];
 
@@ -10,575 +10,146 @@ afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-function runValidator(path: string) {
+function digest(source: string) {
+  return createHash("sha256").update(source).digest("hex");
+}
+
+function runValidator(planSetDir: string, governanceRoot: string) {
   return Bun.spawnSync({
-    cmd: [process.execPath, "run", join(import.meta.dir, "validate-plan.ts"), path],
+    cmd: [process.execPath, "run", join(import.meta.dir, "validate-plan.ts"), planSetDir, governanceRoot],
     stdout: "pipe",
     stderr: "pipe",
   });
 }
 
-function runSingle(source: string) {
-  const root = mkdtempSync(join(tmpdir(), "deterministic-plan-validator-"));
-  roots.push(root);
-  const planPath = join(root, "plan.md");
-  writeFileSync(planPath, source);
-  return runValidator(planPath);
+function resultCodes(result: ReturnType<typeof Bun.spawnSync>): string[] {
+  const output = result.stdout?.toString() ?? "";
+  if (!output) throw new Error(result.stderr?.toString() ?? "validator emitted no output");
+  return JSON.parse(output).errors.map((finding: { code: string }) => finding.code);
 }
 
-function parse(result: ReturnType<typeof Bun.spawnSync>) {
-  const stdout = result.stdout?.toString();
-  if (!stdout) throw new Error(`validator emitted no JSON: ${result.stderr?.toString() ?? "no stderr"}`);
-  return JSON.parse(stdout);
+// A path is only written as a real authority file when it is a plain relative
+// path inside the governance root. Absolute or escaping candidates are left
+// unwritten on purpose: the validator must reject them at the path guard before
+// any filesystem lookup.
+function isSafeRelative(candidate: string) {
+  return !candidate.includes("\0") && !candidate.startsWith("/") && !candidate.startsWith("..");
 }
 
-const phase = `### Phase 0: baseline [ANALYSIS → VERIFICATION]
-#### Goal
-#### Starting state and dependency
-#### Local requirements
-| Requirement | Contract |
-|---|---|
-| REQ-001 | fixed |
-#### Allowed files
-| Exact path | Change | Anchor |
-|---|---|---|
-| src/a.ts | modify | run |
-#### Forbidden files and behaviors
-#### Fixed contract
-Exact failure result and failedChecks.
-#### Implementation steps
-#### Check Registry
-| Check name | PASS |
-|---|---|
-| checkA | true |
-#### All-pass Fixture
-#### Single-failure Matrix
-#### Fixed verification
-\`\`\`bash
-cd /repo
-bun test
-\`\`\`
-component
-#### Rollback/failure convergence
-#### Phase completion gate
-- [ ] gate
-`;
-
-const valid = `# Plan
-**Plan mode**: \`SINGLE_FILE\`
-**Status**: READY-FOR-IMPLEMENTATION
-**Only implementation path**: fixed
-**Evidence ceiling**: NOT-RUN
-## 1. Input contract and source ledger
-## 2. Decisions, scope, and non-goals
-### Decision ledger
-### Non-goals
-### Open/blocking items
-### Negative evidence semantics
-FOUND / NOT_FOUND / UNAVAILABLE are N/A because this feature has no negative check.
-### Current versus historical evidence
-N/A — no lifecycle claim.
-## 3. Verified current baseline
-## 4. End-to-end traceability
-| Requirement | Source | File/symbol | Check name | Evidence source | Happy fixture | Single mutation | Test ID | Level |
-## 5. File change inventory
-### Globally forbidden changes
-## 6. Phase-by-phase implementation
-${phase}
-## 7. Global verification and evidence
-### Evidence preservation
-### Evidence ceiling rule
-## 8. Risks, failure convergence, and rollback
-## 9. Final completion gate
-- [ ] final
-`;
-
-function padChars(source: string, target: number): string {
-  const remaining = target - [...source].length;
-  if (remaining < 0) throw new Error("fixture already exceeds target");
-  return source + "x".repeat(remaining);
+function writeWithParents(path: string, content: string) {
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, content);
 }
 
-function padLines(source: string, target: number): string {
-  let result = source.replace(/\n+$/, "");
-  while (result.split(/\r?\n/).length < target) result += "\n";
-  return result;
+type PlanSetOptions = {
+  indexSchema?: string;
+  canonicalSchema?: string;
+  canonicalHash?: string;
+  canonicalPath?: string;
+  approvalPath?: string;
+  omitApproval?: boolean;
+};
+
+function createPlanSet(options: PlanSetOptions = {}) {
+  const governanceRoot = mkdtempSync(join(tmpdir(), "audit-governance-v3-gov-"));
+  roots.push(governanceRoot);
+  // PLAN_SET directory lives inside the governance root but is distinct from the
+  // authority documents, mirroring the real formal-plan-set layout.
+  const planSetDir = join(governanceRoot, "plans", "plan-set");
+  mkdirSync(planSetDir, { recursive: true });
+
+  const canonicalPathText = options.canonicalPath ?? "authority/canonical.yaml";
+  const approvalPathText = options.approvalPath ?? "authority/approval.json";
+
+  const canonical = JSON.stringify({
+    schema_version: options.canonicalSchema ?? "audit-governance/v3",
+    document_kind: "canonical-requirements",
+    contract_id: "canonical",
+  });
+  const canonicalHash = options.canonicalHash ?? digest(canonical);
+  const approval = JSON.stringify({
+    schema_version: "audit-governance-approval/v3",
+    document_kind: "approval-decision",
+    decision: "APPROVED",
+    approved_by: "HUMAN_USER",
+    approved_artifacts: { canonical_contract: { path: canonicalPathText, sha256: canonicalHash } },
+  });
+
+  const lines = [
+    "# v3 Plan set",
+    "**Plan mode**: `PLAN_SET`",
+    `**Schema version**: \`${options.indexSchema ?? "audit-plan-set/v3"}\``,
+    "**Document kind**: `plan-set-index`",
+    `**Canonical contract**: \`${canonicalPathText}\``,
+    `**Canonical contract SHA-256**: \`${canonicalHash}\``,
+  ];
+  if (!options.omitApproval) lines.push(`**Approval decision**: \`${approvalPathText}\``, `**Approval decision SHA-256**: \`${digest(approval)}\``);
+  writeFileSync(join(planSetDir, "00-plan-index.md"), `${lines.join("\n")}\n`);
+  writeFileSync(join(planSetDir, "99-final-verification.md"), "# Final verification\n");
+
+  if (isSafeRelative(canonicalPathText)) writeWithParents(join(governanceRoot, canonicalPathText), canonical);
+  if (!options.omitApproval && isSafeRelative(approvalPathText)) writeWithParents(join(governanceRoot, approvalPathText), approval);
+
+  return { governanceRoot, planSetDir };
 }
 
-function phaseSetSource(id = "PHASE-01", dependency = "NONE") {
-  return `# Phase ${id}: baseline [ANALYSIS → VERIFICATION]
-**Phase ID**: \`${id}\`
-**Depends on**: ${dependency}
-**Outcome**: fixed result
-**Evidence level**: component
-## Goal
-## Starting state and dependency
-## Local requirements
-| Requirement | Contract |
-|---|---|
-| REQ-001 | fixed |
-## Allowed files
-| Exact path | Change | Anchor |
-|---|---|---|
-| src/a.ts | modify | run |
-## Forbidden files and behaviors
-## Fixed contract
-Exact failure result and failedChecks. FOUND / NOT_FOUND / UNAVAILABLE.
-## Implementation steps
-## Check Registry
-| Check name | PASS |
-|---|---|
-| checkA | true |
-## All-pass Fixture
-## Single-failure Matrix
-## Fixed verification
-\`\`\`bash
-cd /repo
-bun test
-\`\`\`
-## Rollback/failure convergence
-## Phase completion gate
-- [ ] gate
-`;
-}
-
-function createPlanSet(options: { index?: string; phases?: Record<string, string>; final?: string } = {}) {
-  const root = mkdtempSync(join(tmpdir(), "deterministic-plan-set-"));
-  roots.push(root);
-  const index = options.index ?? `# Plan index
-**Plan mode**: \`PLAN_SET\`
-**Status**: READY-FOR-IMPLEMENTATION
-**Only implementation path**: fixed
-**Evidence ceiling**: NOT-RUN
-## 1. Input contract and source ledger
-## 2. Decisions, scope, and non-goals
-## 3. Verified current baseline
-## 4. End-to-end traceability
-## 5. File change inventory
-## 6. Phase manifest
-| Order | Phase ID | File | Depends on | Status |
-|---|---|---|---|---|
-| 1 | PHASE-01 | \`01-phase-baseline.md\` | NONE | READY |
-`;
-  const final = options.final ?? `# Final verification
-## 7. Global verification and evidence
-## 8. Risks, failure convergence, and rollback
-## 9. Final completion gate
-- [ ] final
-`;
-  writeFileSync(join(root, "00-plan-index.md"), index);
-  writeFileSync(join(root, "99-final-verification.md"), final);
-  for (const [file, source] of Object.entries(options.phases ?? { "01-phase-baseline.md": phaseSetSource() })) {
-    writeFileSync(join(root, file), source);
-  }
-  return root;
-}
-
-describe("validate-plan single-file mode", () => {
-  test("accepts a structurally complete closed-world plan", () => {
-    const result = runSingle(valid);
+describe("validate-plan v3 PLAN_SET admission", () => {
+  test("GPOS-001 admits an exact v3 PLAN_SET without lifecycle side effects", () => {
+    const { governanceRoot, planSetDir } = createPlanSet();
+    const result = runValidator(planSetDir, governanceRoot);
     expect(result.exitCode).toBe(0);
-    expect(parse(result).mode).toBe("SINGLE_FILE");
+    expect(resultCodes(result)).toEqual([]);
   });
 
-  test("rejects placeholders, missing phase contracts, and missing cwd", () => {
-    const result = runSingle(`# Plan\n## 6. Phase-by-phase implementation\n### Phase 0: <name>\nTBD\n`);
-    expect(result.exitCode).toBe(1);
-    const codes = parse(result).errors.map((item: { code: string }) => item.code);
-    expect(codes).toContain("PLACEHOLDER");
-    expect(codes).toContain("UNRESOLVED_TBD");
-    expect(codes).toContain("COMMAND_CWD_MISSING");
-  });
-
-  test("rejects a negative claim without three-state evidence semantics", () => {
-    const result = runSingle(valid.replace("FOUND / NOT_FOUND / UNAVAILABLE are N/A because this feature has no negative check.", "B 数据库不存在目标记录即通过 negative isolation。"));
-    expect(parse(result).errors.map((item: { code: string }) => item.code)).toContain("NEGATIVE_THREE_STATE_MISSING");
-  });
-
-  test("accepts exactly 20000 Unicode characters and rejects 20001", () => {
-    expect(runSingle(padChars(valid, 20_000)).exitCode).toBe(0);
-    const tooLong = parse(runSingle(padChars(valid, 20_001)));
-    expect(tooLong.errors.map((item: { code: string }) => item.code)).toContain("PLAN_SPLIT_REQUIRED");
-  });
-
-  test("accepts exactly 450 lines and rejects 451", () => {
-    expect(runSingle(padLines(valid, 450)).exitCode).toBe(0);
-    const tooLong = parse(runSingle(padLines(valid, 451)));
-    expect(tooLong.errors.map((item: { code: string }) => item.code)).toContain("PLAN_SPLIT_REQUIRED");
-  });
-
-  test("requires PLAN_SET when a single file contains more than two phases", () => {
-    const result = runSingle(valid.replace(phase, `${phase}${phase.replace("Phase 0", "Phase 1")}${phase.replace("Phase 0", "Phase 2")}`));
-    expect(parse(result).errors.map((item: { code: string }) => item.code)).toContain("PLAN_SPLIT_REQUIRED");
-  });
-});
-
-describe("validate-plan PLAN_SET mode", () => {
-  test("boundary-contract/v1 requires a present, hash-bound requirements contract", () => {
-    const root = createPlanSet();
-    const contract = join(root, "requirements-contract.yaml");
-    writeFileSync(contract, "schema_version: boundary-contract/v1\nrequirements:\n  - id: R-001\n    decision_cases:\n      - id: DC-001\n        fixture: FX-GOOD\n        oracle: ORACLE-001\n        expected_result: SUCCESS\n        polarity: POSITIVE\n        must_not_happen: [later]\n      - id: DC-002\n        fixture: FX-BAD\n        oracle: ORACLE-001\n        expected_result: ERROR\n        polarity: NEGATIVE\n        must_not_happen: [later]\n");
-    const digest = createHash("sha256").update(readFileSync(contract)).digest("hex");
-    const index = readFileSync(join(root, "00-plan-index.md"), "utf8") + `\n**Boundary contract version**: \`boundary-contract/v1\`\n**Requirements contract**: \`requirements-contract.yaml\`\n**Requirements contract SHA-256**: \`${digest}\`\n`;
-    writeFileSync(join(root, "00-plan-index.md"), index);
-    expect(runValidator(root).exitCode).toBe(0);
-    writeFileSync(contract, "schema_version: boundary-contract/v1\nrequirements: []\n");
-    expect(parse(runValidator(root)).errors.map((item: { code: string }) => item.code)).toContain("BOUNDARY_CONTRACT_HASH_MISMATCH");
-    const invalid = "schema_version: boundary-contract/v1\nrequirements:\n  - id: R-001\n    decision_cases:\n      - id: DC-001\n        fixture: FX-GOOD\n        oracle: ORACLE-001\n        expected_result: SUCCESS\n        polarity: POSITIVE\n        must_not_happen: [later]\n      - id: DC-002\n        fixture: FX-BAD\n        oracle: ORACLE-001\n        expected_result: ERROR\n        polarity: NEGATIVE\n";
-    writeFileSync(contract, invalid); const repaired = readFileSync(join(root, "00-plan-index.md"), "utf8").replace(digest, createHash("sha256").update(invalid).digest("hex")); writeFileSync(join(root, "00-plan-index.md"), repaired);
-    expect(parse(runValidator(root)).errors.map((item: { code: string }) => item.code)).toContain("BOUNDARY_CONTRACT_INVALID");
-  });
-
-  test("legacy-exempt is rejected unless its path and hash are registered", () => {
-    const root = createPlanSet();
-    const index = readFileSync(join(root, "00-plan-index.md"), "utf8") + "\n**Boundary contract version**: `legacy-exempt`\n";
-    writeFileSync(join(root, "00-plan-index.md"), index);
-    expect(parse(runValidator(root)).errors.map((item: { code: string }) => item.code)).toContain("LEGACY_BOUNDARY_EXEMPTION_MISMATCH");
-  });
-  test("accepts a complete one-phase plan set", () => {
-    const result = runValidator(createPlanSet());
-    expect(result.exitCode).toBe(0);
-    expect(parse(result).mode).toBe("PLAN_SET");
-  });
-
-  test("rejects a missing phase file", () => {
-    const root = createPlanSet({ phases: {} });
-    const codes = parse(runValidator(root)).errors.map((item: { code: string }) => item.code);
-    expect(codes).toContain("MISSING_PHASE_FILE");
-  });
-
-  test("reports stable errors for a missing index or final file", () => {
-    const missingIndex = createPlanSet();
-    unlinkSync(join(missingIndex, "00-plan-index.md"));
-    expect(parse(runValidator(missingIndex)).errors.map((item: { code: string }) => item.code)).toContain("MISSING_PLAN_INDEX");
-
-    const missingFinal = createPlanSet();
-    unlinkSync(join(missingFinal, "99-final-verification.md"));
-    expect(parse(runValidator(missingFinal)).errors.map((item: { code: string }) => item.code)).toContain("MISSING_FINAL_VERIFICATION");
-  });
-
-  test("rejects duplicate phase IDs and files", () => {
-    const index = `# Plan index
-**Plan mode**: \`PLAN_SET\`
-**Status**: READY-FOR-IMPLEMENTATION
-**Only implementation path**: fixed
-**Evidence ceiling**: NOT-RUN
-## 1. Input contract and source ledger
-## 2. Decisions, scope, and non-goals
-## 3. Verified current baseline
-## 4. End-to-end traceability
-## 5. File change inventory
-## 6. Phase manifest
-| Order | Phase ID | File | Depends on | Status |
-|---|---|---|---|---|
-| 1 | PHASE-01 | \`01-phase-baseline.md\` | NONE | READY |
-| 2 | PHASE-01 | \`01-phase-baseline.md\` | PHASE-01 | READY |
-`;
-    const codes = parse(runValidator(createPlanSet({ index }))).errors.map((item: { code: string }) => item.code);
-    expect(codes).toContain("DUPLICATE_PHASE_ID");
-    expect(codes).toContain("DUPLICATE_PHASE_FILE");
-  });
-
-  test("rejects unknown and forward dependencies", () => {
-    const index = `# Plan index
-**Plan mode**: \`PLAN_SET\`
-**Status**: READY-FOR-IMPLEMENTATION
-**Only implementation path**: fixed
-**Evidence ceiling**: NOT-RUN
-## 1. Input contract and source ledger
-## 2. Decisions, scope, and non-goals
-## 3. Verified current baseline
-## 4. End-to-end traceability
-## 5. File change inventory
-## 6. Phase manifest
-| Order | Phase ID | File | Depends on | Status |
-|---|---|---|---|---|
-| 1 | PHASE-01 | \`01-phase-baseline.md\` | PHASE-02 | READY |
-| 2 | PHASE-02 | \`02-phase-next.md\` | PHASE-99 | READY |
-`;
-    const phases = {
-      "01-phase-baseline.md": phaseSetSource("PHASE-01", "PHASE-02"),
-      "02-phase-next.md": phaseSetSource("PHASE-02", "PHASE-99"),
-    };
-    const codes = parse(runValidator(createPlanSet({ index, phases }))).errors.map((item: { code: string }) => item.code);
-    expect(codes).toContain("PHASE_DEPENDENCY_ORDER");
-    expect(codes).toContain("UNKNOWN_PHASE_DEPENDENCY");
-  });
-
-  test("rejects a phase with more than twelve registered checks", () => {
-    const rows = Array.from({ length: 13 }, (_, index) => `| check${index + 1} | true |`).join("\n");
-    const source = phaseSetSource().replace("| checkA | true |", rows);
-    const codes = parse(runValidator(createPlanSet({ phases: { "01-phase-baseline.md": source } }))).errors.map((item: { code: string }) => item.code);
-    expect(codes).toContain("PHASE_COMPLEXITY_EXCEEDED");
-  });
-
-  test("rejects a phase above the requirement and file complexity limits", () => {
-    const requirementRows = Array.from({ length: 11 }, (_, index) => `| REQ-${String(index + 1).padStart(3, "0")} | fixed |`).join("\n");
-    const fileRows = Array.from({ length: 9 }, (_, index) => `| src/${index + 1}.ts | modify | run |`).join("\n");
-    const source = phaseSetSource()
-      .replace("| REQ-001 | fixed |", requirementRows)
-      .replace("| src/a.ts | modify | run |", fileRows);
-    const findings = parse(runValidator(createPlanSet({ phases: { "01-phase-baseline.md": source } }))).errors;
-    const complexity = findings.filter((item: { code: string }) => item.code === "PHASE_COMPLEXITY_EXCEEDED");
-    expect(complexity).toHaveLength(2);
-  });
-
-  test("rejects an unregistered phase and a dependency mismatch", () => {
-    const phases = {
-      "01-phase-baseline.md": phaseSetSource("PHASE-01", "PHASE-99"),
-      "02-phase-unregistered.md": phaseSetSource("PHASE-02"),
-    };
-    const codes = parse(runValidator(createPlanSet({ phases }))).errors.map((item: { code: string }) => item.code);
-    expect(codes).toContain("UNREGISTERED_PHASE_FILE");
-    expect(codes).toContain("PHASE_DEPENDENCY_MISMATCH");
-  });
-
-  test("rejects an index above 8000 Unicode characters", () => {
-    const root = createPlanSet();
-    const path = join(root, "00-plan-index.md");
-    const source = Bun.file(path).text();
-    return source.then((value) => {
-      writeFileSync(path, padChars(value, 8_001));
-      const codes = parse(runValidator(root)).errors.map((item: { code: string }) => item.code);
-      expect(codes).toContain("PLAN_INDEX_LENGTH_EXCEEDED");
+  test("GPOS-002 admits authority documents outside the PLAN_SET dir but inside governanceRoot", () => {
+    const { governanceRoot, planSetDir } = createPlanSet({
+      canonicalPath: "shared/governance/canonical-requirements-contract.yaml",
+      approvalPath: "shared/governance/approval-decision.json",
     });
+    const result = runValidator(planSetDir, governanceRoot);
+    expect(result.exitCode).toBe(0);
+    expect(resultCodes(result)).toEqual([]);
   });
 
-  test("validates progression status fields when the schema is enabled", () => {
-    const index = `# Plan index
-**Plan mode**: \`PLAN_SET\`
-**Status**: READY-FOR-IMPLEMENTATION
-**Progression schema**: \`phase-progression/v1\`
-**Only implementation path**: fixed
-**Evidence ceiling**: NOT-RUN
-## 1. Input contract and source ledger
-## 2. Decisions, scope, and non-goals
-## 3. Verified current baseline
-## 4. End-to-end traceability
-## 5. File change inventory
-## 6. Phase manifest
-| Order | Phase ID | File | Depends on | Status |
-|---|---|---|---|---|
-| 1 | PHASE-01 | \`01-phase-baseline.md\` | NONE | NOT_STARTED |
-`;
-    const phase = phaseSetSource().replace(
-      "**Phase ID**: \`PHASE-01\`",
-      "**Phase ID**: \`PHASE-01\`\n**Progression status**: \`NOT_STARTED\`\n**Completion receipt**: NONE",
-    );
-    const codes = parse(runValidator(createPlanSet({ index, phases: { "01-phase-baseline.md": phase } }))).errors.map((item: { code: string }) => item.code);
-    expect(codes).not.toContain("PHASE_STATUS_MISMATCH");
-    expect(codes).not.toContain("TOP_LEVEL_STATUS_MISMATCH");
+  test("GNEG-001 rejects a non-v3 plan schema before admission", () => {
+    const { governanceRoot, planSetDir } = createPlanSet({ indexSchema: "audit-plan-set/v2" });
+    const result = runValidator(planSetDir, governanceRoot);
+    expect(result.exitCode).toBe(1);
+    expect(resultCodes(result)).toContain("ERR_PLAN_SCHEMA_UNSUPPORTED");
   });
 
-  test("rejects progression status drift and ACCEPTED without a receipt", () => {
-    const index = `# Plan index
-**Plan mode**: \`PLAN_SET\`
-**Status**: READY-FOR-IMPLEMENTATION
-**Progression schema**: \`phase-progression/v1\`
-**Only implementation path**: fixed
-**Evidence ceiling**: NOT-RUN
-## 1. Input contract and source ledger
-## 2. Decisions, scope, and non-goals
-## 3. Verified current baseline
-## 4. End-to-end traceability
-## 5. File change inventory
-## 6. Phase manifest
-| Order | Phase ID | File | Depends on | Status |
-|---|---|---|---|---|
-| 1 | PHASE-01 | \`01-phase-baseline.md\` | NONE | ACCEPTED |
-`;
-    const phase = phaseSetSource().replace(
-      "**Phase ID**: \`PHASE-01\`",
-      "**Phase ID**: \`PHASE-01\`\n**Progression status**: \`IN_PROGRESS\`\n**Completion receipt**: NONE",
-    );
-    const codes = parse(runValidator(createPlanSet({ index, phases: { "01-phase-baseline.md": phase } }))).errors.map((item: { code: string }) => item.code);
-    expect(codes).toContain("PHASE_STATUS_MISMATCH");
-    expect(codes).toContain("PHASE_RECEIPT_MISSING");
-    expect(codes).toContain("TOP_LEVEL_STATUS_MISMATCH");
-  });
-});
-
-describe("PHASE-01 plan completion gate semantics (REQ-001)", () => {
-  function progressionIndex(rows: string, status = "READY-FOR-IMPLEMENTATION") {
-    return `# Plan index
-**Plan mode**: \`PLAN_SET\`
-**Status**: ${status}
-**Progression schema**: \`phase-progression/v1\`
-**Only implementation path**: fixed
-**Evidence ceiling**: NOT-RUN
-## 1. Input contract and source ledger
-## 2. Decisions, scope, and non-goals
-## 3. Verified current baseline
-## 4. End-to-end traceability
-## 5. File change inventory
-## 6. Phase manifest
-${rows}`;
-  }
-
-  function readyPhase(file: string, id = "PHASE-01") {
-    return `# Phase ${id}: ready [ANALYSIS → VERIFICATION]
-**Phase ID**: \`${id}\`
-**Progression status**: \`NOT_STARTED\`
-**Completion receipt**: NONE
-**Depends on**: NONE
-**Outcome**: fixed result
-**Evidence level**: component
-## Goal
-## Starting state and dependency
-## Local requirements
-| Requirement | Contract |
-|---|---|
-| REQ-001 | fixed |
-## Allowed files
-| Exact path | Change | Anchor |
-|---|---|---|
-| src/a.ts | modify | run |
-## Forbidden files and behaviors
-## Fixed contract
-Exact failure result and failedChecks. FOUND / NOT_FOUND / UNAVAILABLE.
-## Implementation steps
-## Check Registry
-| Check name | PASS |
-|---|---|
-| checkA | true |
-## All-pass Fixture
-## Single-failure Matrix
-## Fixed verification
-\`\`\`bash
-cd /repo
-bun test
-\`\`\`
-## Rollback/failure convergence
-## Phase completion gate
-- [ ] ready-a
-- [ ] ready-b
-`;
-  }
-
-  function acceptedPhase(file: string, id = "PHASE-02", receipt = "/tmp/evidence/PHASE-02-completion-receipt.json") {
-    return `# Phase ${id}: accepted [ANALYSIS → VERIFICATION]
-**Phase ID**: \`${id}\`
-**Progression status**: \`ACCEPTED\`
-**Completion receipt**: ${receipt}
-**Depends on**: PHASE-01
-**Outcome**: fixed result
-**Evidence level**: component
-## Goal
-## Starting state and dependency
-## Local requirements
-| Requirement | Contract |
-|---|---|
-| REQ-001 | fixed |
-## Allowed files
-| Exact path | Change | Anchor |
-|---|---|---|
-| src/a.ts | modify | run |
-## Forbidden files and behaviors
-## Fixed contract
-Exact failure result and failedChecks. FOUND / NOT_FOUND / UNAVAILABLE.
-## Implementation steps
-## Check Registry
-| Check name | PASS |
-|---|---|
-| checkA | true |
-## All-pass Fixture
-## Single-failure Matrix
-## Fixed verification
-\`\`\`bash
-cd /repo
-bun test
-\`\`\`
-## Rollback/failure convergence
-## Phase completion gate
-- [x] accepted-a
-- [x] accepted-b
-`;
-  }
-
-  function gateSuite(rows: string, phases: Record<string, string>) {
-    return createPlanSet({ index: progressionIndex(rows), phases });
-  }
-
-  test("all-pass fixture: NOT_STARTED gate all unchecked and ACCEPTED gate all checked pass without unrelated boxes", () => {
-    const phases = {
-      "01-phase-ready.md": readyPhase("01-phase-ready.md"),
-      "02-phase-accepted.md": acceptedPhase("02-phase-accepted.md"),
-    };
-    const rows = `| Order | Phase ID | File | Depends on | Status |
-|---|---|---|---|---|
-| 1 | PHASE-01 | \`01-phase-ready.md\` | NONE | NOT_STARTED |
-| 2 | PHASE-02 | \`02-phase-accepted.md\` | PHASE-01 | ACCEPTED |
-`;
-    const codes = parse(runValidator(gateSuite(rows, phases))).errors.map((item: { code: string }) => item.code);
-    expect(codes).not.toContain("PHASE_COMPLETION_GATE_MISMATCH");
-    expect(codes).not.toContain("PHASE_RECEIPT_MISSING");
-    expect(codes).not.toContain("TOP_LEVEL_STATUS_MISMATCH");
+  test("GNEG-002 rejects canonical hash drift", () => {
+    const { governanceRoot, planSetDir } = createPlanSet({ canonicalHash: "0".repeat(64) });
+    const result = runValidator(planSetDir, governanceRoot);
+    expect(result.exitCode).toBe(1);
+    expect(resultCodes(result)).toContain("ERR_APPROVAL_BINDING");
   });
 
-  test("AGC-C-101: checked box in a NOT_STARTED gate is rejected", () => {
-    const ready = readyPhase("01-phase-ready.md").replace("- [ ] ready-a", "- [x] ready-a");
-    const phases = {
-      "01-phase-ready.md": ready,
-      "02-phase-accepted.md": acceptedPhase("02-phase-accepted.md"),
-    };
-    const rows = `| Order | Phase ID | File | Depends on | Status |
-|---|---|---|---|---|
-| 1 | PHASE-01 | \`01-phase-ready.md\` | NONE | NOT_STARTED |
-| 2 | PHASE-02 | \`02-phase-accepted.md\` | PHASE-01 | ACCEPTED |
-`;
-    const errors = parse(runValidator(gateSuite(rows, phases))).errors;
-    const mismatch = errors.filter((item: { code: string }) => item.code === "PHASE_COMPLETION_GATE_MISMATCH");
-    expect(mismatch.map((item: { code: string; message: string }) => item.message)).toContain("PHASE-01: NOT_STARTED cannot have checked completion gate");
-    expect(mismatch).toHaveLength(1);
+  test("GNEG-003 rejects a missing approval binding", () => {
+    const { governanceRoot, planSetDir } = createPlanSet({ omitApproval: true });
+    const result = runValidator(planSetDir, governanceRoot);
+    expect(result.exitCode).toBe(1);
+    expect(resultCodes(result)).toContain("ERR_APPROVAL_MISSING");
   });
 
-  test("AGC-C-102: unchecked box in an ACCEPTED gate is rejected", () => {
-    const accepted = acceptedPhase("02-phase-accepted.md").replace("- [x] accepted-a", "- [ ] accepted-a");
-    const phases = {
-      "01-phase-ready.md": readyPhase("01-phase-ready.md"),
-      "02-phase-accepted.md": accepted,
-    };
-    const rows = `| Order | Phase ID | File | Depends on | Status |
-|---|---|---|---|---|
-| 1 | PHASE-01 | \`01-phase-ready.md\` | NONE | NOT_STARTED |
-| 2 | PHASE-02 | \`02-phase-accepted.md\` | PHASE-01 | ACCEPTED |
-`;
-    const errors = parse(runValidator(gateSuite(rows, phases))).errors;
-    const mismatch = errors.filter((item: { code: string }) => item.code === "PHASE_COMPLETION_GATE_MISMATCH");
-    expect(mismatch.map((item: { code: string; message: string }) => item.message)).toContain("PHASE-02: ACCEPTED requires every completion gate checkbox checked");
-    expect(mismatch).toHaveLength(1);
+  test("GNEG-004 rejects a mismatched canonical discriminator", () => {
+    const { governanceRoot, planSetDir } = createPlanSet({ canonicalSchema: "audit-phase-projection/v3" });
+    const result = runValidator(planSetDir, governanceRoot);
+    expect(result.exitCode).toBe(1);
+    expect(resultCodes(result)).toContain("ERR_SCHEMA_DISCRIMINATOR");
   });
 
-  test("AGC-C-103: ACCEPTED phase with NONE receipt is rejected", () => {
-    const accepted = acceptedPhase("02-phase-accepted.md", "PHASE-02", "NONE");
-    const phases = {
-      "01-phase-ready.md": readyPhase("01-phase-ready.md"),
-      "02-phase-accepted.md": accepted,
-    };
-    const rows = `| Order | Phase ID | File | Depends on | Status |
-|---|---|---|---|---|
-| 1 | PHASE-01 | \`01-phase-ready.md\` | NONE | NOT_STARTED |
-| 2 | PHASE-02 | \`02-phase-accepted.md\` | PHASE-01 | ACCEPTED |
-`;
-    const codes = parse(runValidator(gateSuite(rows, phases))).errors.map((item: { code: string }) => item.code);
-    expect(codes).toContain("PHASE_RECEIPT_MISSING");
-    expect(codes).not.toContain("PHASE_COMPLETION_GATE_MISMATCH");
+  test("GNEG-005 rejects an absolute authority path with ERR_PATH_GUARD", () => {
+    const { governanceRoot, planSetDir } = createPlanSet({ canonicalPath: "/etc/passwd" });
+    const result = runValidator(planSetDir, governanceRoot);
+    expect(result.exitCode).toBe(1);
+    expect(resultCodes(result)).toContain("ERR_PATH_GUARD");
   });
 
-  test("AGC-C-104: zero gate checkboxes in a NOT_STARTED gate is rejected", () => {
-    const ready = readyPhase("01-phase-ready.md").replace(/## Phase completion gate\n- \[ \] ready-a\n- \[ \] ready-b\n/, "## Phase completion gate\n");
-    const phases = {
-      "01-phase-ready.md": ready,
-      "02-phase-accepted.md": acceptedPhase("02-phase-accepted.md"),
-    };
-    const rows = `| Order | Phase ID | File | Depends on | Status |
-|---|---|---|---|---|
-| 1 | PHASE-01 | \`01-phase-ready.md\` | NONE | NOT_STARTED |
-| 2 | PHASE-02 | \`02-phase-accepted.md\` | PHASE-01 | ACCEPTED |
-`;
-    const errors = parse(runValidator(gateSuite(rows, phases))).errors;
-    const mismatch = errors.filter((item: { code: string }) => item.code === "PHASE_COMPLETION_GATE_MISMATCH");
-    expect(mismatch.map((item: { code: string; message: string }) => item.message)).toContain("PHASE-01: completion gate requires at least one checkbox");
-    expect(mismatch).toHaveLength(1);
+  test("GNEG-006 rejects an authority path escaping governanceRoot with ERR_PATH_GUARD", () => {
+    const { governanceRoot, planSetDir } = createPlanSet({ canonicalPath: "../outside.yaml" });
+    const result = runValidator(planSetDir, governanceRoot);
+    expect(result.exitCode).toBe(1);
+    expect(resultCodes(result)).toContain("ERR_PATH_GUARD");
   });
 });

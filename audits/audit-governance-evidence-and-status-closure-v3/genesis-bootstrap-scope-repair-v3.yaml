@@ -1,0 +1,138 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-scope-lock
+scope_lock_id: AGV3-GENESIS-BOOTSTRAP-SCOPE-REPAIR-V3-20260726
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+created_at: '2026-07-26T11:56:00Z'
+
+repair_contract:
+  replaces_for_future_implementation_only:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-replacement-v2.yaml
+    sha256: aa2290b33f6492fcae9919c689d4fe8dcae488cc2344550ab611cdb180931948
+    prior_approval:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-replacement-v2-approval.json
+      sha256: 2f47495f5f7b375232027c19d69d97d535729966e222db21e7a7fb85a9a3d37f
+      effect: historical_only_for_false_green_command_scope
+    prior_pre_change_capture:
+      path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-replacement-v2-pre-change-capture.yaml
+      sha256: 32d9f2986ed8163620d027550f94cb2a69aa207db9ca506aea9b80bbdda22baa
+      effect: not_reusable_for_this_repair
+  only_effective_differences_from_replaced_scope:
+    - replace_false_green_component_command_with_dot_slash_path
+    - make_GPOS_and_GNEG_test_coverage_mapping_explicit
+  preserved_by_exact_parent_hash:
+    - corrected_17_pair_schema_registry
+    - seven_effective_allowlist_paths
+    - REQ_DC_oracle_mapping
+    - all_fixed_positive_and_negative_cases
+    - failure_convergence
+    - forbidden_effects
+  approval:
+    status: PENDING
+    required_from: HUMAN_USER
+    fresh_approval_required: true
+    no_further_write_before: exact_repair_hash_has_HUMAN_USER_approval_and_repair_pre_change_capture
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  corrected_schema_registry_source:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-replacement-v2.yaml
+    sha256: aa2290b33f6492fcae9919c689d4fe8dcae488cc2344550ab611cdb180931948
+    requirement: exact_17_pairs_equal_canonical_schema_family
+
+current_unaccepted_implementation_state:
+  allowed_changed_paths_only:
+    - scripts/lib/audit-governance-schema-v3.ts
+    - scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    - .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+  classification: IN_SCOPE_UNACCEPTED_REWORK
+  mandatory_treatment: hash_each_changed_path_in_the_repair_pre_change_capture_before_any_further_write
+  prohibited: [reset_or_delete_evidence, phase_accept, audit_report_write, latest_pointer_write]
+
+effective_allowlist:
+  exact_paths:
+    - scripts/lib/audit-governance-schema-v3.ts
+    - scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    - .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    - logs/2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md
+    - logs/INDEX.md
+  exact_path_count: 7
+  other_paths_allowed: false
+
+fixed_verification:
+  - check_id: GPOS-002_GNEG-004_TO_GNEG-008_UNIT
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    level: unit
+    required_test_names:
+      - GPOS-002 accepts every canonical schema pair through the shared parser
+      - GNEG-004 rejects a mismatched discriminator without field-shape guessing
+      - GNEG-005 through GNEG-008 enforce bootstrap uniqueness, capture, scope hash, and posthoc admission
+    pass_condition: test_file_discovered_and_all_named_tests_pass
+  - check_id: GPOS-001_GNEG-001_TO_GNEG-004_COMPONENT
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test ./.agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts
+    level: component
+    required_test_names:
+      - GPOS-001 admits an exact v3 PLAN_SET without lifecycle side effects
+      - GNEG-001 rejects a non-v3 plan schema before admission
+      - GNEG-002 rejects canonical hash drift
+      - GNEG-003 rejects a missing approval binding
+      - GNEG-004 rejects a mismatched canonical discriminator
+    pass_condition: test_file_discovered_and_all_five_named_tests_pass
+  - check_id: TYPECHECK
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run typecheck
+    level: component
+    pass_condition: exit_0
+  - check_id: SHARED_PARSER_CALL_EDGE
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && codegraph sync && codegraph callers parseAuditGovernanceV3Document
+    level: static-architecture
+    pass_condition: validator_is_a_caller_and_no_consumer_local_schema_parser_exists
+  - check_id: OLD_ENTRY_ZERO
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && rg -n 'legacy-exempt|boundary-contract/v1' scripts/lib/audit-governance-schema-v3.ts scripts/lib/__tests__/audit-governance-schema-v3.test.ts .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts .agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    level: static-architecture
+    expected_exit: 1
+    pass_condition: zero_matches
+  - check_id: SCOPE_DIFF
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && git diff --check
+    level: static
+    pass_condition: exit_0_and_only_seven_allowed_paths_changed_since_repair_capture
+
+coverage_contract:
+  GPOS-001: GPOS-001_GNEG-001_TO_GNEG-004_COMPONENT
+  GPOS-002: GPOS-002_GNEG-004_TO_GNEG-008_UNIT
+  GNEG-001: GPOS-001_GNEG-001_TO_GNEG-004_COMPONENT
+  GNEG-002: GPOS-001_GNEG-001_TO_GNEG-004_COMPONENT
+  GNEG-003: GPOS-001_GNEG-001_TO_GNEG-004_COMPONENT
+  GNEG-004:
+    required_commands: [GPOS-001_GNEG-001_TO_GNEG-004_COMPONENT, GPOS-002_GNEG-004_TO_GNEG-008_UNIT]
+  GNEG-005: GPOS-002_GNEG-004_TO_GNEG-008_UNIT
+  GNEG-006: GPOS-002_GNEG-004_TO_GNEG-008_UNIT
+  GNEG-007: GPOS-002_GNEG-004_TO_GNEG-008_UNIT
+  GNEG-008: GPOS-002_GNEG-004_TO_GNEG-008_UNIT
+  acceptance_rule: each_required_command_must_discover_its_test_file_and_pass_every_named_test
+
+failure_convergence:
+  zero_test_execution: BLOCKED
+  any_named_test_absent_or_failed: BLOCKED
+  command_exit_zero_without_discovered_tests: BLOCKED
+  hash_drift_or_scope_violation: BLOCKED
+  model_explanation_can_override: false
+
+new_pre_change_capture:
+  required: true
+  required_after: exact_repair_hash_has_HUMAN_USER_approval
+  required_before: any_further_write
+  must_bind: [this_repair_scope_lock, repair_scope_approval, hash_of_each_currently_changed_path, all_seven_effective_allowlist_paths]
+  historical_capture_reuse_allowed: false
+
+next_required_transition:
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v3-approval.json
+  then_required_artifact: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v3-pre-change-capture.yaml
+  no_implementation_before_both_artifacts: true

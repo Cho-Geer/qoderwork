@@ -88,7 +88,8 @@ function createFixture(options: { topStatus?: string; dependencyStatus?: string 
   writeFileSync(join(root, "evidence/audit.md"), audit);
   const hash = sha256Text("validator output");
   writeFileSync(join(root, "evidence/PHASE-01.json"), JSON.stringify({
-    schema_version: "phase-progression/v1",
+    schema_version: "audit-phase-progression/v3",
+    document_kind: "phase-progression-receipt",
     plan_index_sha256: sha256Text(index),
     phase_file_sha256: sha256Text(phaseOne),
     audit_report_sha256: sha256Text(audit),
