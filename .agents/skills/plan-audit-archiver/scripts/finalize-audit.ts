@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { parseAuditGovernanceV3Document } from "../../../../scripts/lib/audit-governance-schema-v3.ts";
+import { scanStagnantBlueprints, type StagnationScanResult } from "../../../../scripts/lib/stagnation-scan.ts";
 import { validateAuditFile } from "./validate-audit.ts";
 
 type AuditValidator = (reportPath: string) => { valid: boolean };
@@ -105,7 +106,7 @@ export function finalizeAudit(
   reportPath: string,
   latestPath: string,
   options: FinalizeOptions = {},
-): { report: string; sha256: string; latestPointer: string; auditReportDoc: string } {
+): { report: string; sha256: string; latestPointer: string; auditReportDoc: string; stagnation_scan: StagnationScanResult | { error: string } } {
   const { validate = validateAuditFile, reportSha256, canonicalSha256, scopeLockSha256 } = options;
   if (!existsSync(reportPath) || !statSync(reportPath).isFile() || statSync(reportPath).size === 0) throw new Error("REPORT_UNAVAILABLE");
 
@@ -166,7 +167,18 @@ export function finalizeAudit(
   const temp = join(dirname(latestPath), `.${basename(latestPath)}.${process.pid}.tmp`);
   writeFileSync(temp, latestDoc, { flag: "wx" });
   renameSync(temp, latestPath);
-  return { report: auditReportFilename, sha256: auditReportSha256, latestPointer: latestDoc, auditReportDoc };
+
+  // M9 stagnation scan (audit-finalize hook). Informational only: it must NEVER block
+  // publication, so it runs AFTER the pointer is published and fails open (a scan error
+  // is reported inline rather than thrown).
+  let stagnation_scan: StagnationScanResult | { error: string };
+  try {
+    stagnation_scan = scanStagnantBlueprints();
+  } catch (err) {
+    stagnation_scan = { error: err instanceof Error ? err.message : String(err) };
+  }
+
+  return { report: auditReportFilename, sha256: auditReportSha256, latestPointer: latestDoc, auditReportDoc, stagnation_scan };
 }
 
 if (import.meta.main) {
