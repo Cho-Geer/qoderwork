@@ -1,0 +1,312 @@
+schema_version: audit-governance/v3
+document_kind: canonical-requirements
+contract_id: BLUEPRINTS-GOVERNANCE-REQS-20260728
+title: blueprints/ 目录治理与生命周期管理 canonical requirements contract
+document_status: AWAITING_EXTERNAL_HUMAN_APPROVAL
+purpose: >-
+  Define the only approved semantic source for blueprints/ directory governance:
+  four-field metadata, seven-value status, causal edges, status truth-source
+  single-sourcing, archive/YYYY-MM/ retirement layer with move/modify bans,
+  INDEX board with reverse-edge view, and drift lint. Immutable after external
+  approval; never a phase projection or evidence receipt.
+
+authority:
+  blueprint:
+    path: blueprints/blueprint-blueprints-governance.md
+    sha256: 3051a5df8f90ffbe1ef148dc932578040ba86044b1514424491ddda42a0d6ea1
+  governance_boundary:
+    path: blueprints/blueprint-blueprints-governance.md
+    section: §0
+    role: blueprint_lifecycle_only_complementary_to_closure_v3
+  provenance_rules:
+    path: .agents/skills/plan-audit-archiver/provenance-rules.md
+    role: mandatory_process_constraints
+
+approval_binding:
+  required_schema_version: audit-governance-approval/v3
+  decision_record_path: audits/blueprints-governance/approval-decision.json
+  status_source: external_hash_bound_decision_record_only
+  required_fields:
+    - decision
+    - approved_by
+    - approved_at
+    - approved_artifacts.blueprint.path
+    - approved_artifacts.blueprint.sha256
+    - approved_artifacts.canonical_contract.path
+    - approved_artifacts.canonical_contract.sha256
+  rule: >-
+    No PLAN_SET phase implementation, scope-lock, pre-change receipt, code/file
+    change, phase audit, report, or LATEST publication is allowed before an
+    APPROVED external decision binds this file and its Blueprint by exact SHA-256.
+
+scope:
+  included:
+    - blueprints/INDEX.md three-section board with reverse-edge view and exemption list
+    - archive/YYYY-MM/ retirement layer with move-ban and modification-ban (fail-closed)
+    - four-field header metadata, seven-value status vocabulary, three causal-edge types
+    - status truth-source single-sourcing to audits/<plan>/LATEST.md with frozen-snapshot rule
+    - drift lint script (scripts/check-blueprint-status.ts) and component tests
+    - retirement decision logs (§11.1) and documents/INDEX.md / AGENTS.md sync
+  excluded:
+    - work-one product code, database schema, serve lifecycle, LLM permissions, npm dependencies
+    - any change to frozen provenance records (scope-lock/approval/receipt) in audits/
+    - M9 stagnation/wake scan wiring target (deferred — see CONTINUATION-001)
+
+schema_family:
+  canonical_contract:
+    schema_version: audit-governance/v3
+    document_kind: canonical-requirements
+  phase_scope_lock:
+    schema_version: audit-scope-lock/v3
+    document_kind: phase-scope-lock
+  plan_set_index:
+    schema_version: audit-plan-set/v3
+    document_kind: plan-set-index
+  approval_decision:
+    schema_version: audit-governance-approval/v3
+    document_kind: approval-decision
+  approval_request:
+    schema_version: audit-governance-approval-request/v3
+    document_kind: approval-request
+  evidence_receipt:
+    schema_version: audit-evidence-receipt/v3
+    document_kind: evidence-receipt
+  boundary_matrix:
+    schema_version: audit-boundary-matrix/v3
+    document_kind: boundary-matrix
+  latest_pointer:
+    schema_version: audit-governance-latest/v3
+    document_kind: latest-pointer
+  discriminator_rule: >-
+    schema_version and document_kind must both match exactly. A parser must reject
+    every unknown pair and must not infer a document type from field shape.
+
+provenance_contract:
+  v3_plan_provenance_level: v3-required
+  rule: >-
+    This PLAN_SET is admissible only with provenance_level v3-required. Evidence
+    level remains per requirement; pre-v3 provenance values are historical only.
+
+global_invariants:
+  - Only v3 schema-family documents may enter this plan's active workflow.
+  - The status truth source for any blueprint with a downstream plan/audit is audits/<plan>/LATEST.md; the blueprint header and INDEX are projections, never a second truth source.
+  - A blueprint frozen by a provenance scope-lock/approval/receipt (path or SHA) is never moved or header-rewritten; its metadata is registered in the INDEX exemption list only.
+  - Causal edges (暂停于/前置依赖/被取代) are recorded single-side on the dependent blueprint; INDEX derives the reverse view; empty value is legal when no causal edge exists.
+  - An 已暂停 status requires a non-empty 暂停于 edge.
+  - Archived files are not header-backfilled; their metadata is registered in INDEX only.
+  - Each retirement requires a logs/ decision record; no retirement without a record.
+  - P-07 repository_root remains the clean work-one anchor; qoderwork scope is checked separately.
+
+requirements:
+  - requirement_id: REQ-001
+    title: blueprints/INDEX.md three-section board registers every file
+    boundary:
+      success: INDEX.md has active/closed/archived sections; every .md under blueprints/ (root and archive/) appears exactly once with status, truth-source pointer, and date basis.
+      failure: a file is missing, duplicated, or lacks status/truth-source/date-basis.
+      invariant: INDEX is a projection; it never overrides audits/LATEST.md verdict.
+      evidence_level: component
+    contract:
+      input:
+        index_sections: three_complete | missing_or_partial
+        file_coverage: every_file_once | missing_or_duplicate
+      output:
+        result: PASS | FAIL
+        error_code: ERR_INDEX_STRUCTURE | ERR_INDEX_COVERAGE | null
+      forbidden_side_effects_on_fail: [archive_move, header_backfill, lint_publication]
+    decision_cases:
+      - decision_case_id: DC-001
+        category: positive
+        fixture:
+          id: FX-001
+          input: { index_sections: three_complete, file_coverage: every_file_once }
+        expected: { result: PASS, error_code: null, observable: index_complete }
+        oracle: { id: ORACLE-001, pass_condition: find blueprints -name '*.md' set equals INDEX registration set, evidence_level: component }
+        must_not_happen: [orphan_file, duplicate_registration]
+      - decision_case_id: DC-002
+        category: negative
+        fixture:
+          id: FX-002
+          input: { index_sections: missing_or_partial, file_coverage: missing_or_duplicate }
+        expected: { result: FAIL, error_code: ERR_INDEX_COVERAGE, observable: index_rejected }
+        oracle: { id: ORACLE-002, pass_condition: a missing file is detected and reported, evidence_level: component }
+        must_not_happen: [archive_move, lint_publication]
+
+  - requirement_id: REQ-002
+    title: archived files have zero audits//plans/ path references (move ban)
+    boundary:
+      success: every archived file has zero path-form references in audits/ and active plans/ before mv; after mv, old path absent and new path present.
+      failure: a candidate has a path reference in audits//plans/, or the reference check command fails (UNAVAILABLE).
+      invariant: fail-closed — uncertain reference status blocks archive; the file stays in place marked 已退役.
+      evidence_level: component
+    contract:
+      input:
+        reference_check: zero_hits | hit_or_unavailable
+        move_result: new_path_present_old_absent | other
+      output:
+        result: PASS | FAIL
+        error_code: ERR_MOVE_BAN | ERR_ARCHIVE_MOVE | null
+      forbidden_side_effects_on_fail: [mv_executed, index_archive_section_update]
+    decision_cases:
+      - decision_case_id: DC-003
+        category: positive
+        fixture:
+          id: FX-003
+          input: { reference_check: zero_hits, move_result: new_path_present_old_absent }
+        expected: { result: PASS, error_code: null, observable: file_archived }
+        oracle: { id: ORACLE-003, pass_condition: test -f archive/<month>/<file> && ! test -f blueprints/<file>, evidence_level: component }
+        must_not_happen: [broken_reference]
+      - decision_case_id: DC-004
+        category: negative
+        fixture:
+          id: FX-004
+          input: { reference_check: hit_or_unavailable, move_result: other }
+        expected: { result: FAIL, error_code: ERR_MOVE_BAN, observable: file_not_moved }
+        oracle: { id: ORACLE-004, pass_condition: file remains in place, marked 已退役 in INDEX, evidence_level: component }
+        must_not_happen: [mv_executed]
+
+  - requirement_id: REQ-003
+    title: active root blueprints carry four-field headers after modification-ban check
+    boundary:
+      success: every non-exempt root blueprint has 创建日期/更新日期/状态/相关蓝图; exempt (frozen-bound) files are listed in the INDEX exemption list.
+      failure: a root file lacks a field, or a frozen-bound file was edited.
+      invariant: modification-ban rg check runs per file before edit; frozen-bound → INDEX-only.
+      evidence_level: component
+    contract:
+      input:
+        ban_check: clean | frozen_bound
+        header_fields: four_complete | missing
+      output:
+        result: PASS | FAIL
+        error_code: ERR_HEADER_FIELDS | ERR_MODIFICATION_BAN | null
+      forbidden_side_effects_on_fail: [frozen_file_edited, lint_publication]
+    decision_cases:
+      - decision_case_id: DC-005
+        category: positive
+        fixture:
+          id: FX-005
+          input: { ban_check: clean, header_fields: four_complete }
+        expected: { result: PASS, error_code: null, observable: header_backfilled }
+        oracle: { id: ORACLE-005, pass_condition: rg four header fields present in each non-exempt root file, evidence_level: component }
+        must_not_happen: [frozen_file_edited]
+      - decision_case_id: DC-006
+        category: negative
+        fixture:
+          id: FX-006
+          input: { ban_check: frozen_bound, header_fields: missing }
+        expected: { result: FAIL, error_code: ERR_MODIFICATION_BAN, observable: file_not_edited_index_only }
+        oracle: { id: ORACLE-006, pass_condition: frozen file untouched and listed in INDEX exemption, evidence_level: component }
+        must_not_happen: [frozen_file_edited]
+
+  - requirement_id: REQ-004
+    title: causal edges single-side recorded, targets exist, INDEX reverse consistent
+    boundary:
+      success: causal edges are written on the dependent side only; every edge target file exists; INDEX reverse view matches single-side edges; 已暂停 implies non-empty 暂停于.
+      failure: an edge target is missing, a double-side write occurs, the reverse view mismatches, or 已暂停 appears without 暂停于.
+      invariant: informational references stay in body text, not in the field.
+      evidence_level: component
+    contract:
+      input:
+        edge_targets: all_exist | missing
+        reverse_consistency: matches | mismatch
+        pause_rule: satisfied | violated
+      output:
+        result: PASS | FAIL
+        error_code: ERR_EDGE_TARGET | ERR_EDGE_REVERSE | ERR_PAUSE_WITHOUT_CAUSE | null
+      forbidden_side_effects_on_fail: [lint_publication, plan_admission]
+    decision_cases:
+      - decision_case_id: DC-007
+        category: positive
+        fixture:
+          id: FX-007
+          input: { edge_targets: all_exist, reverse_consistency: matches, pause_rule: satisfied }
+        expected: { result: PASS, error_code: null, observable: edges_consistent }
+        oracle: { id: ORACLE-007, pass_condition: INDEX reverse view equals single-side edges, evidence_level: component }
+        must_not_happen: [double_side_write]
+      - decision_case_id: DC-008
+        category: negative
+        fixture:
+          id: FX-008
+          input: { edge_targets: missing, reverse_consistency: mismatch, pause_rule: violated }
+        expected: { result: FAIL, error_code: ERR_EDGE_TARGET, observable: edges_rejected }
+        oracle: { id: ORACLE-008, pass_condition: missing edge target detected, evidence_level: component }
+        must_not_happen: [lint_publication]
+
+  - requirement_id: REQ-005
+    title: drift lint validates checks with single-failure mutations
+    boundary:
+      success: check-blueprint-status.ts reports zero drift on the all-pass fixture and fails exactly one check per single-failure mutation; tsc --noEmit passes; bun test passes; no new npm dependency (bun.lock unchanged).
+      failure: lint passes with a mutation present, or tsc/bun test fails, or bun.lock changed.
+      invariant: lint is read-only; it never mutates blueprints or writes business state.
+      evidence_level: component
+    contract:
+      input:
+        all_pass_fixture: zero_drift | drift_undetected
+        single_failure: exactly_one_check_fails | multiple_or_none
+        toolchain: tsc_bun_pass | fail
+      output:
+        result: PASS | FAIL
+        error_code: ERR_LINT_DRIFT | ERR_LINT_MUTATION | ERR_TOOLCHAIN | null
+      forbidden_side_effects_on_fail: [lint_publication, plan_admission]
+    decision_cases:
+      - decision_case_id: DC-009
+        category: positive
+        fixture:
+          id: FX-009
+          input: { all_pass_fixture: zero_drift, single_failure: exactly_one_check_fails, toolchain: tsc_bun_pass }
+        expected: { result: PASS, error_code: null, observable: lint_validated }
+        oracle: { id: ORACLE-009, pass_condition: all-pass zero drift + each mutation fails exactly its check, evidence_level: component }
+        must_not_happen: [new_npm_dependency]
+      - decision_case_id: DC-010
+        category: negative
+        fixture:
+          id: FX-010
+          input: { all_pass_fixture: drift_undetected, single_failure: multiple_or_none, toolchain: fail }
+        expected: { result: FAIL, error_code: ERR_LINT_DRIFT, observable: lint_rejected }
+        oracle: { id: ORACLE-010, pass_condition: undetected drift fails lint, evidence_level: component }
+        must_not_happen: [lint_publication]
+
+  - requirement_id: REQ-006
+    title: every retirement has a logs/ decision record
+    boundary:
+      success: each archived/retired file has a corresponding logs/YYYY-MM-DD-*.md decision record naming the file, the reason, and the successor if any.
+      failure: a retirement lacks a decision record.
+      invariant: no retirement without a record; records follow §11.1.
+      evidence_level: component
+    contract:
+      input:
+        retirement_records: complete | missing
+      output:
+        result: PASS | FAIL
+        error_code: ERR_RETIREMENT_LOG | null
+      forbidden_side_effects_on_fail: [lint_publication, plan_admission]
+    decision_cases:
+      - decision_case_id: DC-011
+        category: positive
+        fixture:
+          id: FX-011
+          input: { retirement_records: complete }
+        expected: { result: PASS, error_code: null, observable: retirements_logged }
+        oracle: { id: ORACLE-011, pass_condition: each archived file has a logs record, evidence_level: component }
+        must_not_happen: [unlogged_retirement]
+      - decision_case_id: DC-012
+        category: negative
+        fixture:
+          id: FX-012
+          input: { retirement_records: missing }
+        expected: { result: FAIL, error_code: ERR_RETIREMENT_LOG, observable: retirement_blocked }
+        oracle: { id: ORACLE-012, pass_condition: missing record detected, evidence_level: component }
+        must_not_happen: [lint_publication]
+
+completion_definition:
+  design_ready_when: >-
+    An APPROVED audit-governance-approval/v3 record binds this exact canonical
+    contract and its Blueprint by SHA-256.
+  plan_ready_when: >-
+    A v3-only PLAN_SET validates against the approved canonical contract and
+    approval record.
+  implementation_ready_when: >-
+    A code/file write is allowed only when each phase independently satisfies
+    P-02/P-02A before writes.
+  governance_complete_when: >-
+    Every selected DC has retained exact evidence, every hard gate passes,
+    validate-audit exits zero, and immutable publication succeeds.

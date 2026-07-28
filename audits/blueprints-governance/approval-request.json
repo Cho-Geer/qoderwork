@@ -1,0 +1,38 @@
+{
+  "schema_version": "audit-governance-approval-request/v3",
+  "document_kind": "approval-request",
+  "request_id": "BLUEPRINTS-GOVERNANCE-APPROVAL-REQUEST-20260728",
+  "status": "AWAITING_HUMAN_DECISION",
+  "requested_artifacts": {
+    "blueprint": {
+      "path": "blueprints/blueprint-blueprints-governance.md",
+      "sha256": "3051a5df8f90ffbe1ef148dc932578040ba86044b1514424491ddda42a0d6ea1"
+    },
+    "canonical_contract": {
+      "path": "plans/blueprints-governance/canonical-requirements-contract.yaml",
+      "sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff"
+    }
+  },
+  "requested_decision_schema": "audit-governance-approval/v3",
+  "approval_scope": [
+    "blueprints/ directory lifecycle governance: four-field metadata, seven-value status, three causal-edge types, status truth-source single-sourcing to audits/LATEST.md",
+    "two-layer directory model with archive/YYYY-MM/ retirement layer, move-ban and modification-ban (fail-closed), and frozen-snapshot rule",
+    "blueprints/INDEX.md three-section board with reverse-edge view and exemption list",
+    "drift lint script (scripts/check-blueprint-status.ts) with nine checks and single-failure mutation tests"
+  ],
+  "decision_record_path": "audits/blueprints-governance/approval-decision.json",
+  "allowed_before_decision": [
+    "inspect the blueprint and canonical-requirements-contract.yaml",
+    "record a human APPROVED or REJECTED decision binding the exact requested artifacts by SHA-256"
+  ],
+  "forbidden_before_decision": [
+    "create a phase scope-lock, pre-change receipt, or phase audit",
+    "modify any blueprint header, move any file to archive/, or write the lint script",
+    "create or update blueprints/INDEX.md as an active governance artifact",
+    "advance any phase to IN_PROGRESS or ACCEPTED"
+  ],
+  "risk_notes": [
+    "This is the first real v3-required PLAN_SET after the 2026-07-28 audit-governance-v3 merge. The merge log states v3 tooling compatibility with prior ACCEPTs is unverified and will be naturally checked when a later phase triggers the v3 audit chain. A HUMAN_USER approval of this request authorizes plan admission only; each phase still independently satisfies P-02/P-02A before any write.",
+    "M9 stagnation/wake-scan wiring target is undecided (session-startup vs audit-finalize) and is deferred to a successor PLAN_SET (CONTINUATION-001)."
+  ]
+}
