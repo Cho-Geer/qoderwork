@@ -1,0 +1,9 @@
+=== STDOUT ===
+check-blueprint-status: DRIFT detected in 1 check(s):
+  - archived_not_referenced
+      archived file archive/2026-07/blueprint-old.md referenced by active record plans/active-plan/00-plan-index.md
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

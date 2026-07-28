@@ -1,0 +1,9 @@
+=== STDOUT ===
+check-blueprint-status: DRIFT detected in 1 check(s):
+  - edge_target_exists
+      blueprint-a.md: edge target "blueprint-missing.md" does not exist
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

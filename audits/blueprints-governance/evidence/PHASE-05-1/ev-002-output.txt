@@ -1,0 +1,9 @@
+=== STDOUT ===
+check-blueprint-status: DRIFT detected in 1 check(s):
+  - four_field_existence
+      blueprint-a.md: missing field 创建日期
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

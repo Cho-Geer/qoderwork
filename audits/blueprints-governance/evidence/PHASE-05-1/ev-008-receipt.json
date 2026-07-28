@@ -1,0 +1,41 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-05-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-008",
+  "decision_case_id": "DC-010",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && d=$(mktemp -d) && mkdir -p \"$d/blueprints\" && printf '# INDEX\\n\\n## 活跃\\n\\n## 已闭环\\n\\n## 已归档\\n\\n## 反向边视图\\n\\n## 豁免清单\\n' > \"$d/blueprints/INDEX.md\" && printf '# A\\n**创建日期**: 2026-07-28\\n**更新日期**: 2026-07-28\\n**状态**: 已完成\\n**相关蓝图**: 无\\n' > \"$d/blueprints/blueprint-a.md\" && bun run scripts/check-blueprint-status.ts \"$d/blueprints\"; ec=$?; rm -rf \"$d\"; exit $ec",
+  "requirement_id": "REQ-005",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-009",
+  "fixture_id": "FX-010-DRIFT-COVERAGE",
+  "evidence_level": "component",
+  "repository_state_sha256": "3d6fe953b2e806c4443b1cf94333829552095f33a749182bb1459fb97a0eeb17",
+  "exit_code": 1,
+  "execution": {
+    "observed": "FAIL",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "EXPECTED_FAILURE",
+    "error_code": "ERR_LINT_DRIFT"
+  },
+  "forbidden_side_effects_observed": [
+    "blueprints_content_edit",
+    "npm_dependency_add",
+    "business_state_mutation"
+  ],
+  "projection_sha256": "f83922d1d4d469ec0ac0c99a4fe09cfbe0a8254d7dc873ae2bdc959dfb5e6424",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-05-1/ev-008-output.txt",
+      "sha256": "b4239f9a8d81c68b3eaabe879e74dc9a22b92fa9a296439ef60214a518d44f99"
+    }
+  ],
+  "completed_at": "2026-07-28T17:28:42.628Z",
+  "observed": "FAIL"
+}

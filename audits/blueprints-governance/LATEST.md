@@ -1,7 +1,7 @@
 schema_version: audit-governance-latest/v3
 document_kind: latest-pointer
-report_filename: 2026-07-28-audit-phase-04-report.json
-report_sha256: 842d7c23522377e25c710b71411fdbdc940a65adc2aa00b40d53d45915b16621
+report_filename: 2026-07-28-audit-phase-05-report.json
+report_sha256: e744a9abf7b4a1a97e2050cba64c7c81f9019c8fce5e0c5e29221fe2abc07364
 settles:
   canonical_contract_sha256: 39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff
-  scope_lock_sha256: e8ca6ffdc5e90ffbbb4afa45e0aeb73d1cf08cabf3e52c5128ac9971dda769d6
+  scope_lock_sha256: f83922d1d4d469ec0ac0c99a4fe09cfbe0a8254d7dc873ae2bdc959dfb5e6424

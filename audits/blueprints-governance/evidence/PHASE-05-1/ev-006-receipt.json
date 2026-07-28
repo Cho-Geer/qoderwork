@@ -1,0 +1,41 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-05-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-006",
+  "decision_case_id": "DC-009",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && git diff --quiet bun.lock",
+  "requirement_id": "REQ-005",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-009",
+  "fixture_id": "FX-009-BUN-LOCK",
+  "evidence_level": "component",
+  "repository_state_sha256": "3d6fe953b2e806c4443b1cf94333829552095f33a749182bb1459fb97a0eeb17",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [
+    "blueprints_content_edit",
+    "npm_dependency_add",
+    "business_state_mutation"
+  ],
+  "projection_sha256": "f83922d1d4d469ec0ac0c99a4fe09cfbe0a8254d7dc873ae2bdc959dfb5e6424",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-05-1/ev-006-output.txt",
+      "sha256": "890d9e753b02601aecc1b097f6f07eba60527b9d1715a5795a9e16763c2b9981"
+    }
+  ],
+  "completed_at": "2026-07-28T17:28:42.524Z",
+  "observed": "PASS"
+}

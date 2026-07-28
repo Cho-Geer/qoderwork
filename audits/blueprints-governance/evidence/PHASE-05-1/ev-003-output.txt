@@ -1,0 +1,25 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/__tests__/check-blueprint-status.test.ts:
+(pass) single_failure_per_check > check 1: four_field_existence — missing 创建日期 [3.97ms]
+(pass) single_failure_per_check > check 2: status_enum — illegal status value [1.56ms]
+(pass) single_failure_per_check > check 3: pause_requires_cause — 已暂停 without 暂停于 edge [1.44ms]
+(pass) single_failure_per_check > check 4: edge_target_exists — edge to missing file [1.44ms]
+(pass) single_failure_per_check > check 5: pause_chain_acyclic — two-node pause cycle [2.57ms]
+(pass) single_failure_per_check > check 6: update_date_vs_git — 更新日期 drifts from git commit date [14.53ms]
+(pass) single_failure_per_check > check 7: index_reverse_view — file edge missing from reverse view [2.39ms]
+(pass) single_failure_per_check > check 8: index_coverage — file on disk not registered in INDEX [2.29ms]
+(pass) single_failure_per_check > check 9: archived_not_referenced — active plan references archived file [1.69ms]
+(pass) single_failure_per_check > check 9 negative: governance provenance reference is exempt [1.89ms]
+
+ 10 pass
+ 4 filtered out
+ 0 fail
+ 20 expect() calls
+Ran 10 tests across 1 file. [107.00ms]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

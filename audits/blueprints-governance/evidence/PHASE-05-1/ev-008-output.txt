@@ -1,0 +1,9 @@
+=== STDOUT ===
+check-blueprint-status: DRIFT detected in 1 check(s):
+  - index_coverage
+      file blueprint-a.md present on disk but not registered in INDEX
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

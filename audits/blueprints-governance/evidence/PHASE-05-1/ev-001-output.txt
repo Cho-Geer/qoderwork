@@ -1,0 +1,7 @@
+=== STDOUT ===
+check-blueprint-status: zero drift (9/9 checks passed)
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

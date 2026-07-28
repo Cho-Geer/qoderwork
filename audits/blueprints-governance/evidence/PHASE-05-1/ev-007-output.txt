@@ -1,0 +1,9 @@
+=== STDOUT ===
+check-blueprint-status: DRIFT detected in 1 check(s):
+  - status_enum
+      blueprint-a.md: status "非法状态" not in seven-value vocabulary
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

@@ -1,0 +1,10 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "repository_realpath": "/home/zhaoge/workspace/opencode/work-one",
+  "phase_id": "BLUEPRINTS-GOVERNANCE-PHASE-05-SCOPE-LOCK-20260728",
+  "captured_at": "2026-07-28T17:22:39.035Z",
+  "head": "64df828d56611ac121baccfaf666f147980aec85",
+  "scope_lock_sha256": "f83922d1d4d469ec0ac0c99a4fe09cfbe0a8254d7dc873ae2bdc959dfb5e6424",
+  "status_entries": []
+}

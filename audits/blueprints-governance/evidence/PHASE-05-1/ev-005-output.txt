@@ -1,0 +1,28 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/__tests__/check-blueprint-status.test.ts:
+(pass) all_pass_zero_drift > current blueprints/ reports zero drift [48.37ms]
+(pass) all_pass_zero_drift > minimal temp fixture reports zero drift [2.58ms]
+(pass) all_pass_zero_drift > all 9 check names are stable and present in details [1.41ms]
+(pass) single_failure_per_check > check 1: four_field_existence — missing 创建日期 [1.24ms]
+(pass) single_failure_per_check > check 2: status_enum — illegal status value [1.28ms]
+(pass) single_failure_per_check > check 3: pause_requires_cause — 已暂停 without 暂停于 edge [1.53ms]
+(pass) single_failure_per_check > check 4: edge_target_exists — edge to missing file [2.46ms]
+(pass) single_failure_per_check > check 5: pause_chain_acyclic — two-node pause cycle [4.55ms]
+(pass) single_failure_per_check > check 6: update_date_vs_git — 更新日期 drifts from git commit date [20.88ms]
+(pass) single_failure_per_check > check 7: index_reverse_view — file edge missing from reverse view [2.53ms]
+(pass) single_failure_per_check > check 8: index_coverage — file on disk not registered in INDEX [2.69ms]
+(pass) single_failure_per_check > check 9: archived_not_referenced — active plan references archived file [1.97ms]
+(pass) single_failure_per_check > check 9 negative: governance provenance reference is exempt [2.10ms]
+(pass) cli_exit_zero > bun run scripts/check-blueprint-status.ts exits 0 on current state [71.14ms]
+
+ 14 pass
+ 0 fail
+ 27 expect() calls
+Ran 14 tests across 1 file. [239.00ms]
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false
