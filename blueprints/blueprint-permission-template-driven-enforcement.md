@@ -1,8 +1,13 @@
 # Blueprint: 权限模板驱动的行为型 Enforcement
 
+**创建日期**: 2026-07-17
+**更新日期**: 2026-07-28
+**状态**: 已完成
+**相关蓝图**: 无
+
 **版本**: 1.6.1  
 **日期**: 2026-07-15  
-**状态**: 返工中（00R2 已完成源码/dispatcher 集成修复复核；完整 integration 与 live 证据未齐，`BLOCK-PT-02/03` 未解除）  
+**原状态（PHASE-03 前自述）**: 返工中（00R2 已完成源码/dispatcher 集成修复复核；完整 integration 与 live 证据未齐，`BLOCK-PT-02/03` 未解除）  
 **优先级**: P1  
 **对应待办**: P1 #3（`getAgentShellAllowlist` 退役）+ P1 #5（`legacy-agent-permissions.ts` 退役）
 

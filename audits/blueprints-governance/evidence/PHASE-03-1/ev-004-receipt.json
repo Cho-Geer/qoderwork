@@ -1,0 +1,40 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-03-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-004",
+  "decision_case_id": "DC-007",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'e1=$(sed -n \"s/^\\*\\*相关蓝图\\*\\*: //p\" blueprints/blueprint-audit-governance-evidence-and-status-closure.md); e2=$(sed -n \"s/^\\*\\*相关蓝图\\*\\*: //p\" blueprints/blueprint-phase-progression-audit-gate.md); e3=$(sed -n \"s/^\\*\\*相关蓝图\\*\\*: //p\" blueprints/blueprint-agent-read-enforcement.md); t1=$(sed -n \"s/^\\*\\*相关蓝图\\*\\*: //p\" blueprints/blueprint-permission-template-driven-enforcement.md); test \"$e1\" = \"被取代 ← blueprint-audit-governance-evidence-and-status-closure-v3.md\" && test \"$e2\" = \"前置依赖 → blueprint-audit-governance-evidence-and-status-closure-v3.md（2026-07-28 已满足）\" && test \"$e3\" = \"被取代（机制吸收） ← blueprint-permission-template-driven-enforcement.md\" && test \"$t1\" = \"无\" && ! rg -q \"^\\*\\*相关蓝图\\*\\*\" blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md && r=$(awk \"/^## 反向边视图/,/^## 豁免清单/\" blueprints/INDEX.md | grep -c \"^| blueprint-\") && echo \"index_reverse_rows=$r\" && test \"$r\" -eq 3 && echo \"edges=3 single-side + reverse view synced\"'",
+  "requirement_id": "REQ-004",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-007",
+  "fixture_id": "FX-007-EDGES-SINGLE-SIDE",
+  "evidence_level": "component",
+  "repository_state_sha256": "468d4dc63205638ca2bdc3d6dbec0b215914ea89eb33e1c68d104197df11e08a",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [
+    "double_side_edge_write",
+    "lint_publication"
+  ],
+  "projection_sha256": "e0f73d1b1acda3219a827136f05ed6c18627661098f79ba3813701366f2ccb7e",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-03-1/ev-004-output.txt",
+      "sha256": "cc781984ae6e2e7e755e191d353a06a27d54f66ba36a43f2da9276e44995ee3d"
+    }
+  ],
+  "completed_at": "2026-07-28T16:13:55.424Z",
+  "observed": "PASS"
+}

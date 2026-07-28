@@ -1,0 +1,40 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-03-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-007",
+  "decision_case_id": "DC-006",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'b=$(rg --fixed-strings \"blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md\" audits/ -g \"*.json\" -g \"*.yaml\" -A2 2>/dev/null | grep -Ec \"(^|[\\\" ])sha256[\\\" ]*:\"); if [ \"$b\" -gt 0 ]; then echo \"modification-ban gate correctly detects frozen-bound v3 (sha_bindings=$b)\"; exit 1; fi'",
+  "requirement_id": "REQ-003",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-005",
+  "fixture_id": "FX-006-FROZEN-BOUND-DETECTED",
+  "evidence_level": "component",
+  "repository_state_sha256": "468d4dc63205638ca2bdc3d6dbec0b215914ea89eb33e1c68d104197df11e08a",
+  "exit_code": 1,
+  "execution": {
+    "observed": "N/A",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "EXPECTED_FAILURE",
+    "error_code": "ERR_MODIFICATION_BAN"
+  },
+  "forbidden_side_effects_observed": [
+    "v3_blueprint_edit",
+    "frozen_provenance_record_edit"
+  ],
+  "projection_sha256": "e0f73d1b1acda3219a827136f05ed6c18627661098f79ba3813701366f2ccb7e",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-03-1/ev-007-output.txt",
+      "sha256": "6bfa3dab76c39e03ae9fb07570b177e474def3e9351cbbd03047e199f0c1ce09"
+    }
+  ],
+  "completed_at": "2026-07-28T16:13:55.445Z",
+  "observed": "FAIL"
+}

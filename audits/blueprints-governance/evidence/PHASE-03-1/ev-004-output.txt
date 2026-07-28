@@ -1,0 +1,8 @@
+=== STDOUT ===
+index_reverse_rows=3
+edges=3 single-side + reverse view synced
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

@@ -1,0 +1,7 @@
+=== STDOUT ===
+pause-violation detector fires on synthetic fixture
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

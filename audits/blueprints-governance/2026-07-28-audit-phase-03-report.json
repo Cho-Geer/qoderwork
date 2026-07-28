@@ -1,0 +1,10 @@
+{
+  "document_kind": "audit-report",
+  "report_filename": "2026-07-28-audit-phase-03.md",
+  "report_sha256": "f297ff135b92825dfc45a3ee6739007db7d3120db4abdf266a03b4a82bf71dad",
+  "schema_version": "audit-governance-report/v3",
+  "settles": {
+    "canonical_contract_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+    "scope_lock_sha256": "e0f73d1b1acda3219a827136f05ed6c18627661098f79ba3813701366f2ccb7e"
+  }
+}

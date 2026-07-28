@@ -1,0 +1,40 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-03-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-001",
+  "decision_case_id": "DC-005",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'files=\"2026-07-12-framework-deprecated-content-audit-blueprint.md blueprint-agent-read-enforcement.md blueprint-audit-governance-evidence-and-status-closure.md blueprint-cognitive-defense-skill-alignment.md blueprint-dispatch-db-canonical.md blueprint-dispatch-scope-privilege.md blueprint-dynamic-path-resolution.md blueprint-impact-analysis-framework.md blueprint-isolated-serve-test-infrastructure.md blueprint-opencode-framework-simplification-roadmap.md blueprint-permission-template-driven-enforcement.md blueprint-phase-progression-audit-gate.md blueprint-question-hybrid-enforcement.md blueprint-serve-api-session-tree-optimization.md blueprint-task-lens-m1.md blueprint-todowrite-driven-weak-agent-supervision.md blueprint-tool-governance-mvc-refactor.md target-structure.md\"; frozen=0; checked=0; for f in $files; do checked=$((checked+1)); hits=$(rg --fixed-strings \"$f\" audits/ -g \"*.json\" -g \"*.yaml\" 2>/dev/null | wc -l); binding=$(rg --fixed-strings \"blueprints/$f\" audits/ -g \"*.json\" -g \"*.yaml\" -A2 2>/dev/null | grep -Ec \"(^|[\\\" ])sha256[\\\" ]*:\"); echo \"$f hits=$hits sha_bindings=$binding\"; if [ \"$binding\" -gt 0 ]; then frozen=1; fi; done; echo \"checked=$checked frozen_bound=$frozen\"; test \"$checked\" -eq 18 && test \"$frozen\" -eq 0 && echo \"modification-ban: 18/18 checked, 0 frozen-bound\"'",
+  "requirement_id": "REQ-003",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-005",
+  "fixture_id": "FX-005-MODIFICATION-BAN-CHECKED",
+  "evidence_level": "component",
+  "repository_state_sha256": "468d4dc63205638ca2bdc3d6dbec0b215914ea89eb33e1c68d104197df11e08a",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [
+    "v3_blueprint_edit",
+    "frozen_provenance_record_edit"
+  ],
+  "projection_sha256": "e0f73d1b1acda3219a827136f05ed6c18627661098f79ba3813701366f2ccb7e",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-03-1/ev-001-output.txt",
+      "sha256": "1ccd234f0b93361d312df96aa8ae3985067e144d8050ad652043eb78a6ff6d85"
+    }
+  ],
+  "completed_at": "2026-07-28T16:13:55.362Z",
+  "observed": "PASS"
+}

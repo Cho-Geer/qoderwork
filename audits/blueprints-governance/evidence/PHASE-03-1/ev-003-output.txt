@@ -1,0 +1,8 @@
+=== STDOUT ===
+v3 sha256=a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+v3 exempt: unchanged
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

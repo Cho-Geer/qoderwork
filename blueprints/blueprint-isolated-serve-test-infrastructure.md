@@ -1,8 +1,13 @@
 # Blueprint: 隔离 Serve 测试基建与测试专用 Skill
 
+**创建日期**: 2026-07-17
+**更新日期**: 2026-07-28
+**状态**: 已完成
+**相关蓝图**: 无
+
 **版本**: v1.3.3
 **日期**: 2026-07-22
-**状态**: 部分实施（P0-1A cleanup、P0-1B runtime smoke 与 P0-2 双 run runtime-smoke 已闭合；TSI-02 的 patch-apply 失败 component 回归已补齐。TSI-01 状态转换守卫与重复 run ID 拒绝已于 P0-3-01 component 审计 ACCEPT（2026-07-22）；TSI-05 的 T-PT-051/052 runner 仍含执行 stub；TSI-06 尚无经 skill 的完整 run 证据；TSI-08 必须等待 reviewer live 证据与 active-caller 清零后才可删除旧 launcher。）
+**原状态（PHASE-03 前自述）**: 部分实施（P0-1A cleanup、P0-1B runtime smoke 与 P0-2 双 run runtime-smoke 已闭合；TSI-02 的 patch-apply 失败 component 回归已补齐。TSI-01 状态转换守卫与重复 run ID 拒绝已于 P0-3-01 component 审计 ACCEPT（2026-07-22）；TSI-05 的 T-PT-051/052 runner 仍含执行 stub；TSI-06 尚无经 skill 的完整 run 证据；TSI-08 必须等待 reviewer live 证据与 active-caller 清零后才可删除旧 launcher。）
 **优先级**: P0
 **唯一实施路径**: 本文定义的 `test-serve` 运行单元；不得继续扩展 `_b_pt_wm_00r2_live.ts` 的临时隔离实现。
 

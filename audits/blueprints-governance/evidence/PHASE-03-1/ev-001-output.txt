@@ -1,0 +1,26 @@
+=== STDOUT ===
+2026-07-12-framework-deprecated-content-audit-blueprint.md hits=0 sha_bindings=0
+blueprint-agent-read-enforcement.md hits=2 sha_bindings=0
+blueprint-audit-governance-evidence-and-status-closure.md hits=10 sha_bindings=0
+blueprint-cognitive-defense-skill-alignment.md hits=0 sha_bindings=0
+blueprint-dispatch-db-canonical.md hits=0 sha_bindings=0
+blueprint-dispatch-scope-privilege.md hits=0 sha_bindings=0
+blueprint-dynamic-path-resolution.md hits=0 sha_bindings=0
+blueprint-impact-analysis-framework.md hits=0 sha_bindings=0
+blueprint-isolated-serve-test-infrastructure.md hits=4 sha_bindings=0
+blueprint-opencode-framework-simplification-roadmap.md hits=1 sha_bindings=0
+blueprint-permission-template-driven-enforcement.md hits=4 sha_bindings=0
+blueprint-phase-progression-audit-gate.md hits=2 sha_bindings=0
+blueprint-question-hybrid-enforcement.md hits=0 sha_bindings=0
+blueprint-serve-api-session-tree-optimization.md hits=0 sha_bindings=0
+blueprint-task-lens-m1.md hits=0 sha_bindings=0
+blueprint-todowrite-driven-weak-agent-supervision.md hits=0 sha_bindings=0
+blueprint-tool-governance-mvc-refactor.md hits=0 sha_bindings=0
+target-structure.md hits=0 sha_bindings=0
+checked=18 frozen_bound=0
+modification-ban: 18/18 checked, 0 frozen-bound
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

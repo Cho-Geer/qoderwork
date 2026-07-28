@@ -1,5 +1,10 @@
 # Framework Deprecated Content Audit Blueprint
 
+**创建日期**: 2026-07-12
+**更新日期**: 2026-07-28
+**状态**: 已完成
+**相关蓝图**: 无
+
 **Date**: 2026-07-12
 **Target repo**: `/home/zhaoge/workspace/opencode/work-one`
 **Output repo**: `/home/zhaoge/workspace/qoderwork`

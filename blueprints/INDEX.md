@@ -2,7 +2,7 @@
 
 > PHASE-01 治理看板：三段式登记（活跃 / 已闭环 / 已归档）+ 反向边视图 + 豁免清单。
 > 治理依据：[blueprint-blueprints-governance.md](./blueprint-blueprints-governance.md) v1.0.1 (sha256 `3051a5df...`)。
-> 本 INDEX 由 PHASE-01 首次创建；PHASE-02 已归档 11 文件（5 → `archive/2026-06/`、6 → `archive/2026-07/`）；PHASE-03 后续填充反向边视图。
+> 本 INDEX 由 PHASE-01 首次创建；PHASE-02 已归档 11 文件（5 → `archive/2026-06/`、6 → `archive/2026-07/`）；PHASE-03 已写入 3 条因果边（单边记录于依赖方）+ 反向边视图 + 18 非豁免 root 文件四字段头部回填 + 3 处过期头部纠正。
 > 注册总数：31（活跃 19 + 已归档 11 + 豁免 1）。
 
 ## 活跃
@@ -10,8 +10,8 @@
 | 文件 | 状态（七值） | truth-source pointer | 日期依据 | 备注 |
 |------|------------|--------------------|---------|------|
 | 2026-07-12-framework-deprecated-content-audit-blueprint.md | 已完成 | `audits/framework-deprecated-content-audit/LATEST.md`（如存在）或 头部自述-未独立验证 | 2026-07-12（自述） | 治理审计蓝图 |
-| blueprint-agent-read-enforcement.md | 已完成 | `audits/agent-read-enforcement/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | PHASE-03 边纠正候选（被取代·机制吸收 ← blueprint-permission-template-driven-enforcement.md） |
-| blueprint-audit-governance-evidence-and-status-closure.md | 已退役 | `audits/audit-governance-evidence-and-status-closure/LATEST.md` | 2026-07-26（v3 ACCEPT） | v1 closure；PHASE-03 边写入（被取代 ← v3） |
+| blueprint-agent-read-enforcement.md | 已完成 | `audits/agent-read-enforcement/LATEST.md` 或 头部自述-未独立验证 | 2026-07-28（PHASE-03 头部纠正） | PHASE-03 边已写入（被取代·机制吸收 ← blueprint-permission-template-driven-enforcement.md）；头部状态 待实施 → 已完成 |
+| blueprint-audit-governance-evidence-and-status-closure.md | 已退役 | `audits/audit-governance-evidence-and-status-closure/LATEST.md` | 2026-07-26（v3 ACCEPT） | v1 closure；PHASE-03 边已写入（被取代 ← v3）；modification-ban 检查 6 命中均为治理提及（无 sha256 绑定）→ 可编辑 |
 | blueprint-cognitive-defense-skill-alignment.md | 已完成 | `audits/cognitive-defense-skill-alignment/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-dispatch-db-canonical.md | 已完成 | `audits/dispatch-db-canonical/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-dispatch-scope-privilege.md | 已完成 | `audits/dispatch-scope-privilege/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
@@ -19,11 +19,11 @@
 | blueprint-impact-analysis-framework.md | 已完成 | `audits/impact-analysis-framework/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-isolated-serve-test-infrastructure.md | 已完成 | `audits/isolated-serve-test-infrastructure/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-opencode-framework-simplification-roadmap.md | 已完成 | `audits/opencode-framework-simplification/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
-| blueprint-permission-template-driven-enforcement.md | 已完成 | `audits/permission-template-driven-enforcement/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | PHASE-03 边写入（被取代·机制吸收 → agent-read） |
-| blueprint-phase-progression-audit-gate.md | 已完成 | `audits/phase-progression-audit-gate/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | PHASE-03 边写入（前置依赖 → v3 closure） |
+| blueprint-permission-template-driven-enforcement.md | 已完成 | `audits/permission-template-driven-enforcement/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | PHASE-03 反向边主体（机制吸收 → agent-read）；单边记录于依赖方，本文件 相关蓝图=无 |
+| blueprint-phase-progression-audit-gate.md | 已完成 | `audits/phase-progression-audit-gate/LATEST.md` 或 头部自述-未独立验证 | 2026-07-28（PHASE-03 头部纠正） | PHASE-03 边已写入（前置依赖 → v3 closure，2026-07-28 已满足）；头部状态 待实施 → 已完成 |
 | blueprint-question-hybrid-enforcement.md | 已完成 | `audits/question-hybrid-enforcement/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-serve-api-session-tree-optimization.md | 已完成 | `audits/serve-api-session-tree-optimization/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
-| blueprint-task-lens-m1.md | 实施中 | `audits/task-lens-m1/LATEST.md` | 2026-07（自述） | PHASE-03 过期头部纠正候选 |
+| blueprint-task-lens-m1.md | 实施中 | `audits/task-lens-m1/LATEST.md` | 2026-07-28（PHASE-03 头部纠正） | PHASE-03 过期头部已纠正（实施中；依 audits/task-lens-m1/LATEST.md PHASE-05 ACCEPTED） |
 | blueprint-todowrite-driven-weak-agent-supervision.md | 已完成 | `audits/todowrite-driven-weak-agent-supervision/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-tool-governance-mvc-refactor.md | 已完成 | `audits/tool-governance-mvc-refactor/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-blueprints-governance.md | 待实施 | 头部自述-未独立验证 | 2026-07-28（写作月） | 本 plan 自身蓝图；PHASE-01 ~ 05 实施后状态待定 |
@@ -31,7 +31,7 @@
 
 ## 已闭环
 
-（PHASE-01 时为空；PHASE-03 完成后闭环的 blueprint 移入此段。）
+（PHASE-01 时为空；PHASE-03 未移动任何行——已完成/已退役 blueprint 仍登记于活跃段，待后续 PHASE 判定闭环后移入。）
 
 ## 已归档
 
@@ -53,7 +53,13 @@ PHASE-02（2026-07-28）归档 11 文件：5 → `archive/2026-06/`、6 → `arc
 
 ## 反向边视图
 
-（PHASE-01 时为空；PHASE-03 完成 3 条因果边（v1 被取代 ← v3、phase-progression 前置依赖 → v3、agent-read 被取代·机制吸收 ← driven-enforcement）后由 INDEX 派生反向视图。）
+PHASE-03（2026-07-28）写入 3 条因果边，单边记录于依赖方文件的 `相关蓝图` 字段；本段为 INDEX 派生的反向视图（信息性引用不进入字段，仅在此呈现）：
+
+| 主体（反向） | 反向关系 | 依赖方（原边记录处） | 日期依据 |
+|------|---------|------------------|---------|
+| blueprint-audit-governance-evidence-and-status-closure-v3.md | 取代 → | blueprint-audit-governance-evidence-and-status-closure.md（`被取代 ← v3`；已退役） | 2026-07-28 |
+| blueprint-audit-governance-evidence-and-status-closure-v3.md | 被依赖 ← | blueprint-phase-progression-audit-gate.md（`前置依赖 → v3`，2026-07-28 已满足；已完成） | 2026-07-28 |
+| blueprint-permission-template-driven-enforcement.md | 取代（机制吸收） → | blueprint-agent-read-enforcement.md（`被取代（机制吸收） ← driven-enforcement`；已完成） | 2026-07-28 |
 
 ## 豁免清单
 
@@ -69,4 +75,5 @@ PHASE-02（2026-07-28）归档 11 文件：5 → `archive/2026-06/`、6 → `arc
 - [x] 所有行含 truth-source pointer（`头部自述-未独立验证` 或 `audits/.../LATEST.md`）
 - [x] 豁免清单包含 v3 blueprint（含 SHA-256 与绑定依据）
 - [x] **PHASE-02 完成**：归档 11 个待归档文件到 `blueprints/archive/YYYY-MM/`（5 → 2026-06、6 → 2026-07；root 活跃 = 19）
-- [ ] **PHASE-03 后续**：写入 3 条因果边 + 反向视图填充 + 3 处过期头部纠正
+- [x] **PHASE-03 完成**：18 非豁免 root 文件四字段头部回填（逐文件 modification-ban 检查，0 sha256 绑定）+ 3 条因果边单边写入（v1 被取代 ← v3、phase-progression 前置依赖 → v3、agent-read 被取代·机制吸收 ← driven-enforcement）+ 反向边视图 3 行派生 + 3 处过期头部纠正（task-lens-m1 → 实施中、phase-progression → 已完成、agent-read → 已完成）；v3 豁免未动（sha256 `a510b7a8...`）
+- [ ] **PHASE-04 后续**：spec sync（blueprint-creation skill / AGENTS.md / documents/INDEX.md）

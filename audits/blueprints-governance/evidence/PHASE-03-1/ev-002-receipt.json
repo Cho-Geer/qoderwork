@@ -1,0 +1,40 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-03-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-002",
+  "decision_case_id": "DC-005",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'ok=0; for f in $(ls blueprints/*.md | grep -v INDEX.md | grep -v blueprint-audit-governance-evidence-and-status-closure-v3.md | grep -v blueprint-blueprints-governance.md); do c=$(rg -c \"^\\*\\*创建日期\\*\\*|^\\*\\*更新日期\\*\\*|^\\*\\*状态\\*\\*|^\\*\\*相关蓝图\\*\\*\" \"$f\" 2>/dev/null | head -1); c=${c:-0}; if [ \"$c\" -eq 4 ]; then ok=$((ok+1)); else echo \"BAD($c) $f\"; fi; done; g=$(head -10 blueprints/blueprint-blueprints-governance.md | rg -c \"^\\*\\*创建日期\\*\\*|^\\*\\*更新日期\\*\\*|^\\*\\*状态\\*\\*|^\\*\\*相关蓝图\\*\\*\"); echo \"backfilled=$ok/18 governance_header=$g/4\"; test \"$ok\" -eq 18 && test \"$g\" -eq 4'",
+  "requirement_id": "REQ-003",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-005",
+  "fixture_id": "FX-005-FOUR-FIELDS-PRESENT",
+  "evidence_level": "component",
+  "repository_state_sha256": "468d4dc63205638ca2bdc3d6dbec0b215914ea89eb33e1c68d104197df11e08a",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [
+    "v3_blueprint_edit",
+    "frozen_provenance_record_edit"
+  ],
+  "projection_sha256": "e0f73d1b1acda3219a827136f05ed6c18627661098f79ba3813701366f2ccb7e",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-03-1/ev-002-output.txt",
+      "sha256": "e6bab4e451dfaea7631955563d0a4c8c2152c643f422be49413749629812611b"
+    }
+  ],
+  "completed_at": "2026-07-28T16:13:55.409Z",
+  "observed": "PASS"
+}

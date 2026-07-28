@@ -1,5 +1,10 @@
 # Blueprint: Question 混合 Enforcement 优化方案
 
+**创建日期**: 2026-07-12
+**更新日期**: 2026-07-28
+**状态**: 已完成
+**相关蓝图**: 无
+
 > **版本**: v2.1.0
 > **日期**: 2026-07-07
 > **状态**: 已实施（代码层面 5 条 recovery 路径全部就位），runtime smoke 已补（softThreshold STOP 注入 + question recovery 已通过 live LLM 验证；详见 `qoderwork/logs/2026-07-07-question-enforcement-smoke.md`）

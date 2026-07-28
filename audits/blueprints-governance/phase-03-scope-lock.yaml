@@ -1,0 +1,196 @@
+schema_version: audit-scope-lock/v3
+document_kind: phase-scope-lock
+lock_id: BLUEPRINTS-GOVERNANCE-PHASE-03-SCOPE-LOCK-20260728
+phase_id: PHASE-03
+provenance_level: v3-required
+created_at: '2026-07-28T16:00:00Z'
+scope:
+  status: FROZEN
+  provenance_level: v3-required
+  frozen_at: '2026-07-28T16:00:00Z'
+  in_scope:
+  - REQ-003
+  - REQ-004
+  out_of_scope:
+  - spec sync to blueprint-creation/AGENTS/documents (PHASE-04 only)
+  - lint script (PHASE-05 only)
+  - work-one product code, DB schema, serve lifecycle, LLM permissions, npm dependencies
+  - any edit to frozen provenance records under audits/
+  - any edit to archived files under blueprints/archive/
+  - any edit to the v3 blueprint (blueprint-audit-governance-evidence-and-status-closure-v3.md)
+    — INDEX-only metadata, no file write
+  - archive moves (PHASE-02 completed)
+  assumptions:
+  - statement: 19 non-exempt root blueprints exist pre-backfill (18 needing backfill
+      + 1 already carrying four fields, blueprint-blueprints-governance.md)
+    disproof: a pre-implementation ls showing a different non-exempt root count
+  - statement: the v3 blueprint is hash-frozen (sha256 a510b7a8...) by audits/audit-governance-evidence-and-status-closure-v3/phase-01-scope-lock.yaml
+      authority_binding and stays untouched
+    disproof: a pre-implementation sha256sum differing from the frozen value
+  - statement: modification-ban check is fail-closed on SHA binding — a basename whose
+      audits/ json/yaml references carry an exact sha256 field binding is frozen-bound
+      and gets INDEX exemption instead of edit; governance mentions without sha256 binding
+      do not block
+    disproof: a frozen-bound file (sha256-bound in audits/) that still gets edited
+  - statement: closure v1 (blueprint-audit-governance-evidence-and-status-closure.md)
+      has zero sha256 bindings in audits/ (its 6 basename hits are PHASE-01/02 governance
+      mentions, not content freezes) and is therefore editable
+    disproof: an exact sha256 field binding for the v1 basename in audits/ json/yaml
+  exit_criteria:
+  - 18 root blueprints backfilled with 创建日期/更新日期/状态/相关蓝图 after per-file modification-ban
+    check (or fail-closed to INDEX exemption)
+  - 3 causal edges written on the dependent side only (closure v1 被取代 ← v3; phase-progression
+    前置依赖 → v3; agent-read 被取代·机制吸收 ← driven-enforcement)
+  - 3 stale headers corrected (task-lens-m1 → 实施中; phase-progression → 已完成; agent-read
+    → 已完成)
+  - 'INDEX 反向边视图 section carries the 3 derived reverse entries; 豁免清单 still lists
+    the v3 blueprint'
+  - 6 fixed checks PASS at component level with retained receipts
+requirements:
+- id: REQ-003
+  plan_item_id: PLAN-REQ-004
+  kind: BEHAVIORAL
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+  behavior: every non-exempt root blueprint has 创建日期/更新日期/状态/相关蓝图 after a per-file
+    modification-ban check; frozen-bound files are not edited and appear in the INDEX
+    exemption list; the v3 blueprint stays byte-identical
+  required_evidence_level: component
+  oracle_id: ORACLE-005
+  oracle: per each of the 18 backfill targets rg of the four header field patterns
+    returns exactly 4 hits (whole file); the pre-existing governance blueprint carries
+    4/4 in its header region (its fenced body example is format spec, not header);
+    per-file modification-ban check ran before edit with zero sha256 bindings; sha256sum
+    of the v3 blueprint equals the frozen value
+  positive_control:
+    command: |-
+      cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'ok=0; for f in $(ls blueprints/*.md | grep -v INDEX.md | grep -v blueprint-audit-governance-evidence-and-status-closure-v3.md | grep -v blueprint-blueprints-governance.md); do c=$(rg -c "^\*\*创建日期\*\*|^\*\*更新日期\*\*|^\*\*状态\*\*|^\*\*相关蓝图\*\*" "$f" 2>/dev/null | head -1); c=${c:-0}; if [ "$c" -eq 4 ]; then ok=$((ok+1)); else echo "BAD($c) $f"; fi; done; g=$(head -10 blueprints/blueprint-blueprints-governance.md | rg -c "^\*\*创建日期\*\*|^\*\*更新日期\*\*|^\*\*状态\*\*|^\*\*相关蓝图\*\*"); echo "backfilled=$ok/18 governance_header=$g/4"; test "$ok" -eq 18 && test "$g" -eq 4'
+    expected: PASS
+    evidence: EV-002
+  negative_control:
+    applicability: REQUIRED
+    method: four-field count assertion against the exempt v3 blueprint (must not carry
+      the header block)
+    command: |-
+      cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'c=$(rg -c "^\*\*创建日期\*\*|^\*\*更新日期\*\*|^\*\*状态\*\*|^\*\*相关蓝图\*\*" blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md 2>/dev/null | head -1); c=${c:-0}; echo "v3_field_hits=$c"; test "$c" -eq 4'
+    expected: FAIL
+    evidence: EV-008
+  status: PASS
+- id: REQ-004
+  plan_item_id: PLAN-REQ-005
+  kind: BEHAVIORAL
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+  behavior: causal edges are written on the dependent side only; every edge target file
+    exists; INDEX reverse view carries the 3 derived reverse entries; 已暂停 implies a
+    non-empty 暂停于 edge
+  required_evidence_level: component
+  oracle_id: ORACLE-007
+  oracle: the 3 dependent-side 相关蓝图 fields equal the approved edge strings; the 2 edge
+    target files exist; the target side carries no reverse edge field value; INDEX 反向边视图
+    lists 3 derived rows; zero 已暂停 headers without 暂停于
+  positive_control:
+    command: |-
+      cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'e1=$(sed -n "s/^\*\*相关蓝图\*\*: //p" blueprints/blueprint-audit-governance-evidence-and-status-closure.md); e2=$(sed -n "s/^\*\*相关蓝图\*\*: //p" blueprints/blueprint-phase-progression-audit-gate.md); e3=$(sed -n "s/^\*\*相关蓝图\*\*: //p" blueprints/blueprint-agent-read-enforcement.md); t1=$(sed -n "s/^\*\*相关蓝图\*\*: //p" blueprints/blueprint-permission-template-driven-enforcement.md); test "$e1" = "被取代 ← blueprint-audit-governance-evidence-and-status-closure-v3.md" && test "$e2" = "前置依赖 → blueprint-audit-governance-evidence-and-status-closure-v3.md（2026-07-28 已满足）" && test "$e3" = "被取代（机制吸收） ← blueprint-permission-template-driven-enforcement.md" && test "$t1" = "无" && ! rg -q "^\*\*相关蓝图\*\*" blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md && r=$(awk "/^## 反向边视图/,/^## 豁免清单/" blueprints/INDEX.md | grep -c "^| blueprint-") && echo "index_reverse_rows=$r" && test "$r" -eq 3 && echo "edges=3 single-side + reverse view synced"'
+    expected: PASS
+    evidence: EV-004
+  negative_control:
+    applicability: REQUIRED
+    method: double-side write mutation — assert the edge target side carries a non-无
+      相关蓝图 value (must not hold)
+    command: |-
+      cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 't=$(sed -n "s/^\*\*相关蓝图\*\*: //p" blueprints/blueprint-permission-template-driven-enforcement.md); echo "target_side_edge=[$t]"; test -n "$t" && test "$t" != "无"'
+    expected: FAIL
+    evidence: EV-010
+  status: PASS
+plan_registry:
+- plan_item_id: PLAN-REQ-004
+  disposition: IN_SCOPE
+  requirement_id: REQ-003
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+- plan_item_id: PLAN-REQ-005
+  disposition: IN_SCOPE
+  requirement_id: REQ-004
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+repository_scope:
+  allowed_paths:
+  - blueprints/*.md (root only, not archive/)
+  - blueprints/INDEX.md
+  - logs/2026-07-28-blueprints-governance-phase-03-accepted.md
+  forbidden_paths:
+  - blueprints/archive/**
+  - blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+  - audits/** (frozen provenance; exception — this phase's own new records phase-03-scope-lock.*,
+    evidence/pre-change-PHASE-03.json, evidence/verdict-state-PHASE-03.json, evidence/PHASE-03-1/*,
+    2026-07-28-audit-phase-03.md, 2026-07-28-audit-phase-03-report.json, LATEST.md rotation)
+  - work-one/
+  - bun.lock
+approval:
+  status: APPROVED
+  actor_type: HUMAN
+  approved_by: HUMAN_USER
+  approved_at: '2026-07-28T16:00:00Z'
+  evidence: audits/blueprints-governance/approval-decision.json
+baseline:
+  workspace_root: /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
+  workspace_head: 7b5a2d752a1ffb78698b1a19e60a3bdd3eca5b87
+  repository_root: /home/zhaoge/workspace/opencode/work-one
+  repository_head: 64df828d56611ac121baccfaf666f147980aec85
+  repository_status_at_design: CLEAN
+fixed_verification:
+- check_id: P03-CHK-1
+  name: modification_ban_checked
+  command: rg --fixed-strings "<basename>" audits/ -g '*.json' -g '*.yaml' per each
+    of the 18 backfill targets before edit; zero exact-sha256 bindings per file; governance
+    mentions without sha256 field do not block; frozen-bound would fall back to INDEX
+    exemption
+  level: component
+  pass_condition: 18_of_18_checked_zero_sha_bindings
+- check_id: P03-CHK-2
+  name: header_four_fields_present
+  command: rg '^\*\*创建日期\*\*|^\*\*更新日期\*\*|^\*\*状态\*\*|^\*\*相关蓝图\*\*' per each
+    of the 18 backfill targets (whole file == 4 hits); governance blueprint header region
+    (head -10) == 4 hits (its fenced body example is format spec text, not a header)
+  level: component
+  pass_condition: 4_hits_per_backfill_target_and_governance_header
+- check_id: P03-CHK-3
+  name: v3_exempt_not_edited
+  command: sha256sum blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+  level: component
+  pass_condition: equals a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+- check_id: P03-CHK-4
+  name: edges_single_side
+  command: sed -n the 相关蓝图 field of the 3 dependent files equals the approved edge
+    strings; target side carries 无 or no field; INDEX 反向边视图 derives 3 rows
+  level: component
+  pass_condition: dependent_side_3_edges_and_reverse_view_3_rows
+- check_id: P03-CHK-5
+  name: edge_targets_exist
+  command: test -f per edge target (v3 blueprint + driven-enforcement blueprint)
+  level: component
+  pass_condition: exit_0_per_target
+- check_id: P03-CHK-6
+  name: pause_rule
+  command: |-
+    rg '^\*\*状态\*\*: 已暂停' blueprints/ --glob '*.md'
+  level: component
+  pass_condition: zero_hits (no 已暂停 without 暂停于)
+prohibited_effects:
+- v3_blueprint_edit
+- archived_file_edit
+- frozen_provenance_record_edit
+- lint_script_write
+- work_one_product_change
+- npm_dependency_add
+- double_side_edge_write
+- pause_without_cause
+failure_convergence:
+  modification_ban_sha_binding_found: BLOCKED_FILE_NOT_EDITED_REGISTER_INDEX_EXEMPTION
+  header_field_missing_after_backfill: BLOCKED
+  v3_sha_drift: BLOCKED
+  edge_target_missing_or_double_side: BLOCKED
+  pause_without_cause: BLOCKED
+  scope_drift: BLOCKED
+plan_sources:
+- path: plans/blueprints-governance/canonical-requirements-contract.yaml
+  sha256: 39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff
+- path: plans/blueprints-governance/formal-plan-set/99-final-verification.md
+  sha256: 741a5640728689171e0e17b7cc5fc529a1609ab0c074f46a5dd1bc9cfa466c30

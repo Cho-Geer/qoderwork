@@ -1,0 +1,7 @@
+=== STDOUT ===
+modification-ban gate correctly detects frozen-bound v3 (sha_bindings=22)
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

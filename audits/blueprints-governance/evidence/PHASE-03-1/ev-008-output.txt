@@ -1,0 +1,7 @@
+=== STDOUT ===
+v3_field_hits=1
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false
