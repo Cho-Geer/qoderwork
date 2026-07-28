@@ -18,9 +18,21 @@ export type FinalizeOptions = {
   scopeLockSha256?: string;
 };
 
+/** Recursively sort object keys (arrays preserved order-wise) for deterministic rendering. */
+function sortKeys(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sortKeys);
+  if (value !== null && typeof value === "object") {
+    const source = value as Record<string, unknown>;
+    const sorted: Record<string, unknown> = {};
+    for (const key of Object.keys(source).sort()) sorted[key] = sortKeys(source[key]);
+    return sorted;
+  }
+  return value;
+}
+
 /** Stable JSON rendering (sorted keys) for immutable, hash-addressable v3 documents. */
 function stableStringify(obj: Record<string, unknown>): string {
-  return JSON.stringify(obj, Object.keys(obj).sort());
+  return JSON.stringify(sortKeys(obj));
 }
 
 /**
@@ -70,33 +82,49 @@ export function buildLatestPointerDocument(input: {
 }
 
 /**
- * Finalize an audit: validate the report parses as audit-governance-report/v3, then atomically
- * publish a CAS LATEST pointer bound to the report + settled canonical/scope-lock hashes.
- * Fail-closed: no publish on validator failure (AUDIT_VALIDATION_FAILED), schema rejection
- * (REPORT_SCHEMA_INVALID), hash drift (REPORT_HASH_DRIFT), missing binding (REPORT_BINDING_MISSING),
- * or existing pointer (LATEST_POINTER_CONFLICT).
+ * Finalize an audit: validate the markdown report, then atomically publish a CAS
+ * LATEST pointer bound to a hash-stable v3 audit-report document derived from the
+ * embedded AUDIT_CONTRACT block, plus the settled canonical/scope-lock hashes.
+ *
+ * v3 design:
+ *   - reportPath is a markdown audit.md file containing `<!-- AUDIT_CONTRACT_START --> ... ```json ... ``` <!-- AUDIT_CONTRACT_END -->`
+ *   - We extract the embedded JSON contract (audit-governance-audit/v3::audit-contract).
+ *   - We build a hash-stable audit-report/v3::audit-report document via buildAuditReportDocument
+ *     and write it to `<basename>-report.json` next to the markdown.
+ *   - The LATEST pointer binds to that JSON report filename (NOT the markdown), so the
+ *     publication address is a parseable v3 doc.
+ *
+ * Fail-closed: no publish on validator failure (AUDIT_VALIDATION_FAILED), missing
+ * contract block (CONTRACT_BLOCK_MISSING), bad contract JSON (CONTRACT_JSON_INVALID),
+ * hash drift (REPORT_HASH_DRIFT), missing binding (REPORT_BINDING_MISSING), or
+ * existing pointer (LATEST_POINTER_CONFLICT).
  */
+const CONTRACT_BLOCK_RE = /<!-- AUDIT_CONTRACT_START -->\s*```json\n([\s\S]*?)\n```\s*<!-- AUDIT_CONTRACT_END -->/;
+
 export function finalizeAudit(
   reportPath: string,
   latestPath: string,
   options: FinalizeOptions = {},
-): { report: string; sha256: string; latestPointer: string } {
+): { report: string; sha256: string; latestPointer: string; auditReportDoc: string } {
   const { validate = validateAuditFile, reportSha256, canonicalSha256, scopeLockSha256 } = options;
   if (!existsSync(reportPath) || !statSync(reportPath).isFile() || statSync(reportPath).size === 0) throw new Error("REPORT_UNAVAILABLE");
 
-  // Fail-closed gate 1: caller semantic validator must pass.
+  // Fail-closed gate 1: caller semantic validator must pass against the markdown.
   if (!validate(reportPath).valid) throw new Error("AUDIT_VALIDATION_FAILED");
 
-  // Report must parse as a v3 audit-report document.
-  let reportDoc: unknown;
+  // Extract the embedded audit-contract JSON block from the markdown.
+  const markdown = readFileSync(reportPath, "utf8");
+  const match = markdown.match(CONTRACT_BLOCK_RE);
+  if (!match) throw new Error("CONTRACT_BLOCK_MISSING");
+  let contract: unknown;
   try {
-    reportDoc = JSON.parse(readFileSync(reportPath, "utf8"));
-  } catch {
-    throw new Error("REPORT_SCHEMA_INVALID");
+    contract = JSON.parse(match[1]);
+  } catch (err) {
+    throw new Error(`CONTRACT_JSON_INVALID: ${err instanceof Error ? err.message : String(err)}`);
   }
-  const reportResult = parseAuditGovernanceV3Document(reportDoc);
-  if (!reportResult.ok || reportResult.value.schema_version !== "audit-governance-report/v3" || reportResult.value.document_kind !== "audit-report") {
-    throw new Error("REPORT_SCHEMA_INVALID");
+  const contractResult = parseAuditGovernanceV3Document(contract);
+  if (!contractResult.ok || contractResult.value.schema_version !== "audit-governance-audit/v3" || contractResult.value.document_kind !== "audit-contract") {
+    throw new Error("CONTRACT_SCHEMA_INVALID");
   }
 
   const content = readFileSync(reportPath);
@@ -108,12 +136,28 @@ export function finalizeAudit(
   // Fail-closed: required settlement bindings must be present.
   if (!canonicalSha256 || !scopeLockSha256) throw new Error("REPORT_BINDING_MISSING");
 
+  // Build the hash-stable v3 audit-report document and write it next to the markdown.
+  const reportFilename = basename(reportPath);
+  const auditReportFilename = `${basename(reportPath, ".md")}-report.json`;
+  const auditReportPath = join(dirname(reportPath), auditReportFilename);
+  const auditReportDoc = buildAuditReportDocument({
+    reportFilename,
+    reportSha256: sha256,
+    canonicalSha256,
+    scopeLockSha256,
+  });
+  if (existsSync(auditReportPath)) throw new Error("AUDIT_REPORT_DOC_CONFLICT");
+  writeFileSync(auditReportPath, auditReportDoc, { flag: "wx" });
+
+  // Compute audit-report.json sha256 for the LATEST pointer binding.
+  const auditReportSha256 = createHash("sha256").update(auditReportDoc).digest("hex");
+
   // Fail-closed gate 2: never overwrite an existing pointer.
   if (existsSync(latestPath)) throw new Error("LATEST_POINTER_CONFLICT");
 
   const latestDoc = buildLatestPointerDocument({
-    reportFilename: basename(reportPath),
-    reportSha256: sha256,
+    reportFilename: auditReportFilename,
+    reportSha256: auditReportSha256,
     canonicalSha256,
     scopeLockSha256,
   });
@@ -122,7 +166,7 @@ export function finalizeAudit(
   const temp = join(dirname(latestPath), `.${basename(latestPath)}.${process.pid}.tmp`);
   writeFileSync(temp, latestDoc, { flag: "wx" });
   renameSync(temp, latestPath);
-  return { report: basename(reportPath), sha256, latestPointer: latestDoc };
+  return { report: auditReportFilename, sha256: auditReportSha256, latestPointer: latestDoc, auditReportDoc };
 }
 
 if (import.meta.main) {

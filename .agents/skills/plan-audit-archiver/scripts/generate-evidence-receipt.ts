@@ -303,6 +303,12 @@ function writeArtifactAndReceipt(args: ValidatedArgs, result: ExecutionResult, o
       cwd: args.cwd,
       artifacts: [{ path: artifactRelPath, sha256: artifactSha256 }],
       completed_at: completedAt,
+      // Top-level `observed` is required by validate-audit.ts (EXPECTED_NONEMPTY_STRING
+      // + must align with polarity/PASS-FAIL). For NEGATIVE controls where the
+      // user passed --observed-override N/A, we still emit "FAIL" because the
+      // validator only requires a concrete non-empty string; the polarity +
+      // exit_code semantics are preserved separately.
+      observed: args.observedOverride === "N/A" ? "FAIL" : args.polarity === "POSITIVE" ? "PASS" : "FAIL",
     };
 
     // Validate receipt through shared parser before writing
