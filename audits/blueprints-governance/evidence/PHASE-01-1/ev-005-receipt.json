@@ -1,0 +1,39 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-01-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-005",
+  "decision_case_id": "DC-001",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'if test -s blueprint/_NONEXISTENT_FILE.md; then exit 0; else exit 1; fi'",
+  "requirement_id": "REQ-001",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FX-NEGATIVE-NONEXISTENT",
+  "evidence_level": "component",
+  "repository_state_sha256": "c9e01e9d6685fe74ceb034af28fd203ffbbbdfca536838220c87a202fa5da0a6",
+  "exit_code": 1,
+  "execution": {
+    "observed": "N/A",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "EXPECTED_FAILURE",
+    "error_code": "NULL"
+  },
+  "forbidden_side_effects_observed": [
+    "index_modify"
+  ],
+  "projection_sha256": "f10a7e544cef2c3efcf4251f68922f12c54d1d344666f742b1bab3aa1cfd9954",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-005-output.txt",
+      "sha256": "b1e5c7757c6db7d7b5636d02c5636f1acb77c4071df430f80a8f52de6f2b8939"
+    }
+  ],
+  "completed_at": "2026-07-28T13:23:48.391Z",
+  "observed": "FAIL"
+}

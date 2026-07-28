@@ -1,0 +1,474 @@
+{
+  "schema_version": "audit-governance-audit/v3",
+  "document_kind": "audit-contract",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-01-AUDIT-20260728",
+  "generation": 1,
+  "previous_audit": null,
+  "scope_lock": {
+    "path": "audits/blueprints-governance/phase-01-scope-lock.json",
+    "sha256": "756f3849bae80430ce62246b5206b4fde6255dfe42005c1d1609b0e97a12cb9b",
+    "lock_id": "BLUEPRINTS-GOVERNANCE-PHASE-01-SCOPE-LOCK-20260728"
+  },
+  "baseline": {
+    "implementation_base_commit": "64df828d56611ac121baccfaf666f147980aec85",
+    "commit": "64df828d56611ac121baccfaf666f147980aec85",
+    "head_at_verdict": "64df828d56611ac121baccfaf666f147980aec85",
+    "workspace_root": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+    "repository_root": "/home/zhaoge/workspace/opencode/work-one",
+    "dirty_surface": "work-one clean",
+    "dirty_paths": [],
+    "pre_change_receipt": {
+      "path": "audits/blueprints-governance/evidence/pre-change-PHASE-01.json",
+      "sha256": "1b77c0e6a749f7f30f25453c612f88297e3607898d927fe89484cd239eab1c36"
+    },
+    "verdict_state_receipt": {
+      "path": "audits/blueprints-governance/evidence/verdict-state-PHASE-01.json",
+      "sha256": "61d4e39c9875e039b661a74cfd6d68187fd1ebb64dd613bbb3165ea0aa702ab9"
+    },
+    "supplemental_sources": []
+  },
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v3-required",
+    "frozen_at": "2026-07-28T19:00:00Z",
+    "in_scope": [
+      {
+        "REQ-001": "blueprints/INDEX.md three-section board (## 活跃 /"
+      },
+      "register all 30 current blueprints/ root files exactly once with status (七值), truth-source pointer, and date basis",
+      "seed exemption entry for blueprint-audit-governance-evidence-and-status-closure-v3.md (frozen-bound, INDEX-only metadata)",
+      {
+        "4 fixed component checks": "index_three_sections_present / index_file_coverage_complete / index_status_values_valid / index_truth_source_pointer"
+      }
+    ],
+    "out_of_scope": [
+      "archive moves (PHASE-02 only)",
+      "header backfill (PHASE-03 only)",
+      "causal edges (PHASE-03 only)",
+      "spec sync to blueprint-creation/AGENTS/documents (PHASE-04 only)",
+      "lint script (PHASE-05 only)",
+      "work-one product code, DB schema, serve lifecycle, LLM permissions, npm dependencies",
+      "any edit to frozen provenance records under audits/",
+      "the v3 blueprint (blueprint-audit-governance-evidence-and-status-closure-v3.md) — INDEX-only metadata, no file write"
+    ],
+    "assumptions": [
+      "30 root blueprints/ files exist pre-archive (PHASE-02 will reduce to 19 root after archive)",
+      "no archive/ subdirectory exists yet",
+      "status set is exactly {草稿, 待审批, 待实施, 实施中, 已暂停, 已完成, 已退役}",
+      "truth-source pointer is either an audits/LATEST.md reference or `头部自述-未独立验证`"
+    ],
+    "exit_criteria": [
+      "blueprints/INDEX.md exists and is non-empty",
+      "3 main sections + 2 reserved sections present",
+      "all 30 .md files registered exactly once",
+      "all status values valid; all rows have truth-source pointer",
+      "exemption list contains v3 blueprint",
+      "4 fixed checks PASS at component level with retained receipts"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-001",
+      "kind": "BEHAVIORAL",
+      "source": "plans/blueprints-governance/canonical-requirements-contract.yaml",
+      "behavior": "blueprints/INDEX.md registers every .md under blueprints/ (root) exactly once with three-section board (active/closed/archived) + reserved reverse-edge view + exemption list; each row carries status (七值) + truth-source pointer + date basis",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-001",
+      "oracle": "4 fixed component checks pass; find coverage equals INDEX registration; v3 exempt file appears in exemption list; truth-source pointer present on every row",
+      "positive_control": {
+        "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && awk '/^## 活跃/,/^## 已闭环/' blueprints/INDEX.md | grep -c '已完成\\|待归档\\|已退役\\|实施中\\|草稿\\|待实施'",
+        "expected": "PASS",
+        "evidence": "EV-004"
+      },
+      "negative_control": {
+        "applicability": "REQUIRED",
+        "method": "REPLACE_NEGATIVE_METHOD",
+        "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'cp blueprints/INDEX.md /tmp/_p01_neg_idx.md && sed -i \"s/| 已完成 |/| INVALID_STATUS_VALUE |/g\" /tmp/_p01_neg_idx.md && if grep -q \"INVALID_STATUS_VALUE\" /tmp/_p01_neg_idx.md; then exit 1; else exit 0; fi; rm -f /tmp/_p01_neg_idx.md'",
+        "expected": "FAIL",
+        "evidence": "EV-008"
+      },
+      "status": "FAIL"
+    },
+    {
+      "id": "REQ-002",
+      "plan_item_id": "PLAN-REQ-002",
+      "kind": "STATIC",
+      "source": "plans/blueprints-governance/canonical-requirements-contract.yaml",
+      "behavior": "blueprints/INDEX.md schema adheres to fixed contract (three sections, two reserved sections, row schema)",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "rg '^## 活跃|^## 已闭环|^## 已归档|^## 反向边视图|^## 豁免清单' blueprints/INDEX.md returns 5 hits",
+      "positive_control": {
+        "command": "REPLACE_POSITIVE_COMMAND",
+        "expected": "PASS",
+        "observed": "REPLACE_POSITIVE_OBSERVED",
+        "evidence": "REPLACE_POSITIVE_EV"
+      },
+      "negative_control": {
+        "applicability": "NOT_APPLICABLE_STATIC",
+        "method": "N/A",
+        "command": "N/A",
+        "expected": "N/A",
+        "observed": "N/A",
+        "evidence": "N/A"
+      },
+      "status": "REPLACE_STATUS"
+    }
+  ],
+  "evidence_receipts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-001-receipt.json",
+      "sha256": "ed73b47dc9aa48cc19f643a54d4bb99f2df6a198a3c39e3ae03e0ee89e49d683",
+      "document_kind": "evidence-receipt",
+      "id": "EV-001",
+      "decision_case_id": "DC-001",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && test -s blueprints/INDEX.md",
+      "requirement_id": "REQ-001",
+      "polarity": "POSITIVE",
+      "oracle_id": "ORACLE-001",
+      "fixture_id": "FX-001-INDEX-EXISTS",
+      "evidence_level": "component",
+      "repository_state_sha256": "1b77c0e6a749f7f30f25453c612f88297e3607898d927fe89484cd239eab1c36",
+      "exit_code": 0,
+      "execution": {
+        "observed": "PASS",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "SUCCESS",
+        "error_code": null
+      },
+      "forbidden_side_effects_observed": [
+        "index_modify",
+        "archive_move",
+        "blueprint_edit"
+      ],
+      "projection_sha256": "b47b5d8612566e3158c17bbee238a37fe16608d5de785b89dee6f1e2581627b2",
+      "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-001-output.txt",
+          "sha256": "890d9e753b02601aecc1b097f6f07eba60527b9d1715a5795a9e16763c2b9981"
+        }
+      ],
+      "completed_at": "2026-07-28T12:20:05.597Z"
+    },
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-002-receipt.json",
+      "sha256": "459ce01e95c0dd4a183e37e291be2f72ecfe8471997c4e4bf9d5246492199de5",
+      "document_kind": "evidence-receipt",
+      "id": "EV-002",
+      "decision_case_id": "DC-001",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && rg -c '^## 活跃$|^## 已闭环$|^## 已归档$|^## 反向边视图$|^## 豁免清单$' blueprints/INDEX.md",
+      "requirement_id": "REQ-001",
+      "polarity": "POSITIVE",
+      "oracle_id": "ORACLE-001",
+      "fixture_id": "FX-001-5-SECTIONS",
+      "evidence_level": "component",
+      "repository_state_sha256": "1b77c0e6a749f7f30f25453c612f88297e3607898d927fe89484cd239eab1c36",
+      "exit_code": 0,
+      "execution": {
+        "observed": "PASS",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "SUCCESS",
+        "error_code": null
+      },
+      "forbidden_side_effects_observed": [
+        "index_modify",
+        "archive_move",
+        "blueprint_edit"
+      ],
+      "projection_sha256": "b47b5d8612566e3158c17bbee238a37fe16608d5de785b89dee6f1e2581627b2",
+      "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-002-output.txt",
+          "sha256": "0367b53fe325a5bfb148faa8464a6a71f7f1b7e6e5fc91a72e385f78033ccea6"
+        }
+      ],
+      "completed_at": "2026-07-28T12:20:16.069Z"
+    },
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-003-receipt.json",
+      "sha256": "32a9af66cc3586cf9033c98e0137adc30725b87a787a8c0d54497202ce8caafa",
+      "document_kind": "evidence-receipt",
+      "id": "EV-003",
+      "decision_case_id": "DC-002",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'find blueprints -maxdepth 2 -name \"*.md\" ! -name INDEX.md | wc -l'",
+      "requirement_id": "REQ-001",
+      "polarity": "POSITIVE",
+      "oracle_id": "ORACLE-001",
+      "fixture_id": "FX-002-FILE-COVERAGE",
+      "evidence_level": "component",
+      "repository_state_sha256": "1b77c0e6a749f7f30f25453c612f88297e3607898d927fe89484cd239eab1c36",
+      "exit_code": 0,
+      "execution": {
+        "observed": "PASS",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "SUCCESS",
+        "error_code": null
+      },
+      "forbidden_side_effects_observed": [
+        "index_modify",
+        "archive_move",
+        "blueprint_edit"
+      ],
+      "projection_sha256": "b47b5d8612566e3158c17bbee238a37fe16608d5de785b89dee6f1e2581627b2",
+      "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-003-output.txt",
+          "sha256": "c5dd77a5f4b4eb5f6218ff1582c5a2a7c36eb26ee6cdcf27a9d24a8ebf76a6c9"
+        }
+      ],
+      "completed_at": "2026-07-28T12:20:24.118Z"
+    },
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-004-receipt.json",
+      "sha256": "78335df24367ede7ac0a353200672a3062a0741bc1ce9564a6e42ec471fe808a",
+      "document_kind": "evidence-receipt",
+      "id": "EV-004",
+      "decision_case_id": "DC-002",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && awk '/^## 活跃/,/^## 已闭环/' blueprints/INDEX.md | grep -c '已完成\\|待归档\\|已退役\\|实施中\\|草稿\\|待实施'",
+      "requirement_id": "REQ-001",
+      "polarity": "POSITIVE",
+      "oracle_id": "ORACLE-001",
+      "fixture_id": "FX-002-STATUS-ENUM",
+      "evidence_level": "component",
+      "repository_state_sha256": "1b77c0e6a749f7f30f25453c612f88297e3607898d927fe89484cd239eab1c36",
+      "exit_code": 0,
+      "execution": {
+        "observed": "PASS",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "SUCCESS",
+        "error_code": null
+      },
+      "forbidden_side_effects_observed": [
+        "index_modify",
+        "archive_move",
+        "blueprint_edit"
+      ],
+      "projection_sha256": "b47b5d8612566e3158c17bbee238a37fe16608d5de785b89dee6f1e2581627b2",
+      "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-004-output.txt",
+          "sha256": "d6d466f0a996bc9d1631070eb257724d0f9d11dd4a654e510ae213deba0086c0"
+        }
+      ],
+      "completed_at": "2026-07-28T12:23:52.348Z"
+    },
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-005-receipt.json",
+      "sha256": "acf640136443cc7bc72309c6a7edecd00a1c54993dc61f45bc93b35cb05fb4bf",
+      "document_kind": "evidence-receipt",
+      "id": "EV-005",
+      "decision_case_id": "DC-001",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && touch /tmp/_p01_empty.md && test -s /tmp/_p01_empty.md && ! test -s blueprints/_NONEXISTENT_FILE.md",
+      "requirement_id": "REQ-001",
+      "polarity": "NEGATIVE",
+      "oracle_id": "ORACLE-001",
+      "fixture_id": "FX-NEGATIVE-EMPTY-INDEX",
+      "evidence_level": "component",
+      "repository_state_sha256": "1b77c0e6a749f7f30f25453c612f88297e3607898d927fe89484cd239eab1c36",
+      "exit_code": 1,
+      "execution": {
+        "observed": "N/A",
+        "exit_code": 1,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "EXPECTED_FAILURE",
+        "error_code": "INDEX_EMPTY"
+      },
+      "forbidden_side_effects_observed": [
+        "index_modify",
+        "archive_move",
+        "blueprint_edit"
+      ],
+      "projection_sha256": "b47b5d8612566e3158c17bbee238a37fe16608d5de785b89dee6f1e2581627b2",
+      "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-005-output.txt",
+          "sha256": "b1e5c7757c6db7d7b5636d02c5636f1acb77c4071df430f80a8f52de6f2b8939"
+        }
+      ],
+      "completed_at": "2026-07-28T12:25:00.819Z"
+    },
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-006-receipt.json",
+      "sha256": "4e81515a13ab4da1068a614ace9a9945c8299e3712ee42e2a0627b20bb6a5ab1",
+      "document_kind": "evidence-receipt",
+      "id": "EV-006",
+      "decision_case_id": "DC-001",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'cp blueprints/INDEX.md /tmp/_p01_neg.md && sed -i \\\"s/^## 已归档/## ARCHIVED/g\\\" /tmp/_p01_neg.md && rg -c \"^## 已归档$\" /tmp/_p01_neg.md'",
+      "requirement_id": "REQ-001",
+      "polarity": "NEGATIVE",
+      "oracle_id": "ORACLE-001",
+      "fixture_id": "FX-NEGATIVE-MISSING-SECTION",
+      "evidence_level": "component",
+      "repository_state_sha256": "1b77c0e6a749f7f30f25453c612f88297e3607898d927fe89484cd239eab1c36",
+      "exit_code": 1,
+      "execution": {
+        "observed": "N/A",
+        "exit_code": 1,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "EXPECTED_FAILURE",
+        "error_code": "SECTION_MISSING"
+      },
+      "forbidden_side_effects_observed": [
+        "index_modify",
+        "archive_move",
+        "blueprint_edit"
+      ],
+      "projection_sha256": "b47b5d8612566e3158c17bbee238a37fe16608d5de785b89dee6f1e2581627b2",
+      "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-006-output.txt",
+          "sha256": "7e1f97553dc89b2947ce01cd120dd8058e67cbf32236056b1500a17f4628d488"
+        }
+      ],
+      "completed_at": "2026-07-28T12:25:10.767Z"
+    },
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-007-receipt.json",
+      "sha256": "ba31dbb8cefbbc68a94a3651b7d6fc61a956774ad90403409690775671deb59e",
+      "document_kind": "evidence-receipt",
+      "id": "EV-007",
+      "decision_case_id": "DC-002",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'mkdir -p /tmp/_p01_neg && touch /tmp/_p01_neg/orphan.md && cp blueprints/INDEX.md /tmp/_p01_neg/INDEX.md && bash -c \"expected=31; actual=\\0; test \\0 -gt 0\"",
+      "requirement_id": "REQ-001",
+      "polarity": "NEGATIVE",
+      "oracle_id": "ORACLE-001",
+      "fixture_id": "FX-NEGATIVE-COVERAGE-DRIFT",
+      "evidence_level": "component",
+      "repository_state_sha256": "1b77c0e6a749f7f30f25453c612f88297e3607898d927fe89484cd239eab1c36",
+      "exit_code": 2,
+      "execution": {
+        "observed": "N/A",
+        "exit_code": 2,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "EXPECTED_FAILURE",
+        "error_code": "COVERAGE_DRIFT"
+      },
+      "forbidden_side_effects_observed": [
+        "index_modify",
+        "archive_move",
+        "blueprint_edit"
+      ],
+      "projection_sha256": "b47b5d8612566e3158c17bbee238a37fe16608d5de785b89dee6f1e2581627b2",
+      "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-007-output.txt",
+          "sha256": "1e96856edfaf50f30e20474ce1c3c2cd48a0b50eb55287c3e33e595cabab52c7"
+        }
+      ],
+      "completed_at": "2026-07-28T12:25:39.763Z"
+    },
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-008-receipt.json",
+      "sha256": "a13433ee38ce43cb4501d14b0be134c6f7e9309df7391c87a449e383d6e477c6",
+      "document_kind": "evidence-receipt",
+      "id": "EV-008",
+      "decision_case_id": "DC-002",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'cp blueprints/INDEX.md /tmp/_p01_neg_idx.md && sed -i \"s/| 已完成 |/| INVALID_STATUS_VALUE |/g\" /tmp/_p01_neg_idx.md && if grep -q \"INVALID_STATUS_VALUE\" /tmp/_p01_neg_idx.md; then exit 1; else exit 0; fi; rm -f /tmp/_p01_neg_idx.md'",
+      "requirement_id": "REQ-001",
+      "polarity": "NEGATIVE",
+      "oracle_id": "ORACLE-001",
+      "fixture_id": "FX-NEGATIVE-INVALID-STATUS",
+      "evidence_level": "component",
+      "repository_state_sha256": "1b77c0e6a749f7f30f25453c612f88297e3607898d927fe89484cd239eab1c36",
+      "exit_code": 1,
+      "execution": {
+        "observed": "N/A",
+        "exit_code": 1,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "EXPECTED_FAILURE",
+        "error_code": "INVALID_STATUS"
+      },
+      "forbidden_side_effects_observed": [
+        "index_modify",
+        "archive_move",
+        "blueprint_edit"
+      ],
+      "projection_sha256": "b47b5d8612566e3158c17bbee238a37fe16608d5de785b89dee6f1e2581627b2",
+      "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/blueprints-governance/evidence/PHASE-01-1/ev-008-output.txt",
+          "sha256": "b1e5c7757c6db7d7b5636d02c5636f1acb77c4071df430f80a8f52de6f2b8939"
+        }
+      ],
+      "completed_at": "2026-07-28T12:26:01.722Z"
+    }
+  ],
+  "audit_boundary_matrix": null,
+  "boundary_precheck_inputs": null,
+  "sweep": {
+    "status": "COMPLETE",
+    "requirement_ids": [
+      {
+        "REQ-001": "blueprints/INDEX.md three-section board (## 活跃 /"
+      },
+      "register all 30 current blueprints/ root files exactly once with status (七值), truth-source pointer, and date basis",
+      "seed exemption entry for blueprint-audit-governance-evidence-and-status-closure-v3.md (frozen-bound, INDEX-only metadata)",
+      {
+        "4 fixed component checks": "index_three_sections_present / index_file_coverage_complete / index_status_values_valid / index_truth_source_pointer"
+      }
+    ],
+    "files_inspected": [
+      "REPLACE_EXACT_FILE"
+    ],
+    "commands": [
+      "REPLACE_COMMAND"
+    ],
+    "completed_at": "2026-07-28T12:28:06.621Z"
+  },
+  "findings": [],
+  "rework_package": {
+    "status": "NONE",
+    "finding_ids": [],
+    "items": []
+  },
+  "reopen_records": [],
+  "inherited_blockers": [],
+  "downgrade_declaration": {
+    "reason": "REPLACE_DOWNGRADE_REASON",
+    "ceiling": "component",
+    "unaffected_scope": "REPLACE_UNAFFECTED_SCOPE",
+    "affected_scope": "REPLACE_AFFECTED_SCOPE"
+  },
+  "unclassified_findings": 0,
+  "evidence_ceiling": "component",
+  "verdict": "ACCEPT",
+  "blocker_reason": null,
+  "invalid_reason": null
+}

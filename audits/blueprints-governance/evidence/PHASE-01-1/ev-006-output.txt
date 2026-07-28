@@ -1,0 +1,6 @@
+=== STDOUT ===
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

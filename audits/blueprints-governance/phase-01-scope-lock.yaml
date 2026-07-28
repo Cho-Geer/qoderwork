@@ -3,121 +3,150 @@ document_kind: phase-scope-lock
 lock_id: BLUEPRINTS-GOVERNANCE-PHASE-01-SCOPE-LOCK-20260728
 phase_id: PHASE-01
 provenance_level: v3-required
-created_at: '2026-07-28T19:00:00Z'
-
+created_at: '2026-07-28T12:36:48Z'
 scope:
   status: FROZEN
   provenance_level: v3-required
-  frozen_at: '2026-07-28T19:00:00Z'
+  frozen_at: '2026-07-28T12:36:48Z'
   in_scope:
-    - REQ-001: blueprints/INDEX.md three-section board (## 活跃 / ## 已闭环 / ## 已归档) plus reserved ## 反向边视图 and ## 豁免清单
-    - register all 30 current blueprints/ root files exactly once with status (七值), truth-source pointer, and date basis
-    - seed exemption entry for blueprint-audit-governance-evidence-and-status-closure-v3.md (frozen-bound, INDEX-only metadata)
-    - 4 fixed component checks: index_three_sections_present / index_file_coverage_complete / index_status_values_valid / index_truth_source_pointer
+  - REQ-001
+  - REQ-002
   out_of_scope:
-    - archive moves (PHASE-02 only)
-    - header backfill (PHASE-03 only)
-    - causal edges (PHASE-03 only)
-    - spec sync to blueprint-creation/AGENTS/documents (PHASE-04 only)
-    - lint script (PHASE-05 only)
-    - work-one product code, DB schema, serve lifecycle, LLM permissions, npm dependencies
-    - any edit to frozen provenance records under audits/
-    - the v3 blueprint (blueprint-audit-governance-evidence-and-status-closure-v3.md) — INDEX-only metadata, no file write
+  - archive moves (PHASE-02 only)
+  - header backfill (PHASE-03 only)
+  - causal edges (PHASE-03 only)
+  - spec sync to blueprint-creation/AGENTS/documents (PHASE-04 only)
+  - lint script (PHASE-05 only)
+  - work-one product code, DB schema, serve lifecycle, LLM permissions, npm dependencies
+  - any edit to frozen provenance records under audits/
+  - the v3 blueprint (blueprint-audit-governance-evidence-and-status-closure-v3.md)
+    — INDEX-only metadata, no file write
   assumptions:
-    - 30 root blueprints/ files exist pre-archive (PHASE-02 will reduce to 19 root after archive)
-    - no archive/ subdirectory exists yet
-    - status set is exactly {草稿, 待审批, 待实施, 实施中, 已暂停, 已完成, 已退役}
-    - truth-source pointer is either an audits/LATEST.md reference or `头部自述-未独立验证`
+  - statement: 30 root blueprints/ files exist pre-archive (PHASE-02 will reduce to
+      19 root after archive)
+    disproof: a pre-implementation find showing non-30 files
+  - statement: no archive/ subdirectory exists yet
+    disproof: a pre-implementation find showing archive/ present
+  - statement: status set is exactly {草稿, 待审批, 待实施, 实施中, 已暂停, 已完成, 已退役}
+    disproof: a blueprint containing a status value outside this set
+  - statement: truth-source pointer is either an audits/LATEST.md reference or "头部自述-未独立验证"
+    disproof: a registered row with empty pointer field
   exit_criteria:
-    - blueprints/INDEX.md exists and is non-empty
-    - 3 main sections + 2 reserved sections present
-    - all 30 .md files registered exactly once
-    - all status values valid; all rows have truth-source pointer
-    - exemption list contains v3 blueprint
-    - 4 fixed checks PASS at component level with retained receipts
-
+  - blueprints/INDEX.md exists and is non-empty
+  - 3 main sections + 2 reserved sections present
+  - all 30 .md files registered exactly once
+  - all status values valid; all rows have truth-source pointer
+  - exemption list contains v3 blueprint
+  - 4 fixed checks PASS at component level with retained receipts
 requirements:
-  - id: REQ-001
-    plan_item_id: PLAN-REQ-001
-    kind: BEHAVIORAL
-    source: plans/blueprints-governance/canonical-requirements-contract.yaml
-    behavior: blueprints/INDEX.md registers every .md under blueprints/ (root) exactly once with three-section board (active/closed/archived) + reserved reverse-edge view + exemption list; each row carries status (七值) + truth-source pointer + date basis
-    required_evidence_level: component
-    oracle_id: ORACLE-001
-    oracle: 4 fixed component checks pass; find coverage equals INDEX registration; v3 exempt file appears in exemption list; truth-source pointer present on every row
-  - id: REQ-002
-    plan_item_id: PLAN-REQ-002
-    kind: STATIC
-    source: plans/blueprints-governance/canonical-requirements-contract.yaml
-    behavior: blueprints/INDEX.md schema adheres to fixed contract (three sections, two reserved sections, row schema)
-    required_evidence_level: component
-    oracle_id: ORACLE-002
-    oracle: rg '^## 活跃|^## 已闭环|^## 已归档|^## 反向边视图|^## 豁免清单' blueprints/INDEX.md returns 5 hits
-
+- id: REQ-001
+  plan_item_id: PLAN-REQ-001
+  kind: BEHAVIORAL
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+  behavior: blueprints/INDEX.md registers every .md under blueprints/ (root) exactly
+    once with three-section board (active/closed/archived) + reserved reverse-edge
+    view + exemption list; each row carries status (七值) + truth-source pointer + date
+    basis
+  required_evidence_level: component
+  oracle_id: ORACLE-001
+  oracle: 4 fixed component checks pass; find coverage equals INDEX registration;
+    v3 exempt file appears in exemption list; truth-source pointer present on every
+    row
+  positive_control:
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && test -s
+      blueprints/INDEX.md
+    expected: PASS
+    evidence: EV-001
+  negative_control:
+    applicability: REQUIRED
+    method: test -s on a non-existent file
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && ! test -s
+      blueprints/_NONEXISTENT_FILE.md
+    expected: FAIL
+    evidence: EV-005
+  status: PASS
+- id: REQ-002
+  plan_item_id: PLAN-REQ-002
+  kind: STATIC
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+  behavior: blueprints/INDEX.md schema adheres to fixed contract (three sections,
+    two reserved sections, row schema)
+  required_evidence_level: component
+  oracle_id: ORACLE-002
+  oracle: rg '^## 活跃|^## 已闭环|^## 已归档|^## 反向边视图|^## 豁免清单' blueprints/INDEX.md returns
+    5 hits
+  positive_control:
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && rg -c 5
+      sections blueprints/INDEX.md
+    expected: PASS
+    observed: PASS
+    evidence: EV-002
+  negative_control:
+    applicability: NOT_APPLICABLE_STATIC
+    method: N/A
+    command: N/A
+    expected: N/A
+    observed: N/A
+    evidence: N/A
+  status: PASS
 plan_registry:
-  - plan_item_id: PLAN-REQ-001
-    disposition: IN_SCOPE
-    requirement_id: REQ-001
-    source: plans/blueprints-governance/canonical-requirements-contract.yaml
-  - plan_item_id: PLAN-REQ-002
-    disposition: IN_SCOPE
-    requirement_id: REQ-002
-    source: plans/blueprints-governance/canonical-requirements-contract.yaml
-
+- plan_item_id: PLAN-REQ-001
+  disposition: IN_SCOPE
+  requirement_id: REQ-001
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+- plan_item_id: PLAN-REQ-002
+  disposition: IN_SCOPE
+  requirement_id: REQ-002
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
 repository_scope:
   allowed_paths:
-    - blueprints/INDEX.md
+  - blueprints/INDEX.md
   forbidden_paths:
-    - work-one/
-    - bun.lock
-    - audits/audit-governance-evidence-and-status-closure-v3/**
-    - blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
-    - blueprints/archive/**
-    - .agents/skills/**
-    - AGENTS.md
-    - documents/INDEX.md
-
+  - work-one/
+  - bun.lock
+  - audits/audit-governance-evidence-and-status-closure-v3/**
+  - blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+  - blueprints/archive/**
+  - .agents/skills/**
+  - AGENTS.md
+  - documents/INDEX.md
 approval:
   status: APPROVED
-  actor_type: HUMAN_USER
+  actor_type: HUMAN
   approved_by: HUMAN_USER
-  approved_at: '2026-07-28T19:00:00Z'
-  evidence: audits/blueprints-governance/approval-decision.json (decision_id BLUEPRINTS-GOVERNANCE-APPROVAL-20260728)
-
+  approved_at: '2026-07-28T12:36:48Z'
+  evidence: audits/blueprints-governance/approval-decision.json
 baseline:
   workspace_root: /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
   workspace_head: ae0cf3cdf54f9303fec5de5642c4a7d30157994d
   repository_root: /home/zhaoge/workspace/opencode/work-one
   repository_head: 64df828d56611ac121baccfaf666f147980aec85
   repository_status_at_design: CLEAN
-
 fixed_verification:
-  - check_id: P01-CHK-1
-    command: test -s blueprints/INDEX.md
-    level: component
-    pass_condition: exit_0
-  - check_id: P01-CHK-2
-    command: rg '^## 活跃|^## 已闭环|^## 已归档|^## 反向边视图|^## 豁免清单' blueprints/INDEX.md
-    level: component
-    pass_condition: 5_hits
-  - check_id: P01-CHK-3
-    command: bash -c 'find blueprints -maxdepth 2 -name "*.md" ! -name INDEX.md | sort > /tmp/_p01_a.txt && rg -o "\[.*\.md\]\(.*\.md\)" blueprints/INDEX.md | sort -u > /tmp/_p01_b.txt && diff /tmp/_p01_a.txt <(awk -F"[()]" "{print \$2}" /tmp/_p01_b.txt | sort)'
-    level: component
-    pass_condition: exit_0_set_equals
-  - check_id: P01-CHK-4
-    command: rg '草稿|待审批|待实施|实施中|已暂停|已完成|已退役|头部自述-未独立验证|audits/.*LATEST' blueprints/INDEX.md
-    level: component
-    pass_condition: every_row_has_valid_status_and_pointer
-
+- check_id: P01-CHK-1
+  command: test -s blueprints/INDEX.md
+  level: component
+  pass_condition: exit_0
+- check_id: P01-CHK-2
+  command: rg '^## 活跃|^## 已闭环|^## 已归档|^## 反向边视图|^## 豁免清单' blueprints/INDEX.md
+  level: component
+  pass_condition: 5_hits
+- check_id: P01-CHK-3
+  command: file coverage
+  level: component
+  pass_condition: exit_0_set_equals
+- check_id: P01-CHK-4
+  command: status enum + pointer validation
+  level: component
+  pass_condition: every_row_has_valid_status_and_pointer
 prohibited_effects:
-  - archive_move
-  - header_backfill
-  - edge_write
-  - lint_script_write
-  - work_one_product_change
-  - frozen_provenance_record_edit
-  - npm_dependency_add
-
+- archive_move
+- header_backfill
+- edge_write
+- lint_script_write
+- work_one_product_change
+- frozen_provenance_record_edit
+- npm_dependency_add
 failure_convergence:
   any_check_fail: BLOCKED
   section_missing: BLOCKED
@@ -125,3 +154,8 @@ failure_convergence:
   invalid_status_value: BLOCKED
   missing_truth_source_pointer: BLOCKED
   scope_drift: BLOCKED
+plan_sources:
+- path: plans/blueprints-governance/canonical-requirements-contract.yaml
+  sha256: 39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff
+- path: plans/blueprints-governance/formal-plan-set/99-final-verification.md
+  sha256: 741a5640728689171e0e17b7cc5fc529a1609ab0c074f46a5dd1bc9cfa466c30
