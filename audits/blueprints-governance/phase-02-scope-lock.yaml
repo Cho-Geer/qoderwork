@@ -1,0 +1,179 @@
+schema_version: audit-scope-lock/v3
+document_kind: phase-scope-lock
+lock_id: BLUEPRINTS-GOVERNANCE-PHASE-02-SCOPE-LOCK-20260728
+phase_id: PHASE-02
+provenance_level: v3-required
+created_at: '2026-07-28T14:00:00Z'
+scope:
+  status: FROZEN
+  provenance_level: v3-required
+  frozen_at: '2026-07-28T14:00:00Z'
+  in_scope:
+  - REQ-002
+  - REQ-006
+  out_of_scope:
+  - header backfill (PHASE-03 only)
+  - causal edges (PHASE-03 only)
+  - spec sync to blueprint-creation/AGENTS/documents (PHASE-04 only)
+  - lint script (PHASE-05 only)
+  - work-one product code, DB schema, serve lifecycle, LLM permissions, npm dependencies
+  - any edit to frozen provenance records under audits/
+  - move of closure v1 (blueprint-audit-governance-evidence-and-status-closure.md)
+    — stays in root marked 已退役 (path-referenced by plans/audit-governance-evidence-and-status-closure/)
+  assumptions:
+  - statement: 11 candidate files exist in blueprints/ root pre-archive (5 → 2026-06,
+      6 → 2026-07)
+    disproof: a pre-implementation test -f showing any candidate missing from root
+  - statement: no blueprints/archive/ subdirectory exists yet
+    disproof: a pre-implementation find showing archive/ present
+  - statement: move-ban check is fail-closed — a non-zero path-form ref hit or an
+      UNAVAILABLE check blocks the individual move; the file stays in root marked
+      已退役, no mv executed
+    disproof: a candidate with a path-form reference in audits/ or active plans/ that
+      still gets moved
+  exit_criteria:
+  - 11 files archived (or fail-closed skipped) — 5 in blueprints/archive/2026-06/,
+    6 in blueprints/archive/2026-07/
+  - blueprints/ root 活跃 section holds 19 rows after archive
+  - each retirement has a logs/2026-07-28-blueprints-governance-archive-BASENAME.md
+    decision record naming file, reason, successor
+  - 'INDEX ## 已归档 section lists exactly the archived set'
+  - 5 fixed checks PASS at component level with retained receipts
+requirements:
+- id: REQ-002
+  plan_item_id: PLAN-REQ-002
+  kind: BEHAVIORAL
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+  behavior: every archived file has zero path-form references in audits/ and active
+    plans/ before mv (move ban); after mv, old path absent and new path present under
+    blueprints/archive/MONTH/
+  required_evidence_level: component
+  oracle_id: ORACLE-003
+  oracle: per candidate rg --fixed-strings "blueprints/BASENAME" audits/ plans/ returns
+    zero hits; post-move test -f blueprints/archive/MONTH/FILE passes and ! test -f
+    blueprints/FILE passes for all 11
+  positive_control:
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'set
+      -e; for f in session-context-2026-06-28.md acp-integration-direction.md acp-protocol-verified.md
+      context-lazy-loading-plan.md phase4-scripts-purification.md; do test -f blueprints/archive/2026-06/$f;
+      ! test -f blueprints/$f; done; for f in acp-bridge-design.md acp-bridge-serve-api-redesign.md
+      blueprint-acp-bidirectional.md blueprint-acp-bridge-optimization-roadmap.md blueprint-acp-bridge-sse-events.md
+      blueprint-permission-template-refactor.md; do test -f blueprints/archive/2026-07/$f;
+      ! test -f blueprints/$f; done'
+    expected: PASS
+    evidence: EV-002
+  negative_control:
+    applicability: REQUIRED
+    method: test -f on a non-existent archive path (mutation fixture must FAIL)
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'test
+      -f blueprints/archive/2026-06/_NONEXISTENT_ARCHIVED_FILE.md'
+    expected: FAIL
+    evidence: EV-007
+  status: PASS
+- id: REQ-006
+  plan_item_id: PLAN-REQ-003
+  kind: BEHAVIORAL
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+  behavior: each archived/retired file has a corresponding logs/YYYY-MM-DD-*.md decision
+    record naming the file, the reason, and the successor if any
+  required_evidence_level: component
+  oracle_id: ORACLE-011
+  oracle: test -f logs/2026-07-28-blueprints-governance-archive-BASENAME.md passes
+    for all 11 archived basenames; each record names file + reason + successor
+  positive_control:
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'set
+      -e; for f in session-context-2026-06-28.md acp-integration-direction.md acp-protocol-verified.md
+      context-lazy-loading-plan.md phase4-scripts-purification.md acp-bridge-design.md
+      acp-bridge-serve-api-redesign.md blueprint-acp-bidirectional.md blueprint-acp-bridge-optimization-roadmap.md
+      blueprint-acp-bridge-sse-events.md blueprint-permission-template-refactor.md;
+      do test -f logs/2026-07-28-blueprints-governance-archive-$f.md; done'
+    expected: PASS
+    evidence: EV-004
+  negative_control:
+    applicability: REQUIRED
+    method: test -f on a missing retirement record (mutation fixture must FAIL)
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'test
+      -f logs/2026-07-28-blueprints-governance-archive-_NONEXISTENT_RETIREMENT.md'
+    expected: FAIL
+    evidence: EV-009
+  status: PASS
+plan_registry:
+- plan_item_id: PLAN-REQ-002
+  disposition: IN_SCOPE
+  requirement_id: REQ-002
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+- plan_item_id: PLAN-REQ-003
+  disposition: IN_SCOPE
+  requirement_id: REQ-006
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+repository_scope:
+  allowed_paths:
+  - blueprints/archive/**
+  - blueprints/INDEX.md
+  - logs/2026-07-28-blueprints-governance-archive-*.md
+  forbidden_paths:
+  - work-one/
+  - bun.lock
+  - audits/**/phase-01-*
+  - blueprints/blueprint-audit-governance-evidence-and-status-closure.md
+approval:
+  status: APPROVED
+  actor_type: HUMAN
+  approved_by: HUMAN_USER
+  approved_at: '2026-07-28T14:00:00Z'
+  evidence: audits/blueprints-governance/approval-decision.json
+baseline:
+  workspace_root: /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
+  workspace_head: 9eaf8bf6786e2583238cc72f5678c2c14feae51d
+  repository_root: /home/zhaoge/workspace/opencode/work-one
+  repository_head: 64df828d56611ac121baccfaf666f147980aec85
+  repository_status_at_design: CLEAN
+fixed_verification:
+- check_id: P02-CHK-1
+  name: move_ban_zero_refs
+  command: rg --fixed-strings "blueprints/<basename>" audits/ plans/ (per candidate;
+    zero path-form hits; raw basename hits confined to the PHASE-02 archive-map manifest
+    02-phase-archive-eleven.md are not path-form refs)
+  level: component
+  pass_condition: zero_hits_per_candidate
+- check_id: P02-CHK-2
+  name: archive_new_path_present
+  command: test -f blueprints/archive/<month>/<file> (per moved file)
+  level: component
+  pass_condition: exit_0_per_file
+- check_id: P02-CHK-3
+  name: archive_old_path_absent
+  command: '! test -f blueprints/<file> (per moved file)'
+  level: component
+  pass_condition: exit_0_per_file
+- check_id: P02-CHK-4
+  name: retirement_log_present
+  command: test -f logs/2026-07-28-blueprints-governance-archive-<basename>.md (per
+    archived file)
+  level: component
+  pass_condition: exit_0_per_file
+- check_id: P02-CHK-5
+  name: index_archive_section_synced
+  command: awk '/^## 已归档/,/^## 反向边视图/' blueprints/INDEX.md | grep -c '^| .*\.md
+    ' == 11; blueprints/ root .md count (excl. INDEX.md) == 20
+  level: component
+  pass_condition: archived_section_lists_11_and_root_count_19_active_plus_1_exempt
+prohibited_effects:
+- header_backfill
+- edge_write
+- lint_script_write
+- work_one_product_change
+- frozen_provenance_record_edit
+- npm_dependency_add
+- closure_v1_move
+failure_convergence:
+  move_ban_nonzero_pathform_ref_or_unavailable: BLOCKED_FILE_STAYS_ROOT_MARKED_RETIRED
+  any_check_fail: BLOCKED
+  missing_retirement_record: BLOCKED
+  index_archive_section_drift: BLOCKED
+  scope_drift: BLOCKED
+plan_sources:
+- path: plans/blueprints-governance/canonical-requirements-contract.yaml
+  sha256: 39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff
+- path: plans/blueprints-governance/formal-plan-set/99-final-verification.md
+  sha256: 741a5640728689171e0e17b7cc5fc529a1609ab0c074f46a5dd1bc9cfa466c30

@@ -1,0 +1,7 @@
+=== STDOUT ===
+archived_rows=11 root_md=20
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

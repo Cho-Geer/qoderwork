@@ -1,0 +1,7 @@
+=== STDOUT ===
+old paths: 11/11 absent
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

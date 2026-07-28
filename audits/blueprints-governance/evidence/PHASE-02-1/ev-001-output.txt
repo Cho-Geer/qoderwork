@@ -1,0 +1,7 @@
+=== STDOUT ===
+move-ban: 11/11 zero path-form refs
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

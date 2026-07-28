@@ -1,0 +1,40 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-02-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-006",
+  "decision_case_id": "DC-004",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'if rg --fixed-strings \"blueprints/blueprint-audit-governance-evidence-and-status-closure.md\" audits/ plans/ 2>/dev/null | grep -q .; then echo \"move-ban gate correctly fails for referenced file\"; exit 1; fi'",
+  "requirement_id": "REQ-002",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-003",
+  "fixture_id": "FX-004-MOVE-BAN-HIT-DETECTED",
+  "evidence_level": "component",
+  "repository_state_sha256": "c2a505427bfcd6e401d5d369542ec94111cf47b20bc75360d41155b6eb57342a",
+  "exit_code": 1,
+  "execution": {
+    "observed": "N/A",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "EXPECTED_FAILURE",
+    "error_code": "ERR_MOVE_BAN"
+  },
+  "forbidden_side_effects_observed": [
+    "mv_executed",
+    "index_archive_section_update"
+  ],
+  "projection_sha256": "9418e94b9c9b2e8fd1a3bc30e1ea1247d58cd7b65631a12acaed589fc49c1491",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-02-1/ev-006-output.txt",
+      "sha256": "8a694db565763c35fc26976ba2bc9ce1406e38756e1b6441622cf160aa1146cd"
+    }
+  ],
+  "completed_at": "2026-07-28T15:28:47.870Z",
+  "observed": "FAIL"
+}

@@ -1,0 +1,7 @@
+schema_version: audit-governance-latest/v3
+document_kind: latest-pointer
+report_filename: 2026-07-28-audit-report.json
+report_sha256: ca6acb55e7c3c9fb84703bb61fb56784b05dd21295c12c667209425207830d46
+settles:
+  canonical_contract_sha256: 39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff
+  scope_lock_sha256: f10a7e544cef2c3efcf4251f68922f12c54d1d344666f742b1bab3aa1cfd9954

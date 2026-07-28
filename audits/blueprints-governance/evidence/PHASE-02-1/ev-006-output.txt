@@ -1,0 +1,7 @@
+=== STDOUT ===
+move-ban gate correctly fails for referenced file
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false
