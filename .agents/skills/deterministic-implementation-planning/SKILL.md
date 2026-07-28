@@ -85,6 +85,22 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
     makes the pre-change receipt fail `validate-audit.ts`
     (`DIRTY_PATH_OUTSIDE_SCOPE`), rendering the audit `INVALID`.
 
+12a. **`validate-plan.ts` governanceRoot vs P-07 `repository_root`.** The second
+    argument to `validate-plan.ts <planPath> <governanceRoot>` is the
+    `governanceRoot` - the **qoderwork worktree directory that contains the plan
+    and its authority documents** (e.g.
+    `/home/zhaoge/workspace/qoderwork/.worktrees/check-plan`), used to resolve the
+    canonical/approval relative paths and to guard against path escape. It is
+    **NOT** the P-07 `capture-state.ts --repository-root` clean work-one anchor
+    (`/home/zhaoge/workspace/opencode/work-one`). These are two distinct concepts:
+    `governanceRoot` locates the plan's own artifacts in the qoderwork worktree;
+    `repository_root` locates the clean work-one anchor for the pre-change receipt
+    symmetric diff. Do not pass work-one as `governanceRoot` (canonical/approval
+    paths fail to resolve); do not pass a qoderwork path as `--repository-root`
+    (P-07 violation). Correct call shape, see closure-v3
+    `audits/audit-governance-evidence-and-status-closure-v3/phase-01-scope-lock.yaml`
+    line 166: `bun run .../validate-plan.ts <plan>/formal-plan-set <qoderwork-worktree>`.
+
 13. **Progression contract.** A plan using `**Progression schema**: `phase-progression/v1``
     MUST use only `NOT_STARTED`, `IN_PROGRESS`, `ACCEPTED`, `BLOCKED`, or `INVALID`
     in manifest and phase progression fields. `DONE` is historical prose only.

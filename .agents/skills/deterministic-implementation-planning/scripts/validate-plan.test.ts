@@ -152,4 +152,11 @@ describe("validate-plan v3 PLAN_SET admission", () => {
     expect(result.exitCode).toBe(1);
     expect(resultCodes(result)).toContain("ERR_PATH_GUARD");
   });
+
+  test("GNEG-007 rejects a missing/non-existent governanceRoot with ERR_PLAN_SCHEMA_UNSUPPORTED", () => {
+    const { planSetDir } = createPlanSet();
+    const result = runValidator(planSetDir, join(tmpdir(), "nonexistent-governance-root"));
+    expect(result.exitCode).toBe(1);
+    expect(resultCodes(result)).toContain("ERR_PLAN_SCHEMA_UNSUPPORTED");
+  });
 });

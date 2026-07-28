@@ -121,7 +121,7 @@ try {
   if (!inputPath || !existsSync(inputPath) || !statSync(inputPath).isDirectory()) {
     finding("ERR_PLAN_SCHEMA_UNSUPPORTED", "input must be a v3 PLAN_SET directory");
   } else if (!governanceRoot || !existsSync(governanceRoot) || !statSync(governanceRoot).isDirectory()) {
-    finding("ERR_PLAN_SCHEMA_UNSUPPORTED", "governanceRoot must be an existing directory");
+    finding("ERR_PLAN_SCHEMA_UNSUPPORTED", "governanceRoot must be an existing qoderwork worktree directory (the plan-containing worktree, not work-one; see SKILL.md rule 12a)");
   } else {
     validatePlanSet(inputPath, governanceRoot);
   }
