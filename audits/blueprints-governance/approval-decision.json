@@ -1,0 +1,37 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "decision_id": "BLUEPRINTS-GOVERNANCE-APPROVAL-20260728",
+  "decision": "APPROVED",
+  "approved_by": "HUMAN_USER",
+  "approved_at": "2026-07-28T18:40:00Z",
+  "approved_artifacts": {
+    "blueprint": {
+      "path": "blueprints/blueprint-blueprints-governance.md",
+      "sha256": "3051a5df8f90ffbe1ef148dc932578040ba86044b1514424491ddda42a0d6ea1"
+    },
+    "canonical_contract": {
+      "path": "plans/blueprints-governance/canonical-requirements-contract.yaml",
+      "sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff"
+    },
+    "approval_request": {
+      "path": "audits/blueprints-governance/approval-request.json",
+      "sha256": "b7511657e08ceb3ef639db1239b767281d781901448f9211004162d881a7d4eb"
+    }
+  },
+  "approved_scope": [
+    "blueprints/ directory lifecycle governance: four-field metadata (创建日期/更新日期/状态/相关蓝图), seven-value status set, three causal-edge types (被取代/前置依赖/被取代(机制吸收)), status truth-source single-sourcing to audits/LATEST.md",
+    "two-layer directory model with archive/YYYY-MM/ retirement layer, move-ban and modification-ban (fail-closed), and frozen-snapshot rule",
+    "blueprints/INDEX.md three-section board (## 活跃 / ## 已闭环 / ## 已归档) with reserved reverse-edge view (## 反向边视图) and exemption list (## 豁免清单)",
+    "drift lint script (scripts/check-blueprint-status.ts) with nine checks and single-failure mutation tests"
+  ],
+  "limitations": [
+    "This approval authorizes plan admission only. Each phase (PHASE-01 ~ PHASE-05) independently satisfies P-02 (scope-lock + HUMAN_USER approval + pre-change capture) before any code/file write.",
+    "P-02A admission via validate-phase-progression.ts exit 0 is mandatory before any next-phase scope-lock submission.",
+    "P-03 audit toolchain (capture-state.ts + pre-check-evidence.ts + validate-audit.ts) must run for every phase before ACCEPT sign-off.",
+    "P-07 repository_root clean anchor (work-one) must be passed to capture-state.ts --repository-root; never the audit workspace or current worktree.",
+    "M9 stagnation/wake-scan wiring is OUT of scope; deferred to a successor PLAN_SET (CONTINUATION-001).",
+    "No work-one product code, DB schema, serve lifecycle, LLM permissions, npm dependencies, or frozen provenance records under audits/ may be modified.",
+    "This is the first real v3-required PLAN_SET after the 2026-07-28 audit-governance-v3 merge. v3 tooling compatibility with prior ACCEPTs is unverified and will be naturally checked when a later phase triggers the v3 audit chain (per merge log risk note)."
+  ]
+}

@@ -3,12 +3,12 @@
 **Plan mode**: `PLAN_SET`
 **Schema version**: `audit-plan-set/v3`
 **Document kind**: `plan-set-index`
-**Status**: `BLOCKED-BY-DECISION`
+**Status**: `READY-FOR-IMPLEMENTATION`
 **Progression schema**: `phase-progression/v1`
 **Provenance level**: `v3-required`
 **Canonical contract**: `plans/blueprints-governance/canonical-requirements-contract.yaml`
 **Canonical contract SHA-256**: `39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff`
-**Approval decision**: _awaiting external human approval — see `audits/blueprints-governance/approval-request.json`; field intentionally omitted until a HUMAN_USER APPROVED decision binds the canonical contract and blueprint by exact SHA-256 (P-01)._
+**Approval decision**: `audits/blueprints-governance/approval-decision.json` (decision_id `BLUEPRINTS-GOVERNANCE-APPROVAL-20260728`, APPROVED by HUMAN_USER at 2026-07-28T18:40:00Z; binds blueprint sha256 `3051a5df...` + canonical_contract sha256 `39235a429...` + approval_request sha256 `b7511657...`).
 **Evidence ceiling**: `NOT-RUN`
 
 ## 1. Input contract and source ledger
