@@ -3,13 +3,13 @@
 **Plan mode**: `PLAN_SET`
 **Schema version**: `audit-plan-set/v3`
 **Document kind**: `plan-set-index`
-**Status**: `READY-FOR-IMPLEMENTATION`
+**Status**: `COMPLETE`
 **Progression schema**: `phase-progression/v1`
 **Provenance level**: `v3-required`
 **Canonical contract**: `plans/blueprints-governance/canonical-requirements-contract.yaml`
 **Canonical contract SHA-256**: `39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff`
 **Approval decision**: `audits/blueprints-governance/approval-decision.json` (decision_id `BLUEPRINTS-GOVERNANCE-APPROVAL-20260728`, APPROVED by HUMAN_USER at 2026-07-28T18:40:00Z; binds blueprint sha256 `3051a5df...` + canonical_contract sha256 `39235a429...` + approval_request sha256 `b7511657...`).
-**Evidence ceiling**: `NOT-RUN`
+**Evidence ceiling**: `component`
 
 ## 1. Input contract and source ledger
 
@@ -126,8 +126,8 @@
 
 | Order | Phase ID | File | Depends on | Status |
 |---:|---|---|---|---|
-| 1 | PHASE-01 | `01-phase-index-board.md` | NONE | NOT_STARTED |
-| 2 | PHASE-02 | `02-phase-archive-eleven.md` | PHASE-01 | NOT_STARTED |
-| 3 | PHASE-03 | `03-phase-header-backfill.md` | PHASE-01 | NOT_STARTED |
-| 4 | PHASE-04 | `04-phase-spec-sync.md` | PHASE-03 | NOT_STARTED |
-| 5 | PHASE-05 | `05-phase-lint-script.md` | PHASE-04 | NOT_STARTED |
+| 1 | PHASE-01 | `01-phase-index-board.md` | NONE | ACCEPTED |
+| 2 | PHASE-02 | `02-phase-archive-eleven.md` | PHASE-01 | ACCEPTED |
+| 3 | PHASE-03 | `03-phase-header-backfill.md` | PHASE-01 | ACCEPTED |
+| 4 | PHASE-04 | `04-phase-spec-sync.md` | PHASE-03 | ACCEPTED |
+| 5 | PHASE-05 | `05-phase-lint-script.md` | PHASE-04 | ACCEPTED |
