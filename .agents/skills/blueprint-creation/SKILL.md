@@ -261,10 +261,10 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 ```markdown
 # Blueprint: [标题]
 
-**版本**: X.Y.Z
-**日期**: YYYY-MM-DD
-**状态**: 待实施 / 实施中 / 已完成 / 已回滚
-**优先级**: P0 / P1 / P2
+**创建日期**: YYYY-MM-DD
+**更新日期**: YYYY-MM-DD
+**状态**: <七值之一>
+**相关蓝图**: 无 | <类型化边列表>
 
 ---
 
@@ -322,6 +322,32 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 ### 7.2 参考资料
 ```
 
+### 头部元数据规范（四字段 + 七值状态 + 因果边，对齐 BP §2.2.2-2.2.4）
+
+模板头部四字段（`创建日期/更新日期/状态/相关蓝图`）为强制项，创建时即填写：
+
+- **创建日期**：头部自述写作日；无自述时回退 git 首次入库日。
+- **更新日期**：头部或内容最后变更日。
+- **冻结快照规则**：蓝图进入首个 plan 冻结契约后，头部即快照（更新日期=冻结日期），此后状态/边变更只投影到 INDEX，不回写文件。
+
+**状态词汇表（七值，BP §2.2.3）**：`草稿 / 待审批 / 待实施 / 实施中 / 已暂停 / 已完成 / 已退役`。「部分实施/返工中」归入「实施中」+ INDEX 备注列。`已暂停` 必须伴随非空「暂停于」边（无因暂停禁止）。有下游 plan/audit 的蓝图，状态以 `audits/<plan>/LATEST.md` 为唯一真相源，头部与 INDEX 均为投影（头部回写时机 = audit ACCEPT 签发 / plan 关闭 / 退役裁决三个事件点）。
+
+**「相关蓝图」因果边（最小词汇表，BP §2.2.4）**：
+
+| 边类型 | 语义 |
+|--------|------|
+| `暂停于 → X` | 执行中发现 X 所解决的问题阻断实施，暂停等待 X 闭环 |
+| `前置依赖 → X` | 未启动，等待 X 提供输入 |
+| `被取代 ← X` | X 接管本蓝图目标（含 clean-slate 重启；子类 `被取代（机制吸收） ← X` 表示本蓝图目标被 X 的机制吸收） |
+
+使用规则：只记因果边（暂停/依赖/取代），信息性「参见/关联」留正文；**单边记录**于依赖方/暂停方/被取代方一侧，INDEX 自动派生反向视图，消除双写漂移；无因果边写 `相关蓝图: 无`；边目标必须是存在的蓝图文件。
+
+**命名规范**：文件名 `blueprint-<topic>.md`（小写短横线主题）；新建蓝图必须在 `blueprints/INDEX.md` 活跃段同行登记（状态 + 真相源指针 + 日期依据）。
+
+**归档规范**：退役蓝图移至 `blueprints/archive/YYYY-MM/`，`YYYY-MM` 取文件自身写作月（非归档操作当前月）；归档前先写 `logs/` 退役决策日志（为什么退役、被谁取代）。
+
+**移动/修改禁令（fail-closed）**：被 `audits/` 冻结记录（scope-lock/approval/receipt）或活跃 `plans/` 以路径/SHA 引用的蓝图永不移动、不回写头部，元数据仅登记 INDEX 豁免清单。回写头部或归档前必须 `rg --fixed-strings <basename> audits/ plans/` 双侧引用检查，任一命中或检查失败 → 不动文件，原位标记。
+
 ## 陷阱与注意事项
 
 1. **不要在根因未验证时就进入方案设计**。实测验证是 Phase 0 的硬性要求。跳过实测会导致方案建立在错误假设上。
@@ -338,8 +364,10 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 
 7. **验证计划必须分层**。单元测试、集成测试、端到端测试三个层次缺一不可。只有单元测试不足以验证系统集成正确性。
 
-8. **Blueprint 保存位置**：保存到项目的 `blueprints/` 目录下，文件名格式为 `blueprint-[简短描述].md`。
+8. **Blueprint 保存位置与命名**：保存到项目的 `blueprints/` 目录下，文件名格式为 `blueprint-<topic>.md`（小写短横线主题）。新建蓝图必须在 `blueprints/INDEX.md` 活跃段同行登记（状态 + 真相源指针 + 日期依据）；退役归档移至 `blueprints/archive/YYYY-MM/`（按写作月）。移动/修改禁令（fail-closed）：被 `audits/` 冻结记录或活跃 `plans/` 以路径/SHA 引用的蓝图永不移动、不回写头部，元数据仅登记 INDEX 豁免清单。
 
 9. **不要在 blueprint 完成后跳过子系统合规审计**。Phase 2 的 12 子系统合规检查清单是设计阶段的必要环节，不是可选的附加步骤。实际案例：某 dispatch 系统 blueprint 跳过了合规审计，实施后才发现三个缺陷——TOCTOU 并发漏洞（UPDATE 缺少 `AND status = 'pending'` 守卫）、before-hook 日志通道违规（在统一 writeLog 的框架中混用 `process.stderr.write`）、文件行数超标（router.ts 超过 400 行目标）。这些缺陷在设计阶段通过合规审计即可发现，实施后修复的成本远高于设计阶段调整。
 
 10. **验证计划不得与 provenance 规则冲突**。若 blueprint 的下游 plan 会含 `capture-state.ts --repository-root` 命令（v2.1-required plan），须遵循 `.agents/skills/plan-audit-archiver/provenance-rules.md` P-07：`--repository-root` 必须指向干净锚点仓库（work-one），禁止指向审计工作区（qoderwork 主仓或其 `.worktrees/*` worktree）。违反会导致 `validate-audit.ts` 的 `DIRTY_PATH_OUTSIDE_SCOPE`，审计判定 `INVALID`。
+
+11. **不要编辑冻结绑定（frozen-bound）的蓝图**。被 `audits/` 冻结记录（scope-lock/approval/receipt）以精确 SHA-256 绑定的蓝图禁止任何移动或头部回写（实测命中：`blueprint-audit-governance-evidence-and-status-closure-v3.md`，sha256 `a510b7a8...`，由 v3 审计链 authority_binding 锚定）；其状态/边元数据只投影到 `blueprints/INDEX.md` 豁免清单。回写任何蓝图头部前先执行 modification-ban 检查（`rg --fixed-strings <basename> audits/ -g '*.json' -g '*.yaml'` + 精确 sha256 字段绑定分类）；命中 → 禁改文件，仅登记 INDEX。违反会破坏冻结 provenance 链，审计判定 `INVALID`。

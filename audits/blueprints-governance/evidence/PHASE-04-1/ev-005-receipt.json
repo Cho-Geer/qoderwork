@@ -1,0 +1,40 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-04-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-005",
+  "decision_case_id": "DC-007",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 's=$(awk \"/^## 3\\. /,/^## 4\\. /\" AGENTS.md); i=$(printf \"%s\" \"$s\" | grep -c \"blueprints/INDEX.md\"); a=$(printf \"%s\" \"$s\" | grep -c \"blueprints/archive/\"); echo \"section3_index_mentions=$i section3_archive_mentions=$a\"; test \"$i\" -ge 1 && test \"$a\" -ge 1 && echo \"AGENTS.md section 3 dir tree PASS\"'",
+  "requirement_id": "REQ-004",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-007",
+  "fixture_id": "FX-007-AGENTS-DIR-TREE",
+  "evidence_level": "component",
+  "repository_state_sha256": "a4d1c06ffa0d6ade8e7dbf9790d61a8c2bad8d86e8b651e2f700de2298c166bb",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [
+    "v3_blueprint_edit",
+    "lint_script_write"
+  ],
+  "projection_sha256": "e8ca6ffdc5e90ffbbb4afa45e0aeb73d1cf08cabf3e52c5128ac9971dda769d6",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-04-1/ev-005-output.txt",
+      "sha256": "e1fc7ae7fa732532f145c0a3e8a4e02eca61e6045d466c4404accd5def137cfb"
+    }
+  ],
+  "completed_at": "2026-07-28T16:50:35.161Z",
+  "observed": "PASS"
+}

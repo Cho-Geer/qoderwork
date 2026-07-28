@@ -1,0 +1,196 @@
+schema_version: audit-scope-lock/v3
+document_kind: phase-scope-lock
+lock_id: BLUEPRINTS-GOVERNANCE-PHASE-04-SCOPE-LOCK-20260728
+phase_id: PHASE-04
+provenance_level: v3-required
+created_at: '2026-07-28T16:30:00Z'
+scope:
+  status: FROZEN
+  provenance_level: v3-required
+  frozen_at: '2026-07-28T16:30:00Z'
+  in_scope:
+  - REQ-003
+  - REQ-004
+  out_of_scope:
+  - lint script (PHASE-05 only)
+  - work-one product code, DB schema, serve lifecycle, LLM permissions, npm dependencies
+  - any edit to frozen provenance records under audits/
+  - any edit to archived files under blueprints/archive/
+  - any edit to the v3 blueprint (blueprint-audit-governance-evidence-and-status-closure-v3.md)
+    — INDEX-only metadata, no file write
+  - header backfill + causal edges (PHASE-03 completed)
+  - archive moves (PHASE-02 completed)
+  - opportunistic refactor of the skill beyond the four-field/status/edge/naming/archive/ban
+    additions
+  assumptions:
+  - statement: PHASE-03 is ACCEPTED — audits/blueprints-governance/LATEST.md points
+      to 2026-07-28-audit-phase-03-report.json (sha256 32387be9...) settling scope lock
+      e0f73d1b...; the spec the skill teaches now matches what the files actually carry
+    disproof: a LATEST.md not pointing at an ACCEPTED PHASE-03 report
+  - statement: the v3 blueprint is hash-frozen (sha256 a510b7a8...) by audits/audit-governance-evidence-and-status-closure-v3/phase-01-scope-lock.yaml
+      authority_binding and stays untouched
+    disproof: a pre-implementation sha256sum differing from the frozen value
+  - statement: the three allowed spec files (SKILL.md / AGENTS.md / documents/INDEX.md)
+      carry zero exact sha256 bindings in audits/ json/yaml and are therefore editable
+    disproof: an exact sha256 field binding for any of the three paths in audits/ json/yaml
+  exit_criteria:
+  - skill template header block carries the four fields (创建日期/更新日期/状态/相关蓝图) matching
+    BP §2.2.2
+  - skill template status vocabulary is the seven values (草稿/待审批/待实施/实施中/已暂停/已完成/已退役)
+    matching BP §2.2.3
+  - skill template edge vocabulary is the three edge types (被取代/前置依赖/被取代（机制吸收）) matching
+    BP §2.2.4, single-side rule stated
+  - skill states the naming rule blueprint-TOPIC.md (TOPIC = lowercase-hyphen topic),
+    the archive rule archive/YYYY-MM/ by writing month, and the move/modify bans (fail-closed)
+  - skill §陷阱 carries a new pitfall on not editing frozen-bound blueprints (v3)
+  - AGENTS.md §3 directory tree gains blueprints/INDEX.md and blueprints/archive/; §11
+    gains a blueprints/INDEX.md maintenance duty line mirroring logs/INDEX.md and documents/INDEX.md
+  - documents/INDEX.md blueprint entries match the current root set (19 active + 1 exempt
+    v3) with governance reading suggestions synced
+  - 6 fixed checks PASS at component level with retained receipts
+requirements:
+- id: REQ-003
+  plan_item_id: PLAN-REQ-006
+  kind: STATIC
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+  behavior: blueprint-creation SKILL.md template defines the four-field header (创建日期/更新日期/状态/相关蓝图),
+    the seven-value status vocabulary, the three causal-edge types with the single-side
+    rule, the naming rule blueprint-TOPIC.md (TOPIC = lowercase-hyphen topic),
+    the archive rule archive/YYYY-MM/ by writing month, the move/modify bans (fail-closed), and a frozen-bound no-edit pitfall
+  required_evidence_level: component
+  oracle_id: ORACLE-005
+  oracle: rg assertions on .agents/skills/blueprint-creation/SKILL.md — four header field
+    names present in the template block; all seven status values present; all three edge
+    types present; naming + archive + ban rules present
+  positive_control:
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'f=.agents/skills/blueprint-creation/SKILL.md;
+      ok=0; for p in 创建日期 更新日期 状态 相关蓝图; do rg -q "$p" "$f" && ok=$((ok+1)); done;
+      echo "four_fields=$ok/4"; test "$ok" -eq 4 && echo "skill template four-field header
+      PASS"'
+    expected: PASS
+    observed: PASS
+    evidence: EV-001
+  negative_control:
+    applicability: NOT_APPLICABLE_STATIC
+    method: N/A
+    command: N/A
+    expected: N/A
+    observed: N/A
+    evidence: not_applicable_for_static_requirement
+  status: PASS
+- id: REQ-004
+  plan_item_id: PLAN-REQ-007
+  kind: STATIC
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+  behavior: AGENTS.md §3 directory tree mentions blueprints/INDEX.md and blueprints/archive/
+    and §11 carries a blueprints/INDEX.md maintenance duty line mirroring the logs/INDEX.md
+    and documents/INDEX.md duties; documents/INDEX.md blueprint entries resolve to the
+    current root set (no archived entry drift) with governance reading suggestions synced
+  required_evidence_level: component
+  oracle_id: ORACLE-007
+  oracle: awk-sectioned grep on AGENTS.md — §3 contains blueprints/INDEX.md + blueprints/archive/;
+    §11 contains blueprints/INDEX.md; documents/INDEX.md referenced blueprint paths all
+    exist at root and the governance blueprint is referenced
+  positive_control:
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'd=$(awk
+      "/^## 11\./,/^## 12\./" AGENTS.md | grep -c "blueprints/INDEX.md"); echo "index_duty_mentions=$d";
+      test "$d" -ge 1 && echo "AGENTS.md §11 blueprints/INDEX.md duty PASS"'
+    expected: PASS
+    observed: PASS
+    evidence: EV-004
+  negative_control:
+    applicability: NOT_APPLICABLE_STATIC
+    method: N/A
+    command: N/A
+    expected: N/A
+    observed: N/A
+    evidence: not_applicable_for_static_requirement
+  status: PASS
+plan_registry:
+- plan_item_id: PLAN-REQ-006
+  disposition: IN_SCOPE
+  requirement_id: REQ-003
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+- plan_item_id: PLAN-REQ-007
+  disposition: IN_SCOPE
+  requirement_id: REQ-004
+  source: plans/blueprints-governance/formal-plan-set/99-final-verification.md#7-global-verification-and-evidence
+repository_scope:
+  allowed_paths:
+  - .agents/skills/blueprint-creation/SKILL.md
+  - AGENTS.md
+  - documents/INDEX.md
+  - logs/2026-07-28-blueprints-governance-phase-04-accepted.md
+  forbidden_paths:
+  - work-one/
+  - bun.lock
+  - blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+  - blueprints/archive/**
+  - audits/** (frozen provenance; exception — this phase's own new records phase-04-scope-lock.*,
+    evidence/pre-change-PHASE-04.json, evidence/verdict-state-PHASE-04.json, evidence/PHASE-04-1/*,
+    2026-07-28-audit-phase-04.md, 2026-07-28-audit-phase-04-report.json, LATEST.md rotation)
+approval:
+  status: APPROVED
+  actor_type: HUMAN
+  approved_by: HUMAN_USER
+  approved_at: '2026-07-28T16:30:00Z'
+  evidence: audits/blueprints-governance/approval-decision.json
+baseline:
+  workspace_root: /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
+  workspace_head: 61dba2b7e954e20f8390b93ebeb0bee205e4e315
+  repository_root: /home/zhaoge/workspace/opencode/work-one
+  repository_head: 64df828d56611ac121baccfaf666f147980aec85
+  repository_status_at_design: CLEAN
+fixed_verification:
+- check_id: P04-CHK-1
+  name: skill_template_four_fields
+  command: rg the four header field names (创建日期/更新日期/状态/相关蓝图) in .agents/skills/blueprint-creation/SKILL.md;
+    all four present in the template block
+  level: component
+  pass_condition: four_fields_4_of_4
+- check_id: P04-CHK-2
+  name: skill_template_seven_values
+  command: rg each of 草稿/待审批/待实施/实施中/已暂停/已完成/已退役 in .agents/skills/blueprint-creation/SKILL.md
+  level: component
+  pass_condition: seven_values_7_of_7
+- check_id: P04-CHK-3
+  name: skill_template_three_edges
+  command: rg -F each of 被取代/前置依赖/被取代（机制吸收） in .agents/skills/blueprint-creation/SKILL.md
+  level: component
+  pass_condition: three_edges_3_of_3
+- check_id: P04-CHK-4
+  name: agents_md_index_duty
+  command: awk §11 section of AGENTS.md | grep -c blueprints/INDEX.md
+  level: component
+  pass_condition: at_least_1_mention
+- check_id: P04-CHK-5
+  name: agents_md_dir_tree
+  command: awk §3 section of AGENTS.md | grep blueprints/INDEX.md and blueprints/archive/
+  level: component
+  pass_condition: both_present
+- check_id: P04-CHK-6
+  name: documents_index_synced
+  command: every blueprints/*.md path referenced in documents/INDEX.md exists at root;
+    governance blueprint referenced; zero archived-entry drift
+  level: component
+  pass_condition: zero_missing_refs_and_governance_referenced
+prohibited_effects:
+- v3_blueprint_edit
+- archived_file_edit
+- frozen_provenance_record_edit
+- lint_script_write
+- work_one_product_change
+- npm_dependency_add
+- skill_opportunistic_refactor
+- verdict_contradicting_latest_change
+failure_convergence:
+  skill_field_missing_after_edit: BLOCKED
+  agents_section_mention_missing: BLOCKED
+  documents_index_ref_missing: BLOCKED
+  v3_sha_drift: BLOCKED
+  scope_drift: BLOCKED
+plan_sources:
+- path: plans/blueprints-governance/canonical-requirements-contract.yaml
+  sha256: 39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff
+- path: plans/blueprints-governance/formal-plan-set/99-final-verification.md
+  sha256: 741a5640728689171e0e17b7cc5fc529a1609ab0c074f46a5dd1bc9cfa466c30

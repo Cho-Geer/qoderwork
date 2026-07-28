@@ -1,0 +1,8 @@
+=== STDOUT ===
+three_edges=3/3
+skill template three edge types PASS
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

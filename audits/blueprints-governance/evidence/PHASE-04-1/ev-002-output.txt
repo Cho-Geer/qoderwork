@@ -1,0 +1,8 @@
+=== STDOUT ===
+seven_values=7/7
+skill template seven-value status PASS
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

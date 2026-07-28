@@ -1,0 +1,8 @@
+=== STDOUT ===
+missing_refs=0 governance_refs=3
+documents/INDEX.md synced PASS
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

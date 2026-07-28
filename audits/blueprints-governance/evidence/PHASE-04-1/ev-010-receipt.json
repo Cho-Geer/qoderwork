@@ -1,0 +1,40 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-04-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-010",
+  "decision_case_id": "DC-008",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'd=$(awk \"/^## 11\\./,/^## 12\\./\" AGENTS.md | grep -c \"blueprints/INDEX.md\"); test \"$d\" -eq 0 && echo \"index duty missing\"'",
+  "requirement_id": "REQ-004",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-007",
+  "fixture_id": "FX-008-INDEX-DUTY-MISSING",
+  "evidence_level": "component",
+  "repository_state_sha256": "a4d1c06ffa0d6ade8e7dbf9790d61a8c2bad8d86e8b651e2f700de2298c166bb",
+  "exit_code": 1,
+  "execution": {
+    "observed": "FAIL",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "EXPECTED_FAILURE",
+    "error_code": "ERR_EDGE_REVERSE"
+  },
+  "forbidden_side_effects_observed": [
+    "v3_blueprint_edit",
+    "lint_script_write"
+  ],
+  "projection_sha256": "e8ca6ffdc5e90ffbbb4afa45e0aeb73d1cf08cabf3e52c5128ac9971dda769d6",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-04-1/ev-010-output.txt",
+      "sha256": "b1e5c7757c6db7d7b5636d02c5636f1acb77c4071df430f80a8f52de6f2b8939"
+    }
+  ],
+  "completed_at": "2026-07-28T16:50:35.287Z",
+  "observed": "FAIL"
+}

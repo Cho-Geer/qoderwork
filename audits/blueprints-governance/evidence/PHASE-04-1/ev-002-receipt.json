@@ -1,0 +1,40 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "BLUEPRINTS-GOVERNANCE-PHASE-04-AUDIT-20260728",
+  "generation": 1,
+  "id": "EV-002",
+  "decision_case_id": "DC-005",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && bash -c 'f=.agents/skills/blueprint-creation/SKILL.md; ok=0; for s in 草稿 待审批 待实施 实施中 已暂停 已完成 已退役; do rg -q \"$s\" \"$f\" && ok=$((ok+1)); done; echo \"seven_values=$ok/7\"; test \"$ok\" -eq 7 && echo \"skill template seven-value status PASS\"'",
+  "requirement_id": "REQ-003",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-005",
+  "fixture_id": "FX-005-SKILL-SEVEN-VALUES",
+  "evidence_level": "component",
+  "repository_state_sha256": "a4d1c06ffa0d6ade8e7dbf9790d61a8c2bad8d86e8b651e2f700de2298c166bb",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [
+    "v3_blueprint_edit",
+    "skill_opportunistic_refactor"
+  ],
+  "projection_sha256": "e8ca6ffdc5e90ffbbb4afa45e0aeb73d1cf08cabf3e52c5128ac9971dda769d6",
+  "canonical_sha256": "39235a4290e0af52a8b68b9cc54b5ceb595a5eb064366cf53c2189096e7690ff",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/blueprints-governance/evidence/PHASE-04-1/ev-002-output.txt",
+      "sha256": "09330a8803de58222faa8b01f528eb24549fc67e001ca9d688098617ea30f1f7"
+    }
+  ],
+  "completed_at": "2026-07-28T16:50:35.080Z",
+  "observed": "PASS"
+}

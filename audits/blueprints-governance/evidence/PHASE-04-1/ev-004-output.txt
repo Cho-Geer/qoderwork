@@ -1,0 +1,8 @@
+=== STDOUT ===
+index_duty_mentions=1
+AGENTS.md section 11 blueprints/INDEX.md duty PASS
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

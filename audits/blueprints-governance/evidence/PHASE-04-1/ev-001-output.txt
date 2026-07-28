@@ -1,0 +1,8 @@
+=== STDOUT ===
+four_fields=4/4
+skill template four-field header PASS
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

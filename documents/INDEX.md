@@ -2,7 +2,9 @@
 
 > 本文件由 QoderWork Session Startup 自动扫描。新增文档时请同步更新此索引。
 >
-> **最近更新**: 2026-07-28 - v3 审计治理升级：`audit-governance-evidence-and-status-closure-v3` 计划 Phase 1-5 全部实施完成（72 pass），v3 ACCEPT 正式签发（`audit-report.json` + CAS LATEST pointer）。**`boundary-contract/v1` 已迁移至 `audit-boundary-matrix/v3`，`v2.1-required` 已升级为 `v3-required`**。详见 `handoff/todo-list.md` §三 与 `plans/audit-governance-evidence-and-status-closure-v3/` 下的 5 个 phase scope-lock。
+> **最近更新**: 2026-07-28 - blueprints-governance PHASE-01~04 实施完成：`blueprints/INDEX.md` 三段看板登记 19 个 root 活跃蓝图 + 11 个归档文件 + closure v3 豁免；11 个退役蓝图按写作月归档 `archive/2026-06|07/`；18 个 root 文件四字段头部回填 + 3 条因果边（单边记录 + 反向边视图）；规范同步至 blueprint-creation skill 模板（四字段/七值状态/三类边/命名/归档/禁令）与 AGENTS.md §3/§11.5。详见 `blueprints/INDEX.md` 与 `blueprints/blueprint-blueprints-governance.md`。
+>
+> **历史更新**: 2026-07-28 - v3 审计治理升级：`audit-governance-evidence-and-status-closure-v3` 计划 Phase 1-5 全部实施完成（72 pass），v3 ACCEPT 正式签发（`audit-report.json` + CAS LATEST pointer）。**`boundary-contract/v1` 已迁移至 `audit-boundary-matrix/v3`，`v2.1-required` 已升级为 `v3-required`**。详见 `handoff/todo-list.md` §三 与 `plans/audit-governance-evidence-and-status-closure-v3/` 下的 5 个 phase scope-lock。
 >
 > **历史更新**: 2026-07-26 - 复核路径动态化蓝图与 M1：实现仍未开始，Phase 02 被 Phase 01 admission 阻断；当前扫描为 1,805 处/467 文件，且 CodeGraph 当前 worktree 索引与两个路径热点调用链已验证，待 Phase 01 重建分类清单。
 >
@@ -39,6 +41,8 @@
 | **blueprints/blueprint-isolated-serve-test-infrastructure.md** | **隔离 Serve 测试基建与测试专用 Skill** | **定义测试运行单元的 worktree、显式脏改动 overlay、framework/SDK 双 DB、SSE、进程生命周期、grant bootstrap、H2 授权、scripts 收口与证据契约；P0-3 六阶段计划负责状态机、真实 runner、reviewer live 证据与旧 launcher 收口。** | **~380** |
 | **blueprints/blueprint-phase-progression-audit-gate.md** | **Phase Progression 审计回写与 Freeze Gate** | **将审计 ACCEPT、计划状态受控回写、哈希 receipt 与下一 phase admission 串成单一机器闸门，并以 P0-2 漂移为回填夹具。面向 plan/audit skill 实施与治理复核。** | **~296** |
 | **blueprints/blueprint-task-lens-m1.md** | **Task Lens M1 确定性任务透镜蓝图** | **定义项目外只读输入、working-tree/commit 差异语义、TaskGraphV1/SpineForest、DA coverage、反馈闭环、安全边界、12 子系统审计与 v2.1-required Freeze Gate；v0.1.5 已完成设计返工，尚未实施。** | **~487** |
+| blueprints/INDEX.md | 蓝图总索引（治理看板） | 三段看板（活跃/已闭环/已归档）逐行登记 19 个 root 活跃蓝图 + 11 个归档文件（状态七值 + 真相源指针 + 日期依据），附派生区段"反向边视图"（3 行）与"豁免清单"（closure v3）。维护义务见 AGENTS.md §11.5。 | ~78 |
+| blueprints/blueprint-blueprints-governance.md | blueprints/ 目录治理与生命周期管理蓝图 | 四字段头部元数据（创建日期/更新日期/状态/相关蓝图）、七值状态词汇与 audits/LATEST.md 单源真相、三类因果边（被取代/前置依赖/被取代（机制吸收），单边记录 + INDEX 反向派生）、archive/YYYY-MM/ 退役层（移动/修改禁令 fail-closed）、INDEX 看板与漂移 lint 设计；PHASE-01~03 已实施（看板/归档/回填+边），PHASE-04 规范同步至 blueprint-creation skill 与 AGENTS/documents。 | ~302 |
 | **handoff/task-lens-resume.md** | **Task Lens 跨 session 续接纪要** | **固化 M1 已决策项、现状证据、v0.1.5 已关闭缺口、M2/M3 未验证边界与下一步固定顺序，防止后续 session 将路线图能力误写成已实现。** | **~104** |
 | **plans/task-lens-m1/00-plan-index.md** | **Task Lens M1 确定性实施 PLAN_SET 入口** | **串联 Freeze Gate、输入安全、结构图、coverage/artifact、metrics、双目标集成与十任务验收；每个 Phase 可独立交给弱模型执行。** | **~132（入口）** |
 | opencode-framework/opencode-db-canonical-design.md | DB-only & DB-Canonical 设计 | DB-only 和 DB-canonical 设计理念、50 个数据表全景架构（54 CREATE - 4 DROP）、9 大类数据模型详解、实体关系图、表关系与业务关联、DB-canonical 设计证据、数据库迁移机制（v1-v37）、关键代码索引。 | ~802 |
@@ -75,6 +79,8 @@
 - **执行隔离 serve 的 runtime/live/mutation 测试** → blueprints/blueprint-isolated-serve-test-infrastructure.md
 - **实施跨 phase 审计状态闭环** → blueprints/blueprint-phase-progression-audit-gate.md
 - **理解或实施 Task Lens M1** → blueprints/blueprint-task-lens-m1.md → handoff/task-lens-resume.md → plans/task-lens-m1/00-plan-index.md
+- **理解蓝图生命周期治理（四字段元数据/七值状态/因果边/归档禁令）** → blueprints/INDEX.md → blueprints/blueprint-blueprints-governance.md
+- **创建新 blueprint（模板与登记规范）** → .agents/skills/blueprint-creation/SKILL.md → blueprints/INDEX.md
 - **理解 DB-only & DB-Canonical 设计** → opencode-framework/opencode-db-canonical-design.md
 - **理解数据模型与表关系** → opencode-framework/opencode-db-canonical-design.md（§3-4）
 - **调试 ACP 桥接** → opencode-framework/opencode-cli-acp-integration.md

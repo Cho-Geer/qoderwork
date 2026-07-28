@@ -82,6 +82,8 @@ qoderwork/
 ├── .workbuddy/               # WorkBuddy 项目级配置
 ├── .vscode/                  # VS Code 配置
 ├── blueprints/               # 框架级变更蓝图与实施方案
+│   ├── INDEX.md              # 蓝图总索引（活跃/已闭环/已归档 三段看板 + 反向边视图 + 豁免清单）
+│   └── archive/              # 已退役蓝图归档层（按写作月 YYYY-MM/ 归档）
 ├── debt/                     # 技术债务记录
 ├── documents/                # 专题文档与知识库
 ├── e2e/                      # E2E 测试规格书
@@ -113,6 +115,8 @@ qoderwork/
 - **`scripts/lib/`**：`serve-api-client.ts` 封装 serve API 身份保留、question 轮询、idle 等待等协议细节；`sse-watcher.ts` 处理 SSE 事件。
 - **`documents/`**：框架认知地图、子系统报告、DB 设计、SSE 事件参考、工具权限矩阵等深度文档。
 - **`blueprints/`**：完整实施方案，含问题背景、根因、方案对比、实施清单、验证计划与风险。
+- **`blueprints/INDEX.md`**：蓝图总索引（活跃/已闭环/已归档 三段看板 + 反向边视图 + 豁免清单），新建蓝图或状态变更后同步。
+- **`blueprints/archive/`**：已退役蓝图归档层，按写作月 `archive/YYYY-MM/` 归档；被 `audits/`、活跃 `plans/` 引用的文件不归档（fail-closed，原位标记已退役）。
 
 
 ## 4. 开发约定与输出规范
@@ -429,6 +433,11 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 - **`logs/INDEX.md`**：日志总索引，分"当前活跃日志（近 14 天）"、"按主题聚类"、"历史归档"三段。session 启动或新增日志后同步。
 - **`logs/archive/YYYY-MM/`**：按月归档旧日志（默认超 30 天且无引用）。归档遵循 fail-closed：被 `documents/INDEX.md`、`plans/`、`audits/` 引用的日志不归档；引用检查不确定时不归档。
 - **`audits/<plan-name>/`**：plans 实施进度审计归档，每次审计生成 `<YYYY-MM-DD>-audit.md` 并更新 `LATEST.md` 指针。
+
+### 11.5 蓝图索引与归档
+
+- **`blueprints/INDEX.md`**：蓝图总索引，分"活跃 / 已闭环 / 已归档"三段 + 派生区段"反向边视图"与"豁免清单"。新建蓝图或状态/边变更后同步；有下游 plan/audit 的蓝图状态以 `audits/<plan>/LATEST.md` 为唯一真相源，INDEX 与头部均为投影。
+- **`blueprints/archive/YYYY-MM/`**：按写作月归档已退役蓝图。移动/修改禁令（fail-closed）：被 `audits/` 冻结记录或活跃 `plans/` 以路径/SHA 引用的文件永不归档、不回写头部，元数据仅登记 INDEX 豁免清单；每次退役须有 `logs/` 决策记录。
 
 
 ## 12. 子 Agent 派遣政策

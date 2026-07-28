@@ -1,0 +1,8 @@
+=== STDOUT ===
+section3_index_mentions=1 section3_archive_mentions=1
+AGENTS.md section 3 dir tree PASS
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false
