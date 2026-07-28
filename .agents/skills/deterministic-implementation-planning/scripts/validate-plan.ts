@@ -1,429 +1,133 @@
 #!/usr/bin/env bun
 
-import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { basename, join, resolve } from "node:path";
+/** v3-only PLAN_SET admission. Schema interpretation is delegated to the shared parser. */
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
 import {
-  deriveTopLevelStatus,
-  isProgressionSchema,
-  isProgressionStatus,
-  parseManifest,
-  parseProgressionStatus,
-  validateManifestRows,
-} from "./phase-progression.ts";
+  compareSha256,
+  guardRelativePath,
+  parseAuditGovernanceV3Document,
+  type GovernanceErrorCode,
+} from "../../../../scripts/lib/audit-governance-schema-v3.ts";
 
 type Finding = { code: string; message: string };
-type Metrics = { unicodeChars: number; lines: number; phases: number; checkboxes: number };
-
-const LIMITS = {
-  single: { unicodeChars: 20_000, lines: 450, phases: 2 },
-  index: { unicodeChars: 8_000, lines: 160 },
-  phase: { unicodeChars: 14_000, lines: 320, requirements: 10, files: 8, checks: 12 },
-  final: { unicodeChars: 8_000, lines: 160 },
-  planSetPhases: 8,
-} as const;
+type Metadata = Record<string, string>;
 
 const inputPath = process.argv[2];
-if (!inputPath) {
-  console.error("usage: bun run validate-plan.ts <plan-file-or-directory>");
-  process.exit(2);
-}
-
+const governanceRoot = process.argv[3];
 const errors: Finding[] = [];
-const warnings: Finding[] = [];
 
-function finding(target: Finding[], code: string, message: string) {
-  target.push({ code, message });
+function finding(code: string, message: string) {
+  errors.push({ code, message });
 }
 
-function read(path: string): string {
+function metadata(source: string): Metadata {
+  const result: Metadata = {};
+  for (const match of source.matchAll(/^\*\*([^*]+)\*\*:\s*`?([^`\n]+)`?\s*$/gm)) result[match[1].trim()] = match[2].trim();
+  return result;
+}
+
+function requireMetadata(values: Metadata, key: string): string | undefined {
+  const value = values[key];
+  if (!value) finding("ERR_APPROVAL_MISSING", `00-plan-index.md: ${key}`);
+  return value;
+}
+
+function parseFile(path: string): unknown | undefined {
   try {
-    return readFileSync(path, "utf8");
-  } catch (error) {
-    throw new Error(`cannot read ${path}: ${error instanceof Error ? error.message : String(error)}`);
+    return Bun.YAML.parse(readFileSync(path, "utf8"));
+  } catch {
+    finding("ERR_SCHEMA_DISCRIMINATOR", `cannot parse ${path}`);
+    return undefined;
   }
 }
 
-function metrics(source: string): Metrics {
-  return {
-    unicodeChars: [...source].length,
-    lines: source.split(/\r?\n/).length,
-    phases: (source.match(/^### Phase\s+[^\n]+$/gm) ?? []).length,
-    checkboxes: (source.match(/- \[ \]/g) ?? []).length,
-  };
+function parseV3Document(input: unknown, label: string) {
+  const parsed = parseAuditGovernanceV3Document(input);
+  if (!parsed.ok) finding(parsed.error, `${label}: ${parsed.message}`);
+  return parsed.ok ? parsed.value : undefined;
 }
 
-function enforceBudget(
-  source: string,
-  label: string,
-  limits: { unicodeChars: number; lines: number },
-  errorCode: string,
-) {
-  const value = metrics(source);
-  if (value.unicodeChars > limits.unicodeChars || value.lines > limits.lines) {
-    finding(
-      errors,
-      errorCode,
-      `${label}: chars=${value.unicodeChars}/${limits.unicodeChars}, lines=${value.lines}/${limits.lines}`,
-    );
+function resolveInput(root: string, candidate: string, label: string): string | undefined {
+  const guarded = guardRelativePath(root, candidate);
+  if (!guarded.ok) finding(guarded.error, `${label}: ${guarded.message}`);
+  return guarded.ok ? guarded.value : undefined;
+}
+
+function validatePlanSet(root: string, authorityRoot: string) {
+  const indexPath = join(root, "00-plan-index.md");
+  const finalPath = join(root, "99-final-verification.md");
+  if (!existsSync(indexPath)) finding("ERR_PLAN_SCHEMA_UNSUPPORTED", "00-plan-index.md is required");
+  if (!existsSync(finalPath)) finding("ERR_PLAN_SCHEMA_UNSUPPORTED", "99-final-verification.md is required");
+  if (!existsSync(indexPath) || !existsSync(finalPath)) return;
+
+  const index = metadata(readFileSync(indexPath, "utf8"));
+  if (index["Plan mode"] !== "PLAN_SET") finding("ERR_PLAN_SCHEMA_UNSUPPORTED", "00-plan-index.md: Plan mode must be PLAN_SET");
+  const indexDocument = parseV3Document({ schema_version: index["Schema version"], document_kind: index["Document kind"] }, "00-plan-index.md");
+  if (!indexDocument || indexDocument.schema_version !== "audit-plan-set/v3" || indexDocument.document_kind !== "plan-set-index") {
+    finding("ERR_PLAN_SCHEMA_UNSUPPORTED", "00-plan-index.md must declare audit-plan-set/v3::plan-set-index");
     return;
   }
-  if (value.unicodeChars >= limits.unicodeChars * 0.8 || value.lines >= limits.lines * 0.8) {
-    finding(
-      warnings,
-      "PLAN_LENGTH_WARNING",
-      `${label}: chars=${value.unicodeChars}/${limits.unicodeChars}, lines=${value.lines}/${limits.lines}`,
-    );
-  }
-}
 
-function requireTokens(source: string, tokens: string[], code: string, label: string) {
-  for (const token of tokens) {
-    if (!source.includes(token)) finding(errors, code, `${label}: ${token}`);
-  }
-}
+  const canonicalPathText = requireMetadata(index, "Canonical contract");
+  const canonicalHash = requireMetadata(index, "Canonical contract SHA-256");
+  const approvalPathText = requireMetadata(index, "Approval decision");
+  const approvalHash = requireMetadata(index, "Approval decision SHA-256");
+  if (!canonicalPathText || !canonicalHash || !approvalPathText || !approvalHash) return;
 
-function checkUnresolvedAndAmbiguous(source: string, label: string) {
-  const patterns: Array<[string, RegExp]> = [
-    ["UNRESOLVED_TBD", /\bTBD\b/gi],
-    ["UNRESOLVED_TODO", /\bTODO\b/gi],
-    ["UNRESOLVED_CHINESE", /待定|二选一/g],
-    ["OPTION_BRANCH", /方案\s*[A-ZＡ-Ｚ]|推荐方案|可选方案/g],
-    ["PLACEHOLDER", /<[^>\n]+>/g],
-    ["VAGUE_ALL", /所有相关|全部相关|all relevant/gi],
-    ["VAGUE_DISCRETION", /视情况|酌情|适当处理|必要时|if convenient|as appropriate/gi],
-    ["WEAK_RECOMMENDATION", /可以考虑|建议选择|recommended option/gi],
-  ];
-  for (const [code, pattern] of patterns) {
-    const matches = source.match(pattern) ?? [];
-    if (matches.length > 0) {
-      finding(errors, code, `${label}: ${matches.length} occurrence(s): ${[...new Set(matches)].slice(0, 5).join(", ")}`);
-    }
-  }
-}
-
-function countTableRows(source: string, heading: string): number {
-  const lines = source.split(/\r?\n/);
-  const start = lines.findIndex((line) => line.trim() === heading);
-  if (start < 0) return 0;
-  const tableLines: string[] = [];
-  for (const line of lines.slice(start + 1)) {
-    if (/^#{1,4}\s/.test(line)) break;
-    const trimmed = line.trim();
-    if (trimmed.startsWith("|") && trimmed.endsWith("|")) tableLines.push(trimmed);
-  }
-  const data = tableLines.filter((line) => !/^\|[\s:|-]+\|$/.test(line));
-  return Math.max(0, data.length - 1);
-}
-
-function checkPhaseComplexity(source: string, label: string, headings: { requirements: string; files: string; checks: string }) {
-  const counts = {
-    requirements: countTableRows(source, headings.requirements),
-    files: countTableRows(source, headings.files),
-    checks: countTableRows(source, headings.checks),
-  };
-  for (const [kind, count] of Object.entries(counts)) {
-    const limit = LIMITS.phase[kind as keyof typeof counts];
-    if (count > limit) finding(errors, "PHASE_COMPLEXITY_EXCEEDED", `${label}: ${kind}=${count}/${limit}`);
-  }
-}
-
-function checkEvidenceContracts(source: string, label: string, isPlanSetPhase = false) {
-  if (!source.includes("failedChecks") && !source.includes("Exact failure result")) {
-    finding(errors, "NO_DIAGNOSTIC_CONTRACT", `${label}: no explicit failure diagnostic contract found`);
-  }
-  const hasNegativeClaim = /negative|absence|isolation|不存在|不得存在|隔离/i.test(source);
-  if (hasNegativeClaim && !["FOUND", "NOT_FOUND", "UNAVAILABLE"].every((token) => source.includes(token))) {
-    finding(errors, "NEGATIVE_THREE_STATE_MISSING", `${label}: negative claims require FOUND / NOT_FOUND / UNAVAILABLE`);
-  }
-  if (!/component|integration|runtime-smoke|live-E2E/.test(source)) {
-    finding(errors, "NO_EVIDENCE_LEVEL", `${label}: no explicit evidence level found`);
-  }
-  if (!source.includes("cd ")) finding(errors, "COMMAND_CWD_MISSING", `${label}: verification commands must specify cwd`);
-  // PLAN_SET phase files defer completion-gate checkbox rules to the progression
-  // branch (extractGateTokens), which inspects only the `## Phase completion gate`
-  // section. Whole-document `- [ ]` is not required there (REQ-001-D); `99-final`
-  // and SINGLE_FILE plans keep the requirement.
-  if (!isPlanSetPhase && !source.includes("- [ ]")) finding(errors, "NO_COMPLETION_CHECKBOX", `${label}: completion gate requires unchecked boxes`);
-}
-
-function checkBoundaryContract(indexSource: string, planRoot: string) {
-  const version = indexSource.match(/^\*\*Boundary contract version\*\*:\s*`?([^`\n]+)`?/m)?.[1].trim();
-  if (!version) return;
-  if (version === "legacy-exempt") {
-    const indexPath = join(planRoot, "00-plan-index.md");
-    const relativePath = indexPath.slice(resolve(process.cwd()).length + 1);
-    const actual = createHash("sha256").update(readFileSync(indexPath)).digest("hex");
-    try {
-      const registry = JSON.parse(readFileSync(join(import.meta.dir, "..", "legacy-boundary-contract-exemptions.json"), "utf8")) as { entries?: Array<{ path?: string; sha256?: string }> };
-      if (!registry.entries?.some((entry) => entry.path === relativePath && entry.sha256 === actual)) finding(errors, "LEGACY_BOUNDARY_EXEMPTION_MISMATCH", relativePath);
-    } catch { finding(errors, "LEGACY_BOUNDARY_EXEMPTION_UNAVAILABLE", "legacy-boundary-contract-exemptions.json"); }
+  const canonicalPath = resolveInput(authorityRoot, canonicalPathText, "Canonical contract");
+  const approvalPath = resolveInput(authorityRoot, approvalPathText, "Approval decision");
+  if (!canonicalPath || !approvalPath || !existsSync(canonicalPath) || !existsSync(approvalPath)) {
+    if (canonicalPath && !existsSync(canonicalPath)) finding("ERR_APPROVAL_BINDING", `canonical contract not found: ${canonicalPathText}`);
+    if (approvalPath && !existsSync(approvalPath)) finding("ERR_APPROVAL_MISSING", `approval decision not found: ${approvalPathText}`);
     return;
   }
-  if (version !== "boundary-contract/v1") { finding(errors, "BOUNDARY_CONTRACT_VERSION_INVALID", `00-plan-index.md: ${version}`); return; }
-  const path = indexSource.match(/^\*\*Requirements contract\*\*:\s*`?([^`\n]+)`?/m)?.[1].trim() ?? "";
-  const expected = indexSource.match(/^\*\*Requirements contract SHA-256\*\*:\s*`?([a-f0-9]{64})`?/mi)?.[1] ?? "";
-  if (!path || !expected) { finding(errors, "BOUNDARY_CONTRACT_REFERENCE_MISSING", "00-plan-index.md requires contract path and SHA-256"); return; }
-  const absolute = resolve(planRoot, path);
-  if (!absolute.startsWith(resolve(planRoot) + "/") || !existsSync(absolute)) { finding(errors, "BOUNDARY_CONTRACT_NOT_FOUND", path); return; }
-  const actual = createHash("sha256").update(readFileSync(absolute)).digest("hex");
-  if (actual !== expected) finding(errors, "BOUNDARY_CONTRACT_HASH_MISMATCH", path);
-  let contract: Record<string, unknown> = {};
-  try { contract = Bun.YAML.parse(readFileSync(absolute, "utf8")) as Record<string, unknown>; } catch { finding(errors, "BOUNDARY_CONTRACT_PARSE_FAILED", path); return; }
-  const requirements = Array.isArray(contract.requirements) ? contract.requirements as Record<string, unknown>[] : [];
-  if (contract.schema_version !== "boundary-contract/v1" || requirements.length === 0) { finding(errors, "BOUNDARY_CONTRACT_INVALID", path); return; }
-  const cases = requirements.flatMap((requirement) => (Array.isArray(requirement.decision_cases) ? requirement.decision_cases : []).map((item) => item as Record<string, unknown>));
-  if (requirements.some((requirement) => !/^R-\d+$/.test(String(requirement.id ?? ""))) || cases.length === 0 || cases.some((item) => !/^DC-\d+$/.test(String(item.id ?? "")) || !/^FX-/.test(String(item.fixture ?? "")) || !String(item.oracle ?? "") || !["SUCCESS", "ERROR"].includes(String(item.expected_result ?? "")) || !["POSITIVE", "NEGATIVE"].includes(String(item.polarity ?? "")) || !Array.isArray(item.must_not_happen))) finding(errors, "BOUNDARY_CONTRACT_INVALID", path);
-  if (!cases.some((item) => item.polarity === "POSITIVE") || !cases.some((item) => item.polarity === "NEGATIVE") || new Set(cases.map((item) => String(item.id))).size !== cases.length) finding(errors, "BOUNDARY_CONTRACT_CASE_COVERAGE_INVALID", path);
+
+  const canonicalSource = readFileSync(canonicalPath);
+  const canonicalIdentity = compareSha256(canonicalHash, canonicalSource);
+  if (!canonicalIdentity.ok) finding(canonicalIdentity.error, `Canonical contract: ${canonicalIdentity.message}`);
+  const canonical = parseV3Document(parseFile(canonicalPath), canonicalPathText);
+  if (!canonical || canonical.schema_version !== "audit-governance/v3" || canonical.document_kind !== "canonical-requirements") {
+    finding("ERR_PLAN_SCHEMA_UNSUPPORTED", `Canonical contract must be audit-governance/v3::canonical-requirements`);
+  }
+
+  const approvalSource = readFileSync(approvalPath);
+  const approvalIdentity = compareSha256(approvalHash, approvalSource);
+  if (!approvalIdentity.ok) finding(approvalIdentity.error, `Approval decision: ${approvalIdentity.message}`);
+  const approval = parseV3Document(parseFile(approvalPath), approvalPathText);
+  if (!approval || approval.schema_version !== "audit-governance-approval/v3" || approval.document_kind !== "approval-decision") {
+    finding("ERR_APPROVAL_MISSING", "Approval decision must be audit-governance-approval/v3::approval-decision");
+    return;
+  }
+  if (approval.decision !== "APPROVED" || approval.approved_by !== "HUMAN_USER") {
+    finding("ERR_APPROVAL_MISSING", "Approval decision must be HUMAN_USER APPROVED");
+    return;
+  }
+  const artifacts = approval.approved_artifacts;
+  if (!artifacts || typeof artifacts !== "object" || Array.isArray(artifacts)) {
+    finding("ERR_APPROVAL_MISSING", "Approval decision has no approved_artifacts");
+    return;
+  }
+  const artifactValues = Object.values(artifacts as Record<string, unknown>);
+  const bindsCanonical = artifactValues.some((artifact) => {
+    if (!artifact || typeof artifact !== "object" || Array.isArray(artifact)) return false;
+    const value = artifact as Record<string, unknown>;
+    return value.path === canonicalPathText && value.sha256 === canonicalHash;
+  });
+  if (!bindsCanonical || !canonicalIdentity.ok || !approvalIdentity.ok) finding("ERR_APPROVAL_BINDING", "approval does not bind the exact canonical path and hash");
 }
 
-// Extracts checkbox tokens only from the `## Phase completion gate` section.
-// Returns gate token count and checked count; ignores unrelated Markdown.
-function extractGateTokens(source: string): { total: number; checked: number } {
-  const match = source.match(/^(?:####|##) Phase completion gate\s*\n([\s\S]*?)(?=^#{1,4}\s|$)/m);
-  const text = match?.[1] ?? "";
-  const boxes = text.match(/- \[([ xX])\]/g) ?? [];
-  const checked = boxes.filter((box) => /\[[xX]\]/.test(box)).length;
-  return { total: boxes.length, checked };
-}
-
-const singleTopLevel = [
-  "## 1. Input contract and source ledger",
-  "## 2. Decisions, scope, and non-goals",
-  "## 3. Verified current baseline",
-  "## 4. End-to-end traceability",
-  "## 5. File change inventory",
-  "## 6. Phase-by-phase implementation",
-  "## 7. Global verification and evidence",
-  "## 8. Risks, failure convergence, and rollback",
-  "## 9. Final completion gate",
-];
-
-const globalTokens = [
-  "**Status**:",
-  "**Only implementation path**:",
-  "**Evidence ceiling**:",
-  "### Decision ledger",
-  "### Non-goals",
-  "### Open/blocking items",
-  "### Negative evidence semantics",
-  "### Current versus historical evidence",
-  "### Globally forbidden changes",
-  "### Evidence preservation",
-  "### Evidence ceiling rule",
-  "| Requirement | Source | File/symbol | Check name | Evidence source | Happy fixture | Single mutation | Test ID | Level |",
-];
-
-const singlePhaseTokens = [
-  "#### Goal",
-  "#### Starting state and dependency",
-  "#### Local requirements",
-  "#### Allowed files",
-  "#### Forbidden files and behaviors",
-  "#### Fixed contract",
-  "#### Implementation steps",
-  "#### Check Registry",
-  "#### All-pass Fixture",
-  "#### Single-failure Matrix",
-  "#### Fixed verification",
-  "#### Rollback/failure convergence",
-  "#### Phase completion gate",
-];
-
-function validateSingle(path: string) {
-  const source = read(path);
-  enforceBudget(source, basename(path), LIMITS.single, "PLAN_SPLIT_REQUIRED");
-  requireTokens(source, ["**Plan mode**: `SINGLE_FILE`", ...singleTopLevel, ...globalTokens], "MISSING_GLOBAL_CONTRACT", basename(path));
-  for (let index = 1; index < singleTopLevel.length; index += 1) {
-    const previous = source.indexOf(singleTopLevel[index - 1]);
-    const current = source.indexOf(singleTopLevel[index]);
-    if (previous >= 0 && current >= 0 && current < previous) finding(errors, "SECTION_ORDER", singleTopLevel[index]);
-  }
-
-  const matches = [...source.matchAll(/^### Phase\s+[^\n]+$/gm)];
-  if (matches.length === 0) finding(errors, "NO_PHASE", "at least one ### Phase section is required");
-  if (matches.length > LIMITS.single.phases) {
-    finding(errors, "PLAN_SPLIT_REQUIRED", `phases=${matches.length}/${LIMITS.single.phases}`);
-  }
-  for (let index = 0; index < matches.length; index += 1) {
-    const start = matches[index].index ?? 0;
-    const end = matches[index + 1]?.index ?? source.indexOf("## 7. Global verification", start);
-    const phase = source.slice(start, end > start ? end : source.length);
-    const name = matches[index][0];
-    if (!/\[(ANALYSIS|VERIFICATION|OBSERVATION)(\s*→\s*(ANALYSIS|VERIFICATION|OBSERVATION))*\]/.test(name)) {
-      finding(errors, "PHASE_TYPE_MISSING", name);
-    }
-    requireTokens(phase, singlePhaseTokens, "PHASE_CONTRACT_MISSING", name);
-    enforceBudget(phase, name, LIMITS.phase, "PHASE_LENGTH_EXCEEDED");
-    checkPhaseComplexity(phase, name, {
-      requirements: "#### Local requirements",
-      files: "#### Allowed files",
-      checks: "#### Check Registry",
-    });
-  }
-  checkUnresolvedAndAmbiguous(source, basename(path));
-  checkEvidenceContracts(source, basename(path));
-  return metrics(source);
-}
-
-function validatePlanSet(directory: string) {
-  const indexPath = join(directory, "00-plan-index.md");
-  const finalPath = join(directory, "99-final-verification.md");
-  if (!existsSync(indexPath)) finding(errors, "MISSING_PLAN_INDEX", "00-plan-index.md");
-  if (!existsSync(finalPath)) finding(errors, "MISSING_FINAL_VERIFICATION", "99-final-verification.md");
-  if (!existsSync(indexPath) || !existsSync(finalPath)) {
-    return { index: null, phases: {}, final: null };
-  }
-  const indexSource = read(indexPath);
-  checkBoundaryContract(indexSource, directory);
-  const finalSource = read(finalPath);
-  enforceBudget(indexSource, "00-plan-index.md", LIMITS.index, "PLAN_INDEX_LENGTH_EXCEEDED");
-  enforceBudget(finalSource, "99-final-verification.md", LIMITS.final, "FINAL_VERIFICATION_LENGTH_EXCEEDED");
-  requireTokens(indexSource, [
-    "**Plan mode**: `PLAN_SET`",
-    "**Status**:",
-    "**Only implementation path**:",
-    "**Evidence ceiling**:",
-    "## 1. Input contract and source ledger",
-    "## 2. Decisions, scope, and non-goals",
-    "## 3. Verified current baseline",
-    "## 4. End-to-end traceability",
-    "## 5. File change inventory",
-    "## 6. Phase manifest",
-  ], "MISSING_PLAN_SET_INDEX_CONTRACT", "00-plan-index.md");
-  requireTokens(finalSource, [
-    "## 7. Global verification and evidence",
-    "## 8. Risks, failure convergence, and rollback",
-    "## 9. Final completion gate",
-  ], "MISSING_FINAL_CONTRACT", "99-final-verification.md");
-
-  const progressionEnabled = isProgressionSchema(indexSource);
-  const parsedManifest = parseManifest(indexSource);
-  const manifest = parsedManifest.rows;
-  if (manifest.length === 0) finding(errors, "EMPTY_PHASE_MANIFEST", "00-plan-index.md has no phase rows");
-  if (manifest.length > LIMITS.planSetPhases) {
-    finding(errors, "PLAN_SET_TOO_MANY_PHASES", `phases=${manifest.length}/${LIMITS.planSetPhases}`);
-  }
-  if (progressionEnabled) {
-    for (const diagnostic of parsedManifest.diagnostics) finding(errors, diagnostic.code, diagnostic.message);
-    for (const diagnostic of validateManifestRows(manifest)) finding(errors, diagnostic.code, diagnostic.message);
-    const derived = deriveTopLevelStatus(manifest.map((row) => parseProgressionStatus(row.status)));
-    const declared = indexSource.match(/^\*\*Status\*\*:\s*`?([^`\n]+)`?/m)?.[1].trim() ?? "";
-    if (declared !== derived) finding(errors, "TOP_LEVEL_STATUS_MISMATCH", `declared=${declared}, derived=${derived}`);
-  }
-  const ids = new Set<string>();
-  const files = new Set<string>();
-  for (const [index, row] of manifest.entries()) {
-    if (row.order !== index + 1) finding(errors, "PHASE_ORDER_INVALID", `${row.id}: order=${row.order}, expected=${index + 1}`);
-    if (ids.has(row.id)) finding(errors, "DUPLICATE_PHASE_ID", row.id);
-    if (files.has(row.file)) finding(errors, "DUPLICATE_PHASE_FILE", row.file);
-    ids.add(row.id);
-    files.add(row.file);
-    for (const dependency of row.dependencies) {
-      const dependencyIndex = manifest.findIndex((item) => item.id === dependency);
-      if (dependencyIndex < 0) finding(errors, "UNKNOWN_PHASE_DEPENDENCY", `${row.id}: ${dependency}`);
-      else if (dependencyIndex >= index) finding(errors, "PHASE_DEPENDENCY_ORDER", `${row.id}: ${dependency}`);
-    }
-  }
-
-  const actualPhaseFiles = readdirSync(directory).filter((file) => /^\d{2}-phase-.+\.md$/.test(file)).sort();
-  for (const file of files) {
-    if (!actualPhaseFiles.includes(file)) finding(errors, "MISSING_PHASE_FILE", file);
-  }
-  for (const file of actualPhaseFiles) {
-    if (!files.has(file)) finding(errors, "UNREGISTERED_PHASE_FILE", file);
-  }
-
-  const phaseMetrics: Record<string, Metrics> = {};
-  for (const row of manifest) {
-    if (!actualPhaseFiles.includes(row.file)) continue;
-    const source = read(join(directory, row.file));
-    enforceBudget(source, row.file, LIMITS.phase, "PHASE_LENGTH_EXCEEDED");
-    requireTokens(source, [
-      `**Phase ID**: \`${row.id}\``,
-      "**Depends on**:",
-      "**Outcome**:",
-      "**Evidence level**:",
-      "## Goal",
-      "## Starting state and dependency",
-      "## Local requirements",
-      "## Allowed files",
-      "## Forbidden files and behaviors",
-      "## Fixed contract",
-      "## Implementation steps",
-      "## Check Registry",
-      "## All-pass Fixture",
-      "## Single-failure Matrix",
-      "## Fixed verification",
-      "## Rollback/failure convergence",
-      "## Phase completion gate",
-    ], "PHASE_CONTRACT_MISSING", row.file);
-    if (!new RegExp(`^# Phase ${row.id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}: .+\\[(ANALYSIS|VERIFICATION|OBSERVATION)`).test(source)) {
-      finding(errors, "PHASE_HEADER_INVALID", row.file);
-    }
-    const declaredDependency = source.match(/^\*\*Depends on\*\*:\s*(.+)$/m)?.[1].replaceAll("`", "").trim() ?? "";
-    const expectedDependency = row.dependencies.length === 0 ? "NONE" : row.dependencies.join(", ");
-    if (declaredDependency !== expectedDependency) {
-      finding(errors, "PHASE_DEPENDENCY_MISMATCH", `${row.file}: declared=${declaredDependency}, manifest=${expectedDependency}`);
-    }
-    if (progressionEnabled) {
-      const manifestStatus = parseProgressionStatus(row.status);
-      if (!manifestStatus) {
-        finding(errors, "PHASE_STATUS_INVALID", `${row.id}: manifest Status=${row.status ?? "<missing>"}`);
-      }
-      const phaseStatusRaw = source.match(/^\*\*Progression status\*\*:\s*`?([^`\n]+)`?/m)?.[1].trim() ?? "";
-      const phaseStatus = parseProgressionStatus(phaseStatusRaw);
-      if (!phaseStatus) finding(errors, "PHASE_STATUS_MISSING", `${row.file}: **Progression status**`);
-      else if (manifestStatus && phaseStatus !== manifestStatus) finding(errors, "PHASE_STATUS_MISMATCH", `${row.id}: manifest=${manifestStatus}, phase=${phaseStatus}`);
-      const gate = extractGateTokens(source);
-      if (manifestStatus) {
-        if (gate.total === 0) {
-          finding(errors, "PHASE_COMPLETION_GATE_MISMATCH", `${row.id}: completion gate requires at least one checkbox`);
-        } else if (manifestStatus === "ACCEPTED" && gate.checked !== gate.total) {
-          finding(errors, "PHASE_COMPLETION_GATE_MISMATCH", `${row.id}: ACCEPTED requires every completion gate checkbox checked`);
-        } else if (manifestStatus !== "ACCEPTED" && gate.checked > 0) {
-          finding(errors, "PHASE_COMPLETION_GATE_MISMATCH", `${row.id}: ${manifestStatus} cannot have checked completion gate`);
-        }
-      }
-      if (manifestStatus === "ACCEPTED") {
-        const receipt = source.match(/^\*\*Completion receipt\*\*:\s*(.+)$/m)?.[1].trim() ?? "";
-        if (!receipt || receipt === "NONE" || receipt === "N/A") finding(errors, "PHASE_RECEIPT_MISSING", `${row.id}: Completion receipt`);
-      }
-    }
-    checkPhaseComplexity(source, row.file, {
-      requirements: "## Local requirements",
-      files: "## Allowed files",
-      checks: "## Check Registry",
-    });
-    checkUnresolvedAndAmbiguous(source, row.file);
-    checkEvidenceContracts(source, row.file, true);
-    phaseMetrics[row.file] = metrics(source);
-  }
-  checkUnresolvedAndAmbiguous(indexSource, "00-plan-index.md");
-  checkUnresolvedAndAmbiguous(finalSource, "99-final-verification.md");
-  if (!finalSource.includes("- [ ]")) finding(errors, "NO_COMPLETION_CHECKBOX", "99-final-verification.md");
-  return {
-    index: metrics(indexSource),
-    phases: phaseMetrics,
-    final: metrics(finalSource),
-  };
-}
-
-let mode: "SINGLE_FILE" | "PLAN_SET";
-let resultMetrics: unknown;
 try {
-  if (statSync(inputPath).isDirectory()) {
-    mode = "PLAN_SET";
-    resultMetrics = validatePlanSet(inputPath);
+  if (!inputPath || !existsSync(inputPath) || !statSync(inputPath).isDirectory()) {
+    finding("ERR_PLAN_SCHEMA_UNSUPPORTED", "input must be a v3 PLAN_SET directory");
+  } else if (!governanceRoot || !existsSync(governanceRoot) || !statSync(governanceRoot).isDirectory()) {
+    finding("ERR_PLAN_SCHEMA_UNSUPPORTED", "governanceRoot must be an existing directory");
   } else {
-    mode = "SINGLE_FILE";
-    resultMetrics = validateSingle(inputPath);
+    validatePlanSet(inputPath, governanceRoot);
   }
 } catch (error) {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exit(2);
+  finding("ERR_PLAN_SCHEMA_UNSUPPORTED", error instanceof Error ? error.message : String(error));
 }
 
-const result = { ok: errors.length === 0, mode, planPath: inputPath, metrics: resultMetrics, errors, warnings };
-console.log(JSON.stringify(result, null, 2));
-process.exit(result.ok ? 0 : 1);
+console.log(JSON.stringify({ ok: errors.length === 0, mode: "PLAN_SET", planPath: inputPath ?? null, errors }, null, 2));
+process.exit(errors.length === 0 ? 0 : 1);

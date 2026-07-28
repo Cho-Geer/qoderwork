@@ -1,0 +1,7 @@
+=== STDOUT ===
+{"path":"/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3/audits/audit-governance-evidence-and-status-closure-v3/phase-03-evidence/projection.json","sha256":"e9e960c0a1bfaaa03f8c2c9809a44b01ba7bb3574d0b57d60b84963a1633041e","status":"READY"}
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

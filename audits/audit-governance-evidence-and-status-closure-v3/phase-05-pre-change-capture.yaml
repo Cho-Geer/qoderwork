@@ -1,0 +1,48 @@
+schema_version: audit-evidence-receipt/v3
+document_kind: evidence-receipt
+capture_id: AGV3-PHASE-05-PRE-CHANGE-CAPTURE-20260727
+phase_id: PHASE-05
+captured_at: '2026-07-27T02:07:00Z'
+captured_by: HUMAN_USER_APPROVED_FREEZE_GATE
+governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+repository_root: /home/zhaoge/workspace/opencode/work-one
+repository_head: 64df828d56611ac121baccfaf666f147980aec85
+repository_status: CLEAN
+status: CAPTURED
+
+binding:
+  scope_lock_path: audits/audit-governance-evidence-and-status-closure-v3/phase-05-scope-lock.yaml
+  scope_lock_sha256: 04c0725e87840b1b04d337fa5303175d0459e38274f7d6dee8274a48f094969a
+  scope_approval_path: audits/audit-governance-evidence-and-status-closure-v3/phase-05-scope-approval.json
+  scope_approval_sha256: 44c349c62bdd8564b6ce63fdb0d78437352cf5844477d474fcca7edb3f862b04
+  canonical_contract_sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+
+allowlist_modified_path_hashes:
+  - sha256: 754676184de505e7b3c6b300e54a5a45b7d08ce9ebf6925f469de12ae5aa5fe6
+    path: .agents/skills/plan-audit-archiver/scripts/finalize-audit.ts
+  - sha256: fe0eeaf0f29902386091bab06e7b0da74d2bb6d8ae5c11a797750a436bb2afbc
+    path: .agents/skills/plan-audit-archiver/scripts/__tests__/finalize-audit.test.ts
+  - sha256: 1e24ca89bc0550dd036fbf236fa9b7b8f51af1c327fc6474d02a202f94e24957
+    path: .agents/skills/plan-audit-archiver/templates/scope-lock-template.json
+  - sha256: f70cbe8eced0f18e89c3b6ee38cdf792252882db8cb36e21a81c32b482df2eda
+    path: scripts/lib/governance-surface-manifest.yaml
+  - sha256: 21379badd0be6a2e86fc74e02b66fa1637e481403de379d9efbd3ea59a3e4d8e
+    path: scripts/lib/run-conformance.ts
+  - sha256: 726983dd4a8a37a202741aa8d3e1589f30cfe1a812f9ba136dfa1dec386fe5e6
+    path: scripts/lib/conformance-corpus/corpus.json
+  - sha256: 469136b03b27d18a7fd896fb847ca15f10cba1b3e2f872a6f75fce14847f8400
+    path: scripts/lib/__tests__/run-conformance.test.ts
+  - sha256: c870ead9c620817309a839877b649f6ad67898387cb264755cd3191cb0a4b2df
+    path: scripts/lib/__tests__/scan-governance-surface.test.ts
+  - sha256: 4e4c8de1c4fb13d772a2d86de1a7e5d145ad27c21d4e24ea3f1404f34790b756
+    path: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+  - sha256: 538b53899794caaf9c33879575821cf10080a773af48710e8624e5d2d7572316
+    path: logs/INDEX.md
+
+git_status_snapshot_sha256: 1dfc290318f5956f2940aac90c67bd06b5c0c158546e0f44dd77a076bec7216d
+worktree_untracked_note: >-
+  The governance worktree also contains previously-approved untracked artifacts
+  (genesis-bootstrap, phase-01/02/03/04 implementations, handoff docs, logs). These are
+  HISTORICAL/approved and outside this phase's added_paths; they are preserved per resume §9
+  and not modified by PHASE-05.

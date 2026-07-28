@@ -1,0 +1,76 @@
+{
+  "cases": [
+    {
+      "requirement_id": "REQ-003",
+      "decision_case_id": "DC-005",
+      "fixture_id": "FX-005",
+      "oracle_id": "ORACLE-005",
+      "expected_result": "SUCCESS",
+      "expected_error_code": null,
+      "must_not_happen": ["future_scope_hash_in_canonical"]
+    },
+    {
+      "requirement_id": "REQ-003",
+      "decision_case_id": "DC-006",
+      "fixture_id": "FX-006",
+      "oracle_id": "ORACLE-005",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_CASE_SELECTION",
+      "must_not_happen": ["receipt_acceptance", "model_review", "audit_publication"]
+    },
+    {
+      "requirement_id": "REQ-004",
+      "decision_case_id": "DC-007",
+      "fixture_id": "FX-007",
+      "oracle_id": "ORACLE-007",
+      "expected_result": "SUCCESS",
+      "expected_error_code": null,
+      "must_not_happen": ["directory_discovery_as_evidence"]
+    },
+    {
+      "requirement_id": "REQ-004",
+      "decision_case_id": "DC-008",
+      "fixture_id": "FX-008",
+      "oracle_id": "ORACLE-007",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_RECEIPT_PATH",
+      "must_not_happen": ["model_review", "audit_acceptance", "report_publication"]
+    },
+    {
+      "requirement_id": "REQ-004",
+      "decision_case_id": "DC-009",
+      "fixture_id": "FX-009",
+      "oracle_id": "ORACLE-007",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_RECEIPT_NOT_FOUND",
+      "must_not_happen": ["model_review", "audit_acceptance", "report_publication"]
+    },
+    {
+      "requirement_id": "REQ-005",
+      "decision_case_id": "DC-010",
+      "fixture_id": "FX-010",
+      "oracle_id": "ORACLE-010",
+      "expected_result": "SUCCESS",
+      "expected_error_code": null,
+      "must_not_happen": []
+    },
+    {
+      "requirement_id": "REQ-005",
+      "decision_case_id": "DC-011",
+      "fixture_id": "FX-011",
+      "oracle_id": "ORACLE-010",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_VALIDATION_FAILED",
+      "must_not_happen": ["report_publication", "latest_pointer_update", "accepted_phase_status"]
+    }
+  ],
+  "receipt_declarations": [
+    { "decision_case_id": "DC-005", "receipt_path": "EV-001-receipt.json" },
+    { "decision_case_id": "DC-006", "receipt_path": "EV-002-receipt.json" },
+    { "decision_case_id": "DC-007", "receipt_path": "EV-003-receipt.json" },
+    { "decision_case_id": "DC-008", "receipt_path": "EV-004-receipt.json" },
+    { "decision_case_id": "DC-009", "receipt_path": "EV-005-receipt.json" },
+    { "decision_case_id": "DC-010", "receipt_path": "EV-006-receipt.json" },
+    { "decision_case_id": "DC-011", "receipt_path": "EV-007-receipt.json" }
+  ]
+}

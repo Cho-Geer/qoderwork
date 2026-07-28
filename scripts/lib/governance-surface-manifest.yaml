@@ -1,0 +1,267 @@
+schema_version: audit-governance-surface/v3
+document_kind: governance-surface-manifest
+manifest_id: AGV3-PHASE-01-SURFACE-MANIFEST
+created_at: '2026-07-26T16:00:00Z'
+
+entries:
+  # --- Shared parser (oracle source) ---
+  - path: scripts/lib/audit-governance-schema-v3.ts
+    sha256: 37b74a621bd31b3e2f254dd9c1638626a57c1d4afa339ab2e3cc1960a92ea7e5
+    owner: shared-parser
+    classification: ACTIVE
+    consumers:
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+      - scripts/lib/scan-governance-surface.ts
+      - scripts/lib/run-conformance.ts
+      - .agents/skills/plan-audit-archiver/scripts/validate-audit.ts
+      - .agents/skills/plan-audit-archiver/scripts/prepare-audit.ts
+      - .agents/skills/plan-audit-archiver/scripts/pre-check-evidence.ts
+      - .agents/skills/plan-audit-archiver/scripts/finalize-audit.ts
+    allowed_references:
+      - node:crypto
+      - node:path
+    forbidden_references: []
+
+  # --- Declared v3 consumers ---
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    sha256: 805aa2a9e24b73f3abfd6e759dc383295669b0e962b53826cd2af81311ea3a19
+    owner: deterministic-implementation-planning
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:crypto
+      - node:fs
+      - node:path
+    forbidden_references: []
+
+  # --- Consumer-local scripts (OPEN findings, not rewired in PHASE-01) ---
+  - path: .agents/skills/deterministic-implementation-planning/scripts/phase-progression.ts
+    sha256: 3c6dcc4310935532a00c77d0e20766005fb399b4ae2a177ce815267d3d78cb27
+    owner: deterministic-implementation-planning
+    classification: ACTIVE
+    consumers:
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:crypto
+      - node:fs
+      - node:path
+    forbidden_references: []
+
+  - path: .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts
+    sha256: 84b2e9d2fee2775a3cce7eaf98548d2e469d55ac72235fd63b8748f465f27b11
+    owner: deterministic-implementation-planning
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - .agents/skills/deterministic-implementation-planning/scripts/phase-progression.ts
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:fs
+      - node:path
+    forbidden_references: []
+
+  - path: .agents/skills/plan-audit-archiver/scripts/validate-audit.ts
+    sha256: 11838b7b26d163abe219f71c1a063d5fc4d803484617b95ae3bd5e721253c386
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:crypto
+      - node:fs
+      - node:path
+    forbidden_references: []
+
+  - path: .agents/skills/plan-audit-archiver/scripts/audit-boundary-precheck.ts
+    sha256: 42ed89b7bb867949122c2ee7d6ab5e44d8dcd9a50d1ff58afca998aa5c1e1712
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:crypto
+      - node:fs
+      - node:path
+    forbidden_references: []
+
+  - path: .agents/skills/plan-audit-archiver/scripts/capture-state.ts
+    sha256: e36f3497847771c41125b5c079c17ed35eb0dfde2856b6d4938a52a271b96480
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:crypto
+      - node:fs
+      - node:path
+    forbidden_references: []
+
+  - path: .agents/skills/plan-audit-archiver/scripts/prepare-audit.ts
+    sha256: 23fb8aa706f345ba1b3dbf1248be50a4b8d6f7cd72df17f0d5804dffc3cb6a6c
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:crypto
+      - node:fs
+      - node:path
+    forbidden_references: []
+
+  - path: .agents/skills/plan-audit-archiver/scripts/generate-evidence-receipt.ts
+    sha256: 99dcb7693b01f35559ed6ddec4d46b183884f3c92840d77c3ec6546b4d6a5c58
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:crypto
+      - node:fs
+      - node:path
+      - node:child_process
+    forbidden_references: []
+
+  - path: .agents/skills/plan-audit-archiver/scripts/pre-check-evidence.ts
+    sha256: d3bd70bfd9be3e552c5790b5ec9d061943da1ec651d2d369fea224f8ae2261b7
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:crypto
+      - node:fs
+      - node:path
+    forbidden_references: []
+
+  # --- PHASE-05 v3-ified publication entry ---
+  - path: .agents/skills/plan-audit-archiver/scripts/finalize-audit.ts
+    sha256: 19726120b46f2bfbd91b094dccef61b434051c3334ebea8b0763bb104b02cc88
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:crypto
+      - node:fs
+      - node:path
+    forbidden_references: []
+
+  - path: .agents/skills/plan-audit-archiver/scripts/generate-phase-projection.ts
+    sha256: 11bf0c5a162c4f8318ecf2af1d0521bf3a7493929846180c31817dde5f319a0f
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - node:crypto
+      - node:fs
+      - node:path
+    forbidden_references: []
+
+  # --- Templates ---
+  - path: .agents/skills/plan-audit-archiver/templates/scope-lock-template.json
+    sha256: 3be802e734e3166848159859e6ec2b16bd257ab4522dd3c4b7a74a5876552512
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers:
+      - .agents/skills/plan-audit-archiver/scripts/prepare-audit.ts
+    allowed_references: []
+    forbidden_references: []
+
+  - path: .agents/skills/plan-audit-archiver/templates/evidence-receipt-template.json
+    sha256: b0f388895618ab83e064279d4933161815b91b8df9780440090c8ff643ed24f7
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers:
+      - .agents/skills/plan-audit-archiver/scripts/generate-evidence-receipt.ts
+    allowed_references: []
+    forbidden_references: []
+
+  - path: .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    sha256: 688dd9158a03996725ce631529198023831af1a39c48dbe75b1ca9494bb66a3b
+    owner: deterministic-implementation-planning
+    classification: ACTIVE
+    consumers:
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+    allowed_references: []
+    forbidden_references: []
+
+  # --- Tests ---
+  - path: scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    sha256: 501fdea5bb3ccad8e81200ad268fd10c39f1290313eb8cc3b62cd6814b9fe9cb
+    owner: shared-parser
+    classification: ACTIVE
+    consumers: []
+    allowed_references:
+      - scripts/lib/audit-governance-schema-v3.ts
+    forbidden_references: []
+
+  # --- Governance documents ---
+  - path: AGENTS.md
+    sha256: 1aa0a8f597f22df59a85bc78f2fb5e97d186b58ebbaae18d88962470674871f0
+    owner: workspace
+    classification: ACTIVE
+    consumers: []
+    allowed_references: []
+    forbidden_references: []
+
+  - path: RULES.md
+    sha256: 924b543d98a2889b77be809632db824f0d6b448b702a6eee7ed5edd358b3f256
+    owner: workspace
+    classification: ACTIVE
+    consumers: []
+    allowed_references: []
+    forbidden_references: []
+
+  - path: .agents/skills/plan-audit-archiver/provenance-rules.md
+    sha256: 35f7a05fa3048c175b59be19fa447686b2076a480f34084ed33e6c6b5986000d
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers:
+      - .agents/skills/plan-audit-archiver/scripts/validate-audit.ts
+    allowed_references: []
+    forbidden_references: []
+
+  # --- Skill definitions ---
+  - path: .agents/skills/deterministic-implementation-planning/SKILL.md
+    sha256: 703740b9f6029b31c707e11bde5c1dce159cb05918abd9ef72ca0af0065d42dc
+    owner: deterministic-implementation-planning
+    classification: ACTIVE
+    consumers: []
+    allowed_references: []
+    forbidden_references: []
+
+  - path: .agents/skills/plan-audit-archiver/SKILL.md
+    sha256: 6b143f4ec63d3f96fdc92210c31aca094b42cd5bffe217df897b85c52c2e6cad
+    owner: plan-audit-archiver
+    classification: ACTIVE
+    consumers: []
+    allowed_references: []
+    forbidden_references: []
+
+  # --- Index/log interfaces ---
+  - path: documents/INDEX.md
+    sha256: 63812c96d9f7f99cda72750de65e01775274fae5c79d9c9e3615dd1fc2b0689a
+    owner: workspace
+    classification: ACTIVE
+    consumers: []
+    allowed_references: []
+    forbidden_references: []
+
+  - path: logs/INDEX.md
+    sha256: 06c278e74a3756fe4504450b58bd278aa42cd1b8ebe1ae7dd43bed2bcbf2c007
+    owner: workspace
+    classification: ACTIVE
+    consumers: []
+    allowed_references: []
+    forbidden_references: []
+
+  # --- Historical / Quarantined (path-only, NEVER opened) ---
+  - path: .agents/skills/deterministic-implementation-planning/legacy-boundary-contract-exemptions.json
+    sha256: null
+    owner: deterministic-implementation-planning
+    classification: HISTORICAL
+    consumers: []
+    allowed_references: []
+    forbidden_references: []

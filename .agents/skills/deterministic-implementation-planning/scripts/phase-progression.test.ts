@@ -3,6 +3,7 @@ import {
   PROGRESSION_SCHEMA,
   PROGRESSION_STATUSES,
   deriveTopLevelStatus,
+  isProgressionSchema,
   isProgressionStatus,
   parseManifest,
   sha256Text,
@@ -15,6 +16,12 @@ describe("phase progression contract", () => {
     expect(PROGRESSION_STATUSES).toEqual(["NOT_STARTED", "IN_PROGRESS", "ACCEPTED", "BLOCKED", "INVALID"]);
     expect(isProgressionStatus("DONE")).toBe(false);
     expect(isProgressionStatus("ACCEPTED")).toBe(true);
+  });
+
+  test("retains the plan-index progression marker decoupled from v3 receipt discrimination", () => {
+    expect(PROGRESSION_SCHEMA).toBe("phase-progression/v1");
+    expect(isProgressionSchema("**Progression schema**: `phase-progression/v1`")).toBe(true);
+    expect(isProgressionSchema("**Progression schema**: `legacy`")).toBe(false);
   });
 
   test("derives the top-level status deterministically", () => {
@@ -53,7 +60,8 @@ describe("phase progression contract", () => {
   test("accepts a complete receipt contract", () => {
     const hash = sha256Text("fixture");
     const receipt = {
-      schema_version: PROGRESSION_SCHEMA,
+      schema_version: "audit-phase-progression/v3",
+      document_kind: "phase-progression-receipt",
       plan_index_sha256: hash,
       phase_file_sha256: hash,
       audit_report_sha256: hash,
@@ -76,7 +84,8 @@ describe("phase progression contract", () => {
   test("fails closed on each receipt hash mutation", () => {
     const hash = sha256Text("fixture");
     const receipt = {
-      schema_version: PROGRESSION_SCHEMA,
+      schema_version: "audit-phase-progression/v3",
+      document_kind: "phase-progression-receipt",
       plan_index_sha256: hash,
       phase_file_sha256: hash,
       audit_report_sha256: hash,
@@ -90,5 +99,24 @@ describe("phase progression contract", () => {
       const diagnostics = validateReceiptContract(mutated, { [field]: hash });
       expect(diagnostics.map((item) => item.code)).toContain("PHASE_RECEIPT_HASH_MISMATCH");
     }
+  });
+
+  test("discriminates the receipt schema through the shared v3 parser", () => {
+    const hash = sha256Text("fixture");
+    const base = {
+      plan_index_sha256: hash,
+      phase_file_sha256: hash,
+      audit_report_sha256: hash,
+      validator_output_sha256: hash,
+      phase_id: "PHASE-01",
+      previous_status: "IN_PROGRESS",
+      new_status: "ACCEPTED",
+    };
+    // The plan-index marker literal is NOT a valid receipt discriminator.
+    const planIndexLiteral = { ...base, schema_version: PROGRESSION_SCHEMA };
+    expect(validateReceiptContract(planIndexLiteral).map((item) => item.code)).toContain("PHASE_RECEIPT_SCHEMA_INVALID");
+    // Right schema_version but wrong document_kind is rejected by the shared parser.
+    const wrongKind = { ...base, schema_version: "audit-phase-progression/v3", document_kind: "phase-projection" };
+    expect(validateReceiptContract(wrongKind).map((item) => item.code)).toContain("PHASE_RECEIPT_SCHEMA_INVALID");
   });
 });

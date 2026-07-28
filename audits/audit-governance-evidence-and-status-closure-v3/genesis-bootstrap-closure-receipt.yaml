@@ -1,0 +1,114 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-receipt
+receipt_id: AGV3-GENESIS-BOOTSTRAP-CLOSURE-RECEIPT-20260726
+receipt_kind: genesis-bootstrap-closure
+document_status: CLOSED
+immutable: true
+created_at: '2026-07-26T14:50:00Z'
+
+purpose: >-
+  Record the one-time Stage G closure: posthoc v3 validation of every bootstrap
+  artifact by the shared v3 parser, admission of one fresh formal v3 PLAN_SET, and the
+  admission state transition to CLOSED. This receipt is not a PLAN_SET, not a phase
+  ACCEPT, not an audit report, and not a LATEST pointer, and cannot be reused as
+  approval, waiver, or compatibility input.
+
+authority_binding:
+  closure_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-scope-lock.yaml
+    sha256: 0bc91c02c7c9742b58e7dbbbf65df58a719d33cf1ed2538f1a0c03da0dbe87e4
+  closure_scope_approval:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-approval.json
+    sha256: f22c26c44bf97501f70251ef71de2a38494dbf8ee10d9913dcba6613725a53c7
+    decision: APPROVED
+    approved_by: HUMAN_USER
+  closure_pre_change_capture:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-pre-change-capture.yaml
+    sha256: 21671bfd03c396df112954c1483c409a3ba0c3a4e8da6d135b3928b1ec4aec76
+  validator_path_fix_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-validator-path-fix-scope-lock.yaml
+    sha256: c90b5b18a43ad6c0193300983d5c1f099d23056b15c999c13e2370f583050155
+    relation: unblocked_closure_CLOS-POS-003_under_separate_human_approval
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+
+state_machine:
+  admission_id: AGV3-GENESIS-BOOTSTRAP-ADMISSION-20260726
+  transitions_observed: DRAFT->HUMAN_APPROVED->IMPLEMENTING->POSTHOC_V3_VALIDATED->CLOSED
+  final_status: CLOSED
+  closure_is_not_accept: true
+  publishes_report: false
+  publishes_latest_pointer: false
+  reusable: false
+
+posthoc_validation:
+  parser: scripts/lib/audit-governance-schema-v3.ts
+  parser_sha256: 37b74a621bd31b3e2f254dd9c1638626a57c1d4afa339ab2e3cc1960a92ea7e5
+  parser_changed_by_closure: false
+  artifacts_validated:
+    - path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-admission.yaml
+      document_kind: genesis-bootstrap-admission
+      result: OK
+    - path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4.yaml
+      document_kind: genesis-bootstrap-scope-lock
+      result: OK
+    - path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-repair-v4-pre-change-capture.yaml
+      document_kind: genesis-bootstrap-receipt
+      result: OK
+    - path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-scope-lock.yaml
+      document_kind: genesis-bootstrap-scope-lock
+      result: OK
+    - path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-pre-change-capture.yaml
+      document_kind: genesis-bootstrap-receipt
+      result: OK
+  command: bun -e shared_parser_parse_each_bootstrap_artifact
+  exit_code: 0
+
+formal_plan_set_admission:
+  directory: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set
+  command: bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  exit_code: 0
+  observed: { ok: true, errors: [] }
+  authorizes_code_write: false
+  rule: each phase still requires its own approved v3 phase scope lock before any write
+
+execution:
+  observed:
+    - check_id: CLOS-POS-001
+      result: FOUND
+      value: schema_parser_4_tests_pass
+    - check_id: CLOS-POS-002
+      result: FOUND
+      value: validator_8_tests_pass
+    - check_id: CLOS-POS-003
+      result: FOUND
+      value: formal_plan_set_admission_exit_0_ok_true
+    - check_id: CLOS-POSTHOC-001
+      result: FOUND
+      value: five_bootstrap_artifacts_parse_under_exact_schema_pair
+    - check_id: CLOS-NEG-001
+      result: FOUND
+      value: non_v3_input_rejected_exit_1_ERR_PLAN_SCHEMA_UNSUPPORTED
+    - check_id: CLOS-NEG-002
+      result: FOUND
+      value: canonical_hash_drift_rejected_exit_1_ERR_APPROVAL_BINDING
+    - check_id: CLOS-NEG-003
+      result: FOUND
+      value: pre_v3_zero_match_in_formal_plan_set_exit_1
+    - check_id: CLOS-TYPECHECK
+      result: FOUND
+      value: exit_0
+  domain_observation:
+    bootstrap_state: CLOSED
+    formal_plan_set: ADMITTED_NOT_STARTED
+    phase_accept: NOT_FOUND
+    audit_report: NOT_FOUND
+    latest_pointer: NOT_FOUND
+    compatibility_entry: NOT_FOUND
+
+prohibited_effects_observed: none
+
+failure_convergence:
+  closure_complete: true
+  next_action: create_and_approve_formal_v3_PLAN_SET_phase_scope_locks_under_normal_v3_gates

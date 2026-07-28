@@ -1,0 +1,232 @@
+schema_version: audit-governance-bootstrap/v3
+document_kind: genesis-bootstrap-admission
+admission_id: AGV3-GENESIS-BOOTSTRAP-ADMISSION-20260726
+document_status: CLOSED
+created_at: '2026-07-26T11:01:33Z'
+closure_binding:
+  closure_receipt:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-receipt.yaml
+    sha256: dece719a6b36a20278388448bdbf291c2a7baf69c122aa42ba659c503080d2ec
+  closure_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-scope-lock.yaml
+    sha256: 0bc91c02c7c9742b58e7dbbbf65df58a719d33cf1ed2538f1a0c03da0dbe87e4
+  validator_path_fix_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-validator-path-fix-scope-lock.yaml
+    sha256: c90b5b18a43ad6c0193300983d5c1f099d23056b15c999c13e2370f583050155
+  transitions_observed: DRAFT->HUMAN_APPROVED->IMPLEMENTING->POSTHOC_V3_VALIDATED->CLOSED
+  closed_at: '2026-07-26T14:50:00Z'
+  closure_is_not_accept: true
+  publishes_report_or_latest: false
+  reusable: false
+purpose: >-
+  Retain the one-time v3-only activation precondition and constrain creation of the
+  first shared v3 parser and PLAN_SET admission. This admission is not a PLAN_SET,
+  phase scope lock, phase receipt, phase ACCEPT, audit report, or LATEST pointer.
+
+authority_binding:
+  priority:
+    - HUMAN_USER
+    - approved_v3_canonical
+    - v3_provenance_rules
+    - handoff_methodology
+  approved_design:
+    blueprint:
+      path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+      sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+    canonical_contract:
+      path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+      sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+    approval_request:
+      path: audits/audit-governance-evidence-and-status-closure-v3/approval-request.json
+      sha256: ec03283181074548266ad84d6177f272c5a4422fd11c5cb3472895115d10e1d8
+    approval_decision:
+      path: audits/audit-governance-evidence-and-status-closure-v3/approval-decision-bootstrap-amendment.json
+      sha256: d6b35ae702648a488402a8b62f1327aa0c115681074ee947653080c189809350
+      decision: APPROVED
+      approved_by: HUMAN_USER
+
+non_reuse:
+  allowed_instances: 1
+  reusable: false
+  prohibited: [second_genesis_attempt, compatibility_mode, migration_path, generic_bypass, phase_accept, report_publication, latest_pointer_update]
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  repository_root: /home/zhaoge/workspace/opencode/work-one
+  repository_head: 64df828d56611ac121baccfaf666f147980aec85
+  repository_status: CLEAN
+
+activation_probe:
+  probe_id: AGV3-BOOTSTRAP-UNSUPPORTED-SCHEMA-20260726
+  disposition: RETAINED_UNSUPPORTED_V3
+  execution:
+    command: >-
+      cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 &&
+      bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+      /tmp/audit-governance-v3-bootstrap-probe.3PnBDD
+    exit_code: 1
+    stdout_sha256: 64f45b9cbec20a58e4e617752bac094918bdb80f798def66437e7ca596576a02
+    expected_error_code: BOUNDARY_CONTRACT_VERSION_INVALID
+    observed_error_code: BOUNDARY_CONTRACT_VERSION_INVALID
+    observed_message: '00-plan-index.md: audit-governance/v3'
+  retention:
+    method: embedded_exact_fixture_contents_and_hashes
+    temporary_execution_directory: /tmp/audit-governance-v3-bootstrap-probe.3PnBDD
+    fixture_files:
+      - path: 00-plan-index.md
+        sha256: d9a32db69d1a1777e31f17a262204c8bd9f2c6c219538a922c669ec8adea11ac
+        content: |+
+          # V3 Genesis Bootstrap Probe — Non-Admissible Fixture
+
+          **Plan mode**: `PLAN_SET`
+          **Status**: `BLOCKED-BY-BOOTSTRAP`
+          **Only implementation path**: `v3 parser and v3 Plan admission must exist before a formal v3 PLAN_SET can be admitted`
+          **Evidence ceiling**: `NOT-RUN`
+          **Boundary contract version**: `audit-governance/v3`
+          **Requirements contract**: `plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml`
+          **Requirements contract SHA-256**: `dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748`
+
+          ## 1. Input contract and source ledger
+
+          This non-admissible fixture binds only the approved v3 canonical contract.
+
+          ## 2. Decisions, scope, and non-goals
+
+          No pre-v3 input, compatibility mode, or generic bypass is present.
+
+          ## 3. Verified current baseline
+
+          The current validator is expected to reject the v3 boundary contract version.
+
+          ## 4. End-to-end traceability
+
+          The expected failure is `BOUNDARY_CONTRACT_VERSION_INVALID` before admission.
+
+          ## 5. File change inventory
+
+          No implementation file is changed by this probe.
+
+          ## 6. Phase manifest
+
+          | Order | Phase ID | File | Depends on | Status |
+          |---|---|---|---|---|
+          | 1 | PROBE-01 | `01-phase-probe.md` | NONE | `BLOCKED` |
+
+      - path: 01-phase-probe.md
+        sha256: adc53fcacd6fbda5e195a6035f21367e74d9a3afee1c0d425ecc1c532b18ad55
+        content: |+
+          # Phase PROBE-01: non-admissible bootstrap probe [VERIFICATION]
+
+          **Phase ID**: `PROBE-01`
+          **Depends on**: NONE
+          **Outcome**: current validator rejects the v3 boundary contract version
+          **Evidence level**: component
+
+          ## Goal
+
+          Confirm that the current validator cannot admit a v3-only input.
+
+          ## Starting state and dependency
+
+          The approved v3 canonical hash is present in `00-plan-index.md`.
+
+          ## Local requirements
+
+          | Requirement | Contract |
+          |---|---|
+          | REQ-001 | non-v3 admission must fail before phase execution |
+
+          ## Allowed files
+
+          | Exact path | Change | Anchor |
+          |---|---|---|
+          | /tmp/audit-governance-v3-bootstrap-probe.3PnBDD | fixture only | non-admissible input |
+
+          ## Forbidden files and behaviors
+
+          No code, receipt, report, or LATEST pointer is produced.
+
+          ## Fixed contract
+
+          Exact failure result and failedChecks include `BOUNDARY_CONTRACT_VERSION_INVALID`.
+          FOUND / NOT_FOUND / UNAVAILABLE are not used by this schema-rejection probe.
+
+          ## Implementation steps
+
+          Run the current validator against this fixture.
+
+          ## Check Registry
+
+          | Check name | PASS |
+          |---|---|
+          | v3_schema_rejected | exit is nonzero with the expected error code |
+
+          ## All-pass Fixture
+
+          The fixture above is complete for the expected rejection.
+
+          ## Single-failure Matrix
+
+          The sole mutation is the v3 boundary contract version.
+
+          ## Fixed verification
+
+          ```bash
+          cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+          bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts /tmp/audit-governance-v3-bootstrap-probe.3PnBDD
+          ```
+
+          ## Rollback/failure convergence
+
+          If the expected error is absent, bootstrap is BLOCKED and no scope lock may be approved.
+
+          ## Phase completion gate
+
+          - [ ] expected rejection is retained
+
+      - path: 99-final-verification.md
+        sha256: 87bccdc7a3473ba85f0fb00f1954ddefe8dccf0ad882c7a28d8c8c212cb075ca
+        content: |
+          # Non-Admissible Probe Final Verification
+
+          ## 7. Global verification and evidence
+
+          The output must retain `BOUNDARY_CONTRACT_VERSION_INVALID`.
+
+          ## 8. Risks, failure convergence, and rollback
+
+          Any unexpected admission blocks bootstrap.
+
+          ## 9. Final completion gate
+
+          - [ ] probe output retained
+
+required_next_artifact:
+  path: audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-lock.yaml
+  schema_version: audit-governance-bootstrap/v3
+  document_kind: genesis-bootstrap-scope-lock
+  required_status: FROZEN_PENDING_HUMAN_APPROVAL
+  required_bindings: [this_admission_sha256, approved_design_hashes, baseline, exact_allowlist, codegraph_impact, fixed_positive_check, single_mutation_negatives]
+  human_approval_rule: >-
+    The HUMAN_USER must approve the exact SHA-256 of the scope-lock before any
+    governance source-code or test write. This admission does not satisfy that rule.
+
+pre_change_capture:
+  status: NOT_CREATED
+  creation_condition: only_after_scope_lock_hash_has_external_HUMAN_USER_approval
+
+blocked_until:
+  - exact_scope_lock_exists
+  - exact_scope_lock_hash_has_external_HUMAN_USER_approval
+  - pre_change_capture_exists_and_binds_approved_scope_lock
+
+forbidden_before_unblock:
+  - governance_source_code_write
+  - governance_test_write
+  - formal_plan_set_write
+  - phase_scope_lock_write
+  - phase_progression_write
+  - receipt_write
+  - audit_report_write
+  - latest_pointer_write

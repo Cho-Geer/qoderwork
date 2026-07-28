@@ -3,6 +3,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, resolve } from "node:path";
+import { parseAuditGovernanceV3Document } from "../../../../scripts/lib/audit-governance-schema-v3.ts";
 
 export type RepositoryStateEntry = {
   path: string;
@@ -11,7 +12,8 @@ export type RepositoryStateEntry = {
 };
 
 export type RepositoryStateReceipt = {
-  schema_version: "1.0";
+  schema_version: "audit-evidence-receipt/v3";
+  document_kind: "evidence-receipt";
   repository_realpath: string;
   phase_id: string;
   captured_at: string;
@@ -87,8 +89,9 @@ export function captureRepositoryState(options: {
   const capturedAt = options.capturedAt ?? new Date().toISOString();
   if (Number.isNaN(Date.parse(capturedAt))) throw new Error("capturedAt must be ISO-8601");
   if (!options.phaseId.trim()) throw new Error("phaseId must not be empty");
-  return {
-    schema_version: "1.0",
+  const receipt = {
+    schema_version: "audit-evidence-receipt/v3" as const,
+    document_kind: "evidence-receipt" as const,
     repository_realpath: repositoryRealpath,
     phase_id: options.phaseId,
     captured_at: capturedAt,
@@ -96,6 +99,10 @@ export function captureRepositoryState(options: {
     scope_lock_sha256: sha256File(options.scopeLockPath),
     status_entries: statusEntries(repositoryRealpath),
   };
+  // Validate through shared parser to confirm v3 discriminator
+  const validation = parseAuditGovernanceV3Document(receipt);
+  if (!validation.ok) throw new Error(`state receipt failed shared parser: ${validation.error} — ${validation.message}`);
+  return receipt;
 }
 
 function argument(name: string): string {

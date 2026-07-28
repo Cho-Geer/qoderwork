@@ -1,0 +1,27 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "decision_id": "AUDIT-GOVERNANCE-EVIDENCE-STATUS-CLOSURE-V3-APPROVAL-20260726",
+  "decision": "APPROVED",
+  "approved_by": "HUMAN_USER",
+  "approved_at": "2026-07-26T10:21:00Z",
+  "approved_artifacts": {
+    "blueprint": {
+      "path": "blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md",
+      "sha256": "bf579a303fed2d35bb932480b801530fd99036d7fcbd360b1195e657a1e5a51a"
+    },
+    "canonical_contract": {
+      "path": "plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml",
+      "sha256": "bc34cfe59e50b2b1dbf6593bf6ce63e9bc928ffba62d31119589202680df6d8b"
+    }
+  },
+  "approved_scope": [
+    "v3 schema-family completion and v3-required provenance",
+    "findings-first governance surface scanning",
+    "independent cross-consumer conformance and intentional mismatch probes"
+  ],
+  "limitations": [
+    "This approval does not assert that the current v1/legacy implementation is compliant.",
+    "Each later PLAN_SET and implementation phase remains subject to its own approval and provenance gates."
+  ]
+}

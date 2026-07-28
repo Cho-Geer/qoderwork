@@ -88,6 +88,7 @@ type EvidenceReceipt = {
 
 type Contract = {
   schema_version: string;
+  document_kind?: string;
   audit_id: string;
   generation: number;
   previous_audit: { path: string; sha256: string; audit_id: string } | null;
@@ -147,7 +148,8 @@ afterEach(() => {
 
 function baseContract(): Contract {
   return {
-    schema_version: "2.1",
+    schema_version: "audit-governance-audit/v3",
+    document_kind: "audit-contract",
     audit_id: "AUDIT-20260719-001",
     generation: 1,
     previous_audit: null,
@@ -167,7 +169,7 @@ function baseContract(): Contract {
     },
     scope: {
       status: "FROZEN",
-      provenance_level: "v2.1-required",
+      provenance_level: "v3-required",
       frozen_at: "2026-07-19T10:00:00+09:00",
       in_scope: ["REQ-001"],
       out_of_scope: ["Unrelated formatting refactors"],
@@ -521,10 +523,39 @@ function materializeExternalBaseline(root: string, contract: Contract) {
 }
 
 describe("validate-audit closure and falsifiability", () => {
-  test("rejects boundary-contract/v1 without an immutable boundary matrix", () => {
+  test("rejects boundary-contract/v3 declared without an immutable boundary matrix", () => {
     const contract = baseContract() as Contract & { boundary_contract_version?: string };
-    contract.boundary_contract_version = "boundary-contract/v1";
+    contract.boundary_contract_version = "audit-boundary-matrix/v3";
     expect(validateAuditSource(report(contract)).errors.map((item) => item.code)).toContain("BOUNDARY_MATRIX_REQUIRED");
+  });
+  test("accepts a v3 audit-contract discriminator (positive case)", () => {
+    const contract = baseContract();
+    expect(contract.schema_version).toBe("audit-governance-audit/v3");
+    expect((contract as Contract & { document_kind?: string }).document_kind).toBe("audit-contract");
+    const result = validateAuditSource(report(contract));
+    expect(result.errors.map((item) => item.code)).not.toContain("SCHEMA_VERSION");
+  });
+  test("rejects a 2.1 audit contract (SCHEMA_VERSION)", () => {
+    const contract = baseContract() as Contract & { schema_version?: string };
+    contract.schema_version = "2.1";
+    expect(validateAuditSource(report(contract)).errors.map((item) => item.code)).toContain("SCHEMA_VERSION");
+  });
+  test("CLI rejects a v1 boundary matrix (BOUNDARY_MATRIX_SCHEMA_INVALID)", () => {
+    const root = mkdtempSync(join(tmpdir(), "audit-validator-v1-matrix-"));
+    roots.push(root);
+    const contract = baseContract() as Contract & { boundary_contract_version?: string; audit_boundary_matrix?: { path: string; sha256: string } };
+    materializeExternalBaseline(root, contract);
+    const matrixPath = join(root, "audits", "example", "evidence", "v1-matrix.json");
+    const v1Matrix = { schema_version: "audit-boundary-matrix/v1", document_kind: "boundary-matrix", status: "READY_FOR_LLM_REVIEW", scope_lock_sha256: contract.scope_lock.sha256, contract_sha256: "c".repeat(64), rows: [] };
+    writeFileSync(matrixPath, JSON.stringify(v1Matrix, null, 2));
+    contract.boundary_contract_version = "audit-boundary-matrix/v3";
+    contract.audit_boundary_matrix = { path: join(root, "audits", "example", "evidence", "v1-matrix.json").replace(root + "/", ""), sha256: sha256(JSON.stringify(v1Matrix, null, 2)) };
+    const auditPath = join(root, "invalid-v1-matrix.md");
+    writeFileSync(auditPath, report(contract));
+    const validator = join(import.meta.dir, "..", "validate-audit.ts");
+    const run = Bun.spawnSync({ cmd: [process.execPath, "run", validator, auditPath], cwd: root, stdout: "pipe", stderr: "pipe" });
+    expect(run.exitCode).toBe(1);
+    expect(JSON.parse(run.stdout.toString()).errors.map((item: { code: string }) => item.code)).toContain("BOUNDARY_MATRIX_SCHEMA_INVALID");
   });
   test("accepts a closed ACCEPT contract with positive and failing negative controls", () => {
     const result = validateAuditSource(report(baseContract()));

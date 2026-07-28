@@ -1,0 +1,171 @@
+{
+  "schema_version": "audit-boundary-matrix/v3",
+  "document_kind": "boundary-matrix",
+  "status": "READY_FOR_LLM_REVIEW",
+  "projection_path": "/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3/audits/audit-governance-evidence-and-status-closure-v3/phase-03-evidence/projection.json",
+  "projection_sha256": "e9e960c0a1bfaaa03f8c2c9809a44b01ba7bb3574d0b57d60b84963a1633041e",
+  "rows": [
+    {
+      "requirement_id": "REQ-003",
+      "decision_case_id": "DC-005",
+      "expected_result": "SUCCESS",
+      "expected_error_code": null,
+      "fixture_id": "FX-005",
+      "oracle_id": "ORACLE-005",
+      "must_not_happen": [
+        "future_scope_hash_in_canonical"
+      ],
+      "receipt_path": "EV-001-receipt.json",
+      "receipt_sha256": "c0adcb604e685435cb0a9af274ab1d47d6d77c2878545a7b4472c07722c7da6b",
+      "observed_execution": "PASS",
+      "observed_domain_result": "SUCCESS",
+      "observed_domain_error_code": null,
+      "forbidden_side_effects_observed": [
+        "future_scope_hash_in_canonical"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    },
+    {
+      "requirement_id": "REQ-003",
+      "decision_case_id": "DC-006",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_CASE_SELECTION",
+      "fixture_id": "FX-006",
+      "oracle_id": "ORACLE-005",
+      "must_not_happen": [
+        "receipt_acceptance",
+        "model_review",
+        "audit_publication"
+      ],
+      "receipt_path": "EV-002-receipt.json",
+      "receipt_sha256": "3ea5eb233429338c51d2615715234ad3642c08f1370a00fa85f4a9c0bed5bb3f",
+      "observed_execution": "FAIL",
+      "observed_domain_result": "ERROR",
+      "observed_domain_error_code": "ERR_CASE_SELECTION",
+      "forbidden_side_effects_observed": [
+        "audit_publication",
+        "model_review",
+        "receipt_acceptance"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    },
+    {
+      "requirement_id": "REQ-004",
+      "decision_case_id": "DC-007",
+      "expected_result": "SUCCESS",
+      "expected_error_code": null,
+      "fixture_id": "FX-007",
+      "oracle_id": "ORACLE-007",
+      "must_not_happen": [
+        "directory_discovery_as_evidence"
+      ],
+      "receipt_path": "EV-003-receipt.json",
+      "receipt_sha256": "6189897e17253c85a33a71c17a7ab4a82f086cac4e5735ffa8c6a0ff2c6f1155",
+      "observed_execution": "PASS",
+      "observed_domain_result": "SUCCESS",
+      "observed_domain_error_code": null,
+      "forbidden_side_effects_observed": [
+        "directory_discovery_as_evidence"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    },
+    {
+      "requirement_id": "REQ-004",
+      "decision_case_id": "DC-008",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_RECEIPT_PATH",
+      "fixture_id": "FX-008",
+      "oracle_id": "ORACLE-007",
+      "must_not_happen": [
+        "model_review",
+        "audit_acceptance",
+        "report_publication"
+      ],
+      "receipt_path": "EV-004-receipt.json",
+      "receipt_sha256": "d98e75c82c4ba619eddda8ea6fb993558c237b10ba444efba3a1446c8a87d266",
+      "observed_execution": "FAIL",
+      "observed_domain_result": "ERROR",
+      "observed_domain_error_code": "ERR_RECEIPT_PATH",
+      "forbidden_side_effects_observed": [
+        "audit_acceptance",
+        "model_review",
+        "report_publication"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    },
+    {
+      "requirement_id": "REQ-004",
+      "decision_case_id": "DC-009",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_RECEIPT_NOT_FOUND",
+      "fixture_id": "FX-009",
+      "oracle_id": "ORACLE-007",
+      "must_not_happen": [
+        "model_review",
+        "audit_acceptance",
+        "report_publication"
+      ],
+      "receipt_path": "EV-005-receipt.json",
+      "receipt_sha256": "5566ebc170150ba1d86baa84de766b275b513911b1ccab8862a42091ad7e5b70",
+      "observed_execution": "FAIL",
+      "observed_domain_result": "ERROR",
+      "observed_domain_error_code": "ERR_RECEIPT_NOT_FOUND",
+      "forbidden_side_effects_observed": [
+        "audit_acceptance",
+        "model_review",
+        "report_publication"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    },
+    {
+      "requirement_id": "REQ-005",
+      "decision_case_id": "DC-010",
+      "expected_result": "SUCCESS",
+      "expected_error_code": null,
+      "fixture_id": "FX-010",
+      "oracle_id": "ORACLE-010",
+      "must_not_happen": [],
+      "receipt_path": "EV-006-receipt.json",
+      "receipt_sha256": "371b621facd3e864b05cc3745cc809247eccc96bfbaf610fe1eaa2a75b1290b8",
+      "observed_execution": "PASS",
+      "observed_domain_result": "SUCCESS",
+      "observed_domain_error_code": null,
+      "forbidden_side_effects_observed": [],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    },
+    {
+      "requirement_id": "REQ-005",
+      "decision_case_id": "DC-011",
+      "expected_result": "ERROR",
+      "expected_error_code": "ERR_VALIDATION_FAILED",
+      "fixture_id": "FX-011",
+      "oracle_id": "ORACLE-010",
+      "must_not_happen": [
+        "report_publication",
+        "latest_pointer_update",
+        "accepted_phase_status"
+      ],
+      "receipt_path": "EV-007-receipt.json",
+      "receipt_sha256": "80b621a367d7cd53a20d202d027f0340705dc2e29ace576754869ce26e5171e1",
+      "observed_execution": "FAIL",
+      "observed_domain_result": "ERROR",
+      "observed_domain_error_code": "ERR_VALIDATION_FAILED",
+      "forbidden_side_effects_observed": [
+        "accepted_phase_status",
+        "latest_pointer_update",
+        "report_publication"
+      ],
+      "coverage": "COVERED",
+      "blocker_reason": null
+    }
+  ],
+  "blockers": [],
+  "scope_lock_sha256": "02cb460439ef1f5e8183654bfcf8ca0f4bc9079cb7b944eebed9b2dca818ef5b",
+  "contract_sha256": "9d2c1e341087b0819397690fb3177319beed42d885998c1e24db04cda8bbd466"
+}

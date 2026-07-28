@@ -36,11 +36,13 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
   specification rather than an implementation plan.
 - Use `guided-code-editing` after this plan exists and the user wants manual
   implementation guidance.
-- Reference `plan-audit-archiver` for v2.1 provenance rules: any Fixed
+- Reference `plan-audit-archiver` for `v3-required` provenance rules: any Fixed
   verification command containing `capture-state.ts --repository-root` must
   follow `.agents/skills/plan-audit-archiver/provenance-rules.md` P-07
   (repository_root = clean anchor work-one, never the audit workspace or
   current worktree).
+
+> **2026-07-28 v3 升级注**：原 `v2.1-required` 已升级为 `v3-required`，原 `boundary-contract/v1` 已迁移至 `audit-boundary-matrix/v3`。
 - This skill does not implement code and does not mark product behavior PASS.
 
 ## Non-negotiable rules
@@ -89,9 +91,9 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
     `ACCEPTED` requires a checked completion gate and a readable completion receipt;
     the index `**Status**` is derived as `COMPLETE`, `IN-PROGRESS`, `BLOCKED`, or
     `READY-FOR-IMPLEMENTATION` from ordered manifest states. Plans explicitly marked
-    `progression_schema: legacy` remain readable but cannot admit a new v2.1 phase.
+    `progression_schema: legacy` remain readable but cannot admit a new `v3-required` phase.
 
-14. **P-02A admission.** Before submitting a v2.1-required next-phase scope-lock for
+14. **P-02A admission.** Before submitting a `v3-required` next-phase scope-lock for
     human approval, run:
 
     ```bash

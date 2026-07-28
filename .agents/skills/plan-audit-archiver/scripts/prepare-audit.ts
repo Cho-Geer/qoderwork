@@ -27,6 +27,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { parseAuditGovernanceV3Document } from "../../../../scripts/lib/audit-governance-schema-v3.ts";
 
 // ─── 类型定义 ───
 
@@ -119,7 +120,7 @@ function readJson(filePath: string): JsonObject {
  * 前置 path + sha256。依赖 JSON.parse 保持 key order + rest-spread 保证字节一致。
  */
 export function buildLedgerEntry(receipt: LoadedReceipt): JsonObject {
-  const { schema_version: _sv, audit_id: _ai, generation: _gen, ...rest } = receipt.parsed;
+  const { schema_version: _omitSchemaVersion, audit_id: _ai, generation: _gen, ...rest } = receipt.parsed;
   return { path: receipt.relPath, sha256: receipt.sha256, ...rest };
 }
 
@@ -239,7 +240,8 @@ export function buildAuditContract(opts: ContractOptions): JsonObject {
   const dirtySurface = dirtyPaths.length === 0 ? `${repoBasename} clean` : `${dirtyPaths.length} dirty path(s)`;
 
   return {
-    schema_version: "2.1",
+    schema_version: "audit-governance-audit/v3",
+    document_kind: "audit-contract",
     audit_id: auditId,
     generation,
     previous_audit: null,
@@ -267,7 +269,7 @@ export function buildAuditContract(opts: ContractOptions): JsonObject {
     audit_boundary_matrix: opts.boundaryMatrix ?? null,
     boundary_precheck_inputs: opts.boundaryPrecheckInputs ?? null,
     boundary_contract_version: opts.boundaryContractVersion,
-    model_review: opts.boundaryContractVersion === "boundary-contract/v1" ? { approved_boundary: "REPLACE_MODEL_APPROVED_BOUNDARY", observed_equivalence: "REPLACE_MODEL_OBSERVED_EQUIVALENCE", exceptions: "REPLACE_MODEL_EXCEPTIONS", classification: "REPLACE_MODEL_VERDICT" } : undefined,
+    model_review: opts.boundaryContractVersion === "audit-boundary-matrix/v3" ? { approved_boundary: "REPLACE_MODEL_APPROVED_BOUNDARY", observed_equivalence: "REPLACE_MODEL_OBSERVED_EQUIVALENCE", exceptions: "REPLACE_MODEL_EXCEPTIONS", classification: "REPLACE_MODEL_VERDICT" } : undefined,
     sweep: {
       status: "COMPLETE",
       requirement_ids: inScope,
@@ -279,7 +281,7 @@ export function buildAuditContract(opts: ContractOptions): JsonObject {
     rework_package: { status: "NONE", finding_ids: [], items: [] },
     reopen_records: [],
     inherited_blockers: [],
-    downgrade_declaration: (scope.provenance_level === "v2.1-required" && opts.evidenceCeiling === "component")
+    downgrade_declaration: (scope.provenance_level === "v3-required" && opts.evidenceCeiling === "component")
       ? { reason: "REPLACE_DOWNGRADE_REASON", ceiling: opts.evidenceCeiling, unaffected_scope: "REPLACE_UNAFFECTED_SCOPE", affected_scope: "REPLACE_AFFECTED_SCOPE" }
       : null,
     unclassified_findings: 0,
@@ -572,7 +574,7 @@ function main() {
   const receiptPrefix = optionalArgument("--receipt-prefix");
   const boundaryMatrixArg = optionalArgument("--boundary-matrix");
   const boundaryContractVersionArg = optionalArgument("--boundary-contract-version");
-  if (boundaryContractVersionArg && boundaryContractVersionArg !== "boundary-contract/v1") fail("--boundary-contract-version must be boundary-contract/v1");
+  if (boundaryContractVersionArg && boundaryContractVersionArg !== "audit-boundary-matrix/v3") fail("--boundary-contract-version must be audit-boundary-matrix/v3");
 
   // 验证 workspace root
   if (!isAbsolute(workspaceRootArg)) fail("--workspace-root must be absolute");

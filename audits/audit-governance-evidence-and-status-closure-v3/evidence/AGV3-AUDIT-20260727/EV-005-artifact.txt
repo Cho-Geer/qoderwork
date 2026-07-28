@@ -1,0 +1,11 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+.agents/skills/plan-audit-archiver/scripts/__tests__/audit-boundary-precheck.test.ts:
+
+error: regex "or missing receipt" matched 0 tests. Searched 1 file (skipping 9 tests) [23.00ms]
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

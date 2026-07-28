@@ -1,0 +1,277 @@
+schema_version: audit-scope-lock/v3
+document_kind: phase-scope-lock
+scope_lock_id: AGV3-PHASE-02-PROGRESSION-V3-SCOPE-LOCK-20260726
+phase_id: PHASE-02
+document_status: FROZEN_PENDING_HUMAN_APPROVAL
+provenance_level: v3-required
+created_at: '2026-07-26T16:40:00Z'
+
+purpose: >-
+  Freeze PHASE-02: v3-ify the progression receipt discrimination by routing it
+  through the shared parser (audit-phase-progression/v3::phase-progression-receipt),
+  repair the v3 PLAN-SET template progression markers, synchronize the surface
+  manifest, and refine the surface scanner so it distinguishes a consumer-local v3
+  schema interpretation (a blocking finding) from the legitimate plan-index
+  progression marker phase-progression/v1 (not a finding). The plan-index marker, the
+  NOT_STARTED re-entrancy gate, and the receipt audit-report binding semantics are
+  deliberately unchanged.
+
+scope_decision:
+  chosen: receipt_discrimination_v3_plus_template_fix_plus_scanner_refinement
+  rejected_options:
+    - v3-ify the plan-index progression marker (would break the admitted formal PLAN_SET P-02A gate and ripple into three active plans)
+    - tighten receipt audit-report binding now (depends on phase 4-5 v3 audit reports)
+  rationale: >-
+    The progression system has two same-named layers. The plan-index marker
+    phase-progression/v1 is plan metadata consumed only by the P-02A gate and is
+    decoupled from v3 admission; it stays. The progression receipt schema is a v3
+    schema-family document discrimination and must use the shared parser. The formal
+    PLAN_SET PHASE-01 is NOT_STARTED, so the P-02A admission path never parses a
+    receipt and the receipt discrimination change is zero-risk to admitted state.
+
+requirements_selection:
+  selected:
+    - requirement_id: REQ-002
+      title: schema-family documents are unambiguous and share one parser
+      decision_cases: [DC-003, DC-004]
+      evidence_level: component
+    - requirement_id: REQ-006
+      title: active governance surface is manifest-bound and findings-first
+      decision_cases: [DC-012, DC-013]
+      evidence_level: file-integration
+    - requirement_id: REQ-007
+      title: every consumer conforms to one independent v3 contract corpus
+      decision_cases: [DC-014, DC-015]
+      evidence_level: file-integration
+  unselected_cases_are_out_of_scope: true
+
+authority_binding:
+  blueprint:
+    path: blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md
+    sha256: a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+  formal_plan_set_index:
+    path: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+  phase_01_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/phase-01-scope-lock.yaml
+    sha256: 03647474a8b32ac7083fac0b445c098f336aa972647efc0ee7afded79cdc7a2c
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  repository_root: /home/zhaoge/workspace/opencode/work-one
+  repository_head: 64df828d56611ac121baccfaf666f147980aec85
+  repository_status_at_design: CLEAN
+  recheck_required_before_capture: true
+
+fix_contract:
+  receipt_discrimination:
+    target: .agents/skills/deterministic-implementation-planning/scripts/phase-progression.ts
+    change: >-
+      validateReceiptContract must discriminate the receipt schema through the shared
+      parser parseAuditGovernanceV3Document as
+      audit-phase-progression/v3::phase-progression-receipt, replacing the
+      consumer-local comparison against PROGRESSION_SCHEMA. The receipt gains a
+      document_kind field. PROGRESSION_SCHEMA may remain only as the plan-index marker
+      literal used by isProgressionSchema.
+    unchanged:
+      - PROGRESSION_STATUSES and TOP_LEVEL_STATUSES enums
+      - deriveTopLevelStatus semantics
+      - parseManifest and validateManifestRows
+      - receipt hash binding fields (plan_index_sha256, phase_file_sha256, audit_report_sha256, validator_output_sha256) and previous_status/new_status validation
+  progression_gate:
+    target: .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts
+    rule: >-
+      The NOT_STARTED re-entrancy gate (next phase must be NOT_STARTED), dependency
+      ACCEPTED requirement, top-level derived status check, and completion-gate
+      consistency are preserved verbatim. Only the receipt discrimination call path
+      changes to route through the shared parser.
+  plan_index_marker:
+    disposition: unchanged
+    rule: >-
+      The plan-index marker phase-progression/v1 (isProgressionSchema) remains the
+      active progression metadata contract. The formal PLAN_SET and the three active
+      plans are not migrated.
+  audit_report_binding:
+    disposition: deferred
+    rule: >-
+      The receipt audit_report_path/audit_verdict/audit_exit_code binding semantics are
+      not tightened in this phase; they depend on phase 4-5 v3 audit reports. No live
+      receipt is produced in this phase because no phase reaches ACCEPTED.
+  template_fix:
+    target: .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    change: >-
+      Add the progression contract the v3 template omitted: the index Progression
+      schema marker phase-progression/v1, and each phase Progression status and
+      Completion receipt lines, aligned with PLAN-TEMPLATE.md. This closes
+      F-PHASE01-TEMPLATE-PROGRESSION-MARKER.
+  scanner_refinement:
+    target: scripts/lib/scan-governance-surface.ts
+    change: >-
+      Refine the consumer-local finding detection so it flags consumer-local
+      interpretation of a v3 schema-family discriminator (any of the 17 SCHEMA_PAIRS,
+      or pre-v3 stand-ins such as 2.1, 1.0, audit-boundary-matrix/v1,
+      boundary-contract/v1) and does NOT flag the legitimate plan-index progression
+      marker phase-progression/v1 used by isProgressionSchema. After the receipt
+      discrimination is v3-ified, F-CONSUMER-LOCAL:phase-progression.ts:phase-progression/v1
+      closes honestly; the remaining consumer-local findings (validate-audit,
+      audit-boundary-precheck, capture-state, prepare-audit, generate-evidence-receipt,
+      pre-check-evidence, templates) stay OPEN.
+    constraint: the scanner must still call the shared parser and complete the full finding set.
+  manifest_sync:
+    target: scripts/lib/governance-surface-manifest.yaml
+    change: >-
+      Add scripts/lib/audit-governance-schema-v3.ts to the allowed_references of
+      phase-progression.ts and validate-phase-progression.ts (and scan-governance-surface.ts
+      if its hash changes), and update the sha256 of every modified registered asset, so
+      the surface scan does not self-flag an illegal reference.
+  conformance_extension:
+    change: >-
+      Declare the rewired phase-progression.ts and validate-phase-progression.ts as v3
+      consumers in the conformance runner set; the corpus already contains
+      audit-phase-progression/v3::phase-progression-receipt samples and mismatch probes.
+
+findings_disposition:
+  closes:
+    - F-PHASE01-TEMPLATE-PROGRESSION-MARKER (template repaired)
+    - F-CONSUMER-LOCAL:phase-progression.ts:phase-progression/v1 (receipt discrimination v3-ified; residual marker is legitimate plan metadata, scanner refined)
+  stays_open:
+    - F-CONSUMER-LOCAL:validate-audit.ts:schema_version-2.1
+    - F-CONSUMER-LOCAL:validate-audit.ts:audit-boundary-matrix/v1
+    - F-CONSUMER-LOCAL:audit-boundary-precheck.ts:boundary-contract/v1
+    - F-CONSUMER-LOCAL:capture-state.ts:schema_version
+    - F-CONSUMER-LOCAL:prepare-audit.ts:schema_version
+    - F-CONSUMER-LOCAL:generate-evidence-receipt.ts:schema_version
+    - F-CONSUMER-LOCAL:pre-check-evidence.ts:schema_version
+    - F-CONSUMER-LOCAL:scope-lock-template.json:pre-v3-schema_version
+    - F-CONSUMER-LOCAL:scope-lock-template.json:provenance-exposure
+    - F-CONSUMER-LOCAL:evidence-receipt-template.json:pre-v3-schema_version
+  closure_requires_receipt_evidence: true
+
+effective_allowlist:
+  modified_paths:
+    - .agents/skills/deterministic-implementation-planning/scripts/phase-progression.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/phase-progression.test.ts
+    - .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.test.ts
+    - .agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md
+    - .agents/skills/deterministic-implementation-planning/SKILL.md
+    - scripts/lib/scan-governance-surface.ts
+    - scripts/lib/__tests__/scan-governance-surface.test.ts
+    - scripts/lib/governance-surface-manifest.yaml
+    - logs/INDEX.md
+  added_paths:
+    - audits/audit-governance-evidence-and-status-closure-v3/phase-02-pre-change-capture.yaml
+    - audits/audit-governance-evidence-and-status-closure-v3/phase-02-evidence/
+    - logs/2026-07-26-audit-governance-v3-phase-02-progression-v3.md
+  directory_roots_note: >-
+    phase-02-evidence/ is a directory root; only files created under it for this phase
+    are allowed. No file outside the listed paths and this root may be created or modified.
+  other_paths_allowed: false
+  shared_parser_writable: false
+  formal_plan_set_index_marker_writable: false
+  legacy_exemptions_content_readable: false
+
+fixed_verification:
+  - check_id: P02-POS-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test .agents/skills/deterministic-implementation-planning/scripts/phase-progression.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_with_v3_receipt_discrimination
+    covers: [DC-003, DC-004]
+  - check_id: P02-POS-002
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_gate_semantics_preserved
+    covers: [DC-003, DC-004]
+  - check_id: P02-POS-003
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set PHASE-01
+    level: component
+    pass_condition: exit_0_formal_plan_set_still_admitted
+  - check_id: P02-POS-004
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+    level: component
+    pass_condition: exit_0_v3_admission_intact
+  - check_id: P02-SCAN-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/scan-governance-surface.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_with_refined_detection
+    covers: [DC-012, DC-013]
+  - check_id: P02-SCAN-002
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run scripts/lib/scan-governance-surface.ts scripts/lib/governance-surface-manifest.yaml
+    level: file-integration
+    pass_condition: progression_marker_finding_closed_consumer_local_findings_remain_open_no_illegal_reference_self_finding
+    covers: [DC-012, DC-013]
+  - check_id: P02-CONF-001
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/run-conformance.test.ts
+    level: component
+    pass_condition: all_named_tests_pass_including_progression_consumer_and_mismatch_probes
+    covers: [DC-014, DC-015]
+  - check_id: P02-CONF-002
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run scripts/lib/run-conformance.ts scripts/lib/conformance-corpus
+    level: file-integration
+    pass_condition: declared_v3_consumers_including_progression_agree_and_mismatch_probes_rejected
+    covers: [DC-014, DC-015]
+  - check_id: P02-POS-005
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun test scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+    level: unit
+    pass_condition: discovered_4_tests_pass_parser_unchanged
+  - check_id: P02-TYPECHECK
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run typecheck
+    level: component
+    pass_condition: exit_0
+  - check_id: P02-PARSER-CALLERS
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && codegraph sync && codegraph callers parseAuditGovernanceV3Document
+    level: static-architecture
+    pass_condition: progression_scripts_scanner_and_runner_are_callers_and_parser_unchanged
+  - check_id: P02-SCOPE-DIFF
+    command: cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && git status --porcelain
+    level: static
+    pass_condition: only_allowlist_paths_and_root_changed_since_phase_02_pre_change_capture
+
+failure_convergence:
+  any_named_test_absent_or_failed: BLOCKED
+  formal_plan_set_p02a_or_v3_admission_regressed: BLOCKED
+  not_started_gate_semantic_changed: BLOCKED
+  plan_index_marker_migrated: BLOCKED
+  audit_report_binding_tightened: BLOCKED
+  consumer_local_finding_silently_closed_without_receipt: BLOCKED
+  scanner_flags_legitimate_progression_marker: BLOCKED
+  scanner_self_flags_illegal_reference_after_manifest_sync: BLOCKED
+  parser_or_shared_schema_registry_changed: BLOCKED
+  scope_or_hash_drift: BLOCKED
+  model_explanation_can_override: false
+
+prohibited_effects:
+  - phase_accept_before_independent_audit
+  - audit_report_write
+  - latest_pointer_write
+  - compatibility_entry
+  - generic_bypass
+  - shared_parser_code_change
+  - plan_index_marker_migration
+  - quarantined_content_read
+
+rollback:
+  on_block: >-
+    Stop. Preserve the rewired progression scripts, scanner, manifest, and findings as
+    BLOCKED evidence. Revert only the PHASE-02 allowlist writes; never delete evidence,
+    never close a finding without receipt evidence, never publish a report or LATEST pointer.
+  convergence: BLOCKED
+
+new_pre_change_capture:
+  required: true
+  required_after: exact_phase_02_scope_lock_hash_has_HUMAN_USER_approval
+  required_before: any_phase_02_write
+  must_bind: [this_phase_02_scope_lock, phase_02_scope_approval, current_hashes_of_allowlist_modified_paths, current_worktree_git_status, work_one_clean_status]
+  historical_capture_reuse_allowed: false
+
+next_required_transition:
+  required_artifact: audits/audit-governance-evidence-and-status-closure-v3/phase-02-scope-approval.json
+  then_required_artifact: audits/audit-governance-evidence-and-status-closure-v3/phase-02-pre-change-capture.yaml
+  no_implementation_before_both_artifacts: true
+  implementation_then_audit: >-
+    After implementation, PHASE-02 requires an independent audit (P-03 to P-07) with EV
+    receipts, MODEL_REVIEW where eligible, and validate-audit exit 0 before any phase
+    ACCEPT. This scope lock does not authorize the audit verdict.

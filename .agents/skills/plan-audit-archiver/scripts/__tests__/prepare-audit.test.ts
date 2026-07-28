@@ -43,7 +43,7 @@ function makeScopeLock(overrides: Record<string, unknown> = {}): Record<string, 
     plan_sources: [{ path: "plans/test-plan.md", sha256: "d".repeat(64) }],
     scope: {
       status: "FROZEN",
-      provenance_level: "v2.1-required",
+      provenance_level: "v3-required",
       frozen_at: "2026-01-01T00:00:00Z",
       in_scope: ["REQ-001"],
       out_of_scope: ["item-1"],
@@ -171,9 +171,9 @@ describe("buildRequirements", () => {
 // ─── buildAuditContract 测试 ───
 
 describe("buildAuditContract", () => {
-  test("v1 option emits boundary matrix and structured model review", () => {
-    const contract = buildAuditContract({ workspaceRoot: "/workspace", scopeLock: makeScopeLock() as never, scopeLockRelPath: "audits/scope-lock.json", scopeLockSha256: "e".repeat(64), preChange: { head: "h1", repository_realpath: "/repo", captured_at: "2026-01-01T00:00:00Z", status_entries: [], scope_lock_sha256: "e".repeat(64), phase_id: "TEST-PHASE" }, preChangeRelPath: "evidence/pre.json", preChangeSha256: "f".repeat(64), verdictState: { head: "h1", repository_realpath: "/repo", captured_at: "2026-01-01T01:00:00Z", status_entries: [], scope_lock_sha256: "e".repeat(64), phase_id: "TEST-PHASE" }, verdictStateRelPath: "evidence/verdict.json", verdictStateSha256: "a".repeat(64), receipts: [], verdict: "INVALID", evidenceCeiling: "component", supplementalSources: [], boundaryContractVersion: "boundary-contract/v1", boundaryMatrix: { path: "audits/matrix.json", sha256: "b".repeat(64) } });
-    expect(contract.boundary_contract_version).toBe("boundary-contract/v1"); expect(contract.audit_boundary_matrix).toEqual({ path: "audits/matrix.json", sha256: "b".repeat(64) }); expect((contract.model_review as Record<string, unknown>).classification).toBe("REPLACE_MODEL_VERDICT");
+  test("v3 boundary matrix option emits boundary matrix and structured model review", () => {
+    const contract = buildAuditContract({ workspaceRoot: "/workspace", scopeLock: makeScopeLock() as never, scopeLockRelPath: "audits/scope-lock.json", scopeLockSha256: "e".repeat(64), preChange: { head: "h1", repository_realpath: "/repo", captured_at: "2026-01-01T00:00:00Z", status_entries: [], scope_lock_sha256: "e".repeat(64), phase_id: "TEST-PHASE" }, preChangeRelPath: "evidence/pre.json", preChangeSha256: "f".repeat(64), verdictState: { head: "h1", repository_realpath: "/repo", captured_at: "2026-01-01T01:00:00Z", status_entries: [], scope_lock_sha256: "e".repeat(64), phase_id: "TEST-PHASE" }, verdictStateRelPath: "evidence/verdict.json", verdictStateSha256: "a".repeat(64), receipts: [], verdict: "INVALID", evidenceCeiling: "component", supplementalSources: [], boundaryContractVersion: "audit-boundary-matrix/v3", boundaryMatrix: { path: "audits/matrix.json", sha256: "b".repeat(64) } });
+    expect(contract.boundary_contract_version).toBe("audit-boundary-matrix/v3"); expect(contract.audit_boundary_matrix).toEqual({ path: "audits/matrix.json", sha256: "b".repeat(64) }); expect((contract.model_review as Record<string, unknown>).classification).toBe("REPLACE_MODEL_VERDICT");
   });
   test("derives audit_id and generation from receipts", () => {
     const receipt = makeReceipt({ audit_id: "MY-AUDIT", generation: 2 });
@@ -390,7 +390,7 @@ describe("buildReportMarkdown", () => {
     const match = md.match(/<!-- AUDIT_CONTRACT_START -->\s*```json\n([\s\S]*?)\n```\s*<!-- AUDIT_CONTRACT_END -->/);
     expect(match).not.toBeNull();
     const parsed = JSON.parse(match![1]);
-    expect(parsed.schema_version).toBe("2.1");
+    expect(parsed.schema_version).toBe("audit-governance-audit/v3");
   });
 });
 
@@ -513,7 +513,7 @@ describe("prepare-audit CLI", () => {
     const match = content.match(/<!-- AUDIT_CONTRACT_START -->\s*```json\n([\s\S]*?)\n```\s*<!-- AUDIT_CONTRACT_END -->/);
     expect(match).not.toBeNull();
     const contract = JSON.parse(match![1]);
-    expect(contract.schema_version).toBe("2.1");
+    expect(contract.schema_version).toBe("audit-governance-audit/v3");
     expect(contract.audit_id).toBe("TEST-AUDIT");
 
     rmSync(tmpDir, { recursive: true, force: true });

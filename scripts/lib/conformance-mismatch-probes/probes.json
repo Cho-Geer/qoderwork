@@ -1,0 +1,73 @@
+{
+  "probes_id": "AGV3-MISMATCH-PROBES",
+  "description": "Intentional mismatches that MUST be rejected by the conformance gate. Kill tests proving the gate can fail.",
+  "probes": [
+    {
+      "probe_id": "PROBE-DOCUMENT-KIND-MISMATCH",
+      "category": "document_kind",
+      "description": "Wrong document_kind for the given schema_version must be rejected",
+      "input": { "schema_version": "audit-governance/v3", "document_kind": "governance-surface-manifest" },
+      "expected_rejection": true,
+      "expected_error": "ERR_SCHEMA_DISCRIMINATOR"
+    },
+    {
+      "probe_id": "PROBE-ERROR-CODE-MISMATCH",
+      "category": "error_code",
+      "description": "A valid document must NOT produce an error code; if consumer reports error for valid input, it disagrees",
+      "input": { "schema_version": "audit-scope-lock/v3", "document_kind": "phase-scope-lock" },
+      "expected_rejection": false,
+      "expected_error": null,
+      "kill_condition": "any consumer reports error for this valid input"
+    },
+    {
+      "probe_id": "PROBE-DUAL-OBSERVATION",
+      "category": "dual-observation",
+      "description": "Same input must produce same result across all consumers; dual observation divergence is blocking",
+      "input": { "schema_version": "audit-governance-conformance/v3", "document_kind": "contract-conformance-report" },
+      "expected_rejection": false,
+      "expected_error": null,
+      "kill_condition": "consumers disagree on result for identical input"
+    },
+    {
+      "probe_id": "PROBE-ORPHAN-RECEIPT",
+      "category": "orphan-receipt",
+      "description": "A document with no valid schema pair must be rejected by all consumers uniformly",
+      "input": { "schema_version": "orphan/v99", "document_kind": "orphan-receipt" },
+      "expected_rejection": true,
+      "expected_error": "ERR_SCHEMA_DISCRIMINATOR"
+    },
+    {
+      "probe_id": "PROBE-CONSUMER-LOCAL-PARSER",
+      "category": "consumer-local-parser",
+      "description": "Pre-v3 schema_version must be rejected by the shared parser",
+      "input": { "schema_version": "2.1", "document_kind": "audit-contract" },
+      "expected_rejection": true,
+      "expected_error": "ERR_SCHEMA_DISCRIMINATOR"
+    },
+    {
+      "probe_id": "PROBE-CAS-SEMANTIC",
+      "category": "CAS-semantic",
+      "description": "Content-addressable semantic: same content different schema_version must produce different results",
+      "input_a": { "schema_version": "audit-governance/v3", "document_kind": "canonical-requirements" },
+      "input_b": { "schema_version": "audit-governance/v2", "document_kind": "canonical-requirements" },
+      "expected_rejection": false,
+      "kill_condition": "consumers treat input_a and input_b identically (CAS violation)"
+    },
+    {
+      "probe_id": "PROBE-V1-BOUNDARY-MATRIX",
+      "category": "boundary-matrix",
+      "description": "PHASE-04: a v1 boundary matrix must be rejected by the v3-ified audit gate",
+      "input": { "schema_version": "audit-boundary-matrix/v1", "document_kind": "boundary-matrix" },
+      "expected_rejection": true,
+      "expected_error": "ERR_SCHEMA_DISCRIMINATOR"
+    },
+    {
+      "probe_id": "PROBE-V21-AUDIT-CONTRACT",
+      "category": "audit-contract",
+      "description": "PHASE-04: a 2.1 audit contract must be rejected by the v3-ified audit gate",
+      "input": { "schema_version": "2.1", "document_kind": "audit-contract" },
+      "expected_rejection": true,
+      "expected_error": "ERR_SCHEMA_DISCRIMINATOR"
+    }
+  ]
+}

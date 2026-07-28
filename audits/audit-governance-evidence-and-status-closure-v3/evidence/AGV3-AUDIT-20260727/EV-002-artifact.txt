@@ -1,0 +1,7 @@
+=== STDOUT ===
+=== STDERR ===
+BLOCKED: ERR_CASE_SELECTION — duplicate decision_case_id: DC-007
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

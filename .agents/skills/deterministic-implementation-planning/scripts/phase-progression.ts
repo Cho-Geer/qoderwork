@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { parseAuditGovernanceV3Document } from "../../../../scripts/lib/audit-governance-schema-v3.ts";
 
 /** Machine-readable progression states. `DONE` is intentionally not accepted. */
 export const PROGRESSION_STATUSES = [
@@ -20,6 +21,12 @@ export const TOP_LEVEL_STATUSES = [
 
 export type TopLevelStatus = (typeof TOP_LEVEL_STATUSES)[number];
 
+/**
+ * Plan-index progression marker literal. Retained ONLY for isProgressionSchema and
+ * the P-02A admission gate (plan metadata). It is NOT used for receipt schema
+ * discrimination, which routes through the shared v3 parser as
+ * audit-phase-progression/v3::phase-progression-receipt.
+ */
 export const PROGRESSION_SCHEMA = "phase-progression/v1" as const;
 export const LEGACY_PROGRESSION_SCHEMA = "legacy" as const;
 
@@ -40,6 +47,7 @@ export interface ManifestParseResult {
 
 export interface ProgressionReceipt {
   schema_version: string;
+  document_kind: string;
   plan_index_sha256: string;
   phase_file_sha256: string;
   audit_report_sha256: string;
@@ -149,7 +157,8 @@ export function validateReceiptContract(
     else if (!HASH_PATTERN.test(value[field] as string)) diagnostics.push({ code: "PHASE_RECEIPT_HASH_INVALID", message: field });
     else if (expected[field] && value[field] !== expected[field]) diagnostics.push({ code: "PHASE_RECEIPT_HASH_MISMATCH", message: field });
   }
-  if (value.schema_version !== PROGRESSION_SCHEMA) diagnostics.push({ code: "PHASE_RECEIPT_SCHEMA_INVALID", message: `schema_version=${String(value.schema_version)}` });
+  const discriminated = parseAuditGovernanceV3Document(value);
+  if (!discriminated.ok) diagnostics.push({ code: "PHASE_RECEIPT_SCHEMA_INVALID", message: `receipt is not audit-phase-progression/v3::phase-progression-receipt (${discriminated.error}: ${discriminated.message}); schema_version=${String(value.schema_version)} document_kind=${String(value.document_kind)}` });
   if (typeof value.phase_id !== "string" || !value.phase_id) diagnostics.push({ code: "PHASE_RECEIPT_MISSING", message: "phase_id" });
   else if (expected.phase_id && value.phase_id !== expected.phase_id) diagnostics.push({ code: "PHASE_RECEIPT_PHASE_MISMATCH", message: `phase_id=${value.phase_id}` });
   for (const field of ["previous_status", "new_status"] as const) {

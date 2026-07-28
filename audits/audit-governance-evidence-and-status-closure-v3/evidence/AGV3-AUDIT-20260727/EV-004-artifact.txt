@@ -1,0 +1,25 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+.agents/skills/plan-audit-archiver/scripts/__tests__/audit-boundary-precheck.test.ts:
+(fail) audit-boundary-precheck (projection-driven) > DC-007: READY_FOR_LLM_REVIEW with exact covered rows and explicit receipt paths [1.66ms]
+  ^ this test timed out after 1ms.
+(pass) audit-boundary-precheck (projection-driven) > DC-008: rejects path escape (../ traversal) [0.55ms]
+(pass) audit-boundary-precheck (projection-driven) > DC-008: rejects symlink escape [0.47ms]
+(pass) audit-boundary-precheck (projection-driven) > DC-009: rejects missing receipt (NOT_FOUND) [0.65ms]
+(fail) audit-boundary-precheck (projection-driven) > DC-009: rejects identity drift (decision_case_id mismatch) [1.05ms]
+  ^ this test timed out after 1ms.
+(pass) audit-boundary-precheck (projection-driven) > DC-009: rejects dual observation mismatch [0.66ms]
+(pass) audit-boundary-precheck (projection-driven) > DC-009: rejects forbidden side-effect mismatch [0.61ms]
+(pass) audit-boundary-precheck (projection-driven) > matrix uses v3 discriminator (audit-boundary-matrix/v3::boundary-matrix) [0.46ms]
+(pass) audit-boundary-precheck (projection-driven) > precheck never issues a verdict (only READY_FOR_LLM_REVIEW or BLOCKED) [0.43ms]
+
+ 7 pass
+ 2 fail
+ 33 expect() calls
+Ran 9 tests across 1 file. [32.00ms]
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

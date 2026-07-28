@@ -1,0 +1,41 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "AGV3-AUDIT-20260727",
+  "generation": 1,
+  "id": "EV-002",
+  "decision_case_id": "DC-006",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/plan-audit-archiver/scripts/generate-phase-projection.ts --canonical plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml --canonical-sha256 dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748 --scope-lock audits/audit-governance-evidence-and-status-closure-v3/scope-lock.json --scope-lock-sha256 02cb460439ef1f5e8183654bfcf8ca0f4bc9079cb7b944eebed9b2dca818ef5b --phase-id AGV3-AUDIT-20260727 --cases audits/audit-governance-evidence-and-status-closure-v3/phase-03-evidence/cases-drifted.json --output /tmp/projection-drifted-Aprime.json",
+  "requirement_id": "REQ-003",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-005",
+  "fixture_id": "FX-006",
+  "evidence_level": "integration",
+  "repository_state_sha256": "5521216c78378b5ca258163a0da725f10ca3f4aab9c6e006534bb5ab62b5c1bb",
+  "exit_code": 1,
+  "execution": {
+    "observed": "FAIL",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "ERROR",
+    "error_code": "ERR_CASE_SELECTION"
+  },
+  "forbidden_side_effects_observed": [
+    "receipt_acceptance",
+    "model_review",
+    "audit_publication"
+  ],
+  "projection_sha256": "2e1eb139d6747088c2b3f7752d6b4eb1d0ebb572000fadd025b940d9495db37b",
+  "canonical_sha256": "dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3",
+  "artifacts": [
+    {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/evidence/AGV3-AUDIT-20260727/EV-002-artifact.txt",
+      "sha256": "cdcbf3f24d9958e61a31a182703bab33273ea551488f1e9fa627e9c664a60678"
+    }
+  ],
+  "completed_at": "2026-07-27T14:45:53.414Z",
+  "observed": "FAIL"
+}

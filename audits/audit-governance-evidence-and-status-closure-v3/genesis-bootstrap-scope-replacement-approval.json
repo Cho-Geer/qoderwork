@@ -1,0 +1,46 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "approval_kind": "genesis-bootstrap-scope-replacement-approval",
+  "decision_id": "AGV3-GENESIS-BOOTSTRAP-SCOPE-REPLACEMENT-APPROVAL-20260726",
+  "decision": "APPROVED",
+  "approved_by": "HUMAN_USER",
+  "approved_at": "2026-07-26T11:40:17Z",
+  "approved_artifacts": {
+    "replacement_scope_lock": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-replacement.yaml",
+      "sha256": "828a01c747cb7fe12f857d97726d46cf7603a528b89b573050c7b048ec81dd89"
+    },
+    "replaced_scope_lock": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-lock.yaml",
+      "sha256": "98f22e0d2dc3c2e339cbe64787e93d8a354c70e146a87d4fd291c148fec961f6"
+    },
+    "genesis_admission": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-admission.yaml",
+      "sha256": "20bf4624e58919f932c00d9ba083954389ba483658001df1da842debc7ce7ff3"
+    }
+  },
+  "supersession": {
+    "prior_scope_approval": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-approval.json",
+      "sha256": "04df8701fc7d7c66a2e269746417d7e0371534605eeebeae786a7c304948e9be",
+      "effect": "historical_only_for_replaced_scope"
+    },
+    "prior_pre_change_capture": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-pre-change-capture.yaml",
+      "sha256": "860ac2b7cca833d7bc11c29a1352c150979d14ced447c4f13f8fd675a838b5d2",
+      "effect": "not_reusable_for_replacement_scope"
+    }
+  },
+  "authorized_next_artifact": {
+    "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-replacement-pre-change-capture.yaml",
+    "schema_version": "audit-governance-bootstrap/v3",
+    "document_kind": "genesis-bootstrap-receipt",
+    "purpose": "replacement pre-change capture only"
+  },
+  "limitations": [
+    "This approval does not authorize a code, test, implementation-log, or logs-index write before a valid replacement pre-change capture binds this decision and all seven effective allowlist paths.",
+    "After the replacement pre-change capture is verified, writes remain limited to exactly the seven paths in the replacement scope lock.",
+    "No pre-v3 input, compatibility entry, generic bypass, phase ACCEPT, report publication, or LATEST update is authorized."
+  ]
+}

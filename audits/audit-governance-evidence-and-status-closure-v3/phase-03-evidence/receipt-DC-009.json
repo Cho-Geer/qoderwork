@@ -1,0 +1,31 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "AGV3-PHASE-03",
+  "generation": 1,
+  "id": "EV-P03-009",
+  "decision_case_id": "DC-009",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3 && bun run .agents/skills/plan-audit-archiver/scripts/audit-boundary-precheck.ts --projection phase-03-evidence/projection-missing.json --evidence-root phase-03-evidence --output phase-03-evidence/boundary-matrix-missing.json",
+  "requirement_id": "REQ-004",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-009",
+  "fixture_id": "FX-009",
+  "evidence_level": "file-integration",
+  "repository_state_sha256": "42d218fd7b73efa02e51c3da6993b6fe8011c1c4",
+  "exit_code": 1,
+  "execution": {
+    "observed": "FAIL",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "ERROR",
+    "error_code": "ERR_RECEIPT_NOT_FOUND"
+  },
+  "forbidden_side_effects_observed": ["model_review", "audit_acceptance", "report_publication"],
+  "projection_sha256": "2eff82f5d6b10b39c295c5cc7e4a09b3b4eb0bc6cf959e7759cb39c53170bf42",
+  "canonical_sha256": "dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3",
+  "artifacts": [],
+  "completed_at": "2026-07-27T00:00:00Z"
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "approval_kind": "genesis-bootstrap-closure-approval",
+  "decision_id": "AGV3-GENESIS-BOOTSTRAP-CLOSURE-APPROVAL-20260726",
+  "decision": "APPROVED",
+  "approved_by": "HUMAN_USER",
+  "approved_at": "2026-07-26T13:45:00Z",
+  "approved_artifacts": {
+    "closure_scope_lock": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-scope-lock.yaml",
+      "sha256": "0bc91c02c7c9742b58e7dbbbf65df58a719d33cf1ed2538f1a0c03da0dbe87e4"
+    },
+    "canonical_contract": {
+      "path": "plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml",
+      "sha256": "dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748"
+    },
+    "blueprint": {
+      "path": "blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md",
+      "sha256": "a510b7a8677c03e7ea1561e48620b95acec8611c88ff7ad2ddc558e0aa930d66"
+    }
+  },
+  "authorized_next_artifact": {
+    "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-closure-pre-change-capture.yaml",
+    "schema_version": "audit-governance-bootstrap/v3",
+    "document_kind": "genesis-bootstrap-receipt",
+    "purpose": "closure pre-change capture only"
+  },
+  "limitations": [
+    "This approval does not authorize a closure implementation write before a valid closure pre-change capture binds this decision, the approved closure scope-lock hash, the current hashes of all seven allowlist paths, and the current worktree state.",
+    "After the closure pre-change capture is verified, writes remain limited to exactly the seven paths in the approved closure scope lock.",
+    "No pre-v3 input, compatibility entry, generic bypass, phase ACCEPT, report publication, LATEST update, parser code change, validator code change, or second genesis attempt is authorized."
+  ]
+}

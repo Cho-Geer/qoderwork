@@ -1,14 +1,15 @@
 # Logs Index
 
-Last updated: 2026-07-26
+Last updated: 2026-07-28 — v3 审计治理正式 ACCEPT 签发
 
-本索引由 `logs-governance` 规则维护。当前活跃窗口为 2026-07-12 至 2026-07-26；不删除或移动日志。
+本索引由 `logs-governance` 规则维护。当前活跃窗口为 2026-07-13 至 2026-07-28；不删除或移动日志。
 
 ## 当前活跃日志（近 14 天）
 
 | 日期 | 数量 | 日志 |
 |---|---:|---|
-| 2026-07-26 | 3 | [2026-07-26-audit-boundary-contract-inventory.md](2026-07-26-audit-boundary-contract-inventory.md), [2026-07-26-boundary-contract-v1-implementation.md](2026-07-26-boundary-contract-v1-implementation.md), [2026-07-26-path-dynamic-resolution-recheck.md](2026-07-26-path-dynamic-resolution-recheck.md) |
+| 2026-07-27 | 1 | [2026-07-27-audit-governance-v3-phase-03-receipt-projection-precheck.md](2026-07-27-audit-governance-v3-phase-03-receipt-projection-precheck.md) |
+| 2026-07-26 | 13 | [2026-07-26-audit-boundary-contract-inventory.md](2026-07-26-audit-boundary-contract-inventory.md), [2026-07-26-boundary-contract-v1-implementation.md](2026-07-26-boundary-contract-v1-implementation.md), [2026-07-26-path-dynamic-resolution-recheck.md](2026-07-26-path-dynamic-resolution-recheck.md), [2026-07-26-audit-governance-v3-rebaseline.md](2026-07-26-audit-governance-v3-rebaseline.md), [2026-07-26-audit-governance-v3-conformance-gate.md](2026-07-26-audit-governance-v3-conformance-gate.md), [2026-07-26-audit-governance-v3-bootstrap-contract.md](2026-07-26-audit-governance-v3-bootstrap-contract.md), [2026-07-26-audit-governance-v3-bootstrap-scope-submission.md](2026-07-26-audit-governance-v3-bootstrap-scope-submission.md), [2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md](2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md), [2026-07-26-audit-governance-v3-validator-path-fix.md](2026-07-26-audit-governance-v3-validator-path-fix.md), [2026-07-26-audit-governance-v3-genesis-bootstrap-closure.md](2026-07-26-audit-governance-v3-genesis-bootstrap-closure.md), [2026-07-26-audit-governance-v3-progression-labels.md](2026-07-26-audit-governance-v3-progression-labels.md), [2026-07-26-audit-governance-v3-phase-01-surface-conformance.md](2026-07-26-audit-governance-v3-phase-01-surface-conformance.md), [2026-07-26-audit-governance-v3-phase-02-progression-v3.md](2026-07-26-audit-governance-v3-phase-02-progression-v3.md) |
 | 2026-07-25 | 4 | [2026-07-25-agents-md-trim-provenance-externalize.md](2026-07-25-agents-md-trim-provenance-externalize.md), [2026-07-25-audit-gov-phase01-gate-semantics.md](2026-07-25-audit-gov-phase01-gate-semantics.md), [2026-07-25-dynamic-path-blueprint-audit.md](2026-07-25-dynamic-path-blueprint-audit.md), [2026-07-25-dynamic-path-m1-plan.md](2026-07-25-dynamic-path-m1-plan.md) |
 | 2026-07-24 | 4 | [2026-07-24-phase-04-implementation.md](2026-07-24-phase-04-implementation.md), [2026-07-24-phase-progression-bootstrap-waiver.md](2026-07-24-phase-progression-bootstrap-waiver.md), [2026-07-24-task-lens-m1-phase03-implementation.md](2026-07-24-task-lens-m1-phase03-implementation.md), [2026-07-24-task-lens-phase05-scope-amendment.md](2026-07-24-task-lens-phase05-scope-amendment.md) |
 | 2026-07-23 | 6 | [2026-07-23-blueprint-plan-code-cross-audit.md](2026-07-23-blueprint-plan-code-cross-audit.md), [2026-07-23-fix-worktree-repository-root.md](2026-07-23-fix-worktree-repository-root.md), [2026-07-23-impact-analysis-framework.md](2026-07-23-impact-analysis-framework.md), [2026-07-23-task-lens-blueprint.md](2026-07-23-task-lens-blueprint.md), [2026-07-23-task-lens-m1-phase02-implementation.md](2026-07-23-task-lens-m1-phase02-implementation.md), [2026-07-23-task-lens-m1-plan-set.md](2026-07-23-task-lens-m1-plan-set.md) |
@@ -174,8 +175,17 @@ Last updated: 2026-07-26
 - [2026-07-19-P0-2-实施计划拆分.md](2026-07-19-P0-2-实施计划拆分.md) — P0-2 实施计划拆分（17 行）
 - [2026-07-20-p0-2-phase-06a-cleanup-extract.md](2026-07-20-p0-2-phase-06a-cleanup-extract.md) — PHASE-06a: cleanupRun 提取打破循环依赖 + 修复 TDZ（30 行）
 
-### 框架与治理（32）
+### 框架与治理（41）
 
+- [2026-07-26-audit-governance-v3-phase-02-progression-v3.md](2026-07-26-audit-governance-v3-phase-02-progression-v3.md) — 审计治理 v3 PHASE-02：progression 回执判别经共享 parser v3 化、扫描仪精化与模板修复（20 行）
+- [2026-07-26-audit-governance-v3-progression-labels.md](2026-07-26-audit-governance-v3-progression-labels.md) — 审计治理 v3 正式 PLAN_SET 补进度标签解锁 P-02A 进度门卫（13 行）
+- [2026-07-26-audit-governance-v3-genesis-bootstrap-closure.md](2026-07-26-audit-governance-v3-genesis-bootstrap-closure.md) — 审计治理 v3 Genesis Bootstrap 关闭：posthoc 验证、正式 PLAN_SET 准入与 admission CLOSED（14 行）
+- [2026-07-26-audit-governance-v3-validator-path-fix.md](2026-07-26-audit-governance-v3-validator-path-fix.md) — 审计治理 v3 PLAN_SET 准入器权威路径改对 governanceRoot 解析修复（17 行）
+- [2026-07-26-audit-governance-v3-bootstrap-scope-submission.md](2026-07-26-audit-governance-v3-bootstrap-scope-submission.md) — 审计治理 v3 Genesis Bootstrap scope-lock 提交与嵌入证据哈希修复（12 行）
+- [2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md](2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md) — 审计治理 v3 Genesis Bootstrap shared parser、PLAN_SET admission 与 B1 路径修复实施（10 行）
+- [2026-07-26-audit-governance-v3-bootstrap-contract.md](2026-07-26-audit-governance-v3-bootstrap-contract.md) — 审计治理 v3 Genesis Bootstrap Admission 契约修订（8 行）
+- [2026-07-26-audit-governance-v3-conformance-gate.md](2026-07-26-audit-governance-v3-conformance-gate.md) — 审计治理 v3 全域契约一致性门与发现优先原则（7 行）
+- [2026-07-26-audit-governance-v3-rebaseline.md](2026-07-26-audit-governance-v3-rebaseline.md) — 审计治理 v3 独立基线与人类批准闸门（8 行）
 - [2026-07-23-impact-analysis-framework.md](2026-07-23-impact-analysis-framework.md) — 共享函数改动影响面分析框架（33 行）
 - [2026-07-22-p0-3-01-state-contract.md](2026-07-22-p0-3-01-state-contract.md) — P0-3-01 状态转换守卫与重复 run ID 拒绝（27 行）
 - [2026-07-22-hotfix-transition-table.md](2026-07-22-hotfix-transition-table.md) — TRANSITION_TABLE 与实际状态机对齐 hotfix（29 行）

@@ -1,0 +1,97 @@
+schema_version: audit-evidence-receipt/v3
+document_kind: evidence-receipt
+receipt_id: AGV3-PHASE-01-PRECHANGE-20260726
+receipt_kind: phase-01-pre-change-capture
+document_status: CAPTURED
+immutable: true
+created_at: '2026-07-26T16:10:00Z'
+
+authority_binding:
+  phase_01_scope_lock:
+    path: audits/audit-governance-evidence-and-status-closure-v3/phase-01-scope-lock.yaml
+    sha256: 03647474a8b32ac7083fac0b445c098f336aa972647efc0ee7afded79cdc7a2c
+  phase_01_scope_approval:
+    path: audits/audit-governance-evidence-and-status-closure-v3/phase-01-scope-approval.json
+    sha256: 34ff9ddc004905fb68e1d5023b639cfb68f8a535d3b6449a958333f3d4698285
+    decision: APPROVED
+    approved_by: HUMAN_USER
+  canonical_contract:
+    path: plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml
+    sha256: dd58ef590956c85c7ce96743589b1e25aa956e7a1030f0502ecbde59f6afd748
+
+baseline:
+  governance_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-v3
+  governance_head: 42d218fd7b73efa02e51c3da6993b6fe8011c1c4
+  work_one_repository_root: /home/zhaoge/workspace/opencode/work-one
+  work_one_head: 64df828d56611ac121baccfaf666f147980aec85
+  work_one_status: CLEAN
+  pre_capture_git_status_canonical_json: |-
+    [{"path":".agents/skills/deterministic-implementation-planning/PLAN-SET-TEMPLATE.md","status":" M"},{"path":".agents/skills/deterministic-implementation-planning/scripts/validate-plan.test.ts","status":" M"},{"path":".agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts","status":" M"},{"path":"logs/INDEX.md","status":" M"},{"path":"scripts/_b1_live.ts","status":" M"},{"path":"audits/audit-governance-evidence-and-status-closure-v3/","status":"??"},{"path":"blueprints/blueprint-audit-governance-evidence-and-status-closure-v3.md","status":"??"},{"path":"handoff/2026-07-26-audit-governance-v3-genesis-bootstrap-resume.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-bootstrap-contract.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-bootstrap-scope-submission.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-conformance-gate.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-genesis-bootstrap-closure.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-genesis-bootstrap-implementation.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-progression-labels.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-rebaseline.md","status":"??"},{"path":"logs/2026-07-26-audit-governance-v3-validator-path-fix.md","status":"??"},{"path":"plans/audit-governance-evidence-and-status-closure-v3/","status":"??"},{"path":"scripts/__tests__/","status":"??"},{"path":"scripts/lib/__tests__/","status":"??"},{"path":"scripts/lib/audit-governance-schema-v3.ts","status":"??"}]
+  pre_capture_git_status_canonical_json_sha256: 06e6b65b82a4ab6fd22c3eb5b5128948467cfd6ec5816c1db4f32251ea298d72
+
+modified_path_baseline:
+  - path: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/00-plan-index.md
+    sha256: 0a46df29e0dd7cbe1052325b1af56b3377378b0416340a9ff22744359e6736b5
+    state: IN_SCOPE_PENDING_PHASE_STATUS_UPDATE
+  - path: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set/01-phase-surface-conformance.md
+    sha256: 66b628c293af99583ba26067c2cb26ae909a435d9aa883090659608b35beb699
+    state: IN_SCOPE_PENDING_PHASE_STATUS_UPDATE
+  - path: logs/INDEX.md
+    sha256: 749f3b9c98c9a21b57fcba4f3a8bf537e063e46ca6a08be36eeddf4b149b4747
+    state: IN_SCOPE_PENDING_LOG_INDEX_UPDATE
+
+added_path_baseline:
+  - path: scripts/lib/governance-surface-manifest.yaml
+    observed: NOT_FOUND
+  - path: scripts/lib/scan-governance-surface.ts
+    observed: NOT_FOUND
+  - path: scripts/lib/run-conformance.ts
+    observed: NOT_FOUND
+  - path: scripts/lib/conformance-corpus/
+    observed: NOT_FOUND
+  - path: scripts/lib/conformance-mismatch-probes/
+    observed: NOT_FOUND
+  - path: scripts/lib/__tests__/scan-governance-surface.test.ts
+    observed: NOT_FOUND
+  - path: scripts/lib/__tests__/run-conformance.test.ts
+    observed: NOT_FOUND
+  - path: audits/audit-governance-evidence-and-status-closure-v3/phase-01-evidence/
+    observed: NOT_FOUND
+  - path: logs/2026-07-26-audit-governance-v3-phase-01-surface-conformance.md
+    observed: NOT_FOUND
+
+execution:
+  observed:
+    - check_id: P01PRE-001
+      command: sha256sum_approved_phase_01_scope_lock
+      result: FOUND
+      value: 03647474a8b32ac7083fac0b445c098f336aa972647efc0ee7afded79cdc7a2c
+    - check_id: P01PRE-002
+      command: sha256sum_phase_01_scope_approval
+      result: FOUND
+      value: 34ff9ddc004905fb68e1d5023b639cfb68f8a535d3b6449a958333f3d4698285
+    - check_id: P01PRE-003
+      command: sha256sum_each_modified_path_and_record_added_not_found
+      result: FOUND
+      value: three_modified_hashes_and_nine_added_not_found_recorded
+    - check_id: P01PRE-004
+      command: git_status_porcelain_normalized_to_canonical_json
+      result: FOUND
+      value: exact_worktree_state_recorded
+    - check_id: P01PRE-005
+      command: git_C_work_one_status_porcelain
+      result: FOUND
+      value: CLEAN
+  domain_observation:
+    phase_state: NOT_STARTED
+    surface_manifest: NOT_FOUND
+    conformance_corpus: NOT_FOUND
+    phase_accept: NOT_FOUND
+    audit_report: NOT_FOUND
+    latest_pointer: NOT_FOUND
+
+transition_guard:
+  capture_does_not_accept_existing_changes: true
+  allowed_next_actions: [create_surface_manifest, create_scanner, create_conformance_runner, create_corpus_and_probes, create_tests, create_phase_01_evidence, update_formal_plan_set_phase_status, add_phase_01_log, update_logs_index, run_phase_01_fixed_verification]
+  prohibited_effects: [phase_accept, audit_report_write, latest_pointer_write, compatibility_entry, generic_bypass, shared_parser_code_change, existing_consumer_rewire, quarantined_content_read, no_open_findings_without_closure]
+  failure_convergence: BLOCKED

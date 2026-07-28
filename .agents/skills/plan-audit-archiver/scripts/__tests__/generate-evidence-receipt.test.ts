@@ -21,17 +21,23 @@ function runScript(args: string[]): RunResult {
   };
 }
 
-function baseArgs(root: string, receiptPath: string, artifactPath: string, command: string, opts: Partial<{ observedOverride: string; timeout: number }> = {}): string[] {
+function baseArgs(root: string, receiptPath: string, artifactPath: string, command: string, opts: Partial<{ observedOverride: string; timeout: number; domainResult: string; domainErrorCode: string }> = {}): string[] {
   const args = [
     "--audit-id", "TEST-AUDIT-001",
     "--generation", "1",
     "--receipt-id", "EV-001",
     "--requirement-id", "REQ-001",
+    "--decision-case-id", "DC-001",
     "--polarity", "POSITIVE",
     "--oracle-id", "ORACLE-001",
     "--fixture-id", "FIXTURE-GOOD-001",
     "--evidence-level", "component",
     "--verdict-state-sha256", "e".repeat(64),
+    "--domain-result", opts.domainResult ?? "SUCCESS",
+    "--domain-error-code", opts.domainErrorCode ?? "null",
+    "--forbidden-side-effects", "[]",
+    "--projection-sha256", "f".repeat(64),
+    "--canonical-sha256", "a".repeat(64),
     "--cwd", root,
     "--command", `cd ${root} && ${command}`,
     "--receipt-path", receiptPath,
@@ -67,9 +73,17 @@ describe("generate-evidence-receipt", () => {
     expect(existsSync(receiptPath)).toBe(true);
     expect(existsSync(artifactPath)).toBe(true);
     const receipt = JSON.parse(readFileSync(receiptPath, "utf8"));
+    expect(receipt.schema_version).toBe("audit-evidence-receipt/v3");
+    expect(receipt.document_kind).toBe("evidence-receipt");
     expect(receipt.id).toBe("EV-001");
-    expect(receipt.observed).toBe("PASS");
-    expect(receipt.exit_code).toBe(0);
+    expect(receipt.decision_case_id).toBe("DC-001");
+    expect(receipt.execution.observed).toBe("PASS");
+    expect(receipt.execution.exit_code).toBe(0);
+    expect(receipt.domain_observation.result).toBe("SUCCESS");
+    expect(receipt.domain_observation.error_code).toBeNull();
+    expect(receipt.projection_sha256).toBe("f".repeat(64));
+    expect(receipt.canonical_sha256).toBe("a".repeat(64));
+    expect(receipt.forbidden_side_effects_observed).toEqual([]);
     expect(receipt.repository_state_sha256).toBe("e".repeat(64));
     const artifact = readFileSync(artifactPath, "utf8");
     expect(artifact).toContain("hello");
@@ -80,14 +94,16 @@ describe("generate-evidence-receipt", () => {
   test("normal negative: exit 1 → observed=FAIL", () => {
     const receiptPath = join(root, "ev-002.json");
     const artifactPath = join(root, "ev-002-output.txt");
-    const result = runScript(baseArgs(root, receiptPath, artifactPath, "exit 1"));
+    const result = runScript(baseArgs(root, receiptPath, artifactPath, "exit 1", { domainResult: "ERROR", domainErrorCode: "ERR_TEST" }));
     expect(result.exitCode).toBe(0);
     const output = JSON.parse(result.stdout);
     expect(output.observed).toBe("FAIL");
     expect(output.exit_code).toBe(1);
     const receipt = JSON.parse(readFileSync(receiptPath, "utf8"));
-    expect(receipt.observed).toBe("FAIL");
-    expect(receipt.exit_code).toBe(1);
+    expect(receipt.execution.observed).toBe("FAIL");
+    expect(receipt.execution.exit_code).toBe(1);
+    expect(receipt.domain_observation.result).toBe("ERROR");
+    expect(receipt.domain_observation.error_code).toBe("ERR_TEST");
   });
 
   test("observed-override BLOCKED is allowed", () => {

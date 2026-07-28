@@ -1,0 +1,36 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "approval_kind": "genesis-bootstrap-scope-approval",
+  "decision_id": "AGV3-GENESIS-BOOTSTRAP-SCOPE-APPROVAL-20260726",
+  "decision": "APPROVED",
+  "approved_by": "HUMAN_USER",
+  "approved_at": "2026-07-26T11:14:57Z",
+  "approved_artifacts": {
+    "scope_lock": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-scope-lock.yaml",
+      "sha256": "98f22e0d2dc3c2e339cbe64787e93d8a354c70e146a87d4fd291c148fec961f6"
+    },
+    "genesis_admission": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-admission.yaml",
+      "sha256": "20bf4624e58919f932c00d9ba083954389ba483658001df1da842debc7ce7ff3"
+    },
+    "design_approval": {
+      "path": "audits/audit-governance-evidence-and-status-closure-v3/approval-decision-bootstrap-amendment.json",
+      "sha256": "d6b35ae702648a488402a8b62f1327aa0c115681074ee947653080c189809350"
+    }
+  },
+  "bootstrap_state_transition": "DRAFT->HUMAN_APPROVED",
+  "scope_state_transition": "FROZEN_PENDING_HUMAN_APPROVAL->HUMAN_APPROVED",
+  "authorized_next_artifact": {
+    "path": "audits/audit-governance-evidence-and-status-closure-v3/genesis-bootstrap-pre-change-capture.yaml",
+    "schema_version": "audit-governance-bootstrap/v3",
+    "document_kind": "genesis-bootstrap-receipt",
+    "purpose": "pre-change capture only"
+  },
+  "limitations": [
+    "This approval does not authorize a governance source-code or test write before a valid pre-change capture binds this decision and the frozen baseline.",
+    "After the pre-change capture is verified, any implementation remains limited to the five exact allowlist paths in the approved scope lock.",
+    "No pre-v3 input, compatibility entry, generic bypass, phase ACCEPT, report publication, or LATEST update is authorized."
+  ]
+}

@@ -2,7 +2,9 @@
 
 > 本文件由 QoderWork Session Startup 自动扫描。新增文档时请同步更新此索引。
 >
-> **最近更新**: 2026-07-26 - 复核路径动态化蓝图与 M1：实现仍未开始，Phase 02 被 Phase 01 admission 阻断；当前扫描为 1,805 处/467 文件，且 CodeGraph 当前 worktree 索引与两个路径热点调用链已验证，待 Phase 01 重建分类清单。
+> **最近更新**: 2026-07-28 - v3 审计治理升级：`audit-governance-evidence-and-status-closure-v3` 计划 Phase 1-5 全部实施完成（72 pass），v3 ACCEPT 正式签发（`audit-report.json` + CAS LATEST pointer）。**`boundary-contract/v1` 已迁移至 `audit-boundary-matrix/v3`，`v2.1-required` 已升级为 `v3-required`**。详见 `handoff/todo-list.md` §三 与 `plans/audit-governance-evidence-and-status-closure-v3/` 下的 5 个 phase scope-lock。
+>
+> **历史更新**: 2026-07-26 - 复核路径动态化蓝图与 M1：实现仍未开始，Phase 02 被 Phase 01 admission 阻断；当前扫描为 1,805 处/467 文件，且 CodeGraph 当前 worktree 索引与两个路径热点调用链已验证，待 Phase 01 重建分类清单。
 >
 > **历史更新**: 2026-07-25 - 新增路径动态化 M1 PLAN_SET：冻结范围、解析器与 test-serve 临界路径均有阶段合同、负例和 provenance gate；产品实现尚未开始。
 >

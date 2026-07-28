@@ -3,12 +3,29 @@
 // SKILL-SUMMARY-INJECTED log, and assert CN==EN + actual==expected boost.
 //
 // ⚠️ 本脚本不适用 serve-api skill §1.1 (本脚本是 in-process handler test，
-//    直接 import work-one 源码调函数，不经过 serve API)
+//    在验证显式 OPENCODE_ROOT 后动态加载 work-one handler，不经过 serve API)
 //
 // Run: OPENCODE_ROOT=/home/zhaoge/workspace/opencode/work-one \
 //      /home/zhaoge/.bun/bin/bun run /home/zhaoge/workspace/qoderwork/scripts/_b1_live.ts
 
-import { captureUserMessage, handle } from "../../opencode/work-one/.opencode/plugin-handlers/system/skill-summary.ts";
+import { isAbsolute, join } from "node:path";
+
+type SkillSummaryModule = {
+  captureUserMessage(sessionID: string, prompt: string): unknown;
+  handle(input: { sessionID: string }, context: Record<string, never>): Promise<unknown>;
+};
+
+export function resolveSkillSummaryModulePath(opencodeRoot: string): string {
+  if (!opencodeRoot || !opencodeRoot.trim() || !isAbsolute(opencodeRoot)) {
+    throw new Error("OPENCODE_ROOT must be a non-empty absolute path before handler loading");
+  }
+  return join(opencodeRoot, ".opencode", "plugin-handlers", "system", "skill-summary.ts");
+}
+
+async function loadSkillSummaryModule(opencodeRoot: string): Promise<SkillSummaryModule> {
+  const modulePath = resolveSkillSummaryModulePath(opencodeRoot);
+  return import(modulePath) as Promise<SkillSummaryModule>;
+}
 
 type Case = { id: number; lang: "CN" | "EN"; prompt: string; expected: string[] };
 
@@ -52,11 +69,12 @@ const CASES: Case[] = [
 ];
 
 async function main() {
+  const skillSummary = await loadSkillSummaryModule(process.env.OPENCODE_ROOT ?? "");
   for (const c of CASES) {
     const sid = `B1-live-${c.id}-${c.lang}`;
     try {
-      captureUserMessage(sid, c.prompt);
-      await handle({ sessionID: sid }, {});
+      skillSummary.captureUserMessage(sid, c.prompt);
+      await skillSummary.handle({ sessionID: sid }, {});
     } catch (e: any) {
       console.error(`[ERR] ${sid}: ${e?.message?.slice(0, 160)}`);
     }
@@ -68,4 +86,4 @@ async function main() {
   }
 }
 
-main();
+if (import.meta.main) await main();
