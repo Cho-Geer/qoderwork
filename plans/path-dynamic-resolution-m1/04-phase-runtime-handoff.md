@@ -96,7 +96,7 @@ test -s audits/path-dynamic-resolution-m1/continuation-register.json
 /home/zhaoge/.bun/bin/bun -e 'const x=JSON.parse(await Bun.file("audits/path-dynamic-resolution-m1/continuation-register.json").text()); if(x.schema_version!==1 || !Array.isArray(x.deferred) || x.deferred.some((r)=>r.required_admission!=="APPROVED_SUCCESSOR_PLAN")){process.exit(1)}'
 git diff --check
 git diff --name-only -- .codebuddy/settings.json .codebuddy/settings.local.json .kimi-code/mcp.json .qoder/settings.local.json
-/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/path-dynamic-resolution-m1
+/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/path-dynamic-resolution-m1 /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
 ```
 
 - Required output/artifacts: component evidence references, continuation JSON, M1 audit, dated log, two synchronized indexes, and structural validator output.

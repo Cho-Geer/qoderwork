@@ -4,7 +4,7 @@
 
 | Level | Command | Preconditions | Exact PASS condition | Artifacts | Current status |
 |---|---|---|---|---|---|
-| plan structure | `bun run .../validate-plan.ts plans/path-dynamic-resolution-m1` | each plan file exists | exit 0 with no errors | validator JSON | run while authoring |
+| plan structure | `bun run .../validate-plan.ts plans/path-dynamic-resolution-m1 <governanceRoot>` | each plan file exists; governanceRoot = plan-containing qoderwork worktree (SKILL rule 12a, not work-one) | exit 0 with no errors | validator JSON | FAIL `ERR_APPROVAL_MISSING`（pending human approval, 2026-07-29 实测）；v3 schema + governanceRoot + canonical contract PASS |
 | manual freeze | PHASE-01 fixed commands | human-approved lock and clean work-one | inventory, lock, and receipt parse | scan JSONL, inventory, receipt | NOT-RUN |
 | component | PHASE-02 and PHASE-03 fixed test commands | accepted prior phase and its receipt | named tests plus typecheck exit 0 | test output and audit receipts | NOT-RUN |
 | runtime-smoke | successor isolated-serve lifecycle | approved successor scope and a unique available port | plan-mode run retains manifest, dual DB paths, SSE, PIDs, cleanup result | isolated run directory | NOT-RUN |

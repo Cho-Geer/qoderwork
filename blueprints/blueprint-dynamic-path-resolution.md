@@ -1,7 +1,7 @@
 # Blueprint: 路径动态化与跨平台配置收敛
 
 **创建日期**: 2026-07-26
-**更新日期**: 2026-07-28
+**更新日期**: 2026-07-29
 **状态**: 待实施
 **相关蓝图**: 无
 
@@ -248,6 +248,7 @@ rg --hidden -l -F '/home/zhaoge/' \
 - 本机 `qodercli mcp --help`、`qodercli mcp add --help`、`qodercli mcp add-json --help`、Kimi/CodeBuddy CLI help；Trae WSL shim 的 Windows-host 限制。
 - [Bun 环境变量文档](https://bun.sh/docs/runtime/environment-variables)、[Kimi MCP 文档](https://www.kimi.com/code/docs/en/kimi-code-cli/customization/mcp.html)、[Qoder MCP 文档](https://docs.qoder.com/en/cli/mcp-servers)、[ZCode MCP 文档](https://zcode.z.ai/en/docs/mcp-services)。
 - 2026-07-26 复核：同一全量扫描得到 467 个文件、1,805 处匹配；分类表仍由 Phase 0 清单重建，不能只替换合计。`workspace-paths.ts` 及其 Phase 2 测试仍不存在，`getDefaultPrimaryWorktree()` 与 `SSE_DAEMON_PATH` 仍为固定路径；`bootstrap-import-source.test.ts` 重新运行 2/2 PASS。CodeGraph 当前索引属于本 worktree 且为最新：`getDefaultPrimaryWorktree()` 的函数调用方为 `isolated-serve.ts` 与 `_b_pt_wm_00r2_live.ts`，`SSE_DAEMON_PATH` 仅由 `startRunProcesses()` 使用；PHASE-02 admission 因 PHASE-01 `NOT_STARTED` 被拒绝。
+- 2026-07-29 复审：全量扫描漂移为 2,500 处匹配 / 610 文件（§1.2 与上条均为标注日期的历史快照，PHASE-01 按约定重新扫描冻结，不回改快照）。§1.2 快照漏记一个已跟踪 IDE 配置——`git ls-files` 实测已跟踪 IDE 配置为 **4 个**（`.codebuddy/settings.json`、`.codebuddy/settings.local.json`、`.kimi-code/mcp.json`、`.qoder/settings.local.json`），与 M1 plan"four tracked"一致。头部状态已由 PHASE-03 误标"已完成"纠正为"待实施"；M1 plan 已升级 `v3-required` 并新建 `canonical-requirements-contract.yaml`；`validate-plan.ts`（带 governanceRoot）现止于 `ERR_APPROVAL_MISSING`——v3 schema/canonical 通过，仅待 human approval（fail-closed，符合 P-02）。
 
 ### 6.2 证据等级
 
