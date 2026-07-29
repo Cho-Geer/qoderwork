@@ -3,7 +3,7 @@
 **Plan mode**: `PLAN_SET`
 **Schema version**: `audit-plan-set/v3`
 **Document kind**: `plan-set-index`
-**Status**: `READY-FOR-IMPLEMENTATION`
+**Status**: `COMPLETE`
 **Progression schema**: `phase-progression/v1`
 **Provenance level**: `v3-required`
 **Canonical contract**: `plans/audit-governance-evidence-and-status-closure-v3/canonical-requirements-contract.yaml`
@@ -54,8 +54,10 @@
 
 | Order | Phase ID | File | Depends on | Status |
 |---|---|---|---|---|
-| 1 | PHASE-01 | `01-phase-surface-conformance.md` | NONE | NOT_STARTED |
-| 2 | PHASE-02 | `02-phase-progression-v3.md` | PHASE-01 | NOT_STARTED |
-| 3 | PHASE-03 | `03-phase-receipt-projection-precheck.md` | PHASE-02 | NOT_STARTED |
-| 4 | PHASE-04 | `04-phase-audit-chain-v3.md` | PHASE-03 | NOT_STARTED |
-| 5 | PHASE-05 | `05-phase-finalize-publication-v3.md` | PHASE-04 | NOT_STARTED |
+| 1 | PHASE-01 | `01-phase-surface-conformance.md` | NONE | ACCEPTED |
+| 2 | PHASE-02 | `02-phase-progression-v3.md` | PHASE-01 | ACCEPTED |
+| 3 | PHASE-03 | `03-phase-receipt-projection-precheck.md` | PHASE-02 | ACCEPTED |
+| 4 | PHASE-04 | `04-phase-audit-chain-v3.md` | PHASE-03 | ACCEPTED |
+| 5 | PHASE-05 | `05-phase-finalize-publication-v3.md` | PHASE-04 | ACCEPTED |
+
+> **Closure projection (2026-07-29)**: 顶层 `Status: COMPLETE` 与 manifest 各 phase `ACCEPTED` 均为投影；唯一真相源为 `audits/audit-governance-evidence-and-status-closure-v3/LATEST.md` → `2026-07-27-audit-accept-v2.md`（`audit_id AGV3-AUDIT-20260727`，`verdict ACCEPT`，`invalid_reason null`，settle canonical `dd58ef59...` + scope-lock `02cb4604...`）。本 plan 集经**单一整体 ACCEPT 报告**闭环（非逐 phase 独立 ACCEPT 报告）；各 phase 的 P-02 冻结门证据（scope-lock / approval / pre-change-capture / evidence）见 `audits/audit-governance-evidence-and-status-closure-v3/phase-0N-*`。

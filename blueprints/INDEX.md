@@ -26,7 +26,7 @@
 | blueprint-task-lens-m1.md | 实施中 | `audits/task-lens-m1/LATEST.md` | 2026-07-28（PHASE-03 头部纠正） | PHASE-03 过期头部已纠正（实施中；依 audits/task-lens-m1/LATEST.md PHASE-05 ACCEPTED） |
 | blueprint-todowrite-driven-weak-agent-supervision.md | 已完成 | `audits/todowrite-driven-weak-agent-supervision/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-tool-governance-mvc-refactor.md | 已完成 | `audits/tool-governance-mvc-refactor/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
-| blueprint-blueprints-governance.md | 待实施 | 头部自述-未独立验证 | 2026-07-28（写作月） | 本 plan 自身蓝图；PHASE-01 ~ 05 实施后状态待定 |
+| blueprint-blueprints-governance.md | 已完成 | `audits/blueprints-governance/LATEST.md` | 2026-07-28（PHASE-05 ACCEPTED） | 本 plan 自身蓝图；PHASE-01~05 全部 ACCEPTED、plan COMPLETE（依 LATEST.md → 2026-07-28-audit-phase-05.md，verdict ACCEPT，invalid_reason null）；按看板规约已完成 blueprint 仍登记于活跃段 |
 | target-structure.md | 草稿 | 头部自述-未独立验证 | 2026-07（自述） | 待后续 PHASE 细化 |
 
 ## 已闭环
