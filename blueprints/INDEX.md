@@ -15,7 +15,7 @@
 | blueprint-cognitive-defense-skill-alignment.md | 已完成 | `audits/cognitive-defense-skill-alignment/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-dispatch-db-canonical.md | 已完成 | `audits/dispatch-db-canonical/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-dispatch-scope-privilege.md | 已完成 | `audits/dispatch-scope-privilege/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
-| blueprint-dynamic-path-resolution.md | 已完成 | `audits/dynamic-path-resolution/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
+| blueprint-dynamic-path-resolution.md | 待实施 | 头部自述-未独立验证 | 2026-07-25（设计审计） | 设计经 2026-07-25 审计 + 2026-07-26 复核；M1 plan `plans/path-dynamic-resolution-m1/` READY-FOR-IMPLEMENTATION，4 phase 全 NOT_STARTED；PHASE-03 曾误标为已完成，2026-07-29 纠正回待实施 |
 | blueprint-impact-analysis-framework.md | 已完成 | `audits/impact-analysis-framework/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-isolated-serve-test-infrastructure.md | 已完成 | `audits/isolated-serve-test-infrastructure/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-opencode-framework-simplification-roadmap.md | 已完成 | `audits/opencode-framework-simplification/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |

@@ -1,10 +1,16 @@
 # 路径动态化与跨平台配置收敛 M1 — Plan Index
 
 **Plan mode**: `PLAN_SET`
+**Schema version**: `audit-plan-set/v3`
+**Document kind**: `plan-set-index`
 **ID**: `PATH-DYNAMIC-RESOLUTION-M1-20260725`
 **Status**: `READY-FOR-IMPLEMENTATION`
 **Progression schema**: `phase-progression/v1`
-**Provenance level**: `v2.1-required`
+**Provenance level**: `v3-required`
+**Canonical contract**: `plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml`
+**Canonical contract SHA-256**: `0c939357355936ef329b907e75339c38a119791b6dba6fcade5c3e86df2961f2`
+**Approval decision**: `audits/path-dynamic-resolution-m1/approval-decision.json`
+**Approval decision SHA-256**: `PENDING-HUMAN-APPROVAL`
 **Only implementation path**: 冻结范围 → 解析器 → test-serve；未登记路径只可进入后续已批准计划。
 **Evidence ceiling**: `NOT-RUN`
 

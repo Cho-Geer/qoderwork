@@ -1,0 +1,63 @@
+# Canonical Requirements Contract — path-dynamic-resolution-m1
+# schema: audit-governance/v3::canonical-requirements
+# plan_id: PATH-DYNAMIC-RESOLUTION-M1-20260725
+# derived_from: plans/path-dynamic-resolution-m1/00-plan-index.md §1-§2
+# created: 2026-07-29
+
+schema_version: audit-governance/v3
+document_kind: canonical-requirements
+plan_id: PATH-DYNAMIC-RESOLUTION-M1-20260725
+
+requirements:
+  - id: REQ-001
+    condition: code write
+    required_behavior: lock + receipt first
+    observable_result: bound receipt
+    source: P-02
+    owning_phase: PHASE-01
+  - id: REQ-002
+    condition: resolve
+    required_behavior: validated roots/tools
+    observable_result: cases pass
+    source: BP §2.2
+    owning_phase: PHASE-02
+  - id: REQ-003
+    condition: test-serve
+    required_behavior: roots + file URL
+    observable_result: regressions pass
+    source: BP §1/3
+    owning_phase: PHASE-03
+  - id: REQ-004
+    condition: verify
+    required_behavior: retain level labels
+    observable_result: evidence
+    source: BP §4
+    owning_phase: PHASE-04
+  - id: REQ-005
+    condition: external path
+    required_behavior: no unapproved edit
+    observable_result: deferred row
+    source: BP §3/5
+    owning_phase: PHASE-04
+
+decisions:
+  - id: DEC-001
+    question: route
+    final_contract: resolver + JSON
+  - id: DEC-002
+    question: precedence
+    final_contract: CLI/env/JSON/fallback
+  - id: DEC-003
+    question: SSE
+    final_contract: module asset
+  - id: DEC-004
+    question: scan
+    final_contract: disposition per match
+  - id: DEC-005
+    question: anchor
+    final_contract: absolute root
+
+non_goals:
+  - work-one, IDE machine config, pre-M1 history, evidence, prior logs
+  - bulk replacement, bare serve, port 4097, live-E2E, reviewer variables, upgrades, bun.lock
+  - unsupported IDE/Windows behavior and deferred batches
