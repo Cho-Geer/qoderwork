@@ -22,7 +22,7 @@
 5. Only then may a distinct Implementer B task write.
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
   plans/audit-governance-recovery-v1/formal-plan-set PHASE-02
 ```
@@ -57,7 +57,7 @@ No other file is permitted in this phase.
 After Implementer B stops, Auditor A creates the release and captures VERDICT:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
   --emit-producer-release \
   --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml \
@@ -65,7 +65,7 @@ bun run .agents/skills/deterministic-implementation-planning/scripts/validate-ph
   --object-root audits/audit-governance-recovery-v1/objects/sha256 \
   --output audits/audit-governance-recovery-v1/producer-releases/PHASE-02-closure-candidate.json
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts --state-kind VERDICT \
-  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --work-one-root /home/zhaoge/workspace/opencode/work-one \
   --scope-lock audits/audit-governance-recovery-v1/phases/PHASE-02/g001/scope-lock-PHASE-02-g001.json \
   --phase-approval audits/audit-governance-recovery-v1/phases/PHASE-02/g001/phase-approval-decision-PHASE-02-g001.json \
@@ -77,7 +77,7 @@ bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts --state-kind
 Auditor A independently sweeps and writes only `audits/audit-governance-recovery-v1/phases/PHASE-02/g001/auditor-findings.md`; a blocker stops. Then:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 bun run .agents/skills/plan-audit-archiver/scripts/generate-evidence-receipt.ts \
   --audit-id AUDIT-GOVERNANCE-RECOVERY-PHASE-02-g001 \
   --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml \
@@ -105,9 +105,9 @@ bun run .agents/skills/plan-audit-archiver/scripts/prepare-audit.ts \
 Auditor Session A uses the exact active phase/generation paths. PHASE-02 g001 is:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 bun run .agents/skills/plan-audit-archiver/scripts/close-audit-phase.ts \
-  --workspace-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --workspace-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --plan-root plans/audit-governance-recovery-v1/formal-plan-set \
   --stage-candidate PHASE-02 \
   --prepared-report audits/audit-governance-recovery-v1/phases/PHASE-02/g001/prepared/audit-report.md \
@@ -125,7 +125,7 @@ bun run .agents/skills/plan-audit-archiver/scripts/close-audit-phase.ts \
 The candidate may write only inside `closure-transaction/staged`; it cannot commit, resume, publish, or mark itself accepted. Accepted PHASE-01 control then runs:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
   --adopt-closure-candidate PHASE-02 \
   --plan-root plans/audit-governance-recovery-v1/formal-plan-set \
@@ -196,7 +196,7 @@ Interruption yields `COMMIT_INTERRUPTED`; exact `--resume` validates the prefix 
 ## Fixed verification
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun test \
   .agents/skills/plan-audit-archiver/scripts/__tests__/pre-check-evidence.test.ts \
   .agents/skills/plan-audit-archiver/scripts/__tests__/finalize-audit.test.ts \

@@ -29,7 +29,7 @@ The user clarified that v1 (`plans/audit-governance-recovery-v1/`) is the carrie
 | M8 | #2 MAJOR | canonical L1133-1135 | `gate_text_normalization` already exists; documented in 00-index §8.1 |
 | M9 | #5 MAJOR | canonical L1248-1269 | `phase_06_activation_additions` block + final_update trimmed |
 | M10 | #8 MAJOR | canonical L24 + L1542 area | worktree path → `audit-governance-recovery-v1-bootstrap` |
-| M11 | #11 MAJOR | 06-phase L30-37 | 06-phase allowed-files reduced from 3 to 2 (documents/INDEX.md moved to 99-final) |
+| M11 | #11 MAJOR | 06-phase L30-37 | 06-phase allowed-files reduced from 3 to 2 (implementation-evidence log removed; documents/INDEX.md + logs/INDEX.md retained) + new `## Auditor implementation log` section marks the log as Auditor-only |
 | M12 | #12 MAJOR | canonical L1055-1119 | `dataflow_pipeline` block (10 rows covering PHASE-01..99-final) |
 | M13 | #14 MAJOR | canonical L1406-1414 | EV-017 / EV-018 in evidence_case_registry (pending→approved) |
 | M14 | #15 MAJOR | 00-plan-index §8.1 | `gate_count` derivation rule + 8/9 difference explanation |

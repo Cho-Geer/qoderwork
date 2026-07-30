@@ -11,7 +11,7 @@
 
 - Implement `REQ-GR-002` and `REQ-GR-003`.
 - Prove the approval/index/scope/receipt graph is acyclic and accepts both JSON and registered byte artifacts.
-- Respect the cross-phase activation field ownership rule declared in `canonical-requirements-contract.yaml`: each phase owns its own `phase_NN_activation_additions` block; PHASE-03 does NOT mutate `phase_06_activation_additions.documents_status_marker` (that field is exclusive to PHASE-06; see canonical L1172-1181 and the post-revision `phase_06_activation_additions` block). PHASE-03 only mutates the `phase_03_activation_additions` fields. This eliminates the historical finding that the projection snapshot for PHASE-06 was not declared exclusively.
+- Respect the cross-phase activation field ownership rule declared in `canonical-requirements-contract.yaml`: each phase owns its own `phase_NN_activation_additions` block; PHASE-03 does NOT mutate `phase_06_activation_additions.documents_status_marker` (that field is exclusive to PHASE-06; see canonical L1250-1266 `phase_06_activation_additions` block). PHASE-03 only mutates the `phase_03_activation_additions` fields. This eliminates the historical finding that the projection snapshot for PHASE-06 was not declared exclusively.
 
 ## Starting state and admission
 
@@ -22,7 +22,7 @@
 5. Only then may a distinct Implementer B task write.
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
   plans/audit-governance-recovery-v1/formal-plan-set PHASE-03
 ```
@@ -121,7 +121,7 @@ Each case starts from the synthetic complete graph and yields only its family er
 ## Fixed verification
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun test \
   scripts/lib/__tests__/audit-governance-schema-v3.test.ts \
   scripts/lib/__tests__/artifact-reference-graph.test.ts \
@@ -137,14 +137,14 @@ Evidence must include exact exits/counts, all node/edge/mutation results, indepe
 After Implementer B stops, Auditor A runs:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 export AUDIT_RECOVERY_PHASE_DIR=audits/audit-governance-recovery-v1/phases/PHASE-03/g001
 export AUDIT_RECOVERY_RELEASE=audits/audit-governance-recovery-v1/producer-releases/PHASE-03-g001.json
 bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
   --emit-producer-release --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml \
   --case-set PHASE-03 --object-root audits/audit-governance-recovery-v1/objects/sha256 --output "$AUDIT_RECOVERY_RELEASE"
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts --state-kind VERDICT \
-  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --work-one-root /home/zhaoge/workspace/opencode/work-one \
   --scope-lock "$AUDIT_RECOVERY_PHASE_DIR/scope-lock-PHASE-03-g001.json" \
   --phase-approval "$AUDIT_RECOVERY_PHASE_DIR/phase-approval-decision-PHASE-03-g001.json" \
@@ -156,7 +156,7 @@ Auditor A independently sweeps the implementation and writes only
 `audits/audit-governance-recovery-v1/phases/PHASE-03/g001/auditor-findings.md`. A blocker stops before the next block.
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 export AUDIT_RECOVERY_PHASE_DIR=audits/audit-governance-recovery-v1/phases/PHASE-03/g001
 export AUDIT_RECOVERY_RELEASE=audits/audit-governance-recovery-v1/producer-releases/PHASE-03-g001.json
 bun run .agents/skills/plan-audit-archiver/scripts/generate-evidence-receipt.ts \
@@ -175,7 +175,7 @@ bun run .agents/skills/plan-audit-archiver/scripts/prepare-audit.ts \
   --output-dir "$AUDIT_RECOVERY_PHASE_DIR/prepared"
 bun run .agents/skills/plan-audit-archiver/scripts/validate-audit.ts "$AUDIT_RECOVERY_PHASE_DIR/prepared/audit-report.md"
 bun run .agents/skills/plan-audit-archiver/scripts/close-audit-phase.ts \
-  --workspace-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --workspace-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --plan-root plans/audit-governance-recovery-v1/formal-plan-set --phase PHASE-03 \
   --prepared-report "$AUDIT_RECOVERY_PHASE_DIR/prepared/audit-report.md" \
   --published-report "$AUDIT_RECOVERY_PHASE_DIR/published/audit-report.md" \

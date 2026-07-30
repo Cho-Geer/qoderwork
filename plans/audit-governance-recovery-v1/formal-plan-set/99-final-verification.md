@@ -29,8 +29,8 @@ The worktree path was renamed from `audit-governance-recovery-v1` to `audit-gove
 cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 cd audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r5
 sha256sum --check audits/audit-governance-recovery-v1/approved-plan-files-r5.sha256
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
-/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-recovery-v1/formal-plan-set /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
+/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-recovery-v1/formal-plan-set /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts plans/audit-governance-recovery-v1/formal-plan-set --final-readiness
 /home/zhaoge/.bun/bin/bun test \
   .agents/skills/plan-audit-archiver/scripts/__tests__ \
@@ -39,7 +39,7 @@ cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
   scripts/lib/__tests__/artifact-reference-graph.test.ts \
   scripts/__tests__/check-audit-governance-recovery-conformance.test.ts
 /home/zhaoge/.bun/bin/bun run scripts/check-audit-governance-recovery-conformance.ts \
-  --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 --profile all
+  --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap --profile all
 /home/zhaoge/.bun/bin/bun run typecheck
 git diff --check
 ```
@@ -51,7 +51,7 @@ Every manifest entry must be `OK`; readiness/conformance must be `ok:true`; all 
 Emit the current release; stale releases fail:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
   --emit-producer-release \
   --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml \
@@ -63,9 +63,9 @@ bun run .agents/skills/deterministic-implementation-planning/scripts/validate-ph
 ### 1. Capture PRE_CHANGE
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts --final --state-kind PRE_CHANGE \
-  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --work-one-root /home/zhaoge/workspace/opencode/work-one \
   --session-roles audits/audit-governance-recovery-v1/session-role-manifest.json \
   --producer-release audits/audit-governance-recovery-v1/producer-releases/final-g001.json \
@@ -79,11 +79,11 @@ Auditor A checks canonical, six chains, diff, mirror, graph, tests, conformance,
 ### 3. Capture VERDICT and generate the fixed case set
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 export AUDIT_RECOVERY_FINAL_DIR=audits/audit-governance-recovery-v1/final/g001
 export AUDIT_RECOVERY_RELEASE=audits/audit-governance-recovery-v1/producer-releases/final-g001.json
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts --final --state-kind VERDICT \
-  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --work-one-root /home/zhaoge/workspace/opencode/work-one \
   --session-roles audits/audit-governance-recovery-v1/session-role-manifest.json \
   --producer-release "$AUDIT_RECOVERY_RELEASE" --output "$AUDIT_RECOVERY_FINAL_DIR/verdict-state.json"
@@ -112,11 +112,11 @@ Required: `valid:true`, no errors, `ACCEPT`, and distinct prepared/published pat
 ## Staged final transaction and live recheck
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 export AUDIT_RECOVERY_FINAL_DIR=audits/audit-governance-recovery-v1/final/g001
 export AUDIT_RECOVERY_RELEASE=audits/audit-governance-recovery-v1/producer-releases/final-g001.json
 bun run .agents/skills/plan-audit-archiver/scripts/close-audit-phase.ts \
-  --workspace-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --workspace-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --plan-root plans/audit-governance-recovery-v1/formal-plan-set \
   --final \
   --prepared-report "$AUDIT_RECOVERY_FINAL_DIR/prepared/audit-report.md" \
@@ -126,7 +126,7 @@ bun run .agents/skills/plan-audit-archiver/scripts/close-audit-phase.ts \
   --producer-release "$AUDIT_RECOVERY_RELEASE" \
   --session-role AUDITOR \
   --transaction-dir "$AUDIT_RECOVERY_FINAL_DIR/closure-transaction"
-/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-recovery-v1/formal-plan-set /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-recovery-v1/formal-plan-set /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts plans/audit-governance-recovery-v1/formal-plan-set --final
 ```
 
@@ -134,7 +134,7 @@ The wrapper stages, validates, then commits; both live rechecks must return `ok:
 
 ## Final completion gate
 
-- [ ] `GATE-GR-FINAL-001` — exact r4 plan/PHASE-01 decisions.
+- [ ] `GATE-GR-FINAL-001` — exact r5 plan/PHASE-01 decisions.
 - [ ] `GATE-GR-FINAL-002` — distinct tasks; waiver consumed once.
 - [ ] `GATE-GR-FINAL-003` — six valid audit/progression/status chains.
 - [ ] `GATE-GR-FINAL-004` — manifest/tests/conformance/type/diff pass.

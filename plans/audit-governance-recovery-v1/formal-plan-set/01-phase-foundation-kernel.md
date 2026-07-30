@@ -57,7 +57,7 @@ No other file is permitted.
 Canonical `phase_01_release_command` resolves the fixed registry/imports and exclusively writes immutable source objects plus `PHASE-01-foundation.json`.
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
   --upgrade-bootstrap-pre-change \
   --qoderwork-baseline audits/audit-governance-recovery-v1/bootstrap/qoderwork-baseline-PHASE-01.json \
@@ -71,10 +71,10 @@ bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
 Upgrade records source hashes/times plus `materialized_at`; effective time is the earlier capture. After Implementer B stops, Auditor A captures VERDICT:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 export AUDIT_RECOVERY_PHASE_DIR=audits/audit-governance-recovery-v1/phases/PHASE-01/g001
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts --state-kind VERDICT \
-  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --work-one-root /home/zhaoge/workspace/opencode/work-one \
   --scope-lock audits/audit-governance-recovery-v1/bootstrap/scope-lock-PHASE-01-g001.json \
   --phase-approval audits/audit-governance-recovery-v1/bootstrap/phase-approval-decision-PHASE-01-g001.json \
@@ -94,7 +94,7 @@ Only after VERDICT, Auditor A independently sweeps and writes semantics only to 
 The canonical `evidence_case_registry.PHASE-01` owns all 16 positive/negative cases for the eight requirements. One command executes them in registry order:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 bun run .agents/skills/plan-audit-archiver/scripts/generate-evidence-receipt.ts \
   --audit-id AUDIT-GOVERNANCE-RECOVERY-PHASE-01-g001 \
   --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml \
@@ -146,12 +146,12 @@ Order: scope → entry 0 → HUMAN approval → PRE_CHANGE → write. g001 forbi
 After candidate `validate-audit` returns `valid:true`, Auditor Session A runs:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
   --bootstrap-activate-and-close PHASE-01 \
   --plan-root plans/audit-governance-recovery-v1/formal-plan-set \
   --prepared-report audits/audit-governance-recovery-v1/phases/PHASE-01/g001/prepared/audit-report.md \
-  --plan-decision audits/audit-governance-recovery-v1/approval-decision-r4.json \
+  --plan-decision audits/audit-governance-recovery-v1/approval-decision-r5.json \
   --phase-decision audits/audit-governance-recovery-v1/bootstrap/phase-approval-decision-PHASE-01-g001.json \
   --producer-release audits/audit-governance-recovery-v1/producer-releases/PHASE-01-foundation.json \
   --transaction-dir audits/audit-governance-recovery-v1/phases/PHASE-01/g001/bootstrap-closure-transaction
@@ -185,7 +185,7 @@ Each mutation starts all-pass, yields its listed failure, and preserves destinat
 3. Run:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun test \
   .agents/skills/plan-audit-archiver/scripts/__tests__/validate-audit.test.ts \
   .agents/skills/plan-audit-archiver/scripts/__tests__/capture-state.test.ts \

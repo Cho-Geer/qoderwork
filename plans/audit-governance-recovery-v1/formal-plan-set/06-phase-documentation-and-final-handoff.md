@@ -20,7 +20,7 @@
 4. Auditor A captures PRE_CHANGE; then a distinct Implementer B task may write.
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
   plans/audit-governance-recovery-v1/formal-plan-set PHASE-06
 ```
@@ -125,9 +125,9 @@ Register the exact log path under the current active and governance topic views 
 ## Fixed verification
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun run scripts/check-audit-governance-recovery-conformance.ts \
-  --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --profile implementation-docs
 /home/zhaoge/.bun/bin/bun run typecheck
 git diff --check
@@ -148,14 +148,14 @@ Required output: `ok:true, failedChecks:[]`; evidence includes query observation
 After Implementer B stops, Auditor A runs:
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 export AUDIT_RECOVERY_PHASE_DIR=audits/audit-governance-recovery-v1/phases/PHASE-06/g001
 export AUDIT_RECOVERY_RELEASE=audits/audit-governance-recovery-v1/producer-releases/PHASE-06-g001.json
 bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
   --emit-producer-release --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml \
   --case-set PHASE-06 --object-root audits/audit-governance-recovery-v1/objects/sha256 --output "$AUDIT_RECOVERY_RELEASE"
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts --state-kind VERDICT \
-  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --qoderwork-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --work-one-root /home/zhaoge/workspace/opencode/work-one \
   --scope-lock "$AUDIT_RECOVERY_PHASE_DIR/scope-lock-PHASE-06-g001.json" \
   --phase-approval "$AUDIT_RECOVERY_PHASE_DIR/phase-approval-decision-PHASE-06-g001.json" \
@@ -167,7 +167,7 @@ Auditor A independently sweeps and writes only
 `audits/audit-governance-recovery-v1/phases/PHASE-06/g001/auditor-findings.md`; a blocker stops.
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 export AUDIT_RECOVERY_PHASE_DIR=audits/audit-governance-recovery-v1/phases/PHASE-06/g001
 export AUDIT_RECOVERY_RELEASE=audits/audit-governance-recovery-v1/producer-releases/PHASE-06-g001.json
 bun run .agents/skills/plan-audit-archiver/scripts/generate-evidence-receipt.ts \
@@ -186,7 +186,7 @@ bun run .agents/skills/plan-audit-archiver/scripts/prepare-audit.ts \
   --output-dir "$AUDIT_RECOVERY_PHASE_DIR/prepared"
 bun run .agents/skills/plan-audit-archiver/scripts/validate-audit.ts "$AUDIT_RECOVERY_PHASE_DIR/prepared/audit-report.md"
 bun run .agents/skills/plan-audit-archiver/scripts/close-audit-phase.ts \
-  --workspace-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 \
+  --workspace-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap \
   --plan-root plans/audit-governance-recovery-v1/formal-plan-set --phase PHASE-06 \
   --prepared-report "$AUDIT_RECOVERY_PHASE_DIR/prepared/audit-report.md" \
   --published-report "$AUDIT_RECOVERY_PHASE_DIR/published/audit-report.md" \

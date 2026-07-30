@@ -316,8 +316,8 @@ artifact_dag:
       approval-objects/sha256/<sha256>. entry_count is 8 and entries_sha256 hashes the UTF-8
       compact JSON entries array. logical_path and source_base_commit are LOGICAL_ONLY.
     checksum_entry: >
-      approved-plan-files-r4.sha256 is UTF-8 with exactly one LF-terminated line:
-      "<object_set.sha256>  audits/audit-governance-recovery-v1/approved-plan-object-set-r4.json".
+      approved-plan-files-r5.sha256 is UTF-8 with exactly one LF-terminated line:
+      "<object_set.sha256>  audits/audit-governance-recovery-v1/approved-plan-object-set-r5.json".
       It excludes itself, live plan paths, baselines, requests, decisions, and materialization.
     approved_plan_materialization: >
       schema audit-approved-plan-materialization/v1 and kind approved-plan-materialization
@@ -1382,7 +1382,7 @@ evidence_case_registry:
     - domain_result
     - domain_error_code
   defaults:
-    cwd: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+    cwd: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
     expected_execution: { observed: PASS, exit_code: 0, timed_out: false }
     forbidden_effects: [live_repository_write, work_one_write, audit_publication]
     output_rule: EV-NNN.json is exclusive and NNN equals the registry row order within its case set.
@@ -1425,10 +1425,10 @@ evidence_case_registry:
     - [EV-001, DC-GR4-012-P, REQ-GR-012, POSITIVE, ORACLE-GR4-012, GR4-EIGHT-SURFACES, "/home/zhaoge/.bun/bin/bun test scripts/__tests__/check-audit-governance-recovery-conformance.test.ts -t 'DC-GR4-012-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
     - [EV-002, DC-GR4-012-N, REQ-GR-012, NEGATIVE, ORACLE-GR4-012, GR4-STALE-MARKER, "/home/zhaoge/.bun/bin/bun test scripts/__tests__/check-audit-governance-recovery-conformance.test.ts -t 'DC-GR4-012-N DOMAIN_ERROR=CONFORMANCE_STALE_TEXT'", "DOMAIN_ERROR=CONFORMANCE_STALE_TEXT", REJECTION_VERIFIED, CONFORMANCE_STALE_TEXT]
   PHASE-05:
-    - [EV-001, DC-GR5-013-P, REQ-GR-013, POSITIVE, ORACLE-GR5-013, GR5-REAL-SURFACES, "/home/zhaoge/.bun/bin/bun run scripts/check-audit-governance-recovery-conformance.ts --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 --profile governance-surfaces", "\"ok\":true", PASS, NONE]
+    - [EV-001, DC-GR5-013-P, REQ-GR-013, POSITIVE, ORACLE-GR5-013, GR5-REAL-SURFACES, "/home/zhaoge/.bun/bin/bun run scripts/check-audit-governance-recovery-conformance.ts --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap --profile governance-surfaces", "\"ok\":true", PASS, NONE]
     - [EV-002, DC-GR5-013-N, REQ-GR-013, NEGATIVE, ORACLE-GR5-013, GR5-STALE-SURFACE, "/home/zhaoge/.bun/bin/bun test scripts/__tests__/check-audit-governance-recovery-conformance.test.ts -t 'DC-GR5-013-N DOMAIN_ERROR=CONFORMANCE_STALE_TEXT'", "DOMAIN_ERROR=CONFORMANCE_STALE_TEXT", REJECTION_VERIFIED, CONFORMANCE_STALE_TEXT]
   PHASE-06:
-    - [EV-001, DC-GR6-014-P, REQ-GR-014, POSITIVE, ORACLE-GR6-014, GR6-REAL-DOCS, "/home/zhaoge/.bun/bin/bun run scripts/check-audit-governance-recovery-conformance.ts --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 --profile implementation-docs", "\"ok\":true", PASS, NONE]
+    - [EV-001, DC-GR6-014-P, REQ-GR-014, POSITIVE, ORACLE-GR6-014, GR6-REAL-DOCS, "/home/zhaoge/.bun/bin/bun run scripts/check-audit-governance-recovery-conformance.ts --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap --profile implementation-docs", "\"ok\":true", PASS, NONE]
     - [EV-002, DC-GR6-014-N, REQ-GR-014, NEGATIVE, ORACLE-GR6-014, GR6-PREMATURE-DOCS, "/home/zhaoge/.bun/bin/bun test scripts/__tests__/check-audit-governance-recovery-conformance.test.ts -t 'DC-GR6-014-N DOMAIN_ERROR=DOC_STATUS_PREMATURE_OR_MISSING'", "DOMAIN_ERROR=DOC_STATUS_PREMATURE_OR_MISSING", REJECTION_VERIFIED, DOC_STATUS_PREMATURE_OR_MISSING]
   FINAL_AUDIT:
     - [EV-001, DC-GR-FINAL-AUDIT-001, FINAL-AUDIT-CHAIN, POSITIVE, ORACLE-GR-FINAL-AUDIT-001, FINAL-SIX-ACCEPTED-CHAINS, "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-audit-inputs --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1", "FINAL_AUDIT_RESULT=PHASE_CHAINS:PASS COUNT=6", PASS, NONE]
@@ -1436,7 +1436,7 @@ evidence_case_registry:
 
 final_gate_registry:
   schema_version: final-gate-registry/v1
-  cwd: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+  cwd: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
   output_rule: Each final-gate-receipt/v1 is exclusive; gate_id, stage, refs, exit, and required marker must match its row.
   command_rule: >
     Every literal command invokes validate-phase-progression.ts with only
@@ -1521,7 +1521,7 @@ final_gate_registry:
 approval_freeze_registry:
   schema_version: audit-governance-approval-freeze/v1
   source_root: /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
-  target_root: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+  target_root: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
   semantic_logical_paths:
     - plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml
     - plans/audit-governance-recovery-v1/formal-plan-set/01-phase-foundation-kernel.md
@@ -1533,15 +1533,15 @@ approval_freeze_registry:
     - plans/audit-governance-recovery-v1/formal-plan-set/99-final-verification.md
   artifacts:
     approved_object_root: audits/audit-governance-recovery-v1/approval-objects/sha256
-    approved_plan_object_set: audits/audit-governance-recovery-v1/approved-plan-object-set-r4.json
-    approved_plan_files: audits/audit-governance-recovery-v1/approved-plan-files-r4.sha256
-    approved_index_baseline: audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r4.md
-    pending_decision: audits/audit-governance-recovery-v1/approval-decision-pending-r4.json
-    frozen_m1_files: audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r4.json
-    p4_boundary: audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r4.json
-    plan_request: audits/audit-governance-recovery-v1/approval-request-r4.json
-    plan_decision: audits/audit-governance-recovery-v1/approval-decision-r4.json
-    materialization: audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r4.json
+    approved_plan_object_set: audits/audit-governance-recovery-v1/approved-plan-object-set-r5.json
+    approved_plan_files: audits/audit-governance-recovery-v1/approved-plan-files-r5.sha256
+    approved_index_baseline: audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r5.md
+    pending_decision: audits/audit-governance-recovery-v1/approval-decision-pending-r5.json
+    frozen_m1_files: audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r5.json
+    p4_boundary: audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r5.json
+    plan_request: audits/audit-governance-recovery-v1/approval-request-r5.json
+    plan_decision: audits/audit-governance-recovery-v1/approval-decision-r5.json
+    materialization: audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r5.json
   p0_exact_set:
     roots:
       - plans/path-dynamic-resolution-m1
@@ -1584,7 +1584,7 @@ approval_freeze_registry:
     - CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT
   invariants:
     - All writes are exclusive; a collision stops and no hash is synchronized.
-    - The one-entry checksum manifest hashes only approved-plan-object-set-r4.json.
+    - The one-entry checksum manifest hashes only approved-plan-object-set-r5.json.
     - The index baseline is outside the semantic object set and contains no self/request hash.
     - Plan approval precedes target materialization; materialization receipt cannot be in its own approval chain.
     - HUMAN approval binds exact refs and four waivers; it authorizes materialization only, not source writes.
@@ -1616,13 +1616,13 @@ recovery_bootstrap:
   materialization_commands: |
     cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
     export AUDIT_RECOVERY_SOURCE_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/check-plan
-    export AUDIT_RECOVERY_TARGET_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+    export AUDIT_RECOVERY_TARGET_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
     export AUDIT_RECOVERY_IMMUTABLE_ROOT="$AUDIT_RECOVERY_TARGET_ROOT/audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r4"
     test ! -e "$AUDIT_RECOVERY_TARGET_ROOT"
     /home/zhaoge/.bun/bin/bun -e '
     import{chmodSync,mkdirSync,writeFileSync}from"node:fs";import{dirname,resolve}from"node:path";import{createHash}from"node:crypto";
     const src=process.env.AUDIT_RECOVERY_SOURCE_ROOT,tgt=process.env.AUDIT_RECOVERY_TARGET_ROOT;
-    const p={o:"audits/audit-governance-recovery-v1/approved-plan-object-set-r4.json",m:"audits/audit-governance-recovery-v1/approved-plan-files-r4.sha256",b:"audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r4.md",pending:"audits/audit-governance-recovery-v1/approval-decision-pending-r4.json",h:"audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r4.json",p4:"audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r4.json",rp:"audits/audit-governance-recovery-v1/approval-request-r4.json",dp:"audits/audit-governance-recovery-v1/approval-decision-r4.json",t:"audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r4.json",index:"plans/audit-governance-recovery-v1/formal-plan-set/00-plan-index.md"};
+    const p={o:"audits/audit-governance-recovery-v1/approved-plan-object-set-r5.json",m:"audits/audit-governance-recovery-v1/approved-plan-files-r5.sha256",b:"audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r5.md",pending:"audits/audit-governance-recovery-v1/approval-decision-pending-r5.json",h:"audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r5.json",p4:"audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r5.json",rp:"audits/audit-governance-recovery-v1/approval-request-r5.json",dp:"audits/audit-governance-recovery-v1/approval-decision-r5.json",t:"audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r5.json",index:"plans/audit-governance-recovery-v1/formal-plan-set/00-plan-index.md"};
     const bytes=async(r,x)=>Buffer.from(await Bun.file(resolve(r,x)).arrayBuffer()),H=b=>createHash("sha256").update(b).digest("hex"),J=async x=>JSON.parse((await bytes(src,x)).toString());
     const ref=async(r,x)=>({path:x,sha256:H(await bytes(r,x))}),A=(x,m)=>{if(!x)throw Error("MATERIALIZATION_INVALID:"+m)};
     const [O,H0,DP]=await Promise.all([J(p.o),J(p.h),J(p.dp)]);A(DP.decision==="APPROVED"&&DP.approved_by==="HUMAN_USER","decision");
@@ -1639,14 +1639,14 @@ recovery_bootstrap:
     const T={schema_version:"audit-approved-plan-materialization/v1",document_kind:"approved-plan-materialization",plan_id:O.plan_id,generation:O.generation,plan_approval:await ref(tgt,p.dp),object_set:await ref(tgt,p.o),approved_plan_files:await ref(tgt,p.m),approved_index_baseline:await ref(tgt,p.b),semantic_entry_count:8,live_path_count:9,semantic_entries:semantic,index_entry:{live_path:p.index,approved_index_baseline:await ref(tgt,p.b),initial_live_snapshot:{path:io,sha256:H(ib)}},materialized_at:new Date().toISOString()};put(p.t,Buffer.from(JSON.stringify(T,null,2)+"\n"),0o444);
     console.log(JSON.stringify({ok:true,materialization:p.t,semantic_entries:8,live_paths:9}));
     '
-    cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
-    test -s audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r4.json
+    cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
+    test -s audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r5.json
     test "$(find plans/audit-governance-recovery-v1/formal-plan-set -maxdepth 1 -type f | wc -l)" -eq 8
   prewrite_verification_command: |
     /home/zhaoge/.bun/bin/bun -e '
     import{createHash}from"node:crypto";import{writeFileSync}from"node:fs";import{resolve}from"node:path";
-    const root="/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1";
-    const p={c:"plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",m:"audits/audit-governance-recovery-v1/approved-plan-files-r4.sha256",b:"audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r4.md",rp:"audits/audit-governance-recovery-v1/approval-request-r4.json",dp:"audits/audit-governance-recovery-v1/approval-decision-r4.json",s:"audits/audit-governance-recovery-v1/bootstrap/scope-lock-PHASE-01-g001.json",q:"audits/audit-governance-recovery-v1/bootstrap/qoderwork-baseline-PHASE-01.json",rph:"audits/audit-governance-recovery-v1/bootstrap/phase-approval-request-PHASE-01-g001.json",dph:"audits/audit-governance-recovery-v1/bootstrap/phase-approval-decision-PHASE-01-g001.json",w:"audits/audit-governance-recovery-v1/bootstrap/pre-change-work-one-PHASE-01.json",out:"audits/audit-governance-recovery-v1/bootstrap/prewrite-verification.json"};
+    const root="/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap";
+    const p={c:"plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",m:"audits/audit-governance-recovery-v1/approved-plan-files-r5.sha256",b:"audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r5.md",rp:"audits/audit-governance-recovery-v1/approval-request-r5.json",dp:"audits/audit-governance-recovery-v1/approval-decision-r5.json",s:"audits/audit-governance-recovery-v1/bootstrap/scope-lock-PHASE-01-g001.json",q:"audits/audit-governance-recovery-v1/bootstrap/qoderwork-baseline-PHASE-01.json",rph:"audits/audit-governance-recovery-v1/bootstrap/phase-approval-request-PHASE-01-g001.json",dph:"audits/audit-governance-recovery-v1/bootstrap/phase-approval-decision-PHASE-01-g001.json",w:"audits/audit-governance-recovery-v1/bootstrap/pre-change-work-one-PHASE-01.json",out:"audits/audit-governance-recovery-v1/bootstrap/prewrite-verification.json"};
     const H=async x=>createHash("sha256").update(Buffer.from(await Bun.file(resolve(root,x)).arrayBuffer())).digest("hex");
     const J=async x=>JSON.parse(await Bun.file(resolve(root,x)).text());
     const A=(x,m)=>{if(!x)throw Error("BOOTSTRAP_WAIVER_INVALID:"+m)};
