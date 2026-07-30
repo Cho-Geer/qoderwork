@@ -32,6 +32,20 @@ baseline:
   historical_governance_plan: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set
   historical_governance_audit: audits/audit-governance-evidence-and-status-closure-v3
   m1_failure_freeze: temporary-audits/2026-07-30-path-dynamic-resolution-m1-p0-freeze.md
+  path_namespace_disambiguation: >
+    The plan/audit path roots `plans/audit-governance-recovery-v1/` and
+    `audits/audit-governance-recovery-v1/` are LOGICAL identifiers that
+    remain stable across worktree renames. They identify the plan and its
+    audit dir within the workspace, regardless of which physical worktree
+    hosts the plan. The implementation_worktree path above is the
+    PHYSICAL location of the r5 bootstrap worktree (renamed 2026-07-30
+    from `audit-governance-recovery-v1` to `audit-governance-recovery-v1-bootstrap`
+    to disambiguate from the historical `audit-governance-v2` and
+    `audit-governance-v3` worktrees). The `materialization_commands` block
+    and all `cd` commands in phase files use the physical worktree path;
+    the `plans/...` and `audits/...` roots inside those commands remain the
+    logical plan/audit identifier. This separation is intentional: the
+    plan identity is stable; the worktree identity is per-bootstrap-cycle.
   observations:
     - Existing governance index says COMPLETE while every phase file says NOT_STARTED and 99-final-verification remains unchecked.
     - Current validate-plan accepts that contradiction because it does not parse every phase or final completion gate.

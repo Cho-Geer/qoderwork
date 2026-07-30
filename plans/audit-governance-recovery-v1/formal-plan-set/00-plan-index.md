@@ -36,7 +36,7 @@ P0 is observation only; this plan repairs no M1 source or artifact.
 
 ## 1.5 P0 preflight — must complete before PHASE-01 admission
 
-Auditor Session A MUST run this preflight before the r4 admission freeze. Each step has a hard-gate check; any failure blocks admission and returns a `STATUS_PUBLICATION_UNAUTHORIZED` verdict (not BLOCKED).
+Auditor Session A MUST run this preflight before the r5 admission freeze. Each step has a hard-gate check; any failure blocks admission and returns a `STATUS_PUBLICATION_UNAUTHORIZED` verdict (not BLOCKED).
 
 1. **Target worktree exists**: `test -d /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap || { echo "BLOCKED: target worktree missing; run materialization_commands first"; exit 11; }`
 2. **9-r5 artifacts present** (the post-revision generation is r5 because plan text was revised 2026-07-30; the original 9-r4 path layout becomes 9-r5):
