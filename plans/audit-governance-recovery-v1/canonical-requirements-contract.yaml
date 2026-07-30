@@ -1210,7 +1210,7 @@ mutable_projection_registry:
     or "- [x] " with "- [] ", join with LF, append one LF, and hash UTF-8 bytes.
   phase_updates:
     PHASE-01:
-      index_admission: [P1_R4_HUMAN_DECISION_PENDING, PHASE-01_ACCEPTED]
+      index_admission: [P1_R5_PENDING_REFREEZE, PHASE-01_ACCEPTED]
       index_manifest_status: [NOT_STARTED, ACCEPTED]
       progression_status: [NOT_STARTED, ACCEPTED]
       completion_receipt: [N/A, audits/audit-governance-recovery-v1/phases/PHASE-01/g001/phase-progression-receipt.json]
