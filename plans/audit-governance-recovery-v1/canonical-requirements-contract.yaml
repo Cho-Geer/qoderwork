@@ -1,0 +1,1705 @@
+schema_version: audit-governance/v3
+document_kind: canonical-requirements
+contract_id: AUDIT-GOVERNANCE-RECOVERY-V1-20260730
+governance_profile: audit-governance-recovery/v1
+contract_state: IMMUTABLE_PROPOSAL
+language: zh-CN
+provenance_level: v3-required
+
+authority:
+  semantic_source: this_file
+  approval_request: audits/audit-governance-recovery-v1/approval-request-r5.json
+  approved_decision: audits/audit-governance-recovery-v1/approval-decision-r5.json
+  implementation_session: IMPLEMENTER_SESSION_B
+  audit_session: AUDITOR_SESSION_A
+  rule: >
+    This contract becomes executable only when a separate HUMAN_USER approval-decision
+    binds the approved-plan object set, its one-entry checksum manifest, the approved index
+    baseline, the P0 M1 freeze manifest, and the P4 boundary contract. The approved decision
+    is immutable and is never rewritten, synchronized, or replaced in place.
+
+    Generation history (for traceability; only r5 is authoritative):
+    - r1: original freeze, plan files used 01-phase-artifact-dag-and-scope-lock.md naming (deprecated, file `approved-plan-files.sha256` retained for reference only)
+    - r2: rejection with `approved_artifacts: {}` (file `approval-decision-pending-r2.json` retained for reference only)
+    - r3: would require a fresh manifest SHA freeze; not yet produced
+    - r4: P1_R4_INDEPENDENT_REVIEW_PENDING (historical name; frozen 2026-07-30, superseded by 2026-07-30 plan-text revision because the original phase file naming was wrong relative to current `formal-plan-set/`)
+    - r5: post-revision generation; this is the only authoritative generation
+
+baseline:
+  qoderwork_base_commit: 2a8b15ac2c7bfe237cdde0473564d9320b024edc
+  work_one_reference_commit: 64df8280007bd86fc4f607d1eec544eb3a3f9dd3
+  implementation_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
+  historical_governance_plan: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set
+  historical_governance_audit: audits/audit-governance-evidence-and-status-closure-v3
+  m1_failure_freeze: temporary-audits/2026-07-30-path-dynamic-resolution-m1-p0-freeze.md
+  observations:
+    - Existing governance index says COMPLETE while every phase file says NOT_STARTED and 99-final-verification remains unchecked.
+    - Current validate-plan accepts that contradiction because it does not parse every phase or final completion gate.
+    - Current validate-audit accepts any JSON path/hash as an EXCLUDED approval receipt and has no artifact-cycle check.
+    - Current capture-state --freeze mutates a scope-lock after its content has been drafted.
+    - Current skill permits manual audit-report template copying instead of requiring prepare-audit.
+    - No sync-phase-status command or single fail-fast closure entrypoint exists.
+
+closed_decisions:
+  - id: DEC-GR-001
+    decision: >
+      Auditor Session A owns planning, scope freeze, pre-change capture, formal evidence,
+      audit verdict, and post-ACCEPT publication. Implementer Session B owns only files
+      explicitly allowed by the active phase. The two product task/thread IDs must differ.
+  - id: DEC-GR-002
+    decision: >
+      Auditor Session A may use read-only subagents, but neither Auditor Session A nor any
+      of its subagents may implement governance source changes. Implementer Session B may
+      not create or edit audit reports, formal EV receipts, verdict receipts, progression
+      receipts, LATEST pointers, or plan status projections.
+  - id: DEC-GR-003
+    decision: >
+      Plan approval is a stable external artifact. EXCLUDED plan_registry entries reference
+      the stable plan approval decision, never another scope-lock. A phase approval decision
+      may reference a scope-lock; the scope-lock must not reference that phase approval.
+  - id: DEC-GR-004
+    decision: >
+      Scope-lock files are immutable and generation-addressed as
+      scope-lock-<PHASE>-gNNN.json. A correction creates gNNN+1 with an exact supersedes
+      path/hash; no command may rewrite an existing generation.
+  - id: DEC-GR-005
+    decision: >
+      New acceptance artifacts keep the existing v3 schema discriminators and additionally
+      require governance_profile audit-governance-recovery/v1. Pre-recovery v3 artifacts
+      remain historical inputs and cannot close a new phase.
+  - id: DEC-GR-006
+    decision: >
+      Mechanical producers are mandatory for scope-lock projection, dual-repository state
+      capture, EV receipts, audit-report preparation, phase closure, and status publication.
+      Manual semantic findings remain an Auditor responsibility; manual cryptographic binding
+      or SHA synchronization is forbidden.
+  - id: DEC-GR-007
+    decision: >
+      Producer identity is procedural and structural, not Byzantine-proof cryptographic
+      attestation. Each receipt binds an immutable producer-release manifest containing the
+      historical tool path, content SHA-256, version, and source base commit; validation never compares an
+      old receipt with mutable current tool bytes. Malicious forgery is an explicit non-goal.
+  - id: DEC-GR-008
+    decision: >
+      One workspace-state receipt records both qoderwork and work-one. qoderwork may have a
+      frozen pre-existing dirty baseline, but its before/after delta must be contained by the
+      phase allowed paths. work-one must remain a clean anchor with no delta.
+  - id: DEC-GR-009
+    decision: >
+      validate-plan must parse the complete phase registry, every registered phase file,
+      dependencies, progression status, completion receipt, and 99-final-verification.
+      Presence-only checks are forbidden.
+  - id: DEC-GR-010
+    decision: >
+      validate-phase-progression status modes are the only status publication path. Direct
+      manual edits of phase status, index status, manifest status, final gates, or the
+      registered documents index projection are invalid.
+  - id: DEC-GR-011
+    decision: >
+      close-audit-phase is the single fail-fast closure entrypoint. It executes precheck,
+      validate-audit, staged audit publication, staged progression receipt, staged status sync,
+      closed-phase progression validation, and plan validation in that exact order, then commits.
+      It stops before the next side effect on any failure.
+  - id: DEC-GR-012
+    decision: >
+      Existing M1 audit artifacts are never repaired in place. M1 may be re-baselined only
+      after this recovery plan receives an independent final ACCEPT.
+  - id: DEC-GR-013
+    decision: >
+      PHASE-01 has one HUMAN-bound recovery bootstrap waiver because the current admission,
+      embedded lock approval, qoderwork state, and status rules cannot authorize their own
+      repair. The live index remains BLOCKED until the candidate PHASE-01 audit passes; one
+      atomic bootstrap activation/closure then consumes the waiver. It cannot authorize any
+      later phase or any manual status edit.
+  - id: DEC-GR-014
+    decision: >
+      Every normal phase follows create scope, run P-02A entry admission, obtain HUMAN approval
+      of that exact scope, capture PRE_CHANGE, and only then implement. PHASE-01 replaces only
+      the blocked entry-admission result with its exact two-decision waiver; all other order
+      constraints remain mandatory.
+  - id: DEC-GR-015
+    decision: >
+      PHASE-01 contains the minimum evidence, report, release, state, and closure producers
+      required to audit and adopt itself. Candidate output has no authority until candidate
+      validation succeeds and the one-use bootstrap transaction publishes the accepted
+      release and receipts. PHASE-02 candidate wrapper may create staged bytes only; accepted
+      PHASE-01 validate-phase-progression independently revalidates and commits them through
+      its one-use adoption mode. Only PHASE-03 onward invokes the wrapper as accepted tooling.
+  - id: DEC-GR-016
+    decision: >
+      Approval freezes semantic bytes before approval as a content-addressed
+      approved-plan-object-set. The checksum manifest contains exactly that object-set entry,
+      never mutable live phase paths. After plan approval, one materialization receipt binds
+      the approved objects, immutable mirrors, and initial live snapshots. Scope and prewrite
+      consume that receipt and immutable mirrors; live plan bytes are never approval identity.
+  - id: DEC-GR-017
+    decision: >
+      Final audit evidence and final publication gates are separate acyclic chains.
+      Audit-report evidence is prepared before publication. Ten exclusive final-gate receipts
+      are produced at their registered stages and are referenced only by the final status
+      authority receipt. That authority receipt is atomically renamed last; its appearance is
+      the only FINAL_ACCEPTED event.
+  - id: DEC-GR-018
+    decision: >
+      P0 immutability is an exact 87-file path/SHA manifest covering the seven M1 plan files
+      and eighty M1 audit files. P4 is mechanically bounded by a separate approval-bound
+      admission contract. The final gate proves no authorized P4 admission or write occurred;
+      it does not claim visibility into arbitrary external task-control-plane state.
+
+atomic_requirements:
+  - id: REQ-GR-001
+    title: Session role separation
+    required_behavior: >
+      Every active audit bundle binds one immutable session-role manifest containing distinct
+      auditor_session_id and implementer_session_id values, role-owned path classes, and the
+      HUMAN_USER-approved plan decision.
+    observable_result: >
+      Missing, equal, unknown, or role-inconsistent session IDs fail with exactly
+      SESSION_ROLE_MISSING or SESSION_ROLE_COLLISION.
+    phase: PHASE-01
+    evidence_level: component
+  - id: REQ-GR-002
+    title: Stable approval references
+    required_behavior: >
+      Every EXCLUDED registry item references the stable plan approval decision path/hash.
+      Scope-lock paths and mutable status documents are forbidden approval targets.
+    observable_result: >
+      A scope-lock approval target fails with APPROVAL_ARTIFACT_UNSTABLE; the stable decision
+      fixture passes without any downstream hash rewrite.
+    phase: PHASE-03
+    evidence_level: component
+  - id: REQ-GR-003
+    title: Artifact DAG validation
+    required_behavior: >
+      The shared validator builds the governance JSON reference graph, validates allowed edge
+      types, and rejects every directed cycle before audit semantics are evaluated.
+    observable_result: >
+      A two-node lock cycle fails only ARTIFACT_REFERENCE_CYCLE; a forbidden edge fails only
+      ARTIFACT_EDGE_FORBIDDEN; the canonical chain is acyclic.
+    phase: PHASE-03
+    evidence_level: component
+  - id: REQ-GR-004
+    title: Immutable versioned scope locks
+    required_behavior: >
+      prepare-scope-lock creates gNNN with write-exclusive semantics. Existing outputs are
+      never overwritten. Later generations require an exact supersedes path/hash and retain
+      every prior generation.
+    observable_result: >
+      Reusing an output path fails SCOPE_LOCK_MUTATION_FORBIDDEN; a broken generation chain
+      fails SCOPE_LOCK_GENERATION_INVALID.
+    phase: PHASE-01
+    evidence_level: file-integration
+  - id: REQ-GR-005
+    title: Mandatory evidence and report preparation
+    required_behavior: >
+      EV receipts and the audit contract/report pair are accepted only when produced
+      mechanically and their envelope matches an immutable producer-release manifest
+      path/hash/version. Auditor findings remain a separate bounded semantic section.
+    observable_result: >
+      A missing producer envelope fails PRODUCER_METADATA_MISSING and a wrong tool hash or
+      dependency/version fails PRODUCER_RELEASE_MISMATCH; an incomplete pair fails
+      PREPARED_REPORT_INCOMPLETE.
+    phase: PHASE-01
+    evidence_level: file-integration
+  - id: REQ-GR-006
+    title: Dual-repository state receipt
+    required_behavior: >
+      capture-state reads qoderwork and work-one in one invocation, never mutates scope-lock,
+      records both Git roots/HEAD/status/file hashes, and writes a PRE_CHANGE or VERDICT
+      receipt with exclusive creation.
+    observable_result: >
+      Missing either repository fails WORKSPACE_STATE_MISSING; a qoderwork delta outside
+      allowed paths or any work-one delta fails WORKSPACE_DELTA_OUT_OF_SCOPE.
+    phase: PHASE-01
+    evidence_level: file-integration
+  - id: REQ-GR-007
+    title: Independent execution and domain observations
+    required_behavior: >
+      EV receipts retain execution.observed/exit_code/timed_out separately from
+      domain_observation.result/error_code. Neither value may be inferred from the other.
+    observable_result: >
+      A command-exit/domain-result disagreement remains representable and is checked against
+      its decision case; collapsing the two observations fails the exact receipt contract.
+    phase: PHASE-01
+    evidence_level: component
+  - id: REQ-GR-008
+    title: Complete PLAN_SET admission
+    required_behavior: >
+      validate-plan checks contiguous manifest order, unique IDs/files, dependency direction,
+      phase header equivalence, phase status/receipt consistency, unregistered phase files,
+      complete requirement ownership, and 99-final-verification completion.
+    observable_result: >
+      An empty 99 file, phase/index status split, missing receipt, or unregistered phase file
+      fails a stable PLAN_* error and cannot return ok:true.
+    phase: PHASE-01
+    evidence_level: file-integration
+  - id: REQ-GR-009
+    title: Admission for every phase and final closure
+    required_behavior: >
+      validate-phase-progression has distinct entry, closed-phase, and final modes. Entry checks
+      the target and dependencies before implementation; closed-phase checks an ACCEPTED staged
+      overlay; final checks every phase plus final gates.
+    observable_result: >
+      No single overall report can project all phases ACCEPTED unless each phase has a valid,
+      phase-specific completion receipt.
+    phase: PHASE-01
+    evidence_level: file-integration
+  - id: REQ-GR-010
+    title: Sync-only status publication
+    required_behavior: >
+      validate-phase-progression status modes derive index/phase/99 and the registered
+      documents index projection exclusively from validated immutable receipts, use atomic
+      writes, record before/after hashes, and refuse free-form target statuses.
+    observable_result: >
+      An absent/invalid receipt causes zero file changes and STATUS_PUBLICATION_UNAUTHORIZED.
+    phase: PHASE-01
+    evidence_level: file-integration
+  - id: REQ-GR-011
+    title: Single closure wrapper
+    required_behavior: >
+      close-audit-phase executes the eight required closure stages in fixed order, records a
+      stage ledger, and performs no later publication after the first nonzero stage.
+    observable_result: >
+      One isolated stage mutation produces only CLOSURE_STEP_FAILED:<stage>, preserves prior
+      evidence, and leaves all later stage effects absent. An injected partial commit produces
+      COMMIT_INTERRUPTED and permits only exact journal-bound resume.
+    phase: PHASE-02
+    evidence_level: file-integration
+  - id: REQ-GR-012
+    title: Executable conformance verifier
+    required_behavior: >
+      One table-driven conformance CLI validates file readability, every surface-marker pair,
+      three-state negative searches, template discriminators, and ordered failedChecks.
+    observable_result: >
+      Each isolated missing marker or stale instruction returns exactly one registered
+      CONFORMANCE_* failure; unreadable evidence never counts as absence.
+    phase: PHASE-04
+    evidence_level: file-integration
+  - id: REQ-GR-013
+    title: Rules, skills, templates, and historical boundary
+    required_behavior: >
+      AGENTS, provenance rules, planning/audit skills, and active templates state the same role,
+      DAG, producer-release, workspace-state, progression, and closure contracts. Historical
+      invalid artifacts are explicitly non-repairable.
+    observable_result: >
+      The PHASE-04 conformance CLI returns ok:true on the active surfaces with no stale v2.1,
+      manual-copy, --freeze, or direct-publication instruction.
+    phase: PHASE-05
+    evidence_level: file-integration
+  - id: REQ-GR-014
+    title: Documentation and implementation log projection
+    required_behavior: >
+      After PHASE-01 through PHASE-05 are individually accepted, PHASE-06 writes indexes as
+      IMPLEMENTED_PENDING_FINAL_AUDIT and records exact changed surfaces, evidence levels, and
+      remaining final-audit gates.
+    observable_result: >
+      Premature ACCEPTED/COMPLETE language or a missing/misindexed implementation log fails
+      PHASE-06 fixed checks and cannot advance final closure.
+    phase: PHASE-06
+    evidence_level: file-integration
+
+artifact_dag:
+  edge_direction: dependent_to_prerequisite
+  reference_rule: Every path/SHA or scalar-SHA reference is registered by source kind, field, target kind, and constraint.
+  parser_contracts:
+    json_reference: "object with exact path and lowercase sha256; both are verified"
+    logical_metadata: >
+      logical_path, historical_path, live_path, case_set, source_base_commit, profile,
+      version, and every field explicitly declared LOGICAL_ONLY are labels, never graph
+      references. Parsers may create an edge only from a registered REF field.
+    approved_plan_object_set: >
+      schema audit-approved-plan-object-set/v1 and kind approved-plan-object-set have exact
+      top-level keys schema_version, document_kind, plan_id, generation,
+      source_base_commit, entry_count, entries_sha256, entries. Entries are sorted by
+      logical_path and cover canonical, PHASE-01..06, and final verification exactly once.
+      Each entry has exact keys logical_path, kind, bytes; bytes is a REF to
+      approval-objects/sha256/<sha256>. entry_count is 8 and entries_sha256 hashes the UTF-8
+      compact JSON entries array. logical_path and source_base_commit are LOGICAL_ONLY.
+    checksum_entry: >
+      approved-plan-files-r4.sha256 is UTF-8 with exactly one LF-terminated line:
+      "<object_set.sha256>  audits/audit-governance-recovery-v1/approved-plan-object-set-r4.json".
+      It excludes itself, live plan paths, baselines, requests, decisions, and materialization.
+    approved_plan_materialization: >
+      schema audit-approved-plan-materialization/v1 and kind approved-plan-materialization
+      have exact refs plan_approval, object_set, approved_plan_files, approved_index_baseline;
+      semantic_entries contain exactly eight sorted rows with logical_path/kind LOGICAL_ONLY
+      plus approved_object, immutable_mirror, and initial_live_snapshot REFs of identical SHA.
+      index_entry binds the approved baseline and a content-addressed initial live snapshot.
+      semantic_entry_count is 8 and live_path_count is 9. The receipt is exclusive, is created
+      after plan approval/materialization, and hashes no later mutable live path.
+    frozen_m1_files: >
+      schema audit-frozen-file-set/v1 and kind frozen-m1-files contain exactly 87 sorted
+      unique entries: seven plans/path-dynamic-resolution-m1 files and eighty
+      audits/path-dynamic-resolution-m1 files. Every entry has logical_path LOGICAL_ONLY and
+      bytes REF to an immutable object; symlinks, extra/missing paths, and duplicate paths fail.
+    p4_boundary_contract: >
+      schema audit-p4-boundary/v1 and kind p4-boundary-contract freeze the sole P4 plan ID,
+      admission root, plan root, worktree path, admission receipt schema, and prerequisite
+      final authority receipt path. All paths are LOGICAL_ONLY. Without the registered
+      admission receipt there is no authorized P4 admission or P4 write.
+    legacy_bootstrap_repository_receipt: >
+      Only PHASE-01 may parse the current schema_version audit-evidence-receipt/v3,
+      document_kind evidence-receipt, repository_realpath, phase_id, head, captured_at,
+      status_entries, and scalar
+      scope_lock_sha256 shape. The scalar must equal the referenced scope bytes. Its
+      role is inferred only from the exact approved qoderwork or work-one realpath.
+    audit_report_markdown: >
+      The only structural outgoing reference is contract; all other structural
+      references live in the mechanically generated audit-report-contract.
+    projection_snapshot: >
+      projection_path is a logical live destination, not a graph reference;
+      projection_sha256 must equal bytes.sha256. bytes is the sole path/SHA edge to
+      immutable projection-bytes, and sequence is monotonically increasing.
+    workspace_state_receipt: >
+      Phase form requires scope_lock and phase_approval; final form requires final=true
+      and forbids both. Both forms require distinct session roles, producer release,
+      exact qoderwork/work-one roots, and PRE_CHANGE or VERDICT kind.
+    producer_release_manifest: >
+      Exact top-level keys are schema_version, document_kind, governance_profile, release_id,
+      case_set, canonical_contract, registry_projection, registry_projection_sha256,
+      normalized_source_set_sha256, source_base_commit, producer_version, tool_sources,
+      transitive_dependencies, created_at. schema/version/profile are fixed by
+      producer_release_registry. Entries are sorted and have exact keys historical_path,
+      classification, source_base_commit, version, bytes. historical_path is LOGICAL_ONLY;
+      bytes is the only REF and points to objects/sha256/<sha256>. Validation reads only that
+      object, never later live historical_path bytes.
+    self_kind_edges: >
+      scope supersedes and status prior_publication are allowed only when target
+      generation or sequence is exactly source minus one; all other self edges fail.
+    pending_plan_decision: >
+      The pending marker is a true leaf: no path/SHA object, request/baseline reference,
+      create_new_path field, or other string interpreted as a governance reference.
+    final_gate_receipt: >
+      schema final-gate-receipt/v1, kind final-gate-receipt, exclusive output, exact gate ID,
+      stage, observed inputs, exit/marker, and registered REFs. Gate receipts are meta-evidence:
+      they are excluded from the GATE-005 subject graph and are validated with the final
+      authority receipt after GATE-008.
+  node_parsers:
+    yaml:
+      - canonical-requirements
+    json:
+      - plan-approval-request
+      - plan-approval-decision
+      - plan-approval-decision-pending
+      - approved-plan-object-set
+      - approved-plan-materialization
+      - frozen-m1-files
+      - p4-boundary-contract
+      - phase-approval-request
+      - phase-scope-lock
+      - phase-approval-decision
+      - legacy-bootstrap-repository-receipt
+      - bootstrap-prewrite-receipt
+      - session-role-manifest
+      - workspace-state-receipt
+      - producer-release-manifest
+      - evidence-receipt
+      - audit-report-contract
+      - phase-projection
+      - phase-progression-receipt
+      - plan-final-progression-receipt
+      - projection-snapshot
+      - status-publication-receipt
+      - plan-activation-receipt
+      - closure-transaction
+      - auditor-semantic-decision
+      - final-gate-receipt
+      - finalization-journal
+    markdown:
+      - approved-index-baseline
+      - plan-phase
+      - final-verification
+      - audit-report
+      - auditor-findings
+    checksum_manifest:
+      - approved-plan-files
+    byte:
+      - approved-plan-byte
+      - historical-m1-byte
+      - source-file
+      - projection-bytes
+  allowed_edges:
+    - source: plan-approval-request
+      field: canonical_contract
+      target: canonical-requirements
+    - source: plan-approval-request
+      field: approved_plan_files
+      target: approved-plan-files
+    - source: plan-approval-request
+      field: approved_plan_object_set
+      target: approved-plan-object-set
+    - source: plan-approval-request
+      field: approved_index_baseline
+      target: approved-index-baseline
+    - source: plan-approval-request
+      field: pending_decision
+      target: plan-approval-decision-pending
+    - source: plan-approval-request
+      field: frozen_m1_files
+      target: frozen-m1-files
+    - source: plan-approval-request
+      field: p4_boundary
+      target: p4-boundary-contract
+    - source: plan-approval-decision
+      field: approval_request
+      target: plan-approval-request
+    - source: plan-approval-decision
+      field: canonical_contract
+      target: canonical-requirements
+    - source: plan-approval-decision
+      field: approved_plan_files
+      target: approved-plan-files
+    - source: plan-approval-decision
+      field: approved_plan_object_set
+      target: approved-plan-object-set
+    - source: plan-approval-decision
+      field: approved_index_baseline
+      target: approved-index-baseline
+    - source: plan-approval-decision
+      field: frozen_m1_files
+      target: frozen-m1-files
+    - source: plan-approval-decision
+      field: p4_boundary
+      target: p4-boundary-contract
+    - source: phase-approval-request
+      field: plan_approval
+      target: plan-approval-decision
+    - source: phase-approval-request
+      field: scope_lock
+      target: phase-scope-lock
+    - source: phase-approval-request
+      field: qoderwork_baseline
+      target: legacy-bootstrap-repository-receipt
+    - source: phase-approval-request
+      field: session_roles
+      target: session-role-manifest
+    - source: phase-approval-decision
+      field: approval_request
+      target: phase-approval-request
+    - source: phase-approval-decision
+      field: plan_approval
+      target: plan-approval-decision
+    - source: phase-approval-decision
+      field: qoderwork_baseline
+      target: legacy-bootstrap-repository-receipt
+    - source: approved-plan-object-set
+      field: entries[].bytes
+      target: approved-plan-byte
+    - source: approved-plan-files
+      field: object_set
+      target: approved-plan-object-set
+    - source: frozen-m1-files
+      field: entries[].bytes
+      target: historical-m1-byte
+    - source: approved-index-baseline
+      field: canonical_contract
+      target: canonical-requirements
+    - source: approved-index-baseline
+      field: approved_plan_files
+      target: approved-plan-files
+    - source: approved-index-baseline
+      field: approved_plan_object_set
+      target: approved-plan-object-set
+    - source: approved-index-baseline
+      field: approval_decision
+      target: plan-approval-decision-pending
+    - source: approved-plan-materialization
+      field: plan_approval
+      target: plan-approval-decision
+    - source: approved-plan-materialization
+      field: object_set
+      target: approved-plan-object-set
+    - source: approved-plan-materialization
+      field: approved_plan_files
+      target: approved-plan-files
+    - source: approved-plan-materialization
+      field: approved_index_baseline
+      target: approved-index-baseline
+    - source: approved-plan-materialization
+      field: semantic_entries[].approved_object
+      target: approved-plan-byte
+    - source: approved-plan-materialization
+      field: semantic_entries[].immutable_mirror
+      target: approved-plan-byte
+    - source: approved-plan-materialization
+      field: semantic_entries[].initial_live_snapshot
+      target: approved-plan-byte
+    - source: approved-plan-materialization
+      field: index_entry.initial_live_snapshot
+      target: projection-bytes
+    - source: plan-activation-receipt
+      field: approved_index_baseline
+      target: approved-index-baseline
+    - source: plan-activation-receipt
+      field: approval_decision
+      target: plan-approval-decision
+    - source: plan-activation-receipt
+      field: phase_approval
+      target: phase-approval-decision
+    - source: plan-activation-receipt
+      field: phase_progression_receipt
+      target: phase-progression-receipt
+    - source: plan-activation-receipt
+      field: before_projections
+      target: projection-snapshot
+    - source: plan-activation-receipt
+      field: after_projections
+      target: projection-snapshot
+    - source: plan-activation-receipt
+      field: producer_release
+      target: producer-release-manifest
+    - source: plan-activation-receipt
+      field: bootstrap_prewrite
+      target: bootstrap-prewrite-receipt
+    - source: plan-activation-receipt
+      field: approved_plan_materialization
+      target: approved-plan-materialization
+    - source: session-role-manifest
+      field: plan_approval
+      target: plan-approval-decision
+    - source: session-role-manifest
+      field: approved_plan_materialization
+      target: approved-plan-materialization
+    - source: phase-scope-lock
+      field: plan_approval
+      target: plan-approval-decision
+    - source: phase-scope-lock
+      field: canonical_contract
+      target: canonical-requirements
+    - source: phase-scope-lock
+      field: approved_plan.object_set
+      target: approved-plan-object-set
+    - source: phase-scope-lock
+      field: approved_plan.materialization
+      target: approved-plan-materialization
+    - source: phase-scope-lock
+      field: approved_plan.phase.mirror
+      target: approved-plan-byte
+    - source: phase-scope-lock
+      field: session_roles
+      target: session-role-manifest
+    - source: phase-scope-lock
+      field: producer_release
+      target: producer-release-manifest
+    - source: phase-scope-lock
+      field: supersedes
+      target: phase-scope-lock
+      constraint: target generation equals source generation minus one
+    - source: producer-release-manifest
+      field: canonical_contract
+      target: canonical-requirements
+    - source: producer-release-manifest
+      field: tool_sources[].bytes
+      target: source-file
+    - source: producer-release-manifest
+      field: transitive_dependencies[].bytes
+      target: source-file
+    - source: phase-approval-decision
+      field: scope_lock
+      target: phase-scope-lock
+    - source: phase-approval-decision
+      field: session_roles
+      target: session-role-manifest
+    - source: legacy-bootstrap-repository-receipt
+      field: scope_lock_sha256
+      target: phase-scope-lock
+      constraint: scalar equals target file sha256 and source phase is PHASE-01
+    - source: bootstrap-prewrite-receipt
+      field: plan_approval_request
+      target: plan-approval-request
+    - source: bootstrap-prewrite-receipt
+      field: plan_approval
+      target: plan-approval-decision
+    - source: bootstrap-prewrite-receipt
+      field: approved_plan_object_set
+      target: approved-plan-object-set
+    - source: bootstrap-prewrite-receipt
+      field: approved_plan_files
+      target: approved-plan-files
+    - source: bootstrap-prewrite-receipt
+      field: approved_index_baseline
+      target: approved-index-baseline
+    - source: bootstrap-prewrite-receipt
+      field: frozen_m1_files
+      target: frozen-m1-files
+    - source: bootstrap-prewrite-receipt
+      field: p4_boundary
+      target: p4-boundary-contract
+    - source: bootstrap-prewrite-receipt
+      field: approved_plan_materialization
+      target: approved-plan-materialization
+    - source: bootstrap-prewrite-receipt
+      field: scope_lock
+      target: phase-scope-lock
+    - source: bootstrap-prewrite-receipt
+      field: qoderwork_baseline
+      target: legacy-bootstrap-repository-receipt
+    - source: bootstrap-prewrite-receipt
+      field: phase_approval_request
+      target: phase-approval-request
+    - source: bootstrap-prewrite-receipt
+      field: phase_approval
+      target: phase-approval-decision
+    - source: bootstrap-prewrite-receipt
+      field: work_one_baseline
+      target: legacy-bootstrap-repository-receipt
+    - source: workspace-state-receipt
+      field: scope_lock
+      target: phase-scope-lock
+    - source: workspace-state-receipt
+      field: phase_approval
+      target: phase-approval-decision
+    - source: workspace-state-receipt
+      field: session_roles
+      target: session-role-manifest
+    - source: workspace-state-receipt
+      field: producer_release
+      target: producer-release-manifest
+    - source: workspace-state-receipt
+      field: bootstrap_sources
+      target: legacy-bootstrap-repository-receipt
+    - source: evidence-receipt
+      field: scope_lock
+      target: phase-scope-lock
+    - source: evidence-receipt
+      field: phase_approval
+      target: phase-approval-decision
+    - source: evidence-receipt
+      field: session_roles
+      target: session-role-manifest
+    - source: evidence-receipt
+      field: pre_change_state
+      target: workspace-state-receipt
+    - source: evidence-receipt
+      field: verdict_state
+      target: workspace-state-receipt
+    - source: evidence-receipt
+      field: canonical_contract
+      target: canonical-requirements
+    - source: evidence-receipt
+      field: producer_release
+      target: producer-release-manifest
+    - source: evidence-receipt
+      field: phase_projections
+      target: phase-projection
+    - source: audit-report
+      field: contract
+      target: audit-report-contract
+    - source: audit-report-contract
+      field: scope_lock
+      target: phase-scope-lock
+    - source: audit-report-contract
+      field: phase_approval
+      target: phase-approval-decision
+    - source: audit-report-contract
+      field: session_roles
+      target: session-role-manifest
+    - source: audit-report-contract
+      field: pre_change_state
+      target: workspace-state-receipt
+    - source: audit-report-contract
+      field: verdict_state
+      target: workspace-state-receipt
+    - source: audit-report-contract
+      field: evidence_receipts
+      target: evidence-receipt
+    - source: audit-report-contract
+      field: canonical_contract
+      target: canonical-requirements
+    - source: audit-report-contract
+      field: auditor_findings
+      target: auditor-findings
+    - source: audit-report-contract
+      field: producer_releases
+      target: producer-release-manifest
+    - source: audit-report-contract
+      field: auditor_semantic_decision
+      target: auditor-semantic-decision
+    - source: audit-report-contract
+      field: phase_projections
+      target: phase-projection
+      constraint: field is present only in final contract and covers PHASE-01 through PHASE-06 exactly once
+    - source: phase-projection
+      field: audit_report
+      target: audit-report
+    - source: phase-projection
+      field: audit_report_contract
+      target: audit-report-contract
+    - source: phase-projection
+      field: verdict_state
+      target: workspace-state-receipt
+    - source: phase-projection
+      field: scope_lock
+      target: phase-scope-lock
+    - source: phase-projection
+      field: phase_approval
+      target: phase-approval-decision
+    - source: phase-projection
+      field: session_roles
+      target: session-role-manifest
+    - source: phase-projection
+      field: producer_release
+      target: producer-release-manifest
+    - source: phase-progression-receipt
+      field: phase_projection
+      target: phase-projection
+    - source: phase-progression-receipt
+      field: audit_report
+      target: audit-report
+    - source: phase-progression-receipt
+      field: audit_report_contract
+      target: audit-report-contract
+    - source: phase-progression-receipt
+      field: verdict_state
+      target: workspace-state-receipt
+    - source: phase-progression-receipt
+      field: producer_release
+      target: producer-release-manifest
+    - source: plan-final-progression-receipt
+      field: audit_report
+      target: audit-report
+    - source: plan-final-progression-receipt
+      field: audit_report_contract
+      target: audit-report-contract
+    - source: plan-final-progression-receipt
+      field: phase_projections
+      target: phase-projection
+    - source: plan-final-progression-receipt
+      field: verdict_state
+      target: workspace-state-receipt
+    - source: plan-final-progression-receipt
+      field: prior_publication
+      target: status-publication-receipt
+      constraint: target is the latest accepted PHASE-06 status for this plan
+    - source: plan-final-progression-receipt
+      field: producer_release
+      target: producer-release-manifest
+    - source: auditor-semantic-decision
+      field: auditor_findings
+      target: auditor-findings
+    - source: auditor-semantic-decision
+      field: canonical_contract
+      target: canonical-requirements
+    - source: auditor-semantic-decision
+      field: producer_release
+      target: producer-release-manifest
+    - source: auditor-semantic-decision
+      field: pre_change_state
+      target: workspace-state-receipt
+    - source: auditor-semantic-decision
+      field: verdict_state
+      target: workspace-state-receipt
+    - source: auditor-semantic-decision
+      field: phase_projections
+      target: phase-projection
+    - source: auditor-semantic-decision
+      field: session_roles
+      target: session-role-manifest
+    - source: final-gate-receipt
+      field: canonical_contract
+      target: canonical-requirements
+    - source: final-gate-receipt
+      field: plan_approval
+      target: plan-approval-decision
+    - source: final-gate-receipt
+      field: phase_approval
+      target: phase-approval-decision
+    - source: final-gate-receipt
+      field: session_roles
+      target: session-role-manifest
+    - source: final-gate-receipt
+      field: producer_release
+      target: producer-release-manifest
+    - source: final-gate-receipt
+      field: pre_change_state
+      target: workspace-state-receipt
+    - source: final-gate-receipt
+      field: verdict_state
+      target: workspace-state-receipt
+    - source: final-gate-receipt
+      field: audit_report
+      target: audit-report
+    - source: final-gate-receipt
+      field: audit_report_contract
+      target: audit-report-contract
+    - source: final-gate-receipt
+      field: auditor_semantic_decision
+      target: auditor-semantic-decision
+    - source: final-gate-receipt
+      field: phase_projections
+      target: phase-projection
+    - source: final-gate-receipt
+      field: prior_publication
+      target: status-publication-receipt
+    - source: final-gate-receipt
+      field: frozen_m1_files
+      target: frozen-m1-files
+    - source: final-gate-receipt
+      field: p4_boundary
+      target: p4-boundary-contract
+    - source: final-gate-receipt
+      field: finalization_journal
+      target: finalization-journal
+    - source: status-publication-receipt
+      field: phase_progression_receipt
+      target: phase-progression-receipt
+    - source: status-publication-receipt
+      field: final_progression_receipt
+      target: plan-final-progression-receipt
+    - source: status-publication-receipt
+      field: plan_activation
+      target: plan-activation-receipt
+    - source: status-publication-receipt
+      field: prior_publication
+      target: status-publication-receipt
+      constraint: target sequence equals source sequence minus one for the same plan
+    - source: status-publication-receipt
+      field: before_projections
+      target: projection-snapshot
+    - source: status-publication-receipt
+      field: after_projections
+      target: projection-snapshot
+    - source: status-publication-receipt
+      field: producer_release
+      target: producer-release-manifest
+    - source: status-publication-receipt
+      field: final_gates
+      target: final-gate-receipt
+      constraint: final authority only; covers GATE-GR-FINAL-001 through 010 exactly once
+    - source: status-publication-receipt
+      field: finalization_journal
+      target: finalization-journal
+      constraint: final authority only; journal was sealed before GATE-GR-FINAL-008
+    - source: projection-snapshot
+      field: bytes
+      target: projection-bytes
+    - source: finalization-journal
+      field: published_report
+      target: audit-report
+    - source: finalization-journal
+      field: report_contract
+      target: audit-report-contract
+    - source: finalization-journal
+      field: final_progression_receipt
+      target: plan-final-progression-receipt
+    - source: finalization-journal
+      field: before_projections
+      target: projection-snapshot
+    - source: finalization-journal
+      field: after_projections
+      target: projection-snapshot
+    - source: finalization-journal
+      field: producer_release
+      target: producer-release-manifest
+    - source: closure-transaction
+      field: scope_lock
+      target: phase-scope-lock
+    - source: closure-transaction
+      field: phase_approval
+      target: phase-approval-decision
+    - source: closure-transaction
+      field: session_roles
+      target: session-role-manifest
+    - source: closure-transaction
+      field: pre_change_state
+      target: workspace-state-receipt
+    - source: closure-transaction
+      field: verdict_state
+      target: workspace-state-receipt
+    - source: closure-transaction
+      field: prepared_report
+      target: audit-report
+    - source: closure-transaction
+      field: report_contract
+      target: audit-report-contract
+    - source: closure-transaction
+      field: published_report
+      target: audit-report
+    - source: closure-transaction
+      field: phase_projection
+      target: phase-projection
+    - source: closure-transaction
+      field: progression_receipt
+      target: phase-progression-receipt
+    - source: closure-transaction
+      field: final_progression_receipt
+      target: plan-final-progression-receipt
+    - source: closure-transaction
+      field: plan_activation
+      target: plan-activation-receipt
+    - source: closure-transaction
+      field: prior_publication
+      target: status-publication-receipt
+    - source: closure-transaction
+      field: status_publication
+      target: status-publication-receipt
+    - source: closure-transaction
+      field: before_projections
+      target: projection-snapshot
+    - source: closure-transaction
+      field: after_projections
+      target: projection-snapshot
+    - source: closure-transaction
+      field: producer_release
+      target: producer-release-manifest
+    - source: closure-transaction
+      field: auditor_semantic_decision
+      target: auditor-semantic-decision
+    - source: closure-transaction
+      field: final_gates
+      target: final-gate-receipt
+  forbidden_edges:
+    - any unregistered source-kind/field/target-kind triple
+    - phase-scope-lock -> phase-approval-decision
+    - phase-scope-lock -> phase-scope-lock except registered adjacent supersedes
+    - phase-scope-lock -> any later approval, state, evidence, report, projection, progression, status, activation, or transaction
+    - audit-report -> any structural target except its audit-report-contract
+    - evidence-receipt -> any report, projection, progression, status, activation, or transaction
+    - producer-release-manifest -> receipt produced by that release
+    - legacy-bootstrap-repository-receipt -> any phase other than PHASE-01
+    - status-publication-receipt -> a different plan or non-adjacent prior publication
+    - any directed cycle
+  typed_edge_fixture:
+    schema_version: audit-governance-typed-edge-fixture/v1
+    authority: >
+      This explicit typed fixture replaces and invalidates every earlier fixed-count/topology
+      constant. Counts and topological order are observed diagnostics only and are never
+      acceptance evidence.
+    required_coverage: >
+      Convert every fixture ref to (source.kind, field, target.kind), deduplicate, sort by
+      UTF-8 code point, and require exact set equality with allowed_edges. Every target ID
+      must exist; every ref must be registered; Kahn must visit every fixture node.
+    variant_contracts:
+      - scope_g002 supersedes only scope_g001; a g001 self-ref and a g002 back-edge each fail.
+      - status_seq2 prior_publication targets only status_seq1; cross-plan/nonadjacent refs fail.
+      - phase/final workspace, evidence, contract, progression, and status shapes are distinct.
+      - report_phase and report_final are separate from contract_phase and contract_final.
+      - phase_projection_01 through phase_projection_06 are six distinct final inputs.
+      - snapshot_before and snapshot_after bind different immutable projection bytes.
+      - gate_001 through gate_010 are stage-specific meta-evidence and not GATE-005 subjects.
+    live_subject_graph_oracle: >
+      Production builder starts from approval roots plus accepted phase transactions/status
+      and the staged final report/progression/projections. An independent implementation in
+      validate-phase-progression starts from the same registered roots, expands registered
+      REFs and every release object, and must not import the production graph builder.
+      Each computes sorted node tuples (kind,path,sha256) and edge tuples
+      (source_tuple,field,target_tuple); tuple-set SHA-256 values and observed counts must
+      match exactly. final-gate receipts and final authority are excluded from this subject
+      graph and validated as meta-evidence after GATE-008.
+    nodes:
+      approved_index_baseline: {kind: approved-index-baseline, refs: {"approval_decision": [plan_approval_decision_pending], "approved_plan_files": [approved_plan_files], "approved_plan_object_set": [approved_plan_object_set], "canonical_contract": [canonical_requirements]}}
+      approved_plan_byte: {kind: approved-plan-byte, refs: {}}
+      approved_plan_files: {kind: approved-plan-files, refs: {"object_set": [approved_plan_object_set]}}
+      approved_plan_materialization: {kind: approved-plan-materialization, refs: {"approved_index_baseline": [approved_index_baseline], "approved_plan_files": [approved_plan_files], "index_entry.initial_live_snapshot": [projection_bytes], "object_set": [approved_plan_object_set], "plan_approval": [plan_approval_decision], "semantic_entries[].approved_object": [approved_plan_byte], "semantic_entries[].immutable_mirror": [approved_plan_byte], "semantic_entries[].initial_live_snapshot": [approved_plan_byte]}}
+      approved_plan_object_set: {kind: approved-plan-object-set, refs: {"entries[].bytes": [approved_plan_byte]}}
+      auditor_findings: {kind: auditor-findings, refs: {}}
+      auditor_semantic_decision: {kind: auditor-semantic-decision, refs: {"auditor_findings": [auditor_findings], "canonical_contract": [canonical_requirements], "phase_projections": [phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "pre_change_state": [workspace_final], "producer_release": [producer_release_manifest], "session_roles": [session_role_manifest], "verdict_state": [workspace_final]}}
+      bootstrap_prewrite_receipt: {kind: bootstrap-prewrite-receipt, refs: {"approved_index_baseline": [approved_index_baseline], "approved_plan_files": [approved_plan_files], "approved_plan_materialization": [approved_plan_materialization], "approved_plan_object_set": [approved_plan_object_set], "frozen_m1_files": [frozen_m1_files], "p4_boundary": [p4_boundary_contract], "phase_approval": [phase_approval_decision], "phase_approval_request": [phase_approval_request], "plan_approval": [plan_approval_decision], "plan_approval_request": [plan_approval_request], "qoderwork_baseline": [legacy_bootstrap_repository_receipt], "scope_lock": [scope_g002], "work_one_baseline": [legacy_bootstrap_repository_receipt]}}
+      canonical_requirements: {kind: canonical-requirements, refs: {}}
+      closure_phase: {kind: closure-transaction, refs: {"after_projections": [snapshot_after], "auditor_semantic_decision": [auditor_semantic_decision], "before_projections": [snapshot_before], "final_gates": [gate_001], "final_progression_receipt": [plan_final_progression_receipt], "phase_approval": [phase_approval_decision], "phase_projection": [phase_projection_01], "plan_activation": [plan_activation_receipt], "pre_change_state": [workspace_phase], "prepared_report": [report_phase], "prior_publication": [status_seq1], "producer_release": [producer_release_manifest], "progression_receipt": [phase_progression_receipt], "published_report": [report_phase], "report_contract": [contract_phase], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "status_publication": [status_seq1], "verdict_state": [workspace_phase]}}
+      contract_final: {kind: audit-report-contract, refs: {"auditor_findings": [auditor_findings], "auditor_semantic_decision": [auditor_semantic_decision], "canonical_contract": [canonical_requirements], "evidence_receipts": [evidence_final], "phase_projections": [phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "pre_change_state": [workspace_final], "producer_releases": [producer_release_manifest], "session_roles": [session_role_manifest], "verdict_state": [workspace_final]}}
+      contract_phase: {kind: audit-report-contract, refs: {"auditor_findings": [auditor_findings], "canonical_contract": [canonical_requirements], "evidence_receipts": [evidence_phase], "phase_approval": [phase_approval_decision], "pre_change_state": [workspace_phase], "producer_releases": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
+      evidence_final: {kind: evidence-receipt, refs: {"canonical_contract": [canonical_requirements], "phase_projections": [phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "pre_change_state": [workspace_final], "producer_release": [producer_release_manifest], "session_roles": [session_role_manifest], "verdict_state": [workspace_final]}}
+      evidence_phase: {kind: evidence-receipt, refs: {"canonical_contract": [canonical_requirements], "phase_approval": [phase_approval_decision], "pre_change_state": [workspace_phase], "producer_release": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
+      final_journal: {kind: finalization-journal, refs: {"after_projections": [snapshot_after], "before_projections": [snapshot_before], "final_progression_receipt": [plan_final_progression_receipt], "producer_release": [producer_release_manifest], "published_report": [report_final], "report_contract": [contract_final]}}
+      frozen_m1_files: {kind: frozen-m1-files, refs: {"entries[].bytes": [historical_m1_byte]}}
+      gate_001: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "phase_approval": [phase_approval_decision], "plan_approval": [plan_approval_decision]}}
+      gate_002: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "session_roles": [session_role_manifest]}}
+      gate_003: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "phase_projections": [phase_projection_01]}}
+      gate_004: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "producer_release": [producer_release_manifest]}}
+      gate_005: {kind: final-gate-receipt, refs: {"audit_report_contract": [contract_final], "canonical_contract": [canonical_requirements]}}
+      gate_006: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "pre_change_state": [workspace_final], "producer_release": [producer_release_manifest], "verdict_state": [workspace_final]}}
+      gate_007: {kind: final-gate-receipt, refs: {"audit_report": [report_final], "audit_report_contract": [contract_final], "auditor_semantic_decision": [auditor_semantic_decision], "canonical_contract": [canonical_requirements], "phase_projections": [phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06]}}
+      gate_008: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "finalization_journal": [final_journal]}}
+      gate_009: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "frozen_m1_files": [frozen_m1_files]}}
+      gate_010: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "p4_boundary": [p4_boundary_contract], "prior_publication": [status_seq1]}}
+      historical_m1_byte: {kind: historical-m1-byte, refs: {}}
+      legacy_bootstrap_repository_receipt: {kind: legacy-bootstrap-repository-receipt, refs: {"scope_lock_sha256": [scope_g002]}}
+      p4_boundary_contract: {kind: p4-boundary-contract, refs: {}}
+      phase_approval_decision: {kind: phase-approval-decision, refs: {"approval_request": [phase_approval_request], "plan_approval": [plan_approval_decision], "qoderwork_baseline": [legacy_bootstrap_repository_receipt], "scope_lock": [scope_g002], "session_roles": [session_role_manifest]}}
+      phase_approval_request: {kind: phase-approval-request, refs: {"plan_approval": [plan_approval_decision], "qoderwork_baseline": [legacy_bootstrap_repository_receipt], "scope_lock": [scope_g002], "session_roles": [session_role_manifest]}}
+      phase_progression_receipt: {kind: phase-progression-receipt, refs: {"audit_report": [report_phase], "audit_report_contract": [contract_phase], "phase_projection": [phase_projection_01], "producer_release": [producer_release_manifest], "verdict_state": [workspace_phase]}}
+      phase_projection_01: {kind: phase-projection, refs: {"audit_report": [report_phase], "audit_report_contract": [contract_phase], "phase_approval": [phase_approval_decision], "producer_release": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
+      phase_projection_02: {kind: phase-projection, refs: {"audit_report": [report_phase], "audit_report_contract": [contract_phase], "phase_approval": [phase_approval_decision], "producer_release": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
+      phase_projection_03: {kind: phase-projection, refs: {"audit_report": [report_phase], "audit_report_contract": [contract_phase], "phase_approval": [phase_approval_decision], "producer_release": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
+      phase_projection_04: {kind: phase-projection, refs: {"audit_report": [report_phase], "audit_report_contract": [contract_phase], "phase_approval": [phase_approval_decision], "producer_release": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
+      phase_projection_05: {kind: phase-projection, refs: {"audit_report": [report_phase], "audit_report_contract": [contract_phase], "phase_approval": [phase_approval_decision], "producer_release": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
+      phase_projection_06: {kind: phase-projection, refs: {"audit_report": [report_phase], "audit_report_contract": [contract_phase], "phase_approval": [phase_approval_decision], "producer_release": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
+      plan_activation_receipt: {kind: plan-activation-receipt, refs: {"after_projections": [snapshot_after], "approval_decision": [plan_approval_decision], "approved_index_baseline": [approved_index_baseline], "approved_plan_materialization": [approved_plan_materialization], "before_projections": [snapshot_before], "bootstrap_prewrite": [bootstrap_prewrite_receipt], "phase_approval": [phase_approval_decision], "phase_progression_receipt": [phase_progression_receipt], "producer_release": [producer_release_manifest]}}
+      plan_approval_decision: {kind: plan-approval-decision, refs: {"approval_request": [plan_approval_request], "approved_index_baseline": [approved_index_baseline], "approved_plan_files": [approved_plan_files], "approved_plan_object_set": [approved_plan_object_set], "canonical_contract": [canonical_requirements], "frozen_m1_files": [frozen_m1_files], "p4_boundary": [p4_boundary_contract]}}
+      plan_approval_decision_pending: {kind: plan-approval-decision-pending, refs: {}}
+      plan_approval_request: {kind: plan-approval-request, refs: {"approved_index_baseline": [approved_index_baseline], "approved_plan_files": [approved_plan_files], "approved_plan_object_set": [approved_plan_object_set], "canonical_contract": [canonical_requirements], "frozen_m1_files": [frozen_m1_files], "p4_boundary": [p4_boundary_contract], "pending_decision": [plan_approval_decision_pending]}}
+      plan_final_progression_receipt: {kind: plan-final-progression-receipt, refs: {"audit_report": [report_final], "audit_report_contract": [contract_final], "phase_projections": [phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "prior_publication": [status_seq1], "producer_release": [producer_release_manifest], "verdict_state": [workspace_final]}}
+      producer_release_manifest: {kind: producer-release-manifest, refs: {"canonical_contract": [canonical_requirements], "tool_sources[].bytes": [source_file], "transitive_dependencies[].bytes": [source_file]}}
+      projection_bytes: {kind: projection-bytes, refs: {}}
+      projection_snapshot: {kind: projection-snapshot, refs: {"bytes": [projection_bytes]}}
+      report_final: {kind: audit-report, refs: {"contract": [contract_final]}}
+      report_phase: {kind: audit-report, refs: {"contract": [contract_phase]}}
+      scope_g001: {kind: phase-scope-lock, refs: {}}
+      scope_g002: {kind: phase-scope-lock, refs: {"approved_plan.materialization": [approved_plan_materialization], "approved_plan.object_set": [approved_plan_object_set], "approved_plan.phase.mirror": [approved_plan_byte], "canonical_contract": [canonical_requirements], "plan_approval": [plan_approval_decision], "producer_release": [producer_release_manifest], "session_roles": [session_role_manifest], "supersedes": [scope_g001]}}
+      session_role_manifest: {kind: session-role-manifest, refs: {"approved_plan_materialization": [approved_plan_materialization], "plan_approval": [plan_approval_decision]}}
+      snapshot_after: {kind: projection-snapshot, refs: {}}
+      snapshot_before: {kind: projection-snapshot, refs: {}}
+      source_file: {kind: source-file, refs: {}}
+      status_seq1: {kind: status-publication-receipt, refs: {"after_projections": [snapshot_after], "before_projections": [snapshot_before], "phase_progression_receipt": [phase_progression_receipt], "plan_activation": [plan_activation_receipt], "producer_release": [producer_release_manifest]}}
+      status_seq2: {kind: status-publication-receipt, refs: {"after_projections": [snapshot_after], "before_projections": [snapshot_before], "final_gates": [gate_001, gate_002, gate_003, gate_004, gate_005, gate_006, gate_007, gate_008, gate_009, gate_010], "final_progression_receipt": [plan_final_progression_receipt], "finalization_journal": [final_journal], "prior_publication": [status_seq1], "producer_release": [producer_release_manifest]}}
+      workspace_final: {kind: workspace-state-receipt, refs: {"producer_release": [producer_release_manifest], "session_roles": [session_role_manifest]}}
+      workspace_phase: {kind: workspace-state-receipt, refs: {"bootstrap_sources": [legacy_bootstrap_repository_receipt], "phase_approval": [phase_approval_decision], "producer_release": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest]}}
+    mechanical_assertions:
+      - fixture edge triple set equals allowed_edges exactly
+      - every target exists and every Kahn traversal visits all fixture nodes
+      - isolated forbidden triple fails ARTIFACT_EDGE_FORBIDDEN
+      - isolated scope/status back-edge fails ARTIFACT_REFERENCE_CYCLE
+      - live subject node and edge tuple sets equal the independent oracle exactly
+      - no fixed node count, edge count, or topology hash is accepted as live completeness proof
+
+dataflow_pipeline:
+  description: >
+    Formal phase-to-phase data contract. Each row declares the producer invocation, its
+    input artifact (read-only at the start of the phase), its output artifact (write-once
+    to the path the next phase consumes), and the consumer gate that the next phase
+    enforces. The pipeline enforces the order: scope → entry → approval → pre-change →
+    write → VERDICT → EV → report → progression → status. Replaces the informal "phase N
+    depends on phase N-1" prose that previously left the producer/consumer contract
+    implicit.
+  rows:
+    - phase: PHASE-01
+      producer: validate-phase-progression.ts --create-scope-lock
+      input: bootstrap/prewrite-verification.json
+      output: bootstrap/scope-lock-PHASE-01-g001.json
+      consumer_gate: PHASE-01 entry admission
+    - phase: PHASE-01
+      producer: capture-state.ts --upgrade-bootstrap-pre-change
+      input: dual workspace HEAD
+      output: phases/PHASE-01/g001/pre-change-state.json
+      consumer_gate: PHASE-01 PRE_CHANGE
+    - phase: PHASE-01
+      producer: prepare-audit.ts --bootstrap-activate-and-close PHASE-01
+      input: scope + pre-change + producer release
+      output: phases/PHASE-01/g001/{auditor-findings.md, prepared/audit-report.md}
+      consumer_gate: PHASE-01 audit gate
+    - phase: PHASE-02
+      producer: close-audit-phase.ts --adopt-closure-candidate PHASE-02
+      input: PHASE-01 audit-report + producer release
+      output: phases/PHASE-02/g001/closure-transaction/
+      consumer_gate: PHASE-02 admission
+    - phase: PHASE-02
+      producer: validate-phase-progression.ts --create-scope-lock PHASE-02
+      input: PHASE-01 closed-phase
+      output: phases/PHASE-02/g001/scope-lock-PHASE-02-g001.json
+      consumer_gate: PHASE-02 PRE_CHANGE
+    - phase: PHASE-03
+      producer: scripts/lib/artifact-reference-graph.ts (PHASE-03 allowed-step 3)
+      input: artifact_dag registry
+      output: buildArtifactGraph + validateEdges + kahnSort
+      consumer_gate: PHASE-03 audit gate
+    - phase: PHASE-04
+      producer: scripts/check-audit-governance-recovery-conformance.ts (PHASE-04 allowed-step 1, CREATE)
+      input: QUERY_REGISTRY + readSurface
+      output: evaluateQuery + runConformance + CLI
+      consumer_gate: PHASE-04 audit gate
+    - phase: PHASE-05
+      producer: prepare-audit.ts (consumes pre-audit-read-gate log)
+      input: 5 mandatory validator files (per Pre-Audit Knowledge Required)
+      output: SKILL.md + provenance-rules.md + AGENTS.md + 4 templates replaced
+      consumer_gate: PHASE-05 audit gate
+    - phase: PHASE-06
+      producer: Auditor A writes implementation-evidence log
+      input: PHASE-01..05 progression receipts
+      output: logs/2026-07-30-audit-governance-recovery-implementation.md + documents/INDEX.md block + logs/INDEX.md entries
+      consumer_gate: PHASE-06 audit gate
+    - phase: 99-final
+      producer: close-audit-phase.ts --final
+      input: all 6 phase-accepted reports + producer release
+      output: final/g001/{auditor-findings, prepared/audit-report, published/audit-report, verdict-state, pre-change-state}.json + progression-receipt
+      consumer_gate: P4 M1 re-baseline gate
+required_error_codes:
+  - SESSION_ROLE_MISSING
+  - SESSION_ROLE_COLLISION
+  - SESSION_ROLE_DECLARATION_MISMATCH
+  - APPROVAL_ARTIFACT_UNSTABLE
+  - ARTIFACT_NODE_FORMAT_INVALID
+  - ARTIFACT_NODE_KIND_MISMATCH
+  - ARTIFACT_REFERENCE_HASH_MISMATCH
+  - ARTIFACT_REFERENCE_CYCLE
+  - ARTIFACT_EDGE_FORBIDDEN
+  - ARTIFACT_GRAPH_INCOMPLETE
+  - BOOTSTRAP_WAIVER_INVALID
+  - BOOTSTRAP_BASELINE_CONTRACT_MISMATCH
+  - SCOPE_LOCK_MUTATION_FORBIDDEN
+  - SCOPE_LOCK_GENERATION_INVALID
+  - SCOPE_APPROVAL_MISMATCH
+  - PRODUCER_METADATA_MISSING
+  - PRODUCER_RELEASE_MISMATCH
+  - WORKSPACE_STATE_MISSING
+  - WORKSPACE_DELTA_OUT_OF_SCOPE
+  - EXECUTION_OBSERVATION_MISMATCH
+  - DOMAIN_OBSERVATION_MISMATCH
+  - CONTROL_EVIDENCE_NOT_INDEPENDENT
+  - PREPARED_REPORT_INCOMPLETE
+  - REPORT_OUTPUT_COLLISION
+  - PLAN_PHASE_MANIFEST_MISMATCH
+  - PLAN_FINAL_GATE_INCOMPLETE
+  - PHASE_ADMISSION_ORDER_MISMATCH
+  - PHASE_CLOSURE_STATE_MISMATCH
+  - STATUS_PUBLICATION_UNAUTHORIZED
+  - PROJECTION_SNAPSHOT_MISMATCH
+  - PRIOR_PUBLICATION_SEQUENCE_INVALID
+  - CLOSURE_STEP_FAILED
+  - COMMIT_INTERRUPTED
+  - CONFORMANCE_RECOVERY_PROFILE
+  - CONFORMANCE_SESSION_BOUNDARY
+  - CONFORMANCE_MECHANICAL_PRODUCER
+  - CONFORMANCE_ARTIFACT_DAG
+  - CONFORMANCE_DUAL_WORKSPACE
+  - CONFORMANCE_STATUS_SYNC
+  - CONFORMANCE_CLOSURE
+  - CONFORMANCE_HISTORICAL_BOUNDARY
+  - CONFORMANCE_STALE_TEXT
+  - DOC_STATUS_PREMATURE_OR_MISSING
+  - IMPLEMENTATION_LOG_CONTRACT
+  - LOG_INDEX_CONTRACT
+
+phase_manifest:
+  - order: 1
+    phase_id: PHASE-01
+    file: formal-plan-set/01-phase-foundation-kernel.md
+    depends_on: NONE
+  - order: 2
+    phase_id: PHASE-02
+    file: formal-plan-set/02-phase-single-closure-entrypoint.md
+    depends_on: PHASE-01
+  - order: 3
+    phase_id: PHASE-03
+    file: formal-plan-set/03-phase-artifact-dag-validation.md
+    depends_on: PHASE-02
+  - order: 4
+    phase_id: PHASE-04
+    file: formal-plan-set/04-phase-conformance-enforcement.md
+    depends_on: PHASE-03
+  - order: 5
+    phase_id: PHASE-05
+    file: formal-plan-set/05-phase-rules-skills-and-templates.md
+    depends_on: PHASE-04
+  - order: 6
+    phase_id: PHASE-06
+    file: formal-plan-set/06-phase-documentation-and-final-handoff.md
+    depends_on: PHASE-05
+
+mutable_projection_registry:
+  authority: >
+    Status producers parse Markdown structurally and apply only the replacements below to
+    exact before-bytes. They reject missing/duplicate anchors, unexpected before-values,
+    gate text drift, or any after-byte delta outside this registry.
+  gate_text_normalization: >
+    Select completion-gate list lines in source order, replace the exact leading "- [ ] "
+    or "- [x] " with "- [] ", join with LF, append one LF, and hash UTF-8 bytes.
+  phase_updates:
+    PHASE-01:
+      index_admission: [P1_R4_HUMAN_DECISION_PENDING, PHASE-01_ACCEPTED]
+      index_manifest_status: [NOT_STARTED, ACCEPTED]
+      progression_status: [NOT_STARTED, ACCEPTED]
+      completion_receipt: [N/A, audits/audit-governance-recovery-v1/phases/PHASE-01/g001/phase-progression-receipt.json]
+      gate_count: 8
+      gate_text_sha256: 4fe89071a44c516c85c22d3b190f94727513afe9cb7f6a352bf50555938b52e9
+    PHASE-02:
+      index_admission: [PHASE-01_ACCEPTED, PHASE-02_ACCEPTED]
+      index_manifest_status: [NOT_STARTED, ACCEPTED]
+      progression_status: [NOT_STARTED, ACCEPTED]
+      completion_receipt: [N/A, audits/audit-governance-recovery-v1/phases/PHASE-02/g001/phase-progression-receipt.json]
+      gate_count: 9
+      gate_text_sha256: a93d6e68bd3ebe9bea2f1ff3c5ac76311e53d7ba8137d89ef897d1c11ec8802d
+    PHASE-03:
+      index_admission: [PHASE-02_ACCEPTED, PHASE-03_ACCEPTED]
+      index_manifest_status: [NOT_STARTED, ACCEPTED]
+      progression_status: [NOT_STARTED, ACCEPTED]
+      completion_receipt: [N/A, audits/audit-governance-recovery-v1/phases/PHASE-03/g001/phase-progression-receipt.json]
+      gate_count: 9
+      gate_text_sha256: b22424eed44c91e3e02e64002487050efdac4974bef3e3ba3297e2bf6d13d665
+    PHASE-04:
+      index_admission: [PHASE-03_ACCEPTED, PHASE-04_ACCEPTED]
+      index_manifest_status: [NOT_STARTED, ACCEPTED]
+      progression_status: [NOT_STARTED, ACCEPTED]
+      completion_receipt: [N/A, audits/audit-governance-recovery-v1/phases/PHASE-04/g001/phase-progression-receipt.json]
+      gate_count: 8
+      gate_text_sha256: 184c1fe6eb2bdf2bd2a9ac139fb9edbee44a3a10e06d39fdff60adb7d45f59f5
+    PHASE-05:
+      index_admission: [PHASE-04_ACCEPTED, PHASE-05_ACCEPTED]
+      index_manifest_status: [NOT_STARTED, ACCEPTED]
+      progression_status: [NOT_STARTED, ACCEPTED]
+      completion_receipt: [N/A, audits/audit-governance-recovery-v1/phases/PHASE-05/g001/phase-progression-receipt.json]
+      gate_count: 8
+      gate_text_sha256: 688b74a1fd662272427b2b58091c6dacba11619a6e8ef2d5999ae93aecda70f9
+    PHASE-06:
+      index_admission: [PHASE-05_ACCEPTED, PHASE-06_ACCEPTED]
+      index_manifest_status: [NOT_STARTED, ACCEPTED]
+      progression_status: [NOT_STARTED, ACCEPTED]
+      completion_receipt: [N/A, audits/audit-governance-recovery-v1/phases/PHASE-06/g001/phase-progression-receipt.json]
+      gate_count: 8
+      gate_text_sha256: 1d53bfea922112bbcd7290cd3783ea08db31725babfe20e281b305112795c681
+  phase_01_activation_additions:
+    index_status: [BLOCKED, IN_PROGRESS]
+    approval_decision_path:
+      - audits/audit-governance-recovery-v1/approval-decision-pending-r5.json
+      - audits/audit-governance-recovery-v1/approval-decision-r5.json
+    approval_decision_sha256:
+      - HASH_OF(audits/audit-governance-recovery-v1/approval-decision-pending-r5.json)
+      - HASH_OF(audits/audit-governance-recovery-v1/approval-decision-r5.json)
+    exact_additional_field_count: 3
+    note: index_admission in PHASE-01 is the fourth activation metadata field.
+  phase_06_activation_additions:
+    documents_status_marker:
+      - "<!-- AUDIT_GOVERNANCE_RECOVERY_V1_STATUS: IMPLEMENTED_PENDING_FINAL_AUDIT -->"
+      - "<!-- AUDIT_GOVERNANCE_RECOVERY_V1_STATUS: FINAL_ACCEPTED -->"
+    documents_final_status:
+      - "Final audit status: PENDING_AUDITOR_FINAL_CLOSURE"
+      - "Final audit status: ACCEPTED_BY_AUDITOR_SESSION_A"
+    exact_additional_field_count: 2
+    note: >
+      The documents_status_marker and documents_final_status fields are exclusive to PHASE-06.
+      Earlier revisions placed them in `final_update`, which caused cross-phase field ownership
+      ambiguity. The 2026-07-30 plan-text revision moves them to phase_06_activation_additions
+      so PHASE-06 owns the documents index projection exclusively, and PHASE-03..05 do NOT
+      touch documents_status_marker. The final_update block now contains only the four non-
+      documents fields (index_status, index_admission, final_evidence_ceiling, final_gate_count).
+  final_update:
+    index_status: [IN_PROGRESS, COMPLETE]
+    index_admission: [PHASE-06_ACCEPTED, FINAL_ACCEPTED]
+    final_evidence_ceiling: [NOT-RUN, file-integration]
+    final_gate_count: 10
+    final_gate_text_sha256: 8a27feafd23e3a7f76a2201850d8733de8ec91cc8178594505de0dfd9163a83b
+    note: >
+      The two documents fields previously declared here (documents_status_marker and
+      documents_final_status) are now exclusive to phase_06_activation_additions (see above).
+      This block now contains only the four non-documents final-update fields.
+
+producer_release_registry:
+  schema_version: audit-producer-release-registry/v1
+  producer_version: audit-governance-release/1
+  manifest_schema:
+    schema_version: audit-producer-release/v1
+    document_kind: producer-release-manifest
+    governance_profile: audit-governance-recovery/v1
+    exact_top_level_keys:
+      - schema_version
+      - document_kind
+      - governance_profile
+      - release_id
+      - case_set
+      - canonical_contract
+      - registry_projection
+      - registry_projection_sha256
+      - normalized_source_set_sha256
+      - source_base_commit
+      - producer_version
+      - tool_sources
+      - transitive_dependencies
+      - created_at
+    exact_entry_keys: [historical_path, classification, source_base_commit, version, bytes]
+    release_id_rule: SHA256 of UTF-8 compact JSON [canonical_contract, registry_projection_sha256, normalized_source_set_sha256, source_base_commit, producer_version]
+    registry_projection_rule: >
+      Exact compact JSON object with keys case_set, inheritance_chain, explicit_paths,
+      recursive_roots, governance_profile, producer_version. Arrays are normalized,
+      duplicate-free, and UTF-8-code-point sorted. registry_projection_sha256 hashes those
+      compact bytes.
+    normalized_source_set_rule: >
+      UTF-8 compact JSON of sorted [historical_path,classification,bytes.sha256] rows after
+      complete import traversal. normalized_source_set_sha256 hashes those bytes.
+  path_and_duplicate_algorithm:
+    - Convert every registry path and resolved import to a repository-relative POSIX path.
+    - Reject absolute paths, empty/dot/dot-dot segments, out-of-root realpaths, symlinks in any path segment, unreadable/non-regular files, and Unicode/case-fold collisions.
+    - Resolve inheritance once in root-to-leaf order; explicit paths and recursive-root files form a set union. Repeated identical normalized membership is one entry, not an error.
+    - Traverse statically resolvable TypeScript imports in lexical path order with a visited set. Tool-source membership has precedence; transitive_dependencies excludes every tool source.
+    - Re-observe file identity and SHA after traversal. Same normalized path with different bytes or classification, or any mid-run drift, fails PRODUCER_RELEASE_MISMATCH.
+    - Write each object exclusive-or-identical, then write the manifest exclusively. Existing different bytes/output fails; callers cannot override registry membership.
+  command_contract: >
+      validate-phase-progression --emit-producer-release accepts only canonical, case-set,
+      object-root, and output. It resolves inheritance and sorted transitive TypeScript imports,
+      applies path_and_duplicate_algorithm, freezes the normalized registry projection, writes
+      content-addressed objects, and exclusively writes the exact manifest.
+  independent_oracle: >
+    Tests implement a second traversal that does not import the producer resolver. It compares
+    exact sorted tool/dependency membership, classifications, object hashes, registry projection
+    hash, and release ID. Isolated missing/import-cycle/symlink/case-collision/out-of-root/
+    same-class duplicate/cross-class duplicate/mid-read mutation cases each assert one result.
+  PHASE-01:
+    inherit: null
+    add_paths:
+      - .agents/skills/plan-audit-archiver/scripts/validate-audit.ts
+      - .agents/skills/plan-audit-archiver/scripts/capture-state.ts
+      - .agents/skills/plan-audit-archiver/scripts/generate-evidence-receipt.ts
+      - .agents/skills/plan-audit-archiver/scripts/prepare-audit.ts
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts
+      - .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts
+      - .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts
+      - .agents/skills/deterministic-implementation-planning/scripts/foundation-kernel.test.ts
+  PHASE-02:
+    inherit: PHASE-01
+    add_paths:
+      - .agents/skills/plan-audit-archiver/scripts/pre-check-evidence.ts
+      - .agents/skills/plan-audit-archiver/scripts/__tests__/pre-check-evidence.test.ts
+      - .agents/skills/plan-audit-archiver/scripts/finalize-audit.ts
+      - .agents/skills/plan-audit-archiver/scripts/__tests__/finalize-audit.test.ts
+      - .agents/skills/plan-audit-archiver/scripts/generate-phase-projection.ts
+      - .agents/skills/plan-audit-archiver/scripts/__tests__/generate-phase-projection.test.ts
+      - .agents/skills/plan-audit-archiver/scripts/close-audit-phase.ts
+      - .agents/skills/plan-audit-archiver/scripts/__tests__/close-audit-phase.test.ts
+  PHASE-03:
+    inherit: PHASE-02
+    add_paths:
+      - scripts/lib/audit-governance-schema-v3.ts
+      - scripts/lib/__tests__/audit-governance-schema-v3.test.ts
+      - scripts/lib/artifact-reference-graph.ts
+      - scripts/lib/__tests__/artifact-reference-graph.test.ts
+  PHASE-04:
+    inherit: PHASE-03
+    add_paths:
+      - scripts/check-audit-governance-recovery-conformance.ts
+      - scripts/__tests__/check-audit-governance-recovery-conformance.test.ts
+  PHASE-05:
+    inherit: PHASE-04
+    add_paths: []
+  PHASE-06:
+    inherit: PHASE-05
+    add_paths: []
+  FINAL:
+    inherit: PHASE-06
+    add_paths: []
+    add_recursive_roots:
+      - .agents/skills/plan-audit-archiver/scripts/__tests__
+      - .agents/skills/deterministic-implementation-planning/scripts
+
+evidence_case_registry:
+  columns:
+    - evidence_id
+    - decision_case_id
+    - requirement_id
+    - polarity
+    - oracle_id
+    - fixture_id
+    - literal_command
+    - required_stdout_marker
+    - domain_result
+    - domain_error_code
+  defaults:
+    cwd: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+    expected_execution: { observed: PASS, exit_code: 0, timed_out: false }
+    forbidden_effects: [live_repository_write, work_one_write, audit_publication]
+    output_rule: EV-NNN.json is exclusive and NNN equals the registry row order within its case set.
+  PHASE-01:
+    - [EV-001, DC-GR1-001-P, REQ-GR-001, POSITIVE, ORACLE-GR1-001, GR1-ROLE-DISTINCT, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-001-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-002, DC-GR1-001-N, REQ-GR-001, NEGATIVE, ORACLE-GR1-001, GR1-ROLE-COLLISION, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-001-N DOMAIN_ERROR=SESSION_ROLE_COLLISION'", "DOMAIN_ERROR=SESSION_ROLE_COLLISION", REJECTION_VERIFIED, SESSION_ROLE_COLLISION]
+    - [EV-003, DC-GR1-004-P, REQ-GR-004, POSITIVE, ORACLE-GR1-004, GR1-SCOPE-G001, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-004-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-004, DC-GR1-004-N, REQ-GR-004, NEGATIVE, ORACLE-GR1-004, GR1-SCOPE-OVERWRITE, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-004-N DOMAIN_ERROR=SCOPE_LOCK_MUTATION_FORBIDDEN'", "DOMAIN_ERROR=SCOPE_LOCK_MUTATION_FORBIDDEN", REJECTION_VERIFIED, SCOPE_LOCK_MUTATION_FORBIDDEN]
+    - [EV-005, DC-GR1-005-P, REQ-GR-005, POSITIVE, ORACLE-GR1-005, GR1-PRODUCER-PAIR, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-005-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-006, DC-GR1-005-N, REQ-GR-005, NEGATIVE, ORACLE-GR1-005, GR1-PRODUCER-MISSING, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-005-N DOMAIN_ERROR=PRODUCER_METADATA_MISSING'", "DOMAIN_ERROR=PRODUCER_METADATA_MISSING", REJECTION_VERIFIED, PRODUCER_METADATA_MISSING]
+    - [EV-007, DC-GR1-006-P, REQ-GR-006, POSITIVE, ORACLE-GR1-006, GR1-DUAL-CLEAN, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-006-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-008, DC-GR1-006-N, REQ-GR-006, NEGATIVE, ORACLE-GR1-006, GR1-WORKSPACE-MISSING, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-006-N DOMAIN_ERROR=WORKSPACE_STATE_MISSING'", "DOMAIN_ERROR=WORKSPACE_STATE_MISSING", REJECTION_VERIFIED, WORKSPACE_STATE_MISSING]
+    - [EV-009, DC-GR1-007-P, REQ-GR-007, POSITIVE, ORACLE-GR1-007, GR1-OBS-INDEPENDENT, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-007-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-010, DC-GR1-007-N, REQ-GR-007, NEGATIVE, ORACLE-GR1-007, GR1-OBS-COLLAPSED, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-007-N DOMAIN_ERROR=DOMAIN_OBSERVATION_MISMATCH'", "DOMAIN_ERROR=DOMAIN_OBSERVATION_MISMATCH", REJECTION_VERIFIED, DOMAIN_OBSERVATION_MISMATCH]
+    - [EV-011, DC-GR1-008-P, REQ-GR-008, POSITIVE, ORACLE-GR1-008, GR1-PLAN-COMPLETE, "/home/zhaoge/.bun/bin/bun test .agents/skills/deterministic-implementation-planning/scripts/foundation-kernel.test.ts -t 'DC-GR1-008-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-012, DC-GR1-008-N, REQ-GR-008, NEGATIVE, ORACLE-GR1-008, GR1-PLAN-MANIFEST-BAD, "/home/zhaoge/.bun/bin/bun test .agents/skills/deterministic-implementation-planning/scripts/foundation-kernel.test.ts -t 'DC-GR1-008-N DOMAIN_ERROR=PLAN_PHASE_MANIFEST_MISMATCH'", "DOMAIN_ERROR=PLAN_PHASE_MANIFEST_MISMATCH", REJECTION_VERIFIED, PLAN_PHASE_MANIFEST_MISMATCH]
+    - [EV-013, DC-GR1-009-P, REQ-GR-009, POSITIVE, ORACLE-GR1-009, GR1-ADMISSION-VALID, "/home/zhaoge/.bun/bin/bun test .agents/skills/deterministic-implementation-planning/scripts/foundation-kernel.test.ts -t 'DC-GR1-009-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-014, DC-GR1-009-N, REQ-GR-009, NEGATIVE, ORACLE-GR1-009, GR1-ADMISSION-SKIP, "/home/zhaoge/.bun/bin/bun test .agents/skills/deterministic-implementation-planning/scripts/foundation-kernel.test.ts -t 'DC-GR1-009-N DOMAIN_ERROR=PHASE_ADMISSION_ORDER_MISMATCH'", "DOMAIN_ERROR=PHASE_ADMISSION_ORDER_MISMATCH", REJECTION_VERIFIED, PHASE_ADMISSION_ORDER_MISMATCH]
+    - [EV-015, DC-GR1-010-P, REQ-GR-010, POSITIVE, ORACLE-GR1-010, GR1-STATUS-RECEIPT, "/home/zhaoge/.bun/bin/bun test .agents/skills/deterministic-implementation-planning/scripts/foundation-kernel.test.ts -t 'DC-GR1-010-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-016, DC-GR1-010-N, REQ-GR-010, NEGATIVE, ORACLE-GR1-010, GR1-STATUS-FREEFORM, "/home/zhaoge/.bun/bin/bun test .agents/skills/deterministic-implementation-planning/scripts/foundation-kernel.test.ts -t 'DC-GR1-010-N DOMAIN_ERROR=STATUS_PUBLICATION_UNAUTHORIZED'", "DOMAIN_ERROR=STATUS_PUBLICATION_UNAUTHORIZED", REJECTION_VERIFIED, STATUS_PUBLICATION_UNAUTHORIZED]
+    - [EV-017, DC-GR1-PEND-P, REQ-GR-013, POSITIVE, ORACLE-GR1-PEND, GR1-PENDING-AS-LEAF, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-PEND-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-018, DC-GR1-PEND-N, REQ-GR-013, NEGATIVE, ORACLE-GR1-PEND, GR1-PENDING-AS-AUTHORITY, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-PEND-N DOMAIN_ERROR=STATUS_PUBLICATION_UNAUTHORIZED'", "DOMAIN_ERROR=STATUS_PUBLICATION_UNAUTHORIZED", REJECTION_VERIFIED, STATUS_PUBLICATION_UNAUTHORIZED]
+    - note: >
+      EV-017/EV-018 enforce the rule that an `approval-decision-pending-r5.json` is a true
+      leaf in the acyclic graph (no path/SHA object, no request/baseline reference, no
+      downstream hash). Treating pending state as authority must fail with
+      STATUS_PUBLICATION_UNAUTHORIZED. This addresses the 2026-07-30 plan-text audit
+      finding #3 (pending in authority field) and finding #14 (philosophical
+      self-consistency: plan-index L22 says "only receipt transactions change status"
+      but pending was used as authority).
+  PHASE-02:
+    - [EV-001, DC-GR2-011-P, REQ-GR-011, POSITIVE, ORACLE-GR2-011, GR2-ALL-STAGES, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/close-audit-phase.test.ts -t 'DC-GR2-011-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-002, DC-GR2-011-N, REQ-GR-011, NEGATIVE, ORACLE-GR2-011, GR2-EACH-STAGE-FAILS, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/close-audit-phase.test.ts -t 'DC-GR2-011-N DOMAIN_ERROR=CLOSURE_STEP_FAILED'", "DOMAIN_ERROR=CLOSURE_STEP_FAILED", REJECTION_VERIFIED, CLOSURE_STEP_FAILED]
+  PHASE-03:
+    - [EV-001, DC-GR3-002-P, REQ-GR-002, POSITIVE, ORACLE-GR3-002, GR3-STABLE-APPROVAL, "/home/zhaoge/.bun/bin/bun test scripts/lib/__tests__/artifact-reference-graph.test.ts -t 'DC-GR3-002-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-002, DC-GR3-002-N, REQ-GR-002, NEGATIVE, ORACLE-GR3-002, GR3-LOCK-APPROVAL, "/home/zhaoge/.bun/bin/bun test scripts/lib/__tests__/artifact-reference-graph.test.ts -t 'DC-GR3-002-N DOMAIN_ERROR=APPROVAL_ARTIFACT_UNSTABLE'", "DOMAIN_ERROR=APPROVAL_ARTIFACT_UNSTABLE", REJECTION_VERIFIED, APPROVAL_ARTIFACT_UNSTABLE]
+    - [EV-003, DC-GR3-003-P, REQ-GR-003, POSITIVE, ORACLE-GR3-003, GR3-TYPED-EDGE-DAG, "/home/zhaoge/.bun/bin/bun test scripts/lib/__tests__/artifact-reference-graph.test.ts -t 'DC-GR3-003-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-004, DC-GR3-003-N, REQ-GR-003, NEGATIVE, ORACLE-GR3-003, GR3-TWO-NODE-CYCLE, "/home/zhaoge/.bun/bin/bun test scripts/lib/__tests__/artifact-reference-graph.test.ts -t 'DC-GR3-003-N DOMAIN_ERROR=ARTIFACT_REFERENCE_CYCLE'", "DOMAIN_ERROR=ARTIFACT_REFERENCE_CYCLE", REJECTION_VERIFIED, ARTIFACT_REFERENCE_CYCLE]
+  PHASE-04:
+    - [EV-001, DC-GR4-012-P, REQ-GR-012, POSITIVE, ORACLE-GR4-012, GR4-EIGHT-SURFACES, "/home/zhaoge/.bun/bin/bun test scripts/__tests__/check-audit-governance-recovery-conformance.test.ts -t 'DC-GR4-012-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
+    - [EV-002, DC-GR4-012-N, REQ-GR-012, NEGATIVE, ORACLE-GR4-012, GR4-STALE-MARKER, "/home/zhaoge/.bun/bin/bun test scripts/__tests__/check-audit-governance-recovery-conformance.test.ts -t 'DC-GR4-012-N DOMAIN_ERROR=CONFORMANCE_STALE_TEXT'", "DOMAIN_ERROR=CONFORMANCE_STALE_TEXT", REJECTION_VERIFIED, CONFORMANCE_STALE_TEXT]
+  PHASE-05:
+    - [EV-001, DC-GR5-013-P, REQ-GR-013, POSITIVE, ORACLE-GR5-013, GR5-REAL-SURFACES, "/home/zhaoge/.bun/bin/bun run scripts/check-audit-governance-recovery-conformance.ts --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 --profile governance-surfaces", "\"ok\":true", PASS, NONE]
+    - [EV-002, DC-GR5-013-N, REQ-GR-013, NEGATIVE, ORACLE-GR5-013, GR5-STALE-SURFACE, "/home/zhaoge/.bun/bin/bun test scripts/__tests__/check-audit-governance-recovery-conformance.test.ts -t 'DC-GR5-013-N DOMAIN_ERROR=CONFORMANCE_STALE_TEXT'", "DOMAIN_ERROR=CONFORMANCE_STALE_TEXT", REJECTION_VERIFIED, CONFORMANCE_STALE_TEXT]
+  PHASE-06:
+    - [EV-001, DC-GR6-014-P, REQ-GR-014, POSITIVE, ORACLE-GR6-014, GR6-REAL-DOCS, "/home/zhaoge/.bun/bin/bun run scripts/check-audit-governance-recovery-conformance.ts --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1 --profile implementation-docs", "\"ok\":true", PASS, NONE]
+    - [EV-002, DC-GR6-014-N, REQ-GR-014, NEGATIVE, ORACLE-GR6-014, GR6-PREMATURE-DOCS, "/home/zhaoge/.bun/bin/bun test scripts/__tests__/check-audit-governance-recovery-conformance.test.ts -t 'DC-GR6-014-N DOMAIN_ERROR=DOC_STATUS_PREMATURE_OR_MISSING'", "DOMAIN_ERROR=DOC_STATUS_PREMATURE_OR_MISSING", REJECTION_VERIFIED, DOC_STATUS_PREMATURE_OR_MISSING]
+  FINAL_AUDIT:
+    - [EV-001, DC-GR-FINAL-AUDIT-001, FINAL-AUDIT-CHAIN, POSITIVE, ORACLE-GR-FINAL-AUDIT-001, FINAL-SIX-ACCEPTED-CHAINS, "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-audit-inputs --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1", "FINAL_AUDIT_RESULT=PHASE_CHAINS:PASS COUNT=6", PASS, NONE]
+    - [EV-002, DC-GR-FINAL-AUDIT-002, FINAL-AUDIT-REGRESSION, POSITIVE, ORACLE-GR-FINAL-AUDIT-002, FINAL-APPROVED-REGRESSION, "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-audit-regression --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1", "FINAL_AUDIT_RESULT=REGRESSION:PASS COMMANDS=5", PASS, NONE]
+
+final_gate_registry:
+  schema_version: final-gate-registry/v1
+  cwd: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+  output_rule: Each final-gate-receipt/v1 is exclusive; gate_id, stage, refs, exit, and required marker must match its row.
+  command_rule: >
+    Every literal command invokes validate-phase-progression.ts with only
+    --verify-final-gate, --canonical, --plan-root, --audit-root, and --output. All inputs,
+    paths, spawn commands, and algorithms come from this registry; callers cannot override.
+  rows:
+    - id: GATE-GR-FINAL-001
+      stage: VERIFY_GATES_001_004_006_007
+      oracle: Two complete HUMAN decision chains Dplan and Dphase01; exact refs/hashes and approved_by HUMAN_USER.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-001:PASS HUMAN_DECISIONS=2"
+      literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-001 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-001.json"
+    - id: GATE-GR-FINAL-002
+      stage: VERIFY_GATES_001_004_006_007
+      oracle: Distinct task IDs agree across request/decision/session; exactly one activation consumes the exact four waivers.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-002:PASS DISTINCT_TASKS=1 WAIVER_CONSUMPTIONS=1"
+      literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-002 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-002.json"
+    - id: GATE-GR-FINAL-003
+      stage: VERIFY_GATES_001_004_006_007
+      oracle: PHASE-01..06 each have one hash-valid ACCEPT report, contract, projection, verdict, progression, and adjacent status chain.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-003:PASS ACCEPTED_CHAINS=6"
+      literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-003 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-003.json"
+    - id: GATE-GR-FINAL-004
+      stage: VERIFY_GATES_001_004_006_007
+      oracle: Spawn approved mirror verification, exact full Bun suite, conformance all, typecheck, and git diff-check; all five exit zero and match output contracts.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-004:PASS COMMANDS=5"
+      literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-004 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-004.json"
+    - id: GATE-GR-FINAL-005
+      stage: VERIFY_GATE_005_STAGED_SUBJECT_GRAPH
+      oracle: Actual staged subject graph and independent registry traversal have exact equal sorted node/edge tuple digests and observed counts; fixed count constants are forbidden.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-005:PASS LIVE_GRAPH_MATCH=1"
+      literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-005 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-005.json"
+    - id: GATE-GR-FINAL-006
+      stage: VERIFY_GATES_001_004_006_007
+      oracle: Recomputed FINAL release and every object match; PRE_CHANGE/VERDICT roots, session, release, order, and deltas are valid.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-006:PASS RELEASE_CURRENT=1 STATES=2"
+      literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-006 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-006.json"
+    - id: GATE-GR-FINAL-007
+      stage: VERIFY_GATES_001_004_006_007
+      oracle: Sealed auditor-semantic-decision/v1 binds findings, canonical, release, both states, session, and six projections; verdict ACCEPT and blocking_finding_ids empty.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-007:PASS AUDITOR_BLOCKERS=0"
+      literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-007 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-007.json"
+    - id: GATE-GR-FINAL-008
+      stage: VERIFY_GATE_008_COMMITTED_VIEW
+      oracle: Non-authority destinations equal validated overlay hashes; both prepublish validators pass; final authority target remains absent.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-008:PASS STAGED_VALID=1 COMMITTED_HASH_MATCH=1 AUTHORITY_ABSENT=1"
+      literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-008 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-008.json"
+    - id: GATE-GR-FINAL-009
+      stage: VERIFY_GATE_009_P0_AND_FOUR_AUDITS
+      oracle: Exact 87-file P0 set is unchanged; FINAL-release rehydrated validator returns exit 1, valid false, and nonempty non-I/O errors for all four reports.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-009:PASS OLD_M1_INVALID=4 UNCHANGED=1"
+      literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-009 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-009.json"
+    - id: GATE-GR-FINAL-010
+      stage: VERIFY_GATE_010_NO_P4
+      oracle: Registered P4 admission root/token/worktree/plan and session p4_task_id are absent and final authority is not yet published; proves no authorized P4 admission/write.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-010:PASS P4_ADMISSIONS=0"
+      literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-010 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-010.json"
+  final_authority_stage_order:
+    - ACQUIRE_PLAN_LOCK
+    - VERIFY_GATES_001_004_006_007
+    - PREPARE_AUDIT
+    - VALIDATE_AUDIT
+    - STAGE_AUDIT_PUBLICATION
+    - STAGE_FINAL_PROGRESSION_AND_PROJECTIONS
+    - VALIDATE_FINAL_PREPUBLISH_OVERLAY
+    - VERIFY_GATE_005_STAGED_SUBJECT_GRAPH
+    - VERIFY_GATE_009_P0_AND_FOUR_AUDITS
+    - VERIFY_GATE_010_NO_P4
+    - COMMIT_NON_AUTHORITY
+    - VERIFY_GATE_008_COMMITTED_VIEW
+    - STAGE_FINAL_AUTHORITY_RECEIPT
+    - VALIDATE_FINAL_AUTHORITY_OVERLAY
+    - FSYNC_STAGED_AUTHORITY
+    - PUBLISH_AUTHORITY_RECEIPT_LAST
+    - RELEASE_PLAN_LOCK
+  failure_contract: >
+    Any failure through FSYNC_STAGED_AUTHORITY leaves the final authority target absent.
+    COMMIT_NON_AUTHORITY may leave hash-valid untrusted projections, but they confer no status.
+    The authority receipt binds all ten gate receipts, the sealed finalization journal, and
+    committed hashes. One atomic rename at PUBLISH_AUTHORITY_RECEIPT_LAST is the sole
+    FINAL_ACCEPTED event.
+
+approval_freeze_registry:
+  schema_version: audit-governance-approval-freeze/v1
+  source_root: /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
+  target_root: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+  semantic_logical_paths:
+    - plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml
+    - plans/audit-governance-recovery-v1/formal-plan-set/01-phase-foundation-kernel.md
+    - plans/audit-governance-recovery-v1/formal-plan-set/02-phase-single-closure-entrypoint.md
+    - plans/audit-governance-recovery-v1/formal-plan-set/03-phase-artifact-dag-validation.md
+    - plans/audit-governance-recovery-v1/formal-plan-set/04-phase-conformance-enforcement.md
+    - plans/audit-governance-recovery-v1/formal-plan-set/05-phase-rules-skills-and-templates.md
+    - plans/audit-governance-recovery-v1/formal-plan-set/06-phase-documentation-and-final-handoff.md
+    - plans/audit-governance-recovery-v1/formal-plan-set/99-final-verification.md
+  artifacts:
+    approved_object_root: audits/audit-governance-recovery-v1/approval-objects/sha256
+    approved_plan_object_set: audits/audit-governance-recovery-v1/approved-plan-object-set-r4.json
+    approved_plan_files: audits/audit-governance-recovery-v1/approved-plan-files-r4.sha256
+    approved_index_baseline: audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r4.md
+    pending_decision: audits/audit-governance-recovery-v1/approval-decision-pending-r4.json
+    frozen_m1_files: audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r4.json
+    p4_boundary: audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r4.json
+    plan_request: audits/audit-governance-recovery-v1/approval-request-r4.json
+    plan_decision: audits/audit-governance-recovery-v1/approval-decision-r4.json
+    materialization: audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r4.json
+  p0_exact_set:
+    roots:
+      - plans/path-dynamic-resolution-m1
+      - audits/path-dynamic-resolution-m1
+    expected_regular_file_count: 87
+    expected_root_counts:
+      plans/path-dynamic-resolution-m1: 7
+      audits/path-dynamic-resolution-m1: 80
+    rule: Recursively enumerate regular non-symlink files, sort repository-relative POSIX paths, and require exact path/SHA equality at freeze and GATE-GR-FINAL-009.
+  p4_boundary_values:
+    plan_id: PATH-DYNAMIC-RESOLUTION-M1-REBASELINE-V1
+    admission_root: audits/audit-governance-recovery-v1/p4-admission
+    plan_root: plans/path-dynamic-resolution-m1-rebaseline-v1
+    worktree: /home/zhaoge/workspace/qoderwork/.worktrees/path-dynamic-resolution-m1-rebaseline-v1
+    admission_receipt_schema: p4-admission-receipt/v1
+    prerequisite_final_authority: audits/audit-governance-recovery-v1/final/g001/final-authority-receipt.json
+  creation_order:
+    - HASH_EIGHT_SEMANTIC_BYTES_AND_WRITE_APPROVAL_OBJECTS
+    - WRITE_APPROVED_PLAN_OBJECT_SET
+    - WRITE_ONE_ENTRY_APPROVED_PLAN_FILES
+    - WRITE_PENDING_DECISION_LEAF
+    - WRITE_APPROVED_INDEX_BASELINE
+    - WRITE_EXACT_87_FILE_P0_MANIFEST_AND_OBJECTS
+    - WRITE_P4_BOUNDARY_CONTRACT
+    - WRITE_PLAN_APPROVAL_REQUEST
+    - STOP_FOR_EXPLICIT_HUMAN_PLAN_DECISION
+    - WRITE_IMMUTABLE_PLAN_DECISION_AFTER_APPROVAL_ONLY
+    - MATERIALIZE_TARGET_AND_WRITE_MATERIALIZATION_RECEIPT
+  request_and_decision_bindings:
+    - canonical_contract
+    - approved_plan_object_set
+    - approved_plan_files
+    - approved_index_baseline
+    - frozen_m1_files
+    - p4_boundary
+  exact_waiver_ids:
+    - PHASE-01_P02A_ENTRY_WHILE_INDEX_BLOCKED
+    - EXTERNAL_HUMAN_DECISION_FOR_PENDING_IMMUTABLE_LOCK
+    - SUPPLEMENTAL_QODERWORK_BASELINE_WITH_WORK_ONE_P07_ANCHOR
+    - CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT
+  invariants:
+    - All writes are exclusive; a collision stops and no hash is synchronized.
+    - The one-entry checksum manifest hashes only approved-plan-object-set-r4.json.
+    - The index baseline is outside the semantic object set and contains no self/request hash.
+    - Plan approval precedes target materialization; materialization receipt cannot be in its own approval chain.
+    - HUMAN approval binds exact refs and four waivers; it authorizes materialization only, not source writes.
+
+recovery_bootstrap:
+  id: PHASE-01-ONLY-RECOVERY-BOOTSTRAP
+  discriminator: audit-governance-recovery-bootstrap/v1
+  reuse: FORBIDDEN
+  approval: >
+    HUMAN first approves the exact canonical, approved-plan manifest, approved index baseline,
+    and bootstrap-waiver semantics. That plan decision authorizes creation of the target
+    worktree but no unknown future scope. Auditor then freezes the exact PHASE-01 lock and
+    qoderwork supplemental baseline; a second HUMAN phase decision binds their exact hashes,
+    the phase request, and the prior plan decision before any source write.
+  mechanics:
+    - The manifest contains canonical, six phases, and final verification; materialization preserves an immutable mirror while live phase/final projections later change only through receipts.
+    - The lock contains only PHASE-01 alias requirements, no EXCLUDED item, approval status PENDING_EXTERNAL_DECISION, the stable plan decision, and no not-yet-existing session/release field.
+    - Current capture-state runs against qoderwork after the lock but before the phase request only to create the bound supplemental bootstrap baseline; it is never supplied as the formal P-07 repository root.
+    - After the exact HUMAN phase decision, current capture-state runs against clean work-one to satisfy the formal P-02 pre-change gate.
+    - PHASE-01 P-02A entry is authorized by the exact HUMAN waiver while the live index remains BLOCKED; no validator result is falsely reported as zero.
+    - After Dplan, Auditor creates a distinct blocked Implementer task before S/Q/Rphase; Dphase binds both actual task IDs. Candidate tooling later materializes the session manifest.
+    - Candidate release/state/evidence/report producers create the complete PHASE-01 audit bundle; no candidate artifact has authority before candidate validate-audit returns valid true.
+    - One candidate bootstrap-activate-and-close transaction changes the four activation fields plus PHASE-01 status/receipt fields atomically, publishes the report, and records activation/progression/publication receipts.
+    - The bootstrap transaction marks the waiver consumed and rejects every later phase or repeated call with BOOTSTRAP_WAIVER_INVALID.
+    - The approved index baseline is immutable; there is no pre-implementation live index activation.
+    - The plan approval request binds the manifest and approved index baseline as separate acyclic artifacts; the phase request separately binds the lock/qoderwork baseline.
+    - The pre-approval index contains no approval-request hash; the immutable HUMAN decision binds the request hash after the request exists.
+    - No old M1 receipt, scope-lock, approval, report, or status projection is reused.
+  materialization_commands: |
+    cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
+    export AUDIT_RECOVERY_SOURCE_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/check-plan
+    export AUDIT_RECOVERY_TARGET_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+    export AUDIT_RECOVERY_IMMUTABLE_ROOT="$AUDIT_RECOVERY_TARGET_ROOT/audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r4"
+    test ! -e "$AUDIT_RECOVERY_TARGET_ROOT"
+    /home/zhaoge/.bun/bin/bun -e '
+    import{chmodSync,mkdirSync,writeFileSync}from"node:fs";import{dirname,resolve}from"node:path";import{createHash}from"node:crypto";
+    const src=process.env.AUDIT_RECOVERY_SOURCE_ROOT,tgt=process.env.AUDIT_RECOVERY_TARGET_ROOT;
+    const p={o:"audits/audit-governance-recovery-v1/approved-plan-object-set-r4.json",m:"audits/audit-governance-recovery-v1/approved-plan-files-r4.sha256",b:"audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r4.md",pending:"audits/audit-governance-recovery-v1/approval-decision-pending-r4.json",h:"audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r4.json",p4:"audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r4.json",rp:"audits/audit-governance-recovery-v1/approval-request-r4.json",dp:"audits/audit-governance-recovery-v1/approval-decision-r4.json",t:"audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r4.json",index:"plans/audit-governance-recovery-v1/formal-plan-set/00-plan-index.md"};
+    const bytes=async(r,x)=>Buffer.from(await Bun.file(resolve(r,x)).arrayBuffer()),H=b=>createHash("sha256").update(b).digest("hex"),J=async x=>JSON.parse((await bytes(src,x)).toString());
+    const ref=async(r,x)=>({path:x,sha256:H(await bytes(r,x))}),A=(x,m)=>{if(!x)throw Error("MATERIALIZATION_INVALID:"+m)};
+    const [O,H0,DP]=await Promise.all([J(p.o),J(p.h),J(p.dp)]);A(DP.decision==="APPROVED"&&DP.approved_by==="HUMAN_USER","decision");
+    for(const k of ["approved_plan_object_set","approved_plan_files","approved_index_baseline","frozen_m1_files","p4_boundary"]){const x={approved_plan_object_set:p.o,approved_plan_files:p.m,approved_index_baseline:p.b,frozen_m1_files:p.h,p4_boundary:p.p4}[k];A(DP[k]?.path===x&&DP[k]?.sha256===(await ref(src,x)).sha256,"decision-ref:"+k)}
+    const ml=(await bytes(src,p.m)).toString();A(ml===`${(await ref(src,p.o)).sha256}  ${p.o}\n`,"one-entry-manifest");
+    A(O.schema_version==="audit-approved-plan-object-set/v1"&&O.document_kind==="approved-plan-object-set"&&O.entry_count===8&&O.entries.length===8,"object-set");
+    A(H0.schema_version==="audit-frozen-file-set/v1"&&H0.document_kind==="frozen-m1-files"&&H0.entry_count===87&&H0.entries.length===87,"p0-set");
+    const g=Bun.spawnSync({cmd:["git","-C","/home/zhaoge/workspace/qoderwork","worktree","add","--detach",tgt,"2a8b15ac2c7bfe237cdde0473564d9320b024edc"],stdout:"inherit",stderr:"inherit"});A(g.exitCode===0,"worktree");
+    const put=(x,b,mode)=>{const a=resolve(tgt,x);mkdirSync(dirname(a),{recursive:true});writeFileSync(a,b,{flag:"wx"});chmodSync(a,mode)};
+    for(const x of [p.o,p.m,p.b,p.pending,p.h,p.p4,p.rp,p.dp])put(x,await bytes(src,x),0o444);
+    for(const e of H0.entries)put(e.bytes.path,await bytes(src,e.bytes.path),0o444);
+    const semantic=[];for(const e of O.entries){const b=await bytes(src,e.bytes.path);A(H(b)===e.bytes.sha256,"object:"+e.logical_path);put(e.bytes.path,b,0o444);put(e.logical_path,b,0o644);const mirror=`audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r4/${e.logical_path}`;put(mirror,b,0o444);semantic.push({logical_path:e.logical_path,kind:e.kind,approved_object:{path:e.bytes.path,sha256:e.bytes.sha256},immutable_mirror:{path:mirror,sha256:e.bytes.sha256},initial_live_snapshot:{path:e.bytes.path,sha256:e.bytes.sha256}})}
+    const ib=await bytes(src,p.b),io=`audits/audit-governance-recovery-v1/objects/sha256/${H(ib)}`;put(io,ib,0o444);put(p.index,ib,0o644);
+    const T={schema_version:"audit-approved-plan-materialization/v1",document_kind:"approved-plan-materialization",plan_id:O.plan_id,generation:O.generation,plan_approval:await ref(tgt,p.dp),object_set:await ref(tgt,p.o),approved_plan_files:await ref(tgt,p.m),approved_index_baseline:await ref(tgt,p.b),semantic_entry_count:8,live_path_count:9,semantic_entries:semantic,index_entry:{live_path:p.index,approved_index_baseline:await ref(tgt,p.b),initial_live_snapshot:{path:io,sha256:H(ib)}},materialized_at:new Date().toISOString()};put(p.t,Buffer.from(JSON.stringify(T,null,2)+"\n"),0o444);
+    console.log(JSON.stringify({ok:true,materialization:p.t,semantic_entries:8,live_paths:9}));
+    '
+    cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1
+    test -s audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r4.json
+    test "$(find plans/audit-governance-recovery-v1/formal-plan-set -maxdepth 1 -type f | wc -l)" -eq 8
+  prewrite_verification_command: |
+    /home/zhaoge/.bun/bin/bun -e '
+    import{createHash}from"node:crypto";import{writeFileSync}from"node:fs";import{resolve}from"node:path";
+    const root="/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1";
+    const p={c:"plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",m:"audits/audit-governance-recovery-v1/approved-plan-files-r4.sha256",b:"audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r4.md",rp:"audits/audit-governance-recovery-v1/approval-request-r4.json",dp:"audits/audit-governance-recovery-v1/approval-decision-r4.json",s:"audits/audit-governance-recovery-v1/bootstrap/scope-lock-PHASE-01-g001.json",q:"audits/audit-governance-recovery-v1/bootstrap/qoderwork-baseline-PHASE-01.json",rph:"audits/audit-governance-recovery-v1/bootstrap/phase-approval-request-PHASE-01-g001.json",dph:"audits/audit-governance-recovery-v1/bootstrap/phase-approval-decision-PHASE-01-g001.json",w:"audits/audit-governance-recovery-v1/bootstrap/pre-change-work-one-PHASE-01.json",out:"audits/audit-governance-recovery-v1/bootstrap/prewrite-verification.json"};
+    const H=async x=>createHash("sha256").update(Buffer.from(await Bun.file(resolve(root,x)).arrayBuffer())).digest("hex");
+    const J=async x=>JSON.parse(await Bun.file(resolve(root,x)).text());
+    const A=(x,m)=>{if(!x)throw Error("BOOTSTRAP_WAIVER_INVALID:"+m)};
+    const R=async(o,path)=>{A(o&&o.path===path&&o.sha256===await H(path),"ref:"+path)};
+    const [RP,DP,S,Q,RPH,DPH,W]=await Promise.all([p.rp,p.dp,p.s,p.q,p.rph,p.dph,p.w].map(J));
+    A(DP.decision==="APPROVED"&&DP.approved_by==="HUMAN_USER","Dplan");
+    await R(DP.approval_request,p.rp);await R(DP.canonical_contract,p.c);await R(DP.approved_plan_files,p.m);await R(DP.approved_index_baseline,p.b);
+    await R(RP.canonical_contract,p.c);await R(RP.approved_plan_files,p.m);await R(RP.approved_index_baseline,p.b);
+    const wi=["CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT","EXTERNAL_HUMAN_DECISION_FOR_PENDING_IMMUTABLE_LOCK","PHASE-01_P02A_ENTRY_WHILE_INDEX_BLOCKED","SUPPLEMENTAL_QODERWORK_BASELINE_WITH_WORK_ONE_P07_ANCHOR"];
+    A(JSON.stringify([...DP.waiver_ids].sort())===JSON.stringify(wi)&&JSON.stringify([...RP.waiver_ids].sort())===JSON.stringify(wi),"waivers");
+    await R(S.plan_approval,p.dp);await R(S.canonical_contract,p.c);await R(S.plan_phase,"plans/audit-governance-recovery-v1/formal-plan-set/01-phase-foundation-kernel.md");
+    A(S.phase_id==="PHASE-01"&&S.generation===1&&S.status==="PENDING_EXTERNAL_DECISION"&&!Object.hasOwn(S,"phase_approval"),"scope");
+    A(Q.document_kind==="evidence-receipt"&&Q.repository_realpath===root&&Q.scope_lock_sha256===await H(p.s),"Q");
+    await R(RPH.plan_approval,p.dp);await R(RPH.scope_lock,p.s);await R(RPH.qoderwork_baseline,p.q);
+    A(typeof RPH.auditor_task_id==="string"&&RPH.auditor_task_id.length>0&&typeof RPH.implementer_task_id==="string"&&RPH.implementer_task_id.length>0&&RPH.auditor_task_id!==RPH.implementer_task_id,"Rphase-ids");
+    A(DPH.decision==="APPROVED"&&DPH.approved_by==="HUMAN_USER","Dphase");await R(DPH.approval_request,p.rph);await R(DPH.plan_approval,p.dp);await R(DPH.scope_lock,p.s);await R(DPH.qoderwork_baseline,p.q);
+    A(DPH.auditor_task_id===RPH.auditor_task_id&&DPH.implementer_task_id===RPH.implementer_task_id&&RPH.auditor_task_id!==RPH.implementer_task_id,"Dphase-ids");
+    A(W.document_kind==="evidence-receipt"&&W.repository_realpath==="/home/zhaoge/workspace/opencode/work-one"&&W.scope_lock_sha256===await H(p.s)&&W.head==="64df8280007bd86fc4f607d1eec544eb3a3f9dd3"&&W.status_entries.length===0,"W");
+    const ref=async path=>({path,sha256:await H(path)});const receipt={schema_version:"audit-governance-bootstrap-prewrite/v1",document_kind:"bootstrap-prewrite-receipt",ok:true,plan_approval_request:await ref(p.rp),plan_approval:await ref(p.dp),scope_lock:await ref(p.s),qoderwork_baseline:await ref(p.q),phase_approval_request:await ref(p.rph),phase_approval:await ref(p.dph),work_one_baseline:await ref(p.w),auditor_task_id:RPH.auditor_task_id,implementer_task_id:RPH.implementer_task_id,waiver_ids:wi};
+    writeFileSync(resolve(root,p.out),JSON.stringify(receipt,null,2)+"\n",{flag:"wx"});console.log(JSON.stringify({ok:true,output:p.out}));
+    '
+  phase_01_release_command: |
+    bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
+      --emit-producer-release \
+      --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml \
+      --case-set PHASE-01 \
+      --object-root audits/audit-governance-recovery-v1/objects/sha256 \
+      --output audits/audit-governance-recovery-v1/producer-releases/PHASE-01-foundation.json
+  closes_when:
+    - PHASE-01 fixed tests pass.
+    - Candidate validate-audit returns valid:true for the PHASE-01 report and external decision.
+    - Auditor Session A signs a phase-specific ACCEPT.
+    - The atomic bootstrap transaction creates the plan-activation and PHASE-01 status receipts.
+    - Accepted PHASE-01 tooling and HUMAN phase approval are used for every later scope/state/admission/status action.
+    - PHASE-02 candidate closure is adopted by its candidate transaction; the accepted wrapper is used only for PHASE-03 onward and final closure.
+
+non_goals:
+  - Repairing or re-hashing existing M1 audit artifacts.
+  - Rewriting the historical governance v3 audit or pretending its overall ACCEPT proves this recovery.
+  - Cryptographic attestation against a malicious actor with arbitrary repository write access.
+  - Runtime smoke, serve execution, live LLM E2E, or work-one source changes.
+  - Direct status editing by either session.
+
+final_acceptance:
+  required_evidence_level: file-integration
+  conditions:
+    - PHASE-01 has separate HUMAN plan and exact bootstrap-scope decisions; PHASE-02 through PHASE-06 each have a HUMAN-approved immutable phase scope.
+    - Every phase has its own state evidence, EV receipts, report, ACCEPT, progression receipt, and status-publication receipt.
+    - Before the first implementation write, the full approved-plan-files manifest passes sha256sum --check.
+    - The plan activation receipt binds the approved index baseline to the PHASE-01 accepted index using only four activation fields plus the registered PHASE-01 status/receipt fields in one bootstrap transaction.
+    - At closure, each mutable projection hash is reachable from activation through an unbroken status-publication receipt chain limited to declared fields.
+    - Every receipt validates against its immutable producer-release manifest rather than mutable current tool bytes.
+    - validate-plan checks every phase and 99-final-verification and returns ok:true.
+    - The closure wrapper passes an all-stage fixture and every single-stage failure fixture.
+    - Rules, skills, templates, and executable behavior pass conformance.
+    - Auditor Session A issues the final ACCEPT; Implementer Session B does not issue or publish it.

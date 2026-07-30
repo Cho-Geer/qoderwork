@@ -21,10 +21,17 @@
 - **触发条件**：`provenance_level = v3-required` 的 plan 的任何 phase，在实施代码写入之前
 - **规则**：实施者必须按以下顺序完成 Freeze Gate，且禁止跳步：
   1. 审计者填写 `scope-lock.json`（覆盖本 phase 的 REQ/Check Registry/oracle）
+  1.5. **Pre-Audit Knowledge Required（v1 PHASE-01 implementer MUST）**：在 v1 PHASE-01 实施者写入任何 audit-report / scope-lock / EV receipt 内容之前，agent **MUST** 完整读取以下 5 个文件，把每个文件的 path、line count、sha256、读取时间戳记录到 `logs/<YYYY-MM-DD>-pre-audit-read-<implementer-task-id>.md`：
+     - `.agents/skills/plan-audit-archiver/scripts/validate-audit.ts`（acceptance oracle）
+     - `.agents/skills/plan-audit-archiver/scripts/pre-check-evidence.ts`（gate-1 pre-check oracle）
+     - `.agents/skills/plan-audit-archiver/templates/scope-lock-template.json`（canonical scope-lock 字段 shape）
+     - `.agents/skills/plan-audit-archiver/templates/audit-report-template.md`（canonical report shape）
+     - `.agents/skills/plan-audit-archiver/templates/evidence-receipt-template.json`（canonical receipt shape）
+     把前序 phase 的 scope-lock 或 audit-report 当作模板替代读取 = 流程违规。读取必须发生在第一次 audit-report 写入**之前**（一次性，不可后补）。SKILL.md L149-173 的 `Pre-Audit Knowledge Required [ANALYSIS]` 段是唯一权威描述。
   2. Human reviewer 批准 `scope-lock.json`（agent 不得自批准）
   3. 运行 `capture-state.ts` 捕获 pre-change receipt，输出到 `audits/<plan-name>/evidence/pre-change-<PHASE-N>.json`；`--repository-root` 必须按 P-07 取干净锚点仓库（work-one），禁止填审计工作区或当前 worktree
   4. 验证 receipt 存在且非空（`test -s` + 内容断言）
-- **违反判定**：实施已开始但 `evidence/pre-change-<PHASE-N>.json` 不存在或为空
+- **违反判定**：实施已开始但 `evidence/pre-change-<PHASE-N>.json` 不存在或为空；或 v1 PHASE-01 实施者未按 step 1.5 完成 Pre-Audit Knowledge 读取 + 留痕
 - **违反后果**：审计必须判定为 `INVALID`（不是 BLOCKED），因为实施流程违规导致审计合同无效
 
 ## 规则 P-02A：依赖 phase progression admission
