@@ -1,0 +1,10 @@
+{
+  "schema_version": "audit-p4-boundary/v1",
+  "document_kind": "p4-boundary-contract",
+  "plan_id": "PATH-DYNAMIC-RESOLUTION-M1-REBASELINE-V1",
+  "admission_root": "audits/audit-governance-recovery-v1/p4-admission",
+  "plan_root": "plans/path-dynamic-resolution-m1-rebaseline-v1",
+  "worktree": "/home/zhaoge/workspace/qoderwork/.worktrees/path-dynamic-resolution-m1-rebaseline-v1",
+  "admission_receipt_schema": "p4-admission-receipt/v1",
+  "prerequisite_final_authority": "audits/audit-governance-recovery-v1/final/g001/final-authority-receipt.json"
+}

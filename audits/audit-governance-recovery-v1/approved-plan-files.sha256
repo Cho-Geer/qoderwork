@@ -1,0 +1,8 @@
+67f79ef7f58d5bea751594f3939d54d5de6d0b3149377ed2c6416b027a2762d9  plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml
+498929b927a77eb75edaceb71b0902423b894abc38d99d99c1fa27d9028f03ab  plans/audit-governance-recovery-v1/formal-plan-set/01-phase-artifact-dag-and-scope-lock.md
+ec189b4ebf7fed6e4d8738cbef5389431db6801e6e58bc53d8bfe574f6737a07  plans/audit-governance-recovery-v1/formal-plan-set/02-phase-state-and-evidence-producers.md
+8529ed72512dcc0454f5e70def05ae15a936798c83f994bb965ae90ebf6af1eb  plans/audit-governance-recovery-v1/formal-plan-set/03-phase-plan-admission-and-status-sync.md
+4fa0e6a872b96dada577e71749a66a93580f8dca5035f8970d93dc5d2f10562b  plans/audit-governance-recovery-v1/formal-plan-set/04-phase-single-closure-entrypoint.md
+0938a4e42d20bc544c02ff2bd0e601f25cb2ce939879816cc4c463b32fa681ea  plans/audit-governance-recovery-v1/formal-plan-set/05-phase-rules-skills-and-conformance.md
+de316aad51849caf664b5925204f3a4a0ab6a0858640c0736f91f94b12a5a6c2  plans/audit-governance-recovery-v1/formal-plan-set/06-phase-documentation-and-final-handoff.md
+79a4804bb44f6bf84dec79f4e0253449a9d9e3eabe300ab407d947ef946c5e90  plans/audit-governance-recovery-v1/formal-plan-set/99-final-verification.md

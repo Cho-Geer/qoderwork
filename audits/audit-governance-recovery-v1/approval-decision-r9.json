@@ -1,0 +1,84 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "decision_id": "R9",
+  "plan_id": "AUDIT-GOVERNANCE-RECOVERY-V1-20260730",
+  "governance_profile": "audit-governance-recovery/v1",
+  "decision": "APPROVED",
+  "approved_by": "HUMAN_USER",
+  "approved_at": "2026-08-01T10:30:00Z",
+  "approval_request": {
+    "path": "audits/audit-governance-recovery-v1/approval-request-r9.json",
+    "sha256": "7817b72b4581b4bed3947b2f085ddadfc2d0874c6635f5b4f465c5a50e6e8578"
+  },
+  "canonical_contract": {
+    "path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+    "sha256": "4305bed5b4e127c15cbb31ba74d473f7efe39d8c357781594b2366d392d229f6"
+  },
+  "approved_plan_object_set": {
+    "path": "audits/audit-governance-recovery-v1/approved-plan-object-set-r9.json",
+    "sha256": "83185595ec3d5b646fc47a9d13846beebae12c7f90085bd938f91e173145b1e1"
+  },
+  "approved_plan_files": {
+    "path": "audits/audit-governance-recovery-v1/approved-plan-files-r9.sha256",
+    "sha256": "d046212cb37c3528e18e8446fbeb35961bf65740fc07c97aa3f2bf3da9d179b5"
+  },
+  "approved_index_baseline": {
+    "path": "audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r9.md",
+    "sha256": "a3f631318f88a731be50aaa1a1474a0efd6bc4ea8ee8a6ccc4e180be4878b1f6"
+  },
+  "frozen_m1_files": {
+    "path": "audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r9.json",
+    "sha256": "dc5ea01fef295d44e59bf1efc9ecce24801cfb56cb96752c102dc5a88e5ba7bf"
+  },
+  "p4_boundary": {
+    "path": "audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r9.json",
+    "sha256": "cbfd7864cb57946bdf78ec88e0be6e57e2e506d5ad2674ed40232c56a262adef"
+  },
+  "approved_artifacts": {
+    "canonical_contract": {
+      "path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+      "sha256": "4305bed5b4e127c15cbb31ba74d473f7efe39d8c357781594b2366d392d229f6"
+    },
+    "approved_plan_object_set": {
+      "path": "audits/audit-governance-recovery-v1/approved-plan-object-set-r9.json",
+      "sha256": "83185595ec3d5b646fc47a9d13846beebae12c7f90085bd938f91e173145b1e1"
+    },
+    "approved_plan_files": {
+      "path": "audits/audit-governance-recovery-v1/approved-plan-files-r9.sha256",
+      "sha256": "d046212cb37c3528e18e8446fbeb35961bf65740fc07c97aa3f2bf3da9d179b5"
+    },
+    "approved_index_baseline": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r9.md",
+      "sha256": "a3f631318f88a731be50aaa1a1474a0efd6bc4ea8ee8a6ccc4e180be4878b1f6"
+    },
+    "frozen_m1_files": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r9.json",
+      "sha256": "dc5ea01fef295d44e59bf1efc9ecce24801cfb56cb96752c102dc5a88e5ba7bf"
+    },
+    "p4_boundary": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r9.json",
+      "sha256": "cbfd7864cb57946bdf78ec88e0be6e57e2e506d5ad2674ed40232c56a262adef"
+    }
+  },
+  "waiver_ids": [
+    "PHASE-01_P02A_ENTRY_WHILE_INDEX_BLOCKED",
+    "EXTERNAL_HUMAN_DECISION_FOR_PENDING_IMMUTABLE_LOCK",
+    "SUPPLEMENTAL_QODERWORK_BASELINE_WITH_WORK_ONE_P07_ANCHOR",
+    "CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT",
+    "PHASE-00_COMPONENT_LEVEL_NO_FORMAL_PRE_CHANGE"
+  ],
+  "exact_waiver_ids": [
+    "PHASE-01_P02A_ENTRY_WHILE_INDEX_BLOCKED",
+    "EXTERNAL_HUMAN_DECISION_FOR_PENDING_IMMUTABLE_LOCK",
+    "SUPPLEMENTAL_QODERWORK_BASELINE_WITH_WORK_ONE_P07_ANCHOR",
+    "CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT",
+    "PHASE-00_COMPONENT_LEVEL_NO_FORMAL_PRE_CHANGE"
+  ],
+  "cryptographic_references": [],
+  "effect": "AUTHORIZES_MATERIALIZATION_PHASE_00_REWORK_LEGITIMATION",
+  "immutable": true,
+  "supersedes": "R9-PENDING",
+  "acyclicity_note": "r9",
+  "approval_effect": "Any change requires new approval (r10)."
+}

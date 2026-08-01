@@ -1,0 +1,38 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "decision_id": "AUDIT-GOVERNANCE-RECOVERY-V1-PENDING-20260730",
+  "plan_id": "AUDIT-GOVERNANCE-RECOVERY-V1-20260730",
+  "governance_profile": "audit-governance-recovery/v1",
+  "decision": "PENDING_HUMAN_APPROVAL",
+  "approved_by": null,
+  "approved_at": null,
+  "approval_request": {
+    "path": "audits/audit-governance-recovery-v1/approval-request.json",
+    "sha256": "91bc077f70eee00baf64ee20afc3bfd876e382895c67d27bfddf05405b5b75f9"
+  },
+  "approved_artifacts": {
+    "canonical_contract": {
+      "path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+      "sha256": "67f79ef7f58d5bea751594f3939d54d5de6d0b3149377ed2c6416b027a2762d9"
+    },
+    "approved_plan_files": {
+      "path": "audits/audit-governance-recovery-v1/approved-plan-files.sha256",
+      "sha256": "01db489230136b3efdf958610f49d8b7163946cf8dd57d366fb032d7243a091f"
+    }
+  },
+  "effect": "NONE_UNTIL_HUMAN_USER_APPROVES",
+  "immutable": true,
+  "supersedes": null,
+  "on_human_approval": {
+    "create_new_path": "audits/audit-governance-recovery-v1/approval-decision.json",
+    "preserve_this_pending_file": true,
+    "required_decision": "APPROVED",
+    "required_approved_by": "HUMAN_USER",
+    "required_bindings": [
+      "approval_request",
+      "canonical_contract",
+      "approved_plan_files"
+    ]
+  }
+}

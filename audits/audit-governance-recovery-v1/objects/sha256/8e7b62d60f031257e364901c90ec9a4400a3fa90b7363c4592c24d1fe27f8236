@@ -8,8 +8,8 @@ provenance_level: v3-required
 
 authority:
   semantic_source: this_file
-  approval_request: audits/audit-governance-recovery-v1/approval-request-r8.json
-  approved_decision: audits/audit-governance-recovery-v1/approval-decision-r8.json
+  approval_request: audits/audit-governance-recovery-v1/approval-request-r5.json
+  approved_decision: audits/audit-governance-recovery-v1/approval-decision-r5.json
   implementation_session: IMPLEMENTER_SESSION_B
   audit_session: AUDITOR_SESSION_A
   rule: >
@@ -18,15 +18,12 @@ authority:
     baseline, the P0 M1 freeze manifest, and the P4 boundary contract. The approved decision
     is immutable and is never rewritten, synchronized, or replaced in place.
 
-    Generation history (for traceability; only r8 is authoritative):
+    Generation history (for traceability; only r5 is authoritative):
     - r1: original freeze, plan files used 01-phase-artifact-dag-and-scope-lock.md naming (deprecated, file `approved-plan-files.sha256` retained for reference only)
     - r2: rejection with `approved_artifacts: {}` (file `approval-decision-pending-r2.json` retained for reference only)
     - r3: would require a fresh manifest SHA freeze; not yet produced
     - r4: P1_R4_INDEPENDENT_REVIEW_PENDING (historical name; frozen 2026-07-30, superseded by 2026-07-30 plan-text revision because the original phase file naming was wrong relative to current `formal-plan-set/`)
-    - r5: post-revision generation (2026-07-30 plan-text revision); superseded by r6 because the materialization command's exclusive-write `put` failed on duplicate content-addressed paths in the 87-entry freeze manifest
-    - r6: post-revision generation (2026-07-31 materialization put-semantics fix: L1651 idempotent put for duplicate content-addressed store paths, L1652-L1653 overwrite semantics for live-path deployment over worktree-checked-out tracked plan files); superseded by r7
-    - r7: post-revision generation (2026-08-01 r7 spec-drift fix: filled three PENDING_R6_FREEZE placeholders in 00-plan-index.md with real SHA-256 hashes, added verify-final-gate/verify-final-audit-inputs/verify-final-audit-regression flag descriptions to PHASE-01 step 6 mode list, and updated stale r5 generation references across 00-index/01-phase/99-final to r7); superseded by r8
-    - r8: post-revision generation (2026-08-01 r8 PHASE-00/01 split: separated toolchain implementation (PHASE-00) from audit bootstrap (PHASE-01) to resolve the cold-start circular dependency); this is the only authoritative generation
+    - r5: post-revision generation; this is the only authoritative generation
 
 baseline:
   qoderwork_base_commit: 51d95dbb919f1be988f026073ac9af9ff3a4a8de
@@ -306,7 +303,7 @@ atomic_requirements:
   - id: REQ-GR-014
     title: Documentation and implementation log projection
     required_behavior: >
-      After PHASE-00 through PHASE-05 are individually accepted, PHASE-06 writes indexes as
+      After PHASE-01 through PHASE-05 are individually accepted, PHASE-06 writes indexes as
       IMPLEMENTED_PENDING_FINAL_AUDIT and records exact changed surfaces, evidence levels, and
       remaining final-audit gates.
     observable_result: >
@@ -328,21 +325,21 @@ artifact_dag:
       schema audit-approved-plan-object-set/v1 and kind approved-plan-object-set have exact
       top-level keys schema_version, document_kind, plan_id, generation,
       source_base_commit, entry_count, entries_sha256, entries. Entries are sorted by
-      logical_path and cover canonical, PHASE-00..06, and final verification exactly once.
+      logical_path and cover canonical, PHASE-01..06, and final verification exactly once.
       Each entry has exact keys logical_path, kind, bytes; bytes is a REF to
-      approval-objects/sha256/<sha256>. entry_count is 9 and entries_sha256 hashes the UTF-8
+      approval-objects/sha256/<sha256>. entry_count is 8 and entries_sha256 hashes the UTF-8
       compact JSON entries array. logical_path and source_base_commit are LOGICAL_ONLY.
     checksum_entry: >
-      approved-plan-files-r8.sha256 is UTF-8 with exactly one LF-terminated line:
-      "<object_set.sha256>  audits/audit-governance-recovery-v1/approved-plan-object-set-r8.json".
+      approved-plan-files-r5.sha256 is UTF-8 with exactly one LF-terminated line:
+      "<object_set.sha256>  audits/audit-governance-recovery-v1/approved-plan-object-set-r5.json".
       It excludes itself, live plan paths, baselines, requests, decisions, and materialization.
     approved_plan_materialization: >
       schema audit-approved-plan-materialization/v1 and kind approved-plan-materialization
       have exact refs plan_approval, object_set, approved_plan_files, approved_index_baseline;
-      semantic_entries contain exactly nine sorted rows with logical_path/kind LOGICAL_ONLY
+      semantic_entries contain exactly eight sorted rows with logical_path/kind LOGICAL_ONLY
       plus approved_object, immutable_mirror, and initial_live_snapshot REFs of identical SHA.
       index_entry binds the approved baseline and a content-addressed initial live snapshot.
-      semantic_entry_count is 9 and live_path_count is 10. The receipt is exclusive, is created
+      semantic_entry_count is 8 and live_path_count is 9. The receipt is exclusive, is created
       after plan approval/materialization, and hashes no later mutable live path.
     frozen_m1_files: >
       schema audit-frozen-file-set/v1 and kind frozen-m1-files contain exactly 87 sorted
@@ -735,7 +732,7 @@ artifact_dag:
     - source: audit-report-contract
       field: phase_projections
       target: phase-projection
-      constraint: field is present only in final contract and covers PHASE-00 through PHASE-06 exactly once
+      constraint: field is present only in final contract and covers PHASE-01 through PHASE-06 exactly once
     - source: phase-projection
       field: audit_report
       target: audit-report
@@ -991,7 +988,7 @@ artifact_dag:
       - status_seq2 prior_publication targets only status_seq1; cross-plan/nonadjacent refs fail.
       - phase/final workspace, evidence, contract, progression, and status shapes are distinct.
       - report_phase and report_final are separate from contract_phase and contract_final.
-      - phase_projection_00 through phase_projection_06 are seven distinct final inputs.
+      - phase_projection_01 through phase_projection_06 are six distinct final inputs.
       - snapshot_before and snapshot_after bind different immutable projection bytes.
       - gate_001 through gate_010 are stage-specific meta-evidence and not GATE-005 subjects.
     live_subject_graph_oracle: >
@@ -1010,13 +1007,13 @@ artifact_dag:
       approved_plan_materialization: {kind: approved-plan-materialization, refs: {"approved_index_baseline": [approved_index_baseline], "approved_plan_files": [approved_plan_files], "index_entry.initial_live_snapshot": [projection_bytes], "object_set": [approved_plan_object_set], "plan_approval": [plan_approval_decision], "semantic_entries[].approved_object": [approved_plan_byte], "semantic_entries[].immutable_mirror": [approved_plan_byte], "semantic_entries[].initial_live_snapshot": [approved_plan_byte]}}
       approved_plan_object_set: {kind: approved-plan-object-set, refs: {"entries[].bytes": [approved_plan_byte]}}
       auditor_findings: {kind: auditor-findings, refs: {}}
-      auditor_semantic_decision: {kind: auditor-semantic-decision, refs: {"auditor_findings": [auditor_findings], "canonical_contract": [canonical_requirements], "phase_projections": [phase_projection_00, phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "pre_change_state": [workspace_final], "producer_release": [producer_release_manifest], "session_roles": [session_role_manifest], "verdict_state": [workspace_final]}}
+      auditor_semantic_decision: {kind: auditor-semantic-decision, refs: {"auditor_findings": [auditor_findings], "canonical_contract": [canonical_requirements], "phase_projections": [phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "pre_change_state": [workspace_final], "producer_release": [producer_release_manifest], "session_roles": [session_role_manifest], "verdict_state": [workspace_final]}}
       bootstrap_prewrite_receipt: {kind: bootstrap-prewrite-receipt, refs: {"approved_index_baseline": [approved_index_baseline], "approved_plan_files": [approved_plan_files], "approved_plan_materialization": [approved_plan_materialization], "approved_plan_object_set": [approved_plan_object_set], "frozen_m1_files": [frozen_m1_files], "p4_boundary": [p4_boundary_contract], "phase_approval": [phase_approval_decision], "phase_approval_request": [phase_approval_request], "plan_approval": [plan_approval_decision], "plan_approval_request": [plan_approval_request], "qoderwork_baseline": [legacy_bootstrap_repository_receipt], "scope_lock": [scope_g002], "work_one_baseline": [legacy_bootstrap_repository_receipt]}}
       canonical_requirements: {kind: canonical-requirements, refs: {}}
       closure_phase: {kind: closure-transaction, refs: {"after_projections": [snapshot_after], "auditor_semantic_decision": [auditor_semantic_decision], "before_projections": [snapshot_before], "final_gates": [gate_001], "final_progression_receipt": [plan_final_progression_receipt], "phase_approval": [phase_approval_decision], "phase_projection": [phase_projection_01], "plan_activation": [plan_activation_receipt], "pre_change_state": [workspace_phase], "prepared_report": [report_phase], "prior_publication": [status_seq1], "producer_release": [producer_release_manifest], "progression_receipt": [phase_progression_receipt], "published_report": [report_phase], "report_contract": [contract_phase], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "status_publication": [status_seq1], "verdict_state": [workspace_phase]}}
-      contract_final: {kind: audit-report-contract, refs: {"auditor_findings": [auditor_findings], "auditor_semantic_decision": [auditor_semantic_decision], "canonical_contract": [canonical_requirements], "evidence_receipts": [evidence_final], "phase_projections": [phase_projection_00, phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "pre_change_state": [workspace_final], "producer_releases": [producer_release_manifest], "session_roles": [session_role_manifest], "verdict_state": [workspace_final]}}
+      contract_final: {kind: audit-report-contract, refs: {"auditor_findings": [auditor_findings], "auditor_semantic_decision": [auditor_semantic_decision], "canonical_contract": [canonical_requirements], "evidence_receipts": [evidence_final], "phase_projections": [phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "pre_change_state": [workspace_final], "producer_releases": [producer_release_manifest], "session_roles": [session_role_manifest], "verdict_state": [workspace_final]}}
       contract_phase: {kind: audit-report-contract, refs: {"auditor_findings": [auditor_findings], "canonical_contract": [canonical_requirements], "evidence_receipts": [evidence_phase], "phase_approval": [phase_approval_decision], "pre_change_state": [workspace_phase], "producer_releases": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
-      evidence_final: {kind: evidence-receipt, refs: {"canonical_contract": [canonical_requirements], "phase_projections": [phase_projection_00, phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "pre_change_state": [workspace_final], "producer_release": [producer_release_manifest], "session_roles": [session_role_manifest], "verdict_state": [workspace_final]}}
+      evidence_final: {kind: evidence-receipt, refs: {"canonical_contract": [canonical_requirements], "phase_projections": [phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "pre_change_state": [workspace_final], "producer_release": [producer_release_manifest], "session_roles": [session_role_manifest], "verdict_state": [workspace_final]}}
       evidence_phase: {kind: evidence-receipt, refs: {"canonical_contract": [canonical_requirements], "phase_approval": [phase_approval_decision], "pre_change_state": [workspace_phase], "producer_release": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
       final_journal: {kind: finalization-journal, refs: {"after_projections": [snapshot_after], "before_projections": [snapshot_before], "final_progression_receipt": [plan_final_progression_receipt], "producer_release": [producer_release_manifest], "published_report": [report_final], "report_contract": [contract_final]}}
       frozen_m1_files: {kind: frozen-m1-files, refs: {"entries[].bytes": [historical_m1_byte]}}
@@ -1026,14 +1023,13 @@ artifact_dag:
       gate_004: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "producer_release": [producer_release_manifest]}}
       gate_005: {kind: final-gate-receipt, refs: {"audit_report_contract": [contract_final], "canonical_contract": [canonical_requirements]}}
       gate_006: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "pre_change_state": [workspace_final], "producer_release": [producer_release_manifest], "verdict_state": [workspace_final]}}
-      gate_007: {kind: final-gate-receipt, refs: {"audit_report": [report_final], "audit_report_contract": [contract_final], "auditor_semantic_decision": [auditor_semantic_decision], "canonical_contract": [canonical_requirements], "phase_projections": [phase_projection_00, phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06]}}
+      gate_007: {kind: final-gate-receipt, refs: {"audit_report": [report_final], "audit_report_contract": [contract_final], "auditor_semantic_decision": [auditor_semantic_decision], "canonical_contract": [canonical_requirements], "phase_projections": [phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06]}}
       gate_008: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "finalization_journal": [final_journal]}}
       gate_009: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "frozen_m1_files": [frozen_m1_files]}}
       gate_010: {kind: final-gate-receipt, refs: {"canonical_contract": [canonical_requirements], "p4_boundary": [p4_boundary_contract], "prior_publication": [status_seq1]}}
       historical_m1_byte: {kind: historical-m1-byte, refs: {}}
       legacy_bootstrap_repository_receipt: {kind: legacy-bootstrap-repository-receipt, refs: {"scope_lock_sha256": [scope_g002]}}
       p4_boundary_contract: {kind: p4-boundary-contract, refs: {}}
-      phase_projection_00: {kind: phase-projection, refs: {"audit_report": [report_phase], "audit_report_contract": [contract_phase], "phase_approval": [phase_approval_decision], "producer_release": [producer_release_manifest], "scope_lock": [scope_g002], "session_roles": [session_role_manifest], "verdict_state": [workspace_phase]}}
       phase_approval_decision: {kind: phase-approval-decision, refs: {"approval_request": [phase_approval_request], "plan_approval": [plan_approval_decision], "qoderwork_baseline": [legacy_bootstrap_repository_receipt], "scope_lock": [scope_g002], "session_roles": [session_role_manifest]}}
       phase_approval_request: {kind: phase-approval-request, refs: {"plan_approval": [plan_approval_decision], "qoderwork_baseline": [legacy_bootstrap_repository_receipt], "scope_lock": [scope_g002], "session_roles": [session_role_manifest]}}
       phase_progression_receipt: {kind: phase-progression-receipt, refs: {"audit_report": [report_phase], "audit_report_contract": [contract_phase], "phase_projection": [phase_projection_01], "producer_release": [producer_release_manifest], "verdict_state": [workspace_phase]}}
@@ -1047,7 +1043,7 @@ artifact_dag:
       plan_approval_decision: {kind: plan-approval-decision, refs: {"approval_request": [plan_approval_request], "approved_index_baseline": [approved_index_baseline], "approved_plan_files": [approved_plan_files], "approved_plan_object_set": [approved_plan_object_set], "canonical_contract": [canonical_requirements], "frozen_m1_files": [frozen_m1_files], "p4_boundary": [p4_boundary_contract]}}
       plan_approval_decision_pending: {kind: plan-approval-decision-pending, refs: {}}
       plan_approval_request: {kind: plan-approval-request, refs: {"approved_index_baseline": [approved_index_baseline], "approved_plan_files": [approved_plan_files], "approved_plan_object_set": [approved_plan_object_set], "canonical_contract": [canonical_requirements], "frozen_m1_files": [frozen_m1_files], "p4_boundary": [p4_boundary_contract], "pending_decision": [plan_approval_decision_pending]}}
-      plan_final_progression_receipt: {kind: plan-final-progression-receipt, refs: {"audit_report": [report_final], "audit_report_contract": [contract_final], "phase_projections": [phase_projection_00, phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "prior_publication": [status_seq1], "producer_release": [producer_release_manifest], "verdict_state": [workspace_final]}}
+      plan_final_progression_receipt: {kind: plan-final-progression-receipt, refs: {"audit_report": [report_final], "audit_report_contract": [contract_final], "phase_projections": [phase_projection_01, phase_projection_02, phase_projection_03, phase_projection_04, phase_projection_05, phase_projection_06], "prior_publication": [status_seq1], "producer_release": [producer_release_manifest], "verdict_state": [workspace_final]}}
       producer_release_manifest: {kind: producer-release-manifest, refs: {"canonical_contract": [canonical_requirements], "tool_sources[].bytes": [source_file], "transitive_dependencies[].bytes": [source_file]}}
       projection_bytes: {kind: projection-bytes, refs: {}}
       projection_snapshot: {kind: projection-snapshot, refs: {"bytes": [projection_bytes]}}
@@ -1081,17 +1077,17 @@ dataflow_pipeline:
     depends on phase N-1" prose that previously left the producer/consumer contract
     implicit.
   rows:
-    - phase: PHASE-00
+    - phase: PHASE-01
       producer: validate-phase-progression.ts --create-scope-lock
       input: bootstrap/prewrite-verification.json
       output: bootstrap/scope-lock-PHASE-01-g001.json
       consumer_gate: PHASE-01 entry admission
-    - phase: PHASE-00
+    - phase: PHASE-01
       producer: capture-state.ts --upgrade-bootstrap-pre-change
       input: dual workspace HEAD
       output: phases/PHASE-01/g001/pre-change-state.json
       consumer_gate: PHASE-01 PRE_CHANGE
-    - phase: PHASE-00
+    - phase: PHASE-01
       producer: prepare-audit.ts --bootstrap-activate-and-close PHASE-01
       input: scope + pre-change + producer release
       output: phases/PHASE-01/g001/{auditor-findings.md, prepared/audit-report.md}
@@ -1123,12 +1119,12 @@ dataflow_pipeline:
       consumer_gate: PHASE-05 audit gate
     - phase: PHASE-06
       producer: Auditor A writes implementation-evidence log
-      input: PHASE-00..05 progression receipts
+      input: PHASE-01..05 progression receipts
       output: logs/2026-07-30-audit-governance-recovery-implementation.md + documents/INDEX.md block + logs/INDEX.md entries
       consumer_gate: PHASE-06 audit gate
     - phase: 99-final
       producer: close-audit-phase.ts --final
-      input: all 7 phase-accepted reports + producer release
+      input: all 6 phase-accepted reports + producer release
       output: final/g001/{auditor-findings, prepared/audit-report, published/audit-report, verdict-state, pre-change-state}.json + progression-receipt
       consumer_gate: P4 M1 re-baseline gate
 required_error_codes:
@@ -1180,30 +1176,26 @@ required_error_codes:
 
 phase_manifest:
   - order: 1
-    phase_id: PHASE-00
-    file: formal-plan-set/00-phase-toolchain-implementation.md
-    depends_on: NONE
-  - order: 2
     phase_id: PHASE-01
     file: formal-plan-set/01-phase-foundation-kernel.md
-    depends_on: PHASE-00
-  - order: 3
+    depends_on: NONE
+  - order: 2
     phase_id: PHASE-02
     file: formal-plan-set/02-phase-single-closure-entrypoint.md
     depends_on: PHASE-01
-  - order: 4
+  - order: 3
     phase_id: PHASE-03
     file: formal-plan-set/03-phase-artifact-dag-validation.md
     depends_on: PHASE-02
-  - order: 5
+  - order: 4
     phase_id: PHASE-04
     file: formal-plan-set/04-phase-conformance-enforcement.md
     depends_on: PHASE-03
-  - order: 6
+  - order: 5
     phase_id: PHASE-05
     file: formal-plan-set/05-phase-rules-skills-and-templates.md
     depends_on: PHASE-04
-  - order: 7
+  - order: 6
     phase_id: PHASE-06
     file: formal-plan-set/06-phase-documentation-and-final-handoff.md
     depends_on: PHASE-05
@@ -1262,11 +1254,11 @@ mutable_projection_registry:
   phase_01_activation_additions:
     index_status: [BLOCKED, IN_PROGRESS]
     approval_decision_path:
-      - audits/audit-governance-recovery-v1/approval-decision-pending-r8.json
-      - audits/audit-governance-recovery-v1/approval-decision-r8.json
+      - audits/audit-governance-recovery-v1/approval-decision-pending-r5.json
+      - audits/audit-governance-recovery-v1/approval-decision-r5.json
     approval_decision_sha256:
-      - HASH_OF(audits/audit-governance-recovery-v1/approval-decision-pending-r8.json)
-      - HASH_OF(audits/audit-governance-recovery-v1/approval-decision-r8.json)
+      - HASH_OF(audits/audit-governance-recovery-v1/approval-decision-pending-r5.json)
+      - HASH_OF(audits/audit-governance-recovery-v1/approval-decision-r5.json)
     exact_additional_field_count: 3
     note: index_admission in PHASE-01 is the fourth activation metadata field.
   phase_06_activation_additions:
@@ -1428,13 +1420,13 @@ evidence_case_registry:
     - [EV-017, DC-GR1-PEND-P, REQ-GR-013, POSITIVE, ORACLE-GR1-PEND, GR1-PENDING-AS-LEAF, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-PEND-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
     - [EV-018, DC-GR1-PEND-N, REQ-GR-013, NEGATIVE, ORACLE-GR1-PEND, GR1-PENDING-AS-AUTHORITY, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/foundation-kernel.test.ts -t 'DC-GR1-PEND-N DOMAIN_ERROR=STATUS_PUBLICATION_UNAUTHORIZED'", "DOMAIN_ERROR=STATUS_PUBLICATION_UNAUTHORIZED", REJECTION_VERIFIED, STATUS_PUBLICATION_UNAUTHORIZED]
     - note: >
-        EV-017/EV-018 enforce the rule that an `approval-decision-pending-r8.json` is a true
-        leaf in the acyclic graph (no path/SHA object, no request/baseline reference, no
-        downstream hash). Treating pending state as authority must fail with
-        STATUS_PUBLICATION_UNAUTHORIZED. This addresses the 2026-07-30 plan-text audit
-        finding #3 (pending in authority field) and finding #14 (philosophical
-        self-consistency: plan-index L22 says "only receipt transactions change status"
-        but pending was used as authority).
+      EV-017/EV-018 enforce the rule that an `approval-decision-pending-r5.json` is a true
+      leaf in the acyclic graph (no path/SHA object, no request/baseline reference, no
+      downstream hash). Treating pending state as authority must fail with
+      STATUS_PUBLICATION_UNAUTHORIZED. This addresses the 2026-07-30 plan-text audit
+      finding #3 (pending in authority field) and finding #14 (philosophical
+      self-consistency: plan-index L22 says "only receipt transactions change status"
+      but pending was used as authority).
   PHASE-02:
     - [EV-001, DC-GR2-011-P, REQ-GR-011, POSITIVE, ORACLE-GR2-011, GR2-ALL-STAGES, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/close-audit-phase.test.ts -t 'DC-GR2-011-P DOMAIN_RESULT=PASS'", "DOMAIN_RESULT=PASS", PASS, NONE]
     - [EV-002, DC-GR2-011-N, REQ-GR-011, NEGATIVE, ORACLE-GR2-011, GR2-EACH-STAGE-FAILS, "/home/zhaoge/.bun/bin/bun test .agents/skills/plan-audit-archiver/scripts/__tests__/close-audit-phase.test.ts -t 'DC-GR2-011-N DOMAIN_ERROR=CLOSURE_STEP_FAILED'", "DOMAIN_ERROR=CLOSURE_STEP_FAILED", REJECTION_VERIFIED, CLOSURE_STEP_FAILED]
@@ -1453,7 +1445,7 @@ evidence_case_registry:
     - [EV-001, DC-GR6-014-P, REQ-GR-014, POSITIVE, ORACLE-GR6-014, GR6-REAL-DOCS, "/home/zhaoge/.bun/bin/bun run scripts/check-audit-governance-recovery-conformance.ts --repository-root /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap --profile implementation-docs", "\"ok\":true", PASS, NONE]
     - [EV-002, DC-GR6-014-N, REQ-GR-014, NEGATIVE, ORACLE-GR6-014, GR6-PREMATURE-DOCS, "/home/zhaoge/.bun/bin/bun test scripts/__tests__/check-audit-governance-recovery-conformance.test.ts -t 'DC-GR6-014-N DOMAIN_ERROR=DOC_STATUS_PREMATURE_OR_MISSING'", "DOMAIN_ERROR=DOC_STATUS_PREMATURE_OR_MISSING", REJECTION_VERIFIED, DOC_STATUS_PREMATURE_OR_MISSING]
   FINAL_AUDIT:
-    - [EV-001, DC-GR-FINAL-AUDIT-001, FINAL-AUDIT-CHAIN, POSITIVE, ORACLE-GR-FINAL-AUDIT-001, FINAL-SEVEN-ACCEPTED-CHAINS, "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-audit-inputs --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1", "FINAL_AUDIT_RESULT=PHASE_CHAINS:PASS COUNT=7", PASS, NONE]
+    - [EV-001, DC-GR-FINAL-AUDIT-001, FINAL-AUDIT-CHAIN, POSITIVE, ORACLE-GR-FINAL-AUDIT-001, FINAL-SIX-ACCEPTED-CHAINS, "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-audit-inputs --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1", "FINAL_AUDIT_RESULT=PHASE_CHAINS:PASS COUNT=6", PASS, NONE]
     - [EV-002, DC-GR-FINAL-AUDIT-002, FINAL-AUDIT-REGRESSION, POSITIVE, ORACLE-GR-FINAL-AUDIT-002, FINAL-APPROVED-REGRESSION, "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-audit-regression --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1", "FINAL_AUDIT_RESULT=REGRESSION:PASS COMMANDS=5", PASS, NONE]
 
 final_gate_registry:
@@ -1472,13 +1464,13 @@ final_gate_registry:
       literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-001 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-001.json"
     - id: GATE-GR-FINAL-002
       stage: VERIFY_GATES_001_004_006_007
-      oracle: Distinct task IDs agree across request/decision/session; exactly one activation consumes the exact five waivers.
+      oracle: Distinct task IDs agree across request/decision/session; exactly one activation consumes the exact four waivers.
       marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-002:PASS DISTINCT_TASKS=1 WAIVER_CONSUMPTIONS=1"
       literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-002 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-002.json"
     - id: GATE-GR-FINAL-003
       stage: VERIFY_GATES_001_004_006_007
-      oracle: PHASE-00..06 each have one hash-valid ACCEPT report, contract, projection, verdict, progression, and adjacent status chain.
-      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-003:PASS ACCEPTED_CHAINS=7"
+      oracle: PHASE-01..06 each have one hash-valid ACCEPT report, contract, projection, verdict, progression, and adjacent status chain.
+      marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-003:PASS ACCEPTED_CHAINS=6"
       literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-003 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-003.json"
     - id: GATE-GR-FINAL-004
       stage: VERIFY_GATES_001_004_006_007
@@ -1497,7 +1489,7 @@ final_gate_registry:
       literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-006 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-006.json"
     - id: GATE-GR-FINAL-007
       stage: VERIFY_GATES_001_004_006_007
-      oracle: Sealed auditor-semantic-decision/v1 binds findings, canonical, release, both states, session, and seven projections; verdict ACCEPT and blocking_finding_ids empty.
+      oracle: Sealed auditor-semantic-decision/v1 binds findings, canonical, release, both states, session, and six projections; verdict ACCEPT and blocking_finding_ids empty.
       marker: "FINAL_GATE_RESULT=GATE-GR-FINAL-007:PASS AUDITOR_BLOCKERS=0"
       literal_command: "/home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts --verify-final-gate GATE-GR-FINAL-007 --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml --plan-root plans/audit-governance-recovery-v1/formal-plan-set --audit-root audits/audit-governance-recovery-v1 --output audits/audit-governance-recovery-v1/final/g001/gates/GATE-GR-FINAL-007.json"
     - id: GATE-GR-FINAL-008
@@ -1546,7 +1538,6 @@ approval_freeze_registry:
   target_root: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
   semantic_logical_paths:
     - plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml
-    - plans/audit-governance-recovery-v1/formal-plan-set/00-phase-toolchain-implementation.md
     - plans/audit-governance-recovery-v1/formal-plan-set/01-phase-foundation-kernel.md
     - plans/audit-governance-recovery-v1/formal-plan-set/02-phase-single-closure-entrypoint.md
     - plans/audit-governance-recovery-v1/formal-plan-set/03-phase-artifact-dag-validation.md
@@ -1556,15 +1547,15 @@ approval_freeze_registry:
     - plans/audit-governance-recovery-v1/formal-plan-set/99-final-verification.md
   artifacts:
     approved_object_root: audits/audit-governance-recovery-v1/approval-objects/sha256
-    approved_plan_object_set: audits/audit-governance-recovery-v1/approved-plan-object-set-r8.json
-    approved_plan_files: audits/audit-governance-recovery-v1/approved-plan-files-r8.sha256
-    approved_index_baseline: audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r8.md
-    pending_decision: audits/audit-governance-recovery-v1/approval-decision-pending-r8.json
-    frozen_m1_files: audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r8.json
-    p4_boundary: audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r8.json
-    plan_request: audits/audit-governance-recovery-v1/approval-request-r8.json
-    plan_decision: audits/audit-governance-recovery-v1/approval-decision-r8.json
-    materialization: audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r8.json
+    approved_plan_object_set: audits/audit-governance-recovery-v1/approved-plan-object-set-r5.json
+    approved_plan_files: audits/audit-governance-recovery-v1/approved-plan-files-r5.sha256
+    approved_index_baseline: audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r5.md
+    pending_decision: audits/audit-governance-recovery-v1/approval-decision-pending-r5.json
+    frozen_m1_files: audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r5.json
+    p4_boundary: audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r5.json
+    plan_request: audits/audit-governance-recovery-v1/approval-request-r5.json
+    plan_decision: audits/audit-governance-recovery-v1/approval-decision-r5.json
+    materialization: audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r5.json
   p0_exact_set:
     roots:
       - plans/path-dynamic-resolution-m1
@@ -1605,13 +1596,12 @@ approval_freeze_registry:
     - EXTERNAL_HUMAN_DECISION_FOR_PENDING_IMMUTABLE_LOCK
     - SUPPLEMENTAL_QODERWORK_BASELINE_WITH_WORK_ONE_P07_ANCHOR
     - CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT
-    - PHASE-00_COMPONENT_LEVEL_NO_FORMAL_PRE_CHANGE
   invariants:
     - All writes are exclusive; a collision stops and no hash is synchronized.
-    - The one-entry checksum manifest hashes only approved-plan-object-set-r8.json.
+    - The one-entry checksum manifest hashes only approved-plan-object-set-r5.json.
     - The index baseline is outside the semantic object set and contains no self/request hash.
     - Plan approval precedes target materialization; materialization receipt cannot be in its own approval chain.
-    - HUMAN approval binds exact refs and five waivers; it authorizes materialization only, not source writes.
+    - HUMAN approval binds exact refs and four waivers; it authorizes materialization only, not source writes.
 
 recovery_bootstrap:
   id: PHASE-01-ONLY-RECOVERY-BOOTSTRAP
@@ -1624,7 +1614,7 @@ recovery_bootstrap:
     qoderwork supplemental baseline; a second HUMAN phase decision binds their exact hashes,
     the phase request, and the prior plan decision before any source write.
   mechanics:
-    - The manifest contains canonical, seven phases, and final verification; materialization preserves an immutable mirror while live phase/final projections later change only through receipts.
+    - The manifest contains canonical, six phases, and final verification; materialization preserves an immutable mirror while live phase/final projections later change only through receipts.
     - The lock contains only PHASE-01 alias requirements, no EXCLUDED item, approval status PENDING_EXTERNAL_DECISION, the stable plan decision, and no not-yet-existing session/release field.
     - Current capture-state runs against qoderwork after the lock but before the phase request only to create the bound supplemental bootstrap baseline; it is never supplied as the formal P-07 repository root.
     - After the exact HUMAN phase decision, current capture-state runs against clean work-one to satisfy the formal P-02 pre-change gate.
@@ -1637,7 +1627,7 @@ recovery_bootstrap:
     - The plan approval request binds the manifest and approved index baseline as separate acyclic artifacts; the phase request separately binds the lock/qoderwork baseline.
     - The pre-approval index contains no approval-request hash; the immutable HUMAN decision binds the request hash after the request exists.
     - No old M1 receipt, scope-lock, approval, report, or status projection is reused.
-  materialization_commands_historical_r5: |  # HISTORICAL: r5-era materialization, retained for traceability; use materialization_commands_r8 for r8
+  materialization_commands: |
     cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
     export AUDIT_RECOVERY_SOURCE_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/check-plan
     export AUDIT_RECOVERY_TARGET_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
@@ -1652,73 +1642,25 @@ recovery_bootstrap:
     const [O,H0,DP]=await Promise.all([J(p.o),J(p.h),J(p.dp)]);A(DP.decision==="APPROVED"&&DP.approved_by==="HUMAN_USER","decision");
     for(const k of ["approved_plan_object_set","approved_plan_files","approved_index_baseline","frozen_m1_files","p4_boundary"]){const x={approved_plan_object_set:p.o,approved_plan_files:p.m,approved_index_baseline:p.b,frozen_m1_files:p.h,p4_boundary:p.p4}[k];A(DP[k]?.path===x&&DP[k]?.sha256===(await ref(src,x)).sha256,"decision-ref:"+k)}
     const ml=(await bytes(src,p.m)).toString();A(ml===`${(await ref(src,p.o)).sha256}  ${p.o}\n`,"one-entry-manifest");
-    A(O.schema_version==="audit-approved-plan-object-set/v1"&&O.document_kind==="approved-plan-object-set"&&O.entry_count===9&&O.entries.length===9,"object-set");
-    A(H0.schema_version==="audit-frozen-file-set/v1"&&H0.document_kind==="frozen-m1-files"&&H0.entry_count===87&&H0.entries.length===97,"p0-set");
-    const g=Bun.spawnSync({cmd:["git","-C","/home/zhaoge/workspace/qoderwork","worktree","add","--detach",tgt,"2a8b15ac2c7bfe237cdde0473564d9320b024edc"],stdout:"inherit",stderr:"inherit"});A(g.exitCode===0,"worktree");
+    A(O.schema_version==="audit-approved-plan-object-set/v1"&&O.document_kind==="approved-plan-object-set"&&O.entry_count===8&&O.entries.length===8,"object-set");
+    A(H0.schema_version==="audit-frozen-file-set/v1"&&H0.document_kind==="frozen-m1-files"&&H0.entry_count===87&&H0.entries.length===87,"p0-set");
+    const g=Bun.spawnSync({cmd:["git","-C","/home/zhaoge/workspace/qoderwork","worktree","add","--detach",tgt,"51d95dbb919f1be988f026073ac9af9ff3a4a8de"],stdout:"inherit",stderr:"inherit"});A(g.exitCode===0,"worktree");
     const put=(x,b,mode)=>{const a=resolve(tgt,x);mkdirSync(dirname(a),{recursive:true});writeFileSync(a,b,{flag:"wx"});chmodSync(a,mode)};
     for(const x of [p.o,p.m,p.b,p.pending,p.h,p.p4,p.rp,p.dp])put(x,await bytes(src,x),0o444);
     for(const e of H0.entries)put(e.bytes.path,await bytes(src,e.bytes.path),0o444);
     const semantic=[];for(const e of O.entries){const b=await bytes(src,e.bytes.path);A(H(b)===e.bytes.sha256,"object:"+e.logical_path);put(e.bytes.path,b,0o444);put(e.logical_path,b,0o644);const mirror=`audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r4/${e.logical_path}`;put(mirror,b,0o444);semantic.push({logical_path:e.logical_path,kind:e.kind,approved_object:{path:e.bytes.path,sha256:e.bytes.sha256},immutable_mirror:{path:mirror,sha256:e.bytes.sha256},initial_live_snapshot:{path:e.bytes.path,sha256:e.bytes.sha256}})}
     const ib=await bytes(src,p.b),io=`audits/audit-governance-recovery-v1/objects/sha256/${H(ib)}`;put(io,ib,0o444);put(p.index,ib,0o644);
-    const T={schema_version:"audit-approved-plan-materialization/v1",document_kind:"approved-plan-materialization",plan_id:O.plan_id,generation:O.generation,plan_approval:await ref(tgt,p.dp),object_set:await ref(tgt,p.o),approved_plan_files:await ref(tgt,p.m),approved_index_baseline:await ref(tgt,p.b),semantic_entry_count:9,live_path_count:10,semantic_entries:semantic,index_entry:{live_path:p.index,approved_index_baseline:await ref(tgt,p.b),initial_live_snapshot:{path:io,sha256:H(ib)}},materialized_at:new Date().toISOString()};put(p.t,Buffer.from(JSON.stringify(T,null,2)+"\n"),0o444);
-    console.log(JSON.stringify({ok:true,materialization:p.t,semantic_entries:9,live_paths:9}));
+    const T={schema_version:"audit-approved-plan-materialization/v1",document_kind:"approved-plan-materialization",plan_id:O.plan_id,generation:O.generation,plan_approval:await ref(tgt,p.dp),object_set:await ref(tgt,p.o),approved_plan_files:await ref(tgt,p.m),approved_index_baseline:await ref(tgt,p.b),semantic_entry_count:8,live_path_count:9,semantic_entries:semantic,index_entry:{live_path:p.index,approved_index_baseline:await ref(tgt,p.b),initial_live_snapshot:{path:io,sha256:H(ib)}},materialized_at:new Date().toISOString()};put(p.t,Buffer.from(JSON.stringify(T,null,2)+"\n"),0o444);
+    console.log(JSON.stringify({ok:true,materialization:p.t,semantic_entries:8,live_paths:9}));
     '
     cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
     test -s audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r5.json
     test "$(find plans/audit-governance-recovery-v1/formal-plan-set -maxdepth 1 -type f | wc -l)" -eq 8
-  materialization_commands_r8: |
-    cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
-    export AUDIT_RECOVERY_SOURCE_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/check-plan
-    export AUDIT_RECOVERY_TARGET_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
-    export AUDIT_RECOVERY_IMMUTABLE_ROOT="$AUDIT_RECOVERY_TARGET_ROOT/audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8"
-    # r8 overlay: worktree already exists from r6 materialization; skip test ! -e check
-    /home/zhaoge/.bun/bin/bun -e '
-    import{chmodSync,mkdirSync,writeFileSync}from"node:fs";import{dirname,resolve}from"node:path";import{createHash}from"node:crypto";
-    const src=process.env.AUDIT_RECOVERY_SOURCE_ROOT,tgt=process.env.AUDIT_RECOVERY_TARGET_ROOT;
-    const p={o:"audits/audit-governance-recovery-v1/approved-plan-object-set-r8.json",m:"audits/audit-governance-recovery-v1/approved-plan-files-r8.sha256",b:"audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r8.md",pending:"audits/audit-governance-recovery-v1/approval-decision-pending-r8.json",h:"audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r8.json",p4:"audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r8.json",rp:"audits/audit-governance-recovery-v1/approval-request-r8.json",dp:"audits/audit-governance-recovery-v1/approval-decision-r8.json",t:"audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r8.json",index:"plans/audit-governance-recovery-v1/formal-plan-set/00-plan-index.md"};
-    const bytes=async(r,x)=>Buffer.from(await Bun.file(resolve(r,x)).arrayBuffer()),H=b=>createHash("sha256").update(b).digest("hex");
-    const ref=async(r,x)=>({path:x,sha256:H(await bytes(r,x))}),A=(x,m)=>{if(!x)throw Error("MATERIALIZATION_INVALID:"+m)};
-    const [O,DP]=await Promise.all([JSON.parse((await bytes(src,p.o)).toString()),JSON.parse((await bytes(src,p.dp)).toString())]);A(DP.decision==="APPROVED"&&DP.approved_by==="HUMAN_USER","decision");
-    const put=(x,b,mode)=>{const a=resolve(tgt,x);mkdirSync(dirname(a),{recursive:true});writeFileSync(a,b,{flag:"w"});chmodSync(a,mode)};
-    for(const x of [p.o,p.m,p.b,p.pending,p.h,p.p4,p.rp,p.dp])put(x,await bytes(src,x),0o444);
-    const semantic=[];for(const e of O.entries){const b=await bytes(src,e.bytes.path);A(H(b)===e.bytes.sha256,"object:"+e.logical_path);put(e.bytes.path,b,0o444);const lp=resolve(tgt,e.logical_path);mkdirSync(dirname(lp),{recursive:true});writeFileSync(lp,b);chmodSync(lp,0o644);const mirror="audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8/"+e.logical_path;put(mirror,b,0o444);semantic.push({logical_path:e.logical_path,kind:e.kind,approved_object:{path:e.bytes.path,sha256:e.bytes.sha256},immutable_mirror:{path:mirror,sha256:e.bytes.sha256},initial_live_snapshot:{path:e.bytes.path,sha256:e.bytes.sha256}})}
-    const ib=await bytes(src,p.b),io="audits/audit-governance-recovery-v1/objects/sha256/"+H(ib);put(io,ib,0o444);const ip=resolve(tgt,p.index);mkdirSync(dirname(ip),{recursive:true});writeFileSync(ip,ib);chmodSync(ip,0o644);
-    const T={schema_version:"audit-approved-plan-materialization/v1",document_kind:"approved-plan-materialization",plan_id:O.plan_id,generation:O.generation,plan_approval:await ref(tgt,p.dp),object_set:await ref(tgt,p.o),approved_plan_files:await ref(tgt,p.m),approved_index_baseline:await ref(tgt,p.b),semantic_entry_count:9,live_path_count:10,semantic_entries:semantic,index_entry:{live_path:p.index,approved_index_baseline:await ref(tgt,p.b),initial_live_snapshot:{path:io,sha256:H(ib)}},materialized_at:new Date().toISOString()};put(p.t,Buffer.from(JSON.stringify(T,null,2)+"\n"),0o444);
-    console.log(JSON.stringify({ok:true,materialization:p.t,semantic_entries:9,live_paths:9,generation:"r8-overlay"}));
-    '
-    cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
-    test -s audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r8.json
-
-  materialization_commands_r9: |  # parallel to materialization_commands_r8 (L1669-1690); r9 legitimates the textual reconciliation per Patch 1+4+5 + canonical-contract addition; -r8 -> -r9 substitution throughout
-    cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
-    export AUDIT_RECOVERY_SOURCE_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/check-plan
-    export AUDIT_RECOVERY_TARGET_ROOT=/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
-    export AUDIT_RECOVERY_IMMUTABLE_ROOT="$AUDIT_RECOVERY_TARGET_ROOT/audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r9"
-    # r9 reconciliation: target worktree already exists from r8 materialization; skip test ! -e check
-    /home/zhaoge/.bun/bin/bun -e '
-    import{chmodSync,mkdirSync,writeFileSync}from"node:fs";import{dirname,resolve}from"node:path";import{createHash}from"node:crypto";
-    const src=process.env.AUDIT_RECOVERY_SOURCE_ROOT,tgt=process.env.AUDIT_RECOVERY_TARGET_ROOT;
-    const p={o:"audits/audit-governance-recovery-v1/approved-plan-object-set-r9.json",m:"audits/audit-governance-recovery-v1/approved-plan-files-r9.sha256",b:"audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r9.md",pending:"audits/audit-governance-recovery-v1/approval-decision-pending-r9.json",h:"audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r9.json",p4:"audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r9.json",rp:"audits/audit-governance-recovery-v1/approval-request-r9.json",dp:"audits/audit-governance-recovery-v1/approval-decision-r9.json",t:"audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r9.json",index:"plans/audit-governance-recovery-v1/formal-plan-set/00-plan-index.md"};
-    const bytes=async(r,x)=>Buffer.from(await Bun.file(resolve(r,x)).arrayBuffer()),H=b=>createHash("sha256").update(b).digest("hex");
-    const ref=async(r,x)=>({path:x,sha256:H(await bytes(r,x))}),A=(x,m)=>{if(!x)throw Error("MATERIALIZATION_INVALID:"+m)};
-    const [O,DP]=await Promise.all([JSON.parse((await bytes(src,p.o)).toString()),JSON.parse((await bytes(src,p.dp)).toString())]);A(DP.decision==="APPROVED"&&DP.approved_by==="HUMAN_USER","decision");
-    const put=(x,b,mode)=>{const a=resolve(tgt,x);mkdirSync(dirname(a),{recursive:true});writeFileSync(a,b,{flag:"w"});chmodSync(a,mode)};
-    for(const x of [p.o,p.m,p.b,p.pending,p.h,p.p4,p.rp,p.dp])put(x,await bytes(src,x),0o444);
-    const semantic=[];for(const e of O.entries){const b=await bytes(src,e.bytes.path);A(H(b)===e.bytes.sha256,"object:"+e.logical_path);put(e.bytes.path,b,0o444);const lp=resolve(tgt,e.logical_path);mkdirSync(dirname(lp),{recursive:true});writeFileSync(lp,b);chmodSync(lp,0o644);const mirror="audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r9/"+e.logical_path;put(mirror,b,0o444);semantic.push({logical_path:e.logical_path,kind:e.kind,approved_object:{path:e.bytes.path,sha256:e.bytes.sha256},immutable_mirror:{path:mirror,sha256:e.bytes.sha256},initial_live_snapshot:{path:e.bytes.path,sha256:e.bytes.sha256}})}
-    const ib=await bytes(src,p.b),io="audits/audit-governance-recovery-v1/objects/sha256/"+H(ib);put(io,ib,0o444);const ip=resolve(tgt,p.index);mkdirSync(dirname(ip),{recursive:true});writeFileSync(ip,ib);chmodSync(ip,0o644);
-    const T={schema_version:"audit-approved-plan-materialization/v1",document_kind:"approved-plan-materialization",plan_id:O.plan_id,generation:O.generation,plan_approval:await ref(tgt,p.dp),object_set:await ref(tgt,p.o),approved_plan_files:await ref(tgt,p.m),approved_index_baseline:await ref(tgt,p.b),semantic_entry_count:9,live_path_count:10,semantic_entries:semantic,index_entry:{live_path:p.index,approved_index_baseline:await ref(tgt,p.b),initial_live_snapshot:{path:io,sha256:H(ib)}},materialized_at:new Date().toISOString()};put(p.t,Buffer.from(JSON.stringify(T,null,2)+"\n"),0o444);
-    console.log(JSON.stringify({ok:true,materialization:p.t,semantic_entries:9,live_paths:9,generation:"r9-reconciliation"}));
-    '
-    cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
-    test -s audits/audit-governance-recovery-v1/bootstrap/approved-plan-materialization-r9.json
-
   prewrite_verification_command: |
     /home/zhaoge/.bun/bin/bun -e '
     import{createHash}from"node:crypto";import{writeFileSync}from"node:fs";import{resolve}from"node:path";
-    // PHASE-00 exception: component-level audit, no formal PRE_CHANGE/scope-lock required
-    if(process.env.PHASE_ID==="PHASE-00"){const out=process.env.OUT||"audits/audit-governance-recovery-v1/bootstrap/prewrite-verification-phase00.json";writeFileSync(resolve("/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap",out),JSON.stringify({schema_version:"audit-governance-bootstrap-prewrite/v1",document_kind:"bootstrap-prewrite-receipt",ok:true,phase:"PHASE-00",waiver:"PHASE-00_COMPONENT_LEVEL_NO_FORMAL_PRE_CHANGE",note:"component-level audit, scope-lock/phase-approval waived"})+"\n");console.log(JSON.stringify({ok:true,output:out,phase:"PHASE-00"}));process.exit(0)}
     const root="/home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap";
-    const p={c:"plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",m:"audits/audit-governance-recovery-v1/approved-plan-files-r8.sha256",b:"audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r8.md",rp:"audits/audit-governance-recovery-v1/approval-request-r8.json",dp:"audits/audit-governance-recovery-v1/approval-decision-r8.json",s:"audits/audit-governance-recovery-v1/bootstrap/scope-lock-PHASE-01-g001.json",q:"audits/audit-governance-recovery-v1/bootstrap/qoderwork-baseline-PHASE-01.json",rph:"audits/audit-governance-recovery-v1/bootstrap/phase-approval-request-PHASE-01-g001.json",dph:"audits/audit-governance-recovery-v1/bootstrap/phase-approval-decision-PHASE-01-g001.json",w:"audits/audit-governance-recovery-v1/bootstrap/pre-change-work-one-PHASE-01.json",out:"audits/audit-governance-recovery-v1/bootstrap/prewrite-verification.json"};
+    const p={c:"plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",m:"audits/audit-governance-recovery-v1/approved-plan-files-r5.sha256",b:"audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r5.md",rp:"audits/audit-governance-recovery-v1/approval-request-r5.json",dp:"audits/audit-governance-recovery-v1/approval-decision-r5.json",s:"audits/audit-governance-recovery-v1/bootstrap/scope-lock-PHASE-01-g001.json",q:"audits/audit-governance-recovery-v1/bootstrap/qoderwork-baseline-PHASE-01.json",rph:"audits/audit-governance-recovery-v1/bootstrap/phase-approval-request-PHASE-01-g001.json",dph:"audits/audit-governance-recovery-v1/bootstrap/phase-approval-decision-PHASE-01-g001.json",w:"audits/audit-governance-recovery-v1/bootstrap/pre-change-work-one-PHASE-01.json",out:"audits/audit-governance-recovery-v1/bootstrap/prewrite-verification.json"};
     const H=async x=>createHash("sha256").update(Buffer.from(await Bun.file(resolve(root,x)).arrayBuffer())).digest("hex");
     const J=async x=>JSON.parse(await Bun.file(resolve(root,x)).text());
     const A=(x,m)=>{if(!x)throw Error("BOOTSTRAP_WAIVER_INVALID:"+m)};
@@ -1727,7 +1669,7 @@ recovery_bootstrap:
     A(DP.decision==="APPROVED"&&DP.approved_by==="HUMAN_USER","Dplan");
     await R(DP.approval_request,p.rp);await R(DP.canonical_contract,p.c);await R(DP.approved_plan_files,p.m);await R(DP.approved_index_baseline,p.b);
     await R(RP.canonical_contract,p.c);await R(RP.approved_plan_files,p.m);await R(RP.approved_index_baseline,p.b);
-    const wi=["CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT","EXTERNAL_HUMAN_DECISION_FOR_PENDING_IMMUTABLE_LOCK","PHASE-00_COMPONENT_LEVEL_NO_FORMAL_PRE_CHANGE","PHASE-01_P02A_ENTRY_WHILE_INDEX_BLOCKED","SUPPLEMENTAL_QODERWORK_BASELINE_WITH_WORK_ONE_P07_ANCHOR"];
+    const wi=["CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT","EXTERNAL_HUMAN_DECISION_FOR_PENDING_IMMUTABLE_LOCK","PHASE-01_P02A_ENTRY_WHILE_INDEX_BLOCKED","SUPPLEMENTAL_QODERWORK_BASELINE_WITH_WORK_ONE_P07_ANCHOR"];
     A(JSON.stringify([...DP.waiver_ids].sort())===JSON.stringify(wi)&&JSON.stringify([...RP.waiver_ids].sort())===JSON.stringify(wi),"waivers");
     await R(S.plan_approval,p.dp);await R(S.canonical_contract,p.c);await R(S.plan_phase,"plans/audit-governance-recovery-v1/formal-plan-set/01-phase-foundation-kernel.md");
     A(S.phase_id==="PHASE-01"&&S.generation===1&&S.status==="PENDING_EXTERNAL_DECISION"&&!Object.hasOwn(S,"phase_approval"),"scope");
@@ -1740,7 +1682,7 @@ recovery_bootstrap:
     const ref=async path=>({path,sha256:await H(path)});const receipt={schema_version:"audit-governance-bootstrap-prewrite/v1",document_kind:"bootstrap-prewrite-receipt",ok:true,plan_approval_request:await ref(p.rp),plan_approval:await ref(p.dp),scope_lock:await ref(p.s),qoderwork_baseline:await ref(p.q),phase_approval_request:await ref(p.rph),phase_approval:await ref(p.dph),work_one_baseline:await ref(p.w),auditor_task_id:RPH.auditor_task_id,implementer_task_id:RPH.implementer_task_id,waiver_ids:wi};
     writeFileSync(resolve(root,p.out),JSON.stringify(receipt,null,2)+"\n",{flag:"wx"});console.log(JSON.stringify({ok:true,output:p.out}));
     '
-  phase_00_release_command: |  # implemented by PHASE-00; named phase_00 for toolchain ownership
+  phase_01_release_command: |
     bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts \
       --emit-producer-release \
       --canonical plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml \
@@ -1768,7 +1710,7 @@ final_acceptance:
     - PHASE-01 has separate HUMAN plan and exact bootstrap-scope decisions; PHASE-02 through PHASE-06 each have a HUMAN-approved immutable phase scope.
     - Every phase has its own state evidence, EV receipts, report, ACCEPT, progression receipt, and status-publication receipt.
     - Before the first implementation write, the full approved-plan-files manifest passes sha256sum --check.
-    - The plan activation receipt binds the approved index baseline to the PHASE-01 accepted index using only five activation fields plus the registered PHASE-01 status/receipt fields in one bootstrap transaction.
+    - The plan activation receipt binds the approved index baseline to the PHASE-01 accepted index using only four activation fields plus the registered PHASE-01 status/receipt fields in one bootstrap transaction.
     - At closure, each mutable projection hash is reachable from activation through an unbroken status-publication receipt chain limited to declared fields.
     - Every receipt validates against its immutable producer-release manifest rather than mutable current tool bytes.
     - validate-plan checks every phase and 99-final-verification and returns ok:true.

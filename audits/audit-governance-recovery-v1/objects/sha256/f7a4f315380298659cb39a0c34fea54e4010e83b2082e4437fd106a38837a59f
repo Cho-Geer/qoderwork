@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "plan_id": "PATH-DYNAMIC-RESOLUTION-M1-20260725",
+  "m1_paths": [
+    "scripts/lib/workspace-paths.ts",
+    "scripts/lib/__tests__/workspace-paths.test.ts",
+    "scripts/local-paths.example.json",
+    ".gitignore",
+    "scripts/start-serve.ts",
+    "scripts/__tests__/start-serve-paths.test.ts",
+    "scripts/test-serve/run-context.ts",
+    "scripts/test-serve/__tests__/run-context.test.ts",
+    "scripts/test-serve/process.ts",
+    "scripts/test-serve/__tests__/process.test.ts",
+    "scripts/test-serve/bootstrap.ts",
+    "scripts/test-serve/__tests__/bootstrap-import-source.test.ts",
+    "scripts/test-serve/isolated-serve.ts",
+    "scripts/test-serve/__tests__/isolated-serve-paths.test.ts"
+  ],
+  "m1_paths_count": 14,
+  "deferred": [
+    {
+      "path": ".git",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_b1_live.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_b2_run.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_b2_verify.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_b_l3_012_repo_op_deny.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_b_pt_wm_00r2_live.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_d3_live.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_d3_run.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_e2e_b1_live.py",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_e2e_gov_guard.py",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_e2e_l1001abc_live.py",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_e2e_lslogs.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_e2e_probe.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_e2e_serve_driver.py",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_restart_serve.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/_tmp_restart_serve.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/audit_folders.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/audit_inspect.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/audit_refs.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/audit_verify.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/clean-sessions.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/cleanup-regress.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/deliver-guidance.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/deliver-guidance.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/diag-handover-path.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/diag-schema.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/e2e-cleanup.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/e2e-deliver-guidance.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/e2e-g4-grant-lifecycle.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/e2e-g7-remote-write-positive.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/e2e-grant-lifecycle.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/e2e-query.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/e2e-setup-phase1.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/e2e-setup.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/fix-safe-bash-test.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/framework-inventory.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/integ-grant-session-binding.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/live-llm-dispatch-e2e.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/live-llm-privilege-e2e.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/live-question-recovery-e2e.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/monitor-tree.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/oc_db.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/oc_e2e_run.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/oc_enf.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/oc_parse.sh",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/qoder-watcher.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/regress-parent-child.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/session-tree.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/test-hybrid-enforcement.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/test-integration.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": "scripts/tree-watcher.ts",
+      "classification": "DEFERRED",
+      "reason": "scripts/_b* / _d* / _e2e* / audit_* / e2e-* / live-* / oc_* / _restart_* / _tmp_* etc.: legacy live-E2E / debug scripts not in M1 scope; deferred to successor PLAN_SET with required_admission=APPROVED_SUCCESSOR_PLAN",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": ".codebuddy/settings.json",
+      "classification": "LOCAL_CONFIG",
+      "reason": "Tracked IDE machine configuration; out of M1 scope (forbidden_path); deferred to successor PLAN_SET",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": ".codebuddy/settings.local.json",
+      "classification": "LOCAL_CONFIG",
+      "reason": "Tracked IDE machine local config; out of M1 scope; deferred to successor PLAN_SET",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": ".kimi-code/mcp.json",
+      "classification": "LOCAL_CONFIG",
+      "reason": "Tracked Kimi-code MCP config; out of M1 scope; deferred to successor PLAN_SET",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    },
+    {
+      "path": ".qoder/settings.local.json",
+      "classification": "LOCAL_CONFIG",
+      "reason": "Tracked Qoder local IDE config; out of M1 scope; deferred to successor PLAN_SET",
+      "required_admission": "APPROVED_SUCCESSOR_PLAN"
+    }
+  ],
+  "deferred_count": 55,
+  "ide_tracked_count": 4,
+  "failedChecks": [],
+  "generated_at": "2026-07-29T07:50:00Z",
+  "generated_by": "PHASE-04 evidence closure (QoderWork main agent)",
+  "evidence_chain": {
+    "source_inventory": "audits/path-dynamic-resolution-m1/evidence/path-inventory.json",
+    "source_inventory_schema_version": 1,
+    "source_inventory_total_entries": 2504,
+    "source_inventory_classify_counts": {
+      "DOC_EXAMPLE": 522,
+      "LOCAL_CONFIG": 56,
+      "DEFERRED": 80,
+      "PRESERVE_HISTORY": 1838,
+      "TEST_FIXTURE": 5,
+      "MIGRATE": 3
+    }
+  },
+  "successor_admission_rule": "Every DEFERRED and IDE-LOCAL_CONFIG row requires required_admission=APPROVED_SUCCESSOR_PLAN before any code is written in those paths. A successor plan must (a) include its own scope-lock with these paths explicitly excluded by default, (b) reference this register by SHA, and (c) be human-approved per provenance-rules P-02 §2."
+}

@@ -1,0 +1,182 @@
+{
+  "schema_version": "audit-approved-plan-materialization/v1",
+  "document_kind": "approved-plan-materialization",
+  "plan_id": "AUDIT-GOVERNANCE-RECOVERY-V1-20260730",
+  "generation": 8,
+  "plan_approval": {
+    "path": "audits/audit-governance-recovery-v1/approval-decision-r8.json",
+    "sha256": "28ac4e699e6b67f53830f7fcd3761c2fb6687e280ae152c843459eaf5d6faab9"
+  },
+  "object_set": {
+    "path": "audits/audit-governance-recovery-v1/approved-plan-object-set-r8.json",
+    "sha256": "9555c8e1656a36d3e3a391ea660fe8ade48d9752c178270f4d9ca14266f0b3bc"
+  },
+  "approved_plan_files": {
+    "path": "audits/audit-governance-recovery-v1/approved-plan-files-r8.sha256",
+    "sha256": "99c2d5ba76c3d09584e61e53d9479e38f450e4d21d224a9671f76864d5a6fcb7"
+  },
+  "approved_index_baseline": {
+    "path": "audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r8.md",
+    "sha256": "53cafa45bffd937a4a79f5a468f6c7e86a6b7bfb4327bfbcb71353320c7a0458"
+  },
+  "semantic_entry_count": 9,
+  "live_path_count": 10,
+  "semantic_entries": [
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+      "kind": "canonical-requirements",
+      "approved_object": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/cb26cff477a053de8a1d433dc1d561a5c2fd80499a21c84af1e44dc79fa2b065",
+        "sha256": "cb26cff477a053de8a1d433dc1d561a5c2fd80499a21c84af1e44dc79fa2b065"
+      },
+      "immutable_mirror": {
+        "path": "audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8/plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+        "sha256": "cb26cff477a053de8a1d433dc1d561a5c2fd80499a21c84af1e44dc79fa2b065"
+      },
+      "initial_live_snapshot": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/cb26cff477a053de8a1d433dc1d561a5c2fd80499a21c84af1e44dc79fa2b065",
+        "sha256": "cb26cff477a053de8a1d433dc1d561a5c2fd80499a21c84af1e44dc79fa2b065"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/00-phase-toolchain-implementation.md",
+      "kind": "plan-phase",
+      "approved_object": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/b97551dd2ad28d756a31ec0bfb5b7e4c8a9f2c537cdf78d39c072f3771641baf",
+        "sha256": "b97551dd2ad28d756a31ec0bfb5b7e4c8a9f2c537cdf78d39c072f3771641baf"
+      },
+      "immutable_mirror": {
+        "path": "audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8/plans/audit-governance-recovery-v1/formal-plan-set/00-phase-toolchain-implementation.md",
+        "sha256": "b97551dd2ad28d756a31ec0bfb5b7e4c8a9f2c537cdf78d39c072f3771641baf"
+      },
+      "initial_live_snapshot": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/b97551dd2ad28d756a31ec0bfb5b7e4c8a9f2c537cdf78d39c072f3771641baf",
+        "sha256": "b97551dd2ad28d756a31ec0bfb5b7e4c8a9f2c537cdf78d39c072f3771641baf"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/01-phase-foundation-kernel.md",
+      "kind": "plan-phase",
+      "approved_object": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/dee40aa82d8d3b21cf354cf15d9303bc1896fd64f64be9946b1df76fa7e44b44",
+        "sha256": "dee40aa82d8d3b21cf354cf15d9303bc1896fd64f64be9946b1df76fa7e44b44"
+      },
+      "immutable_mirror": {
+        "path": "audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8/plans/audit-governance-recovery-v1/formal-plan-set/01-phase-foundation-kernel.md",
+        "sha256": "dee40aa82d8d3b21cf354cf15d9303bc1896fd64f64be9946b1df76fa7e44b44"
+      },
+      "initial_live_snapshot": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/dee40aa82d8d3b21cf354cf15d9303bc1896fd64f64be9946b1df76fa7e44b44",
+        "sha256": "dee40aa82d8d3b21cf354cf15d9303bc1896fd64f64be9946b1df76fa7e44b44"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/02-phase-single-closure-entrypoint.md",
+      "kind": "plan-phase",
+      "approved_object": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/0d7fb3137b767ffebf803333151c8052201cfe99c3b2913a5e695657b5e97c01",
+        "sha256": "0d7fb3137b767ffebf803333151c8052201cfe99c3b2913a5e695657b5e97c01"
+      },
+      "immutable_mirror": {
+        "path": "audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8/plans/audit-governance-recovery-v1/formal-plan-set/02-phase-single-closure-entrypoint.md",
+        "sha256": "0d7fb3137b767ffebf803333151c8052201cfe99c3b2913a5e695657b5e97c01"
+      },
+      "initial_live_snapshot": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/0d7fb3137b767ffebf803333151c8052201cfe99c3b2913a5e695657b5e97c01",
+        "sha256": "0d7fb3137b767ffebf803333151c8052201cfe99c3b2913a5e695657b5e97c01"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/03-phase-artifact-dag-validation.md",
+      "kind": "plan-phase",
+      "approved_object": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/23c0f4cd699254f2d71589c43e7afcbdb22b800a363fe4f5c6a73356cc363578",
+        "sha256": "23c0f4cd699254f2d71589c43e7afcbdb22b800a363fe4f5c6a73356cc363578"
+      },
+      "immutable_mirror": {
+        "path": "audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8/plans/audit-governance-recovery-v1/formal-plan-set/03-phase-artifact-dag-validation.md",
+        "sha256": "23c0f4cd699254f2d71589c43e7afcbdb22b800a363fe4f5c6a73356cc363578"
+      },
+      "initial_live_snapshot": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/23c0f4cd699254f2d71589c43e7afcbdb22b800a363fe4f5c6a73356cc363578",
+        "sha256": "23c0f4cd699254f2d71589c43e7afcbdb22b800a363fe4f5c6a73356cc363578"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/04-phase-conformance-enforcement.md",
+      "kind": "plan-phase",
+      "approved_object": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/49e1a2719ea458bf1be757728038c0af03059a2d935571addfb5ebc415b8c025",
+        "sha256": "49e1a2719ea458bf1be757728038c0af03059a2d935571addfb5ebc415b8c025"
+      },
+      "immutable_mirror": {
+        "path": "audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8/plans/audit-governance-recovery-v1/formal-plan-set/04-phase-conformance-enforcement.md",
+        "sha256": "49e1a2719ea458bf1be757728038c0af03059a2d935571addfb5ebc415b8c025"
+      },
+      "initial_live_snapshot": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/49e1a2719ea458bf1be757728038c0af03059a2d935571addfb5ebc415b8c025",
+        "sha256": "49e1a2719ea458bf1be757728038c0af03059a2d935571addfb5ebc415b8c025"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/05-phase-rules-skills-and-templates.md",
+      "kind": "plan-phase",
+      "approved_object": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/869df1c38a60c409536e200142492284a3d55741ab606c8d192582b2e63aa7f5",
+        "sha256": "869df1c38a60c409536e200142492284a3d55741ab606c8d192582b2e63aa7f5"
+      },
+      "immutable_mirror": {
+        "path": "audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8/plans/audit-governance-recovery-v1/formal-plan-set/05-phase-rules-skills-and-templates.md",
+        "sha256": "869df1c38a60c409536e200142492284a3d55741ab606c8d192582b2e63aa7f5"
+      },
+      "initial_live_snapshot": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/869df1c38a60c409536e200142492284a3d55741ab606c8d192582b2e63aa7f5",
+        "sha256": "869df1c38a60c409536e200142492284a3d55741ab606c8d192582b2e63aa7f5"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/06-phase-documentation-and-final-handoff.md",
+      "kind": "plan-phase",
+      "approved_object": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/edd97a6d9e25287b09d3e558db12155f1420b4f951410afa07558e04b0bd9e37",
+        "sha256": "edd97a6d9e25287b09d3e558db12155f1420b4f951410afa07558e04b0bd9e37"
+      },
+      "immutable_mirror": {
+        "path": "audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8/plans/audit-governance-recovery-v1/formal-plan-set/06-phase-documentation-and-final-handoff.md",
+        "sha256": "edd97a6d9e25287b09d3e558db12155f1420b4f951410afa07558e04b0bd9e37"
+      },
+      "initial_live_snapshot": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/edd97a6d9e25287b09d3e558db12155f1420b4f951410afa07558e04b0bd9e37",
+        "sha256": "edd97a6d9e25287b09d3e558db12155f1420b4f951410afa07558e04b0bd9e37"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/99-final-verification.md",
+      "kind": "final-verification",
+      "approved_object": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/67ce5f444659ef12ea1ee4a0d0268893c5a3c8dda03ae1eb356c6fb9b805da97",
+        "sha256": "67ce5f444659ef12ea1ee4a0d0268893c5a3c8dda03ae1eb356c6fb9b805da97"
+      },
+      "immutable_mirror": {
+        "path": "audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8/plans/audit-governance-recovery-v1/formal-plan-set/99-final-verification.md",
+        "sha256": "67ce5f444659ef12ea1ee4a0d0268893c5a3c8dda03ae1eb356c6fb9b805da97"
+      },
+      "initial_live_snapshot": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/67ce5f444659ef12ea1ee4a0d0268893c5a3c8dda03ae1eb356c6fb9b805da97",
+        "sha256": "67ce5f444659ef12ea1ee4a0d0268893c5a3c8dda03ae1eb356c6fb9b805da97"
+      }
+    }
+  ],
+  "index_entry": {
+    "live_path": "plans/audit-governance-recovery-v1/formal-plan-set/00-plan-index.md",
+    "approved_index_baseline": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r8.md",
+      "sha256": "53cafa45bffd937a4a79f5a468f6c7e86a6b7bfb4327bfbcb71353320c7a0458"
+    },
+    "initial_live_snapshot": {
+      "path": "audits/audit-governance-recovery-v1/objects/sha256/53cafa45bffd937a4a79f5a468f6c7e86a6b7bfb4327bfbcb71353320c7a0458",
+      "sha256": "53cafa45bffd937a4a79f5a468f6c7e86a6b7bfb4327bfbcb71353320c7a0458"
+    }
+  },
+  "materialized_at": "2026-08-01T00:14:25.295Z"
+}

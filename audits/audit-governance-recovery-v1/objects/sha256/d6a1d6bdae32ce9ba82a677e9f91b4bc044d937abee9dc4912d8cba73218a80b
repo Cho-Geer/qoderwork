@@ -1,0 +1,7 @@
+=== STDOUT ===
+PASS {"approval":true,"scope_lock":true,"pre_change":true,"scan":true,"inventory":true}
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

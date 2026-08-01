@@ -1,0 +1,30 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "decision_id": "AUDIT-GOVERNANCE-RECOVERY-V1-R6-PENDING-20260731",
+  "plan_id": "AUDIT-GOVERNANCE-RECOVERY-V1-20260730",
+  "governance_profile": "audit-governance-recovery/v1",
+  "decision": "PENDING_HUMAN_APPROVAL",
+  "approved_by": null,
+  "approved_at": null,
+  "approved_artifacts": {},
+  "cryptographic_references": [],
+  "effect": "NONE_UNTIL_HUMAN_USER_APPROVES",
+  "immutable": true,
+  "supersedes": "AUDIT-GOVERNANCE-RECOVERY-V1-R5-PENDING-20260731",
+  "acyclicity_note": "This r6 pending marker intentionally does not reference the approval request or approved index baseline. Its hash may appear in the pre-approval index baseline without creating a hash cycle.",
+  "on_human_approval": {
+    "create_new_path": "audits/audit-governance-recovery-v1/approval-decision-r6.json",
+    "preserve_this_pending_file": true,
+    "required_decision": "APPROVED",
+    "required_approved_by": "HUMAN_USER",
+    "required_bindings": [
+      "approval_request",
+      "canonical_contract",
+      "approved_plan_files",
+      "approved_index_baseline",
+      "frozen_m1_files",
+      "p4_boundary"
+    ]
+  }
+}

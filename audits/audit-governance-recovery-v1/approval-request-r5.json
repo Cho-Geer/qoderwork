@@ -1,0 +1,103 @@
+{
+  "schema_version": "audit-governance-approval-request/v3",
+  "document_kind": "approval-request",
+  "request_id": "AUDIT-GOVERNANCE-RECOVERY-V1-PLAN-APPROVAL-R5-20260731",
+  "plan_id": "AUDIT-GOVERNANCE-RECOVERY-V1-20260730",
+  "governance_profile": "audit-governance-recovery/v1",
+  "status": "PENDING_HUMAN_APPROVAL",
+  "requested_by": "AUDITOR_SESSION_A",
+  "requested_at": "2026-07-31T00:00:00Z",
+  "decision_requested": "APPROVE_EXACT_PLAN_AND_PHASE_01_RECOVERY_BOOTSTRAP",
+  "approved_artifacts": {
+    "canonical_contract": {
+      "path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+      "sha256": "8e7b62d60f031257e364901c90ec9a4400a3fa90b7363c4592c24d1fe27f8236"
+    },
+    "approved_plan_object_set": {
+      "path": "audits/audit-governance-recovery-v1/approved-plan-object-set-r5.json",
+      "sha256": "b5f7ac92b1d1d8a7f907d3be04828e07c3f8c1c2391f171a66fc55dc110ef9ad"
+    },
+    "approved_plan_files": {
+      "path": "audits/audit-governance-recovery-v1/approved-plan-files-r5.sha256",
+      "sha256": "7ed684fefa2f914bb69356d9ae92751d862c446eefdceeda7b48c87cc043a2a9"
+    },
+    "approved_index_baseline": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r5.md",
+      "sha256": "ac0a00db2c2edc5a35c228749dddd6197b6ea23bfe4151323bee225284ff016e"
+    },
+    "frozen_m1_files": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r5.json",
+      "sha256": "f12f41f7fc7fb983758ef889ae0e275aa7b9f24588cd2f8efe32c060031daaaf"
+    },
+    "p4_boundary": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r5.json",
+      "sha256": "cbfd7864cb57946bdf78ec88e0be6e57e2e506d5ad2674ed40232c56a262adef"
+    }
+  },
+  "manifest_entries": [
+    {
+      "path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+      "sha256": "8e7b62d60f031257e364901c90ec9a4400a3fa90b7363c4592c24d1fe27f8236"
+    },
+    {
+      "path": "plans/audit-governance-recovery-v1/formal-plan-set/01-phase-foundation-kernel.md",
+      "sha256": "fb9e11edef490838c528c9d6f79c8546806119bada52d6b88850ca518adbf6fb"
+    },
+    {
+      "path": "plans/audit-governance-recovery-v1/formal-plan-set/02-phase-single-closure-entrypoint.md",
+      "sha256": "733526e559cc7c247b33e3335a0b0f4cb85b631c401bd0c238794b06d655c6ef"
+    },
+    {
+      "path": "plans/audit-governance-recovery-v1/formal-plan-set/03-phase-artifact-dag-validation.md",
+      "sha256": "23c0f4cd699254f2d71589c43e7afcbdb22b800a363fe4f5c6a73356cc363578"
+    },
+    {
+      "path": "plans/audit-governance-recovery-v1/formal-plan-set/04-phase-conformance-enforcement.md",
+      "sha256": "49e1a2719ea458bf1be757728038c0af03059a2d935571addfb5ebc415b8c025"
+    },
+    {
+      "path": "plans/audit-governance-recovery-v1/formal-plan-set/05-phase-rules-skills-and-templates.md",
+      "sha256": "869df1c38a60c409536e200142492284a3d55741ab606c8d192582b2e63aa7f5"
+    },
+    {
+      "path": "plans/audit-governance-recovery-v1/formal-plan-set/06-phase-documentation-and-final-handoff.md",
+      "sha256": "37de021dc0c7c39a02874a8503a730451c38bcc8f700465488be90b20e61f093"
+    },
+    {
+      "path": "plans/audit-governance-recovery-v1/formal-plan-set/99-final-verification.md",
+      "sha256": "d61f1e75f1ecb4ba7ee9dfacebedca5dd75db94eb24270797795a97d8acf8c1c"
+    }
+  ],
+  "explicit_decisions_for_human": [
+    "Auditor Session A and Implementer Session B are separate product tasks/threads; their IDs must differ.",
+    "Auditor Session A and its subagents perform no governance source implementation.",
+    "Implementer Session B performs only active-phase allowed-file changes and never creates formal audit verdict/publication artifacts.",
+    "Every phase alternates Implementer handoff then Auditor independent audit before the next phase.",
+    "Approval references are stable artifacts; scope-lock cross-references and directed cycles are forbidden.",
+    "Scope-locks are write-once generation files; state, EV, report assembly, closure, and status projection are mechanical-only.",
+    "PHASE-01 receives the single-use recovery bootstrap stated in the canonical contract; it cannot be reused by PHASE-02 or later.",
+    "Existing M1 audit artifacts remain HISTORICAL_INVALID_NONREPAIRABLE and are never edited or reused.",
+    "P4 M1 re-baselining cannot start until this governance recovery receives independent final ACCEPT."
+  ],
+  "exact_waiver_ids": [
+    "CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT",
+    "EXTERNAL_HUMAN_DECISION_FOR_PENDING_IMMUTABLE_LOCK",
+    "PHASE-01_P02A_ENTRY_WHILE_INDEX_BLOCKED",
+    "SUPPLEMENTAL_QODERWORK_BASELINE_WITH_WORK_ONE_P07_ANCHOR"
+  ],
+  "authorized_after_approval": [
+    "Auditor Session A may record a separate immutable approval-decision.json that binds this request, the canonical contract, and approved-plan-files.sha256.",
+    "Auditor Session A may prepare a task-owned handoff commit/worktree based on qoderwork commit 51d95dbb919f1be988f026073ac9af9ff3a4a8de.",
+    "Auditor Session A may create a separate Implementer Session B task/thread.",
+    "Auditor Session A may prepare the PHASE-01 role manifest, g001 bootstrap scope-lock, and two mechanical pre-change receipts before handing off.",
+    "Implementer Session B may then implement PHASE-01 only."
+  ],
+  "not_authorized": [
+    "No governance source implementation inside Auditor Session A.",
+    "No PHASE-02 or later implementation before the prior phase-specific ACCEPT and status publication.",
+    "No repair, re-hash, reconstruction, status relabel, or acceptance of existing M1 audit artifacts.",
+    "No M1 source fix or M1 formal re-audit.",
+    "No runtime smoke, serve, work-one source write, or live LLM E2E."
+  ],
+  "approval_effect": "A HUMAN_USER approval authorizes only the exact artifacts and bootstrap boundary in this request. Any semantic plan-file change requires a new approval request and decision."
+}

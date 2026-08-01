@@ -1,0 +1,324 @@
+# Audit Report: PDR-M1-PHASE-01-20260729
+
+## 0. Machine-Readable Audit Contract
+
+<!-- AUDIT_CONTRACT_START -->
+```json
+{
+  "schema_version": "audit-governance-audit/v3",
+  "document_kind": "audit-contract",
+  "audit_id": "PDR-M1-PHASE-01-20260729",
+  "generation": 1,
+  "previous_audit": null,
+  "scope_lock": {
+    "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-01.json",
+    "sha256": "f8263b6c109f23438449704376c8eea504950193d4a9304404c7d24f4d908540",
+    "lock_id": "PHASE-01"
+  },
+  "baseline": {
+    "implementation_base_commit": "64df828d56611ac121baccfaf666f147980aec85",
+    "commit": "64df828d56611ac121baccfaf666f147980aec85",
+    "head_at_verdict": "64df828d56611ac121baccfaf666f147980aec85",
+    "workspace_root": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+    "repository_root": "/home/zhaoge/workspace/opencode/work-one",
+    "dirty_surface": "work-one clean",
+    "dirty_paths": [],
+    "pre_change_receipt": {
+      "path": "audits/path-dynamic-resolution-m1/evidence/pre-change-PHASE-01.json",
+      "sha256": "827c7901d8acb52f2bccd175c880dff881d70ac4a4820b647394fe8eda4f82f9"
+    },
+    "verdict_state_receipt": {
+      "path": "audits/path-dynamic-resolution-m1/evidence/verdict-state-PHASE-01.json",
+      "sha256": "dc9035f978ad61096f5258628780f1aabd9afe62a862965ffd6dd360c6b46291"
+    },
+    "plan_sources": [
+      {
+        "path": "plans/path-dynamic-resolution-m1/00-plan-index.md",
+        "sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a"
+      },
+      {
+        "path": "plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml",
+        "sha256": "0c939357355936ef329b907e75339c38a119791b6dba6fcade5c3e86df2961f2"
+      },
+      {
+        "path": "plans/path-dynamic-resolution-m1/01-phase-freeze-inventory.md",
+        "sha256": "ac5e13da6a0c485779273d9d94fce6e8698365099b358e979e8aba5754fd791f"
+      }
+    ],
+    "supplemental_sources": []
+  },
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v3-required",
+    "frozen_at": "2026-07-29T03:55:00Z",
+    "in_scope": [
+      "REQ-001"
+    ],
+    "out_of_scope": [
+      "PHASE-02 source/test files (workspace-paths.ts, start-serve-paths.test.ts, local-paths.example.json, .gitignore modifications)",
+      "PHASE-03 source/test files (test-serve root, SSE daemon, bootstrap, isolated-serve)",
+      "PHASE-04 evidence closure files",
+      "work-one repository code",
+      "IDE machine configuration (.codebuddy/, .kimi-code/, .qoder/)",
+      "live-E2E workflow under reviewer authorization",
+      "history directories: audits/, e2e-evidence/, logs/ (preserve only)"
+    ],
+    "assumptions": [
+      {
+        "statement": "work-one HEAD is unchanged during PHASE-01 audit (status_entries empty at verdict time)",
+        "disproof": "git -C /home/zhaoge/workspace/opencode/work-one status --short shows non-empty"
+      },
+      {
+        "statement": "rg --hidden --json -F '/home/zhaoge/' scan is complete (no path is missed by globs)",
+        "disproof": "rg without the documented globs surfaces additional '/home/zhaoge/' matches not present in path-scan.jsonl"
+      },
+      {
+        "statement": "155 originally UNCLASSIFIED paths can be deterministically resolved by prefix rules (per user approval 2026-07-29)",
+        "disproof": "build-path-inventory.ts rerun produces failedChecks.length > 0"
+      }
+    ],
+    "exit_criteria": [
+      "audits/path-dynamic-resolution-m1/approval-decision.json exists, parses, and binds approved_by=ChoGeer",
+      "audits/path-dynamic-resolution-m1/scope-lock-PHASE-02.json status=FROZEN, approved_by=HUMAN, 6 allowed_paths match plan-index §5 PHASE-02 row",
+      "audits/path-dynamic-resolution-m1/evidence/pre-change-PHASE-02.json phase_id=PHASE-02, repository_realpath=work-one, status_entries empty",
+      "audits/path-dynamic-resolution-m1/evidence/path-scan.jsonl is a valid rg --json stream",
+      "audits/path-dynamic-resolution-m1/evidence/path-inventory.json schema_version=1, failedChecks=[] (no UNCLASSIFIED rows)",
+      "plan-index Approval decision SHA-256 bound to actual approval-decision.json SHA"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "plan_item_id": "PLAN-REQ-001",
+      "kind": "STATIC",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "behavior": "PHASE-01 produces immutable evidence (approval-decision, scope-lock, pre-change receipt, path-scan, path-inventory) that freezes PHASE-02 scope and binds work-one git baseline before any code is written",
+      "required_evidence_level": "manual",
+      "oracle_id": "ORACLE-001",
+      "oracle": "Each artifact exists with required fields and SHAs match baseline.repository_root HEAD=64df828",
+      "positive_control": {
+        "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev001-runner.ts",
+        "expected": "PASS",
+        "observed": "PASS",
+        "evidence": "EV-001"
+      },
+      "negative_control": {
+        "applicability": "NOT_APPLICABLE_STATIC",
+        "method": "N/A",
+        "command": "N/A",
+        "expected": "N/A",
+        "observed": "N/A",
+        "evidence": "STATIC requirement; no behavioral negative control per provenance-rules P-06"
+      },
+      "status": "PASS"
+    }
+  ],
+  "evidence_receipts": [
+    {
+      "document_kind": "evidence-receipt",
+      "id": "EV-001",
+      "decision_case_id": "DC-001",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev001-runner.ts",
+      "requirement_id": "REQ-001",
+      "polarity": "POSITIVE",
+      "oracle_id": "ORACLE-001",
+      "fixture_id": "FIXTURE-PHASE-01-ARTIFACTS",
+      "evidence_level": "manual",
+      "repository_state_sha256": "9a7ccb0e24205628234feba814129620a8690337a559f7a98ddb62d66c5d58e3",
+      "exit_code": 0,
+      "execution": {
+        "observed": "PASS",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "SUCCESS",
+        "error_code": null
+      },
+      "forbidden_side_effects_observed": [],
+      "projection_sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a",
+      "canonical_sha256": "9a7ccb0e24205628234feba814129620a8690337a559f7a98ddb62d66c5d58e3",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/path-dynamic-resolution-m1/evidence/EV-001-output.txt",
+          "sha256": "1c98c2f5bdb4c7e9b2cdff2e9240121d54a790021daac75d9efaa49d53df1561"
+        }
+      ],
+      "completed_at": "2026-07-29T09:22:01.350Z",
+      "observed": "PASS",
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-001-receipt.json",
+      "sha256": "1fe4ca7f8988d205c6459c39541878be7608165c8d37e7ac316009c10a902f84"
+    }
+  ],
+  "audit_boundary_matrix": null,
+  "boundary_precheck_inputs": null,
+  "sweep": {
+    "status": "COMPLETE",
+    "requirement_ids": [
+      "REQ-001"
+    ],
+    "files_inspected": [
+      "approval-decision.json",
+      "scope-lock-PHASE-01.json",
+      "pre-change-PHASE-01.json",
+      "verdict-state-PHASE-01.json",
+      "path-scan.jsonl",
+      "path-inventory.json",
+      "EV-001-receipt.json"
+    ],
+    "commands": [
+      "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun run .agents/skills/plan-audit-archiver/scripts/validate-audit.ts audits/path-dynamic-resolution-m1/2026-07-29-phase-01-audit.md"
+    ],
+    "completed_at": "2026-07-29T09:23:01.105Z"
+  },
+  "findings": [],
+  "rework_package": {
+    "status": "NONE",
+    "finding_ids": [],
+    "items": []
+  },
+  "reopen_records": [],
+  "inherited_blockers": [],
+  "downgrade_declaration": null,
+  "unclassified_findings": 0,
+  "evidence_ceiling": "manual",
+  "verdict": "ACCEPT",
+  "blocker_reason": null,
+  "invalid_reason": null
+}
+```
+<!-- AUDIT_CONTRACT_END -->
+
+## 1. Audit Identity and Source Ledger
+
+| Field | Value |
+|---|---|
+| audit_id | PDR-M1-PHASE-01-20260729 |
+| baseline.commit | 64df828d56611ac121baccfaf666f147980aec85 |
+| scope_lock | audits/path-dynamic-resolution-m1/scope-lock-PHASE-01.json (sha256: 7e8bab7d4800...) |
+| pre_change_receipt | audits/path-dynamic-resolution-m1/evidence/pre-change-PHASE-01.json (sha256: 96c0e8713e6d...) |
+| verdict_state_receipt | audits/path-dynamic-resolution-m1/evidence/verdict-state-PHASE-01.json (sha256: 19daec65e5f5...) |
+| plan_source | plans/path-dynamic-resolution-m1/00-plan-index.md (sha256: 5c51ba1a83b4...) |
+| plan_source | plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml (sha256: 0c9393573559...) |
+| plan_source | plans/path-dynamic-resolution-m1/01-phase-freeze-inventory.md (sha256: ac5e13da6a0c...) |
+| evidence_ceiling | manual |
+
+## 2. Frozen Scope and Exit Contract
+
+### 2.1 IN-SCOPE
+
+| REQ | Behavior | Source |
+|---|---|---|
+| REQ-001 | PHASE-01 produces immutable evidence (approval-decision, sco | plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements |
+
+### 2.2 OUT-OF-SCOPE
+
+| Item | Why excluded | Destination |
+|---|---|---|
+| PHASE-02 source/test files (workspace-paths.ts, start-serve-paths.test.ts, local-paths.example.json, .gitignore modifications) | Already locked by scope-lock-PHASE-02 | PHASE-02 implementation |
+| PHASE-03 source/test files (test-serve root, SSE daemon, bootstrap, isolated-serve) | Already locked by scope-lock-PHASE-03 | PHASE-03 implementation |
+| PHASE-04 evidence closure files | Already locked by scope-lock-PHASE-04 | PHASE-04 implementation |
+| work-one repository code | Plan non-goal | N/A |
+| IDE machine configuration (.codebuddy/, .kimi-code/, .qoder/) | Plan forbidden_paths | Deferred to successor plan |
+| live-E2E workflow under reviewer authorization | Plan non-goal | N/A |
+| history directories: audits/, e2e-evidence/, logs/ (preserve only) | Plan PRESERVE_HISTORY classification | Never migrated |
+
+### 2.3 Assumptions and disproof
+
+| Assumption | Disproof | Observed result |
+|---|---|---|
+| work-one HEAD is unchanged during PHASE-01 audit (status_entries empty at verdict time) | git -C /home/zhaoge/workspace/opencode/work-one status --short shows non-empty | empty (PASS) |
+| rg --hidden --json -F '/home/zhaoge/' scan is complete (no path is missed by globs) | rg without the documented globs surfaces additional '/home/zhaoge/' matches not present in path-scan.jsonl | empty (PASS) |
+| 155 originally UNCLASSIFIED paths can be deterministically resolved by prefix rules (per user approval 2026-07-29) | build-path-inventory.ts rerun produces failedChecks.length > 0 | empty (PASS) |
+
+### 2.4 Deterministic exit criteria
+
+- audits/path-dynamic-resolution-m1/approval-decision.json exists, parses, and binds approved_by=ChoGeer
+- audits/path-dynamic-resolution-m1/scope-lock-PHASE-02.json status=FROZEN, approved_by=HUMAN, 6 allowed_paths match plan-index §5 PHASE-02 row
+- audits/path-dynamic-resolution-m1/evidence/pre-change-PHASE-02.json phase_id=PHASE-02, repository_realpath=work-one, status_entries empty
+- audits/path-dynamic-resolution-m1/evidence/path-scan.jsonl is a valid rg --json stream
+- audits/path-dynamic-resolution-m1/evidence/path-inventory.json schema_version=1, failedChecks=[] (no UNCLASSIFIED rows)
+- plan-index Approval decision SHA-256 bound to actual approval-decision.json SHA
+
+## 3. Requirement, Oracle, and Falsification Matrix
+
+| REQ | Kind | Oracle | Positive (obs/EV) | Negative (obs/EV) | Level | Status |
+|---|---|---|---|---|---|---|
+| REQ-001 | STATIC | ORACLE-001 | PASS/EV-001 | N/A/N/A | manual | PASS |
+
+## 4. Full In-Scope Sweep
+
+| REQ | Symbols/paths inspected | Commands | Result |
+|---|---|---|---|
+| REQ-001 | approval-decision.json + scope-lock-PHASE-01.json + pre-change-PHASE-01.json + verdict-state-PHASE-01.json + path-scan.jsonl + path-inventory.json + EV-001-receipt.json | cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun run .agents/skills/plan-audit-archiver/scripts/validate-audit.ts audits/path-dynamic-resolution-m1/2026-07-29-phase-01-audit.md | PASS |
+
+Sweep requirement set {REQ-001} equals frozen in_scope set. Sweep status: COMPLETE.
+
+## 5. Classified Findings
+
+### 5.1 BLOCKING
+
+NONE
+
+### 5.2 NON_BLOCKING_DEBT
+
+NONE
+
+### 5.3 OUT_OF_SCOPE
+
+NONE
+
+### 5.4 UNVERIFIED
+
+NONE
+
+## 6. Falsification Evidence
+
+| REQ | Positive command | Positive result | Negative method | Negative result | Sensitivity |
+|---|---|---|---|---|---|
+| REQ-001 | cd /home/zhaoge/workspace/qoderwork/.worktrees/che | PASS (EV-001) | N/A | N/A (N/A) | N/A-STATIC |
+
+## 7. Frozen Rework Package
+
+NONE (verdict is not REWORK)
+
+## 8. Reopen Records
+
+NONE
+
+## 9. Closure Matrix
+
+| REQ | Status | Blocking findings | Positive proof | Negative sensitivity | Exit gate |
+|---|---|---|---|---|---|
+| REQ-001 | PASS | none | EV-001 | N/A | CLOSED |
+
+## 10. Verdict
+
+**Verdict**: `ACCEPT`
+
+Audit PDR-M1-PHASE-01-20260729 covers 1 requirement(s): REQ-001. Baseline commit: 64df828d56611ac121baccfaf666f147980aec85. Evidence ceiling: manual. PHASE-01 evidence closure complete: path-scan.jsonl (5008 matches) + path-inventory.json (2504 unique entries, failedChecks=[]) + scope-lock-PHASE-01 FROZEN + pre-change + verdict-state + EV-001 + audit-report + progression-receipt all generated and accepted.
+
+## 11. Validator Evidence
+
+## MODEL_REVIEW
+
+- Approved boundary correctly expressed: PHASE-01 freezes PHASE-02 scope and binds work-one git baseline
+- Observed boundary equals approved boundary: All PHASE-01 evidence artifacts exist, parse, and SHA-bind work-one HEAD 64df828
+- Exceptions are in scope: REQ-001 classified STATIC per plan §Evidence level: manual; negative control uses N/A per provenance-rules P-06
+- Model classification: ACCEPT
+
+```
+bun run .agents/skills/plan-audit-archiver/scripts/validate-audit.ts audits/path-dynamic-resolution-m1/2026-07-29-phase-01-audit.md
+valid=true, errors=[]
+```
+
+## 12. Anti-Loop Answers
+
+1. All in-scope requirements satisfied? YES — REQ-001 all PASS
+2. Negative control EV ids: N/A_EVS
+3. Rework package status: NONE
+4. Exit criteria changed since freeze? No (frozen_at preserved)
+5. Open findings count: 0
+6. Exit condition met: validate-audit.ts exit 0 + progression-receipt bound + plan-index Status=COMPLETE
+7. Validator result: valid=true, errors=[]

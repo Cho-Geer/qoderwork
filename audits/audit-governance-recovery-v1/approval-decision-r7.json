@@ -1,0 +1,82 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "decision_id": "AUDIT-GOVERNANCE-RECOVERY-V1-R7-APPROVED-20260801",
+  "plan_id": "AUDIT-GOVERNANCE-RECOVERY-V1-20260730",
+  "governance_profile": "audit-governance-recovery/v1",
+  "decision": "APPROVED",
+  "approved_by": "HUMAN_USER",
+  "approved_at": "2026-08-01T01:30:00Z",
+  "approval_request": {
+    "path": "audits/audit-governance-recovery-v1/approval-request-r7.json",
+    "sha256": "732982458b6035cf767d67812020391b6674550f554f18002f7842a88402a532"
+  },
+  "canonical_contract": {
+    "path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+    "sha256": "ea07be8357c1f6ee60f48f334c76920d6be2d9f51cdcfe009f0994e5401adcd9"
+  },
+  "approved_plan_object_set": {
+    "path": "audits/audit-governance-recovery-v1/approved-plan-object-set-r7.json",
+    "sha256": "fefbbe98d924c4212977cc7ca04e6c256d6f8ff03a46e5821c2aeddf000b54a2"
+  },
+  "approved_plan_files": {
+    "path": "audits/audit-governance-recovery-v1/approved-plan-files-r7.sha256",
+    "sha256": "6221c7ab684908a88fac7f870b66d5701b0a98601104f4ab8b54036c2d5431cf"
+  },
+  "approved_index_baseline": {
+    "path": "audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r7.md",
+    "sha256": "2f90bd22dbc17ea8ffe2d69182e40809da5b3b32b8f886ab21e8d8f46d18d87c"
+  },
+  "frozen_m1_files": {
+    "path": "audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r7.json",
+    "sha256": "dc5ea01fef295d44e59bf1efc9ecce24801cfb56cb96752c102dc5a88e5ba7bf"
+  },
+  "p4_boundary": {
+    "path": "audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r7.json",
+    "sha256": "cbfd7864cb57946bdf78ec88e0be6e57e2e506d5ad2674ed40232c56a262adef"
+  },
+  "approved_artifacts": {
+    "canonical_contract": {
+      "path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+      "sha256": "ea07be8357c1f6ee60f48f334c76920d6be2d9f51cdcfe009f0994e5401adcd9"
+    },
+    "approved_plan_object_set": {
+      "path": "audits/audit-governance-recovery-v1/approved-plan-object-set-r7.json",
+      "sha256": "fefbbe98d924c4212977cc7ca04e6c256d6f8ff03a46e5821c2aeddf000b54a2"
+    },
+    "approved_plan_files": {
+      "path": "audits/audit-governance-recovery-v1/approved-plan-files-r7.sha256",
+      "sha256": "6221c7ab684908a88fac7f870b66d5701b0a98601104f4ab8b54036c2d5431cf"
+    },
+    "approved_index_baseline": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r7.md",
+      "sha256": "2f90bd22dbc17ea8ffe2d69182e40809da5b3b32b8f886ab21e8d8f46d18d87c"
+    },
+    "frozen_m1_files": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r7.json",
+      "sha256": "dc5ea01fef295d44e59bf1efc9ecce24801cfb56cb96752c102dc5a88e5ba7bf"
+    },
+    "p4_boundary": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r7.json",
+      "sha256": "cbfd7864cb57946bdf78ec88e0be6e57e2e506d5ad2674ed40232c56a262adef"
+    }
+  },
+  "waiver_ids": [
+    "PHASE-01_P02A_ENTRY_WHILE_INDEX_BLOCKED",
+    "EXTERNAL_HUMAN_DECISION_FOR_PENDING_IMMUTABLE_LOCK",
+    "SUPPLEMENTAL_QODERWORK_BASELINE_WITH_WORK_ONE_P07_ANCHOR",
+    "CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT"
+  ],
+  "exact_waiver_ids": [
+    "PHASE-01_P02A_ENTRY_WHILE_INDEX_BLOCKED",
+    "EXTERNAL_HUMAN_DECISION_FOR_PENDING_IMMUTABLE_LOCK",
+    "SUPPLEMENTAL_QODERWORK_BASELINE_WITH_WORK_ONE_P07_ANCHOR",
+    "CANDIDATE_BOOTSTRAP_ACTIVATION_AND_CLOSE_AFTER_VALID_AUDIT"
+  ],
+  "cryptographic_references": [],
+  "effect": "AUTHORIZES_MATERIALIZATION_AND_PHASE_01_BOOTSTRAP",
+  "immutable": true,
+  "supersedes": "AUDIT-GOVERNANCE-RECOVERY-V1-R7-PENDING-20260801",
+  "acyclicity_note": "This r7 decision binds baseline_sha = SHA of approved-index-baseline-r7.md (L20=PENDING_R7_FREEZE). Live 00-index L20 = decision SHA (projection). Baseline file and live 00-index are intentionally different. Materialization copies baseline file to target.",
+  "approval_effect": "A HUMAN_USER approval authorizes only the exact artifacts and bootstrap boundary in this request. Any semantic plan-file change requires a new approval request and decision."
+}

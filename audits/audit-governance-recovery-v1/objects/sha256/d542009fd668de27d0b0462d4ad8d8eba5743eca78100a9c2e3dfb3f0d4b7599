@@ -1,0 +1,7 @@
+=== STDOUT ===
+PASS EV-006 local-paths happy
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

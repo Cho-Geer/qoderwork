@@ -1,0 +1,83 @@
+{
+  "schema_version": "audit-approved-plan-object-set/v1",
+  "document_kind": "approved-plan-object-set",
+  "plan_id": "AUDIT-GOVERNANCE-RECOVERY-V1-20260730",
+  "generation": 8,
+  "source_base_commit": "51d95dbb919f1be988f026073ac9af9ff3a4a8de",
+  "entry_count": 9,
+  "entries_sha256": "d736a6124db7484866fa2e21ad252f4e2f25e977af340845d78387c25fd4b1f8",
+  "entries": [
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+      "kind": "canonical-requirements",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/cb26cff477a053de8a1d433dc1d561a5c2fd80499a21c84af1e44dc79fa2b065",
+        "sha256": "cb26cff477a053de8a1d433dc1d561a5c2fd80499a21c84af1e44dc79fa2b065"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/00-phase-toolchain-implementation.md",
+      "kind": "plan-phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/b97551dd2ad28d756a31ec0bfb5b7e4c8a9f2c537cdf78d39c072f3771641baf",
+        "sha256": "b97551dd2ad28d756a31ec0bfb5b7e4c8a9f2c537cdf78d39c072f3771641baf"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/01-phase-foundation-kernel.md",
+      "kind": "plan-phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/dee40aa82d8d3b21cf354cf15d9303bc1896fd64f64be9946b1df76fa7e44b44",
+        "sha256": "dee40aa82d8d3b21cf354cf15d9303bc1896fd64f64be9946b1df76fa7e44b44"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/02-phase-single-closure-entrypoint.md",
+      "kind": "plan-phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/0d7fb3137b767ffebf803333151c8052201cfe99c3b2913a5e695657b5e97c01",
+        "sha256": "0d7fb3137b767ffebf803333151c8052201cfe99c3b2913a5e695657b5e97c01"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/03-phase-artifact-dag-validation.md",
+      "kind": "plan-phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/23c0f4cd699254f2d71589c43e7afcbdb22b800a363fe4f5c6a73356cc363578",
+        "sha256": "23c0f4cd699254f2d71589c43e7afcbdb22b800a363fe4f5c6a73356cc363578"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/04-phase-conformance-enforcement.md",
+      "kind": "plan-phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/49e1a2719ea458bf1be757728038c0af03059a2d935571addfb5ebc415b8c025",
+        "sha256": "49e1a2719ea458bf1be757728038c0af03059a2d935571addfb5ebc415b8c025"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/05-phase-rules-skills-and-templates.md",
+      "kind": "plan-phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/869df1c38a60c409536e200142492284a3d55741ab606c8d192582b2e63aa7f5",
+        "sha256": "869df1c38a60c409536e200142492284a3d55741ab606c8d192582b2e63aa7f5"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/06-phase-documentation-and-final-handoff.md",
+      "kind": "plan-phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/edd97a6d9e25287b09d3e558db12155f1420b4f951410afa07558e04b0bd9e37",
+        "sha256": "edd97a6d9e25287b09d3e558db12155f1420b4f951410afa07558e04b0bd9e37"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/99-final-verification.md",
+      "kind": "final-verification",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/approval-objects/sha256/67ce5f444659ef12ea1ee4a0d0268893c5a3c8dda03ae1eb356c6fb9b805da97",
+        "sha256": "67ce5f444659ef12ea1ee4a0d0268893c5a3c8dda03ae1eb356c6fb9b805da97"
+      }
+    }
+  ]
+}

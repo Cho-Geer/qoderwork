@@ -1,0 +1,75 @@
+{
+  "schema_version": "audit-approved-plan-object-set/v1",
+  "document_kind": "approved-plan-object-set",
+  "plan_id": "AUDIT-GOVERNANCE-RECOVERY-V1-20260730",
+  "generation": 5,
+  "source_base_commit": "51d95dbb919f1be988f026073ac9af9ff3a4a8de",
+  "entry_count": 8,
+  "entries_sha256": "c839c048d0008340f934d21f3b9561cc15cc7d4e9de8b0a6717d1736eba037b7",
+  "entries": [
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+      "kind": "canonical",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/objects/sha256/8e7b62d60f031257e364901c90ec9a4400a3fa90b7363c4592c24d1fe27f8236",
+        "sha256": "8e7b62d60f031257e364901c90ec9a4400a3fa90b7363c4592c24d1fe27f8236"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/01-phase-foundation-kernel.md",
+      "kind": "phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/objects/sha256/fb9e11edef490838c528c9d6f79c8546806119bada52d6b88850ca518adbf6fb",
+        "sha256": "fb9e11edef490838c528c9d6f79c8546806119bada52d6b88850ca518adbf6fb"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/02-phase-single-closure-entrypoint.md",
+      "kind": "phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/objects/sha256/733526e559cc7c247b33e3335a0b0f4cb85b631c401bd0c238794b06d655c6ef",
+        "sha256": "733526e559cc7c247b33e3335a0b0f4cb85b631c401bd0c238794b06d655c6ef"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/03-phase-artifact-dag-validation.md",
+      "kind": "phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/objects/sha256/23c0f4cd699254f2d71589c43e7afcbdb22b800a363fe4f5c6a73356cc363578",
+        "sha256": "23c0f4cd699254f2d71589c43e7afcbdb22b800a363fe4f5c6a73356cc363578"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/04-phase-conformance-enforcement.md",
+      "kind": "phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/objects/sha256/49e1a2719ea458bf1be757728038c0af03059a2d935571addfb5ebc415b8c025",
+        "sha256": "49e1a2719ea458bf1be757728038c0af03059a2d935571addfb5ebc415b8c025"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/05-phase-rules-skills-and-templates.md",
+      "kind": "phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/objects/sha256/869df1c38a60c409536e200142492284a3d55741ab606c8d192582b2e63aa7f5",
+        "sha256": "869df1c38a60c409536e200142492284a3d55741ab606c8d192582b2e63aa7f5"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/06-phase-documentation-and-final-handoff.md",
+      "kind": "phase",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/objects/sha256/37de021dc0c7c39a02874a8503a730451c38bcc8f700465488be90b20e61f093",
+        "sha256": "37de021dc0c7c39a02874a8503a730451c38bcc8f700465488be90b20e61f093"
+      }
+    },
+    {
+      "logical_path": "plans/audit-governance-recovery-v1/formal-plan-set/99-final-verification.md",
+      "kind": "final-verification",
+      "bytes": {
+        "path": "audits/audit-governance-recovery-v1/objects/sha256/d61f1e75f1ecb4ba7ee9dfacebedca5dd75db94eb24270797795a97d8acf8c1c",
+        "sha256": "d61f1e75f1ecb4ba7ee9dfacebedca5dd75db94eb24270797795a97d8acf8c1c"
+      }
+    }
+  ]
+}

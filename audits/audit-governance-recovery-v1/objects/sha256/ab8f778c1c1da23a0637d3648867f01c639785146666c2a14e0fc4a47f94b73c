@@ -1,0 +1,179 @@
+{
+  "schema_version": "audit-scope-lock/v3",
+  "lock_id": "PHASE-03",
+  "created_at": "2026-07-29T07:30:00Z",
+  "plan_sources": [
+    {
+      "path": "plans/path-dynamic-resolution-m1/00-plan-index.md",
+      "sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a"
+    },
+    {
+      "path": "plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml",
+      "sha256": "0c939357355936ef329b907e75339c38a119791b6dba6fcade5c3e86df2961f2"
+    },
+    {
+      "path": "plans/path-dynamic-resolution-m1/03-phase-test-serve-consumers.md",
+      "sha256": "8f87f2299384fe242fb22aec2ad192687ef56e2ea3c911644909354d9844ebb6"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v3-required",
+    "frozen_at": "2026-07-29T07:30:00Z",
+    "in_scope": [
+      "REQ-003"
+    ],
+    "out_of_scope": [
+      "PHASE-02 source/test/example/ignore files (already locked by scope-lock-PHASE-02)",
+      "PHASE-04 evidence closure files",
+      "work-one repository code",
+      "IDE machine configuration (.codebuddy/, .kimi-code/, .qoder/)",
+      "live-E2E workflow under reviewer authorization",
+      "history directories: audits/, e2e-evidence/, logs/ (preserve only)"
+    ],
+    "assumptions": [
+      {
+        "statement": "PHASE-02 resolver and start-serve.ts integration are accepted; scripts/lib/workspace-paths.ts exports resolveWorkspacePaths, validateWorkOneRoot, resolveTool unchanged",
+        "disproof": "workspace-paths.ts diff against PHASE-02 locked version shows missing or broken exports"
+      },
+      {
+        "statement": "work-one HEAD is unchanged during PHASE-03 audit",
+        "disproof": "git -C /home/zhaoge/workspace/opencode/work-one status --short shows non-empty after capture-state.ts verdict run"
+      }
+    ],
+    "exit_criteria": [
+      "scripts/test-serve/run-context.ts getDefaultPrimaryWorktree() delegates to resolveWorkspacePaths",
+      "scripts/test-serve/process.ts getSseDaemonPath() resolves from import.meta.dir + throws SSE_DAEMON_PATH_INVALID",
+      "scripts/test-serve/bootstrap.ts privilege dynamic import uses pathToFileURL(resolvedPrivilegePath).href",
+      "scripts/test-serve/isolated-serve.ts exposes an argument-resolution seam (parsed CLI root selection only)",
+      "scripts/test-serve/__tests__/isolated-serve-paths.test.ts covers CLI override + default-root tests",
+      "scripts/test-serve/__tests__/bootstrap-import-source.test.ts updated to inspect pathToFileURL contract",
+      "bun test scripts/test-serve/__tests__/{run-context,process,bootstrap-import-source,isolated-serve-paths}.test.ts exits 0",
+      "bun run typecheck exits 0",
+      "validate-phase-progression.ts plans/path-dynamic-resolution-m1 PHASE-04 exits 0"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-003",
+      "plan_item_id": "PLAN-REQ-003",
+      "kind": "BEHAVIORAL",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "behavior": "getDefaultPrimaryWorktree() has no caller-supplied path parameter and returns resolveWorkspacePaths({}).workOneRoot; isolated-serve.ts retains getArg('--from') || getDefaultPrimaryWorktree() and getArg('--primary-worktree') || getDefaultPrimaryWorktree(); getSseDaemonPath() is defined in process.ts, calculates resolve(import.meta.dir, '..', 'sse-daemon.ts'), verifies a readable regular file, and throws SSE_DAEMON_PATH_INVALID before spawn on failure; Bootstrap constructs resolvedPrivilegePath = resolve(manifest.paths.worktreeDir, '.opencode', 'service', 'dispatch', 'privilege.ts') and calls await import(pathToFileURL(resolvedPrivilegePath).href)",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-003",
+      "oracle": "scripts/test-serve/__tests__/{run-context,process,bootstrap-import-source,isolated-serve-paths}.test.ts must run; positive control validates happy fixtures, negative control mutates single dimension to trigger SSE_DAEMON_PATH_INVALID or WORK_ONE_ROOT_INVALID"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-003",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-003",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-002",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-002",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-02 implementation is owned by scope-lock-PHASE-02 (already ACCEPTED); out of PHASE-03 scope",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-02.json",
+        "sha256": "63325f2fef12f6fbd2f9ab81b16723b2ed1d8f01fd52f278a8060e42cbc9d2b6"
+      }
+    },
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-001",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-01 freeze + inventory owned by scope-lock-PHASE-01 (already ACCEPTED)",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-01.json",
+        "sha256": "f73eba2fbd730c16a8a22f64dccdbdbd7f6b71cff61d570aaccbc5451d46a6ad"
+      }
+    },
+    {
+      "plan_item_id": "PLAN-REQ-004",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-004",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-04 evidence closure is owned by scope-lock-PHASE-04 (to be created after PHASE-03 ACCEPTED)",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-01.json",
+        "sha256": "f73eba2fbd730c16a8a22f64dccdbdbd7f6b71cff61d570aaccbc5451d46a6ad"
+      }
+    },
+    {
+      "plan_item_id": "PLAN-REQ-005",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-005",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-04 evidence closure handles continuation register; deferred items belong to PHASE-04 audit",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-01.json",
+        "sha256": "f73eba2fbd730c16a8a22f64dccdbdbd7f6b71cff61d570aaccbc5451d46a6ad"
+      }
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "scripts/test-serve/run-context.ts",
+      "scripts/test-serve/__tests__/run-context.test.ts",
+      "scripts/test-serve/process.ts",
+      "scripts/test-serve/__tests__/process.test.ts",
+      "scripts/test-serve/bootstrap.ts",
+      "scripts/test-serve/__tests__/bootstrap-import-source.test.ts",
+      "scripts/test-serve/isolated-serve.ts",
+      "scripts/test-serve/__tests__/isolated-serve-paths.test.ts"
+    ],
+    "forbidden_paths": [
+      ".codebuddy/settings.json",
+      ".codebuddy/settings.local.json",
+      ".kimi-code/mcp.json",
+      ".qoder/settings.local.json",
+      "/home/zhaoge/workspace/opencode/work-one",
+      "bun.lock",
+      "scripts/local-paths.json",
+      "scripts/lib/workspace-paths.ts",
+      "scripts/start-serve.ts",
+      "scripts/_b_pt_wm_00r2_live.ts"
+    ]
+  },
+  "impact_analysis": {
+    "modified_functions": [
+      "scripts/test-serve/run-context.ts:getDefaultPrimaryWorktree",
+      "scripts/test-serve/process.ts:SSE_DAEMON_PATH module constant",
+      "scripts/test-serve/bootstrap.ts:loadPrivilegeService",
+      "scripts/test-serve/isolated-serve.ts:CLI argument parsing block"
+    ],
+    "shared_functions": [
+      "scripts/lib/workspace-paths.ts:resolveWorkspacePaths",
+      "scripts/lib/workspace-paths.ts:validateWorkOneRoot",
+      "scripts/lib/workspace-paths.ts:resolveTool"
+    ],
+    "caller_scan_command": "codegraph callers resolveWorkspacePaths && codegraph callers getDefaultPrimaryWorktree && codegraph callers getSseDaemonPath && codegraph callers loadPrivilegeService",
+    "caller_files": [
+      "scripts/test-serve/run-context.ts",
+      "scripts/test-serve/process.ts",
+      "scripts/test-serve/bootstrap.ts",
+      "scripts/test-serve/isolated-serve.ts"
+    ],
+    "caller_tests": [
+      "scripts/lib/__tests__/workspace-paths.test.ts",
+      "scripts/test-serve/__tests__/run-context.test.ts",
+      "scripts/test-serve/__tests__/process.test.ts",
+      "scripts/test-serve/__tests__/bootstrap-import-source.test.ts",
+      "scripts/test-serve/__tests__/isolated-serve-paths.test.ts"
+    ],
+    "scan_output_sha256": "PENDING-PHASE-03-IMPLEMENTATION"
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "ChoGeer",
+    "approved_at": "2026-07-29T07:30:00Z",
+    "evidence": "audits/path-dynamic-resolution-m1/approval-decision.json (sha256: 95aafa76bf1c7725cda4be58a573065ecfd7692cbcdbcf6282a25beb8f396dcd); user verbal approval at ZCode session 2026-07-29 turn"
+  }
+}

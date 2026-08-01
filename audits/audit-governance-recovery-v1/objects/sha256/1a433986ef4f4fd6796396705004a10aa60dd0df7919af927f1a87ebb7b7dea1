@@ -1,0 +1,8 @@
+=== STDOUT ===
+FIXTURE /tmp/bad-startserve-1785309440015
+CAUGHT WORK_ONE_ROOT_INVALID work-one candidate is not a git top-level: /tmp/bad-startserve-1785309440015 (topLevel=<unavailable>)
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

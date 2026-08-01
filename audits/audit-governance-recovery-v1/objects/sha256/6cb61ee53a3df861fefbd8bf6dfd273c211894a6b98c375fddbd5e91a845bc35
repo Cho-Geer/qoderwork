@@ -1,0 +1,516 @@
+# Audit Report: PDR-M1-PHASE-02-20260729
+
+## 0. Machine-Readable Audit Contract
+
+<!-- AUDIT_CONTRACT_START -->
+```json
+{
+  "schema_version": "audit-governance-audit/v3",
+  "document_kind": "audit-contract",
+  "audit_id": "PDR-M1-PHASE-02-20260729",
+  "generation": 1,
+  "previous_audit": null,
+  "scope_lock": {
+    "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-02.json",
+    "sha256": "886b4713b6c6508b4675f83d81b4a151d1d266e36f634da43c19efaa21d8f3e8",
+    "lock_id": "PHASE-02"
+  },
+  "baseline": {
+    "implementation_base_commit": "64df828d56611ac121baccfaf666f147980aec85",
+    "commit": "64df828d56611ac121baccfaf666f147980aec85",
+    "head_at_verdict": "64df828d56611ac121baccfaf666f147980aec85",
+    "workspace_root": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+    "repository_root": "/home/zhaoge/workspace/opencode/work-one",
+    "dirty_surface": "work-one clean",
+    "dirty_paths": [],
+    "pre_change_receipt": {
+      "path": "audits/path-dynamic-resolution-m1/evidence/pre-change-PHASE-02.json",
+      "sha256": "ef5194644d5325ad28b1fa8a26016a67b1da58ca3e476f55accc611d933f031e"
+    },
+    "verdict_state_receipt": {
+      "path": "audits/path-dynamic-resolution-m1/evidence/verdict-state-PHASE-02.json",
+      "sha256": "d13e89888ca71bde975cb3771a0e49be296dd135fb6e6d0d8e22a13e37a756b1"
+    },
+    "plan_sources": [
+      {
+        "path": "plans/path-dynamic-resolution-m1/00-plan-index.md",
+        "sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a"
+      },
+      {
+        "path": "plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml",
+        "sha256": "0c939357355936ef329b907e75339c38a119791b6dba6fcade5c3e86df2961f2"
+      },
+      {
+        "path": "plans/path-dynamic-resolution-m1/02-phase-workspace-resolver.md",
+        "sha256": "bbffd01e107d71184f7c0119d31fac3068bf8be2565e6f0d7e505cf15e28744c"
+      }
+    ],
+    "supplemental_sources": []
+  },
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v3-required",
+    "frozen_at": "2026-07-29T05:00:00Z",
+    "in_scope": [
+      "REQ-002"
+    ],
+    "out_of_scope": [
+      "PHASE-03 source/test files (test-serve root, SSE daemon, bootstrap, isolated-serve)",
+      "PHASE-04 evidence closure files",
+      "work-one repository code",
+      "IDE machine configuration (.codebuddy/, .kimi-code/, .qoder/)",
+      "bare serve or fixed port 4097",
+      "live-E2E workflow under reviewer authorization",
+      "bun.lock dependency upgrades",
+      "historical evidence under audits/, e2e-evidence/, logs/"
+    ],
+    "assumptions": [
+      {
+        "statement": "PHASE-01 path-scan.jsonl and path-inventory.json are accepted as frozen input (failedChecks empty array)",
+        "disproof": "rg --hidden --json -F '/home/zhaoge/' re-run shows unclassified rows or inventory failedChecks non-empty"
+      },
+      {
+        "statement": "work-one HEAD is unchanged during PHASE-02 implementation (status_entries empty at verdict time)",
+        "disproof": "git -C /home/zhaoge/workspace/opencode/work-one status --short shows non-empty after capture-state.ts verdict run"
+      },
+      {
+        "statement": "resolver precedence order CLI > ENV > LOCAL_CONFIG > DEPRECATED_DEFAULT is implementable without modifying test-serve or scripts/.env",
+        "disproof": "workspace-paths.ts must import scripts/.env or modify start-serve.ts in a way that breaks scripts/.env secret loader separation"
+      }
+    ],
+    "exit_criteria": [
+      "scripts/lib/workspace-paths.ts exists and exports resolveWorkspacePaths, validateWorkOneRoot, resolveTool",
+      "scripts/lib/__tests__/workspace-paths.test.ts passes both PDR-C-101 (relative ENV root fails) and PDR-C-102 (unknown JSON key fails)",
+      "scripts/__tests__/start-serve-paths.test.ts passes explicit-work-dir precedence and .env separation tests",
+      "scripts/local-paths.example.json exists with schemaVersion=1 and platforms.{linux,win32}.workOneRoot + tools.{bunBin,codegraphBin}",
+      ".gitignore contains scripts/local-paths.json entry",
+      "scripts/local-paths.json does NOT exist (intentionally untracked)",
+      "bun run typecheck exits 0",
+      "validate-phase-progression.ts plans/path-dynamic-resolution-m1 PHASE-02 exits 0",
+      "All 14 PHASE-02 product/test/example/ignore files match plan-index §5 PHASE-02 row exactly (no more, no less)"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-002",
+      "plan_item_id": "PLAN-REQ-002",
+      "kind": "BEHAVIORAL",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "behavior": "resolveWorkspacePaths({}) returns { qoderworkRoot, workOneRoot, workOneSource, bunBin, codegraphBin } with precedence CLI > ENV > LOCAL_CONFIG > DEPRECATED_DEFAULT; validateWorkOneRoot rejects non-absolute, non-git-top-level, and missing opencode.json; resolveTool accepts absolute executable file or PATH basename without separators",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "scripts/lib/__tests__/workspace-paths.test.ts PDR-C-101/102 + scripts/__tests__/start-serve-paths.test.ts must run; positive control validates happy fixture, negative control mutates single dimension to trigger WORK_ONE_ROOT_INVALID or LOCAL_PATHS_INVALID",
+      "positive_control": {
+        "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev002-runner.ts",
+        "expected": "PASS",
+        "observed": "PASS",
+        "evidence": "EV-002"
+      },
+      "negative_control": {
+        "applicability": "REQUIRED",
+        "method": "mutate single dimension per PDR-C-101/102/103/104",
+        "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev003-runner.ts",
+        "expected": "FAIL",
+        "observed": "FAIL",
+        "evidence": "EV-003"
+      },
+      "status": "PASS"
+    }
+  ],
+  "evidence_receipts": [
+    {
+      "document_kind": "evidence-receipt",
+      "id": "EV-002",
+      "decision_case_id": "DC-002",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev002-runner.ts",
+      "requirement_id": "REQ-002",
+      "polarity": "POSITIVE",
+      "oracle_id": "ORACLE-002",
+      "fixture_id": "FIXTURE-CLI-ROOT-HAPPY",
+      "evidence_level": "component",
+      "repository_state_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "exit_code": 0,
+      "execution": {
+        "observed": "PASS",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "SUCCESS",
+        "error_code": null
+      },
+      "forbidden_side_effects_observed": [],
+      "projection_sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a",
+      "canonical_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/path-dynamic-resolution-m1/evidence/EV-002-output.txt",
+          "sha256": "5f61039c49ee2ed38726df8c4a9abc12aa59939dbd4023c13b425375aebea0e3"
+        }
+      ],
+      "completed_at": "2026-07-29T09:22:01.398Z",
+      "observed": "PASS",
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-002-receipt.json",
+      "sha256": "50a29e9d55819aee5d837e7b07ae93a7d157eca4d71859ced46d52144d1ed6f3"
+    },
+    {
+      "document_kind": "evidence-receipt",
+      "id": "EV-003",
+      "decision_case_id": "DC-003",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev003-runner.ts",
+      "requirement_id": "REQ-002",
+      "polarity": "NEGATIVE",
+      "oracle_id": "ORACLE-002",
+      "fixture_id": "FIXTURE-ENV-ROOT-RELATIVE",
+      "evidence_level": "component",
+      "repository_state_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "exit_code": 1,
+      "execution": {
+        "observed": "FAIL",
+        "exit_code": 1,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "REJECTED_WORK_ONE_ROOT_INVALID",
+        "error_code": "WORK_ONE_ROOT_INVALID"
+      },
+      "forbidden_side_effects_observed": [],
+      "projection_sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a",
+      "canonical_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/path-dynamic-resolution-m1/evidence/EV-003-output.txt",
+          "sha256": "f4392ced0d77d1884a474132b29188fac69e1c0fb4d8836982bde2b567bc2796"
+        }
+      ],
+      "completed_at": "2026-07-29T09:22:01.441Z",
+      "observed": "FAIL",
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-003-receipt.json",
+      "sha256": "4f51606288a3f51048c50ce881068c36c26a609f985a2a0f1203a773ef015365"
+    },
+    {
+      "document_kind": "evidence-receipt",
+      "id": "EV-004",
+      "decision_case_id": "DC-004",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev004-runner.ts",
+      "requirement_id": "REQ-002",
+      "polarity": "NEGATIVE",
+      "oracle_id": "ORACLE-002",
+      "fixture_id": "FIXTURE-TOOL-NO-EXEC-BIT",
+      "evidence_level": "component",
+      "repository_state_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "exit_code": 1,
+      "execution": {
+        "observed": "FAIL",
+        "exit_code": 1,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "REJECTED_TOOL_BUN_INVALID",
+        "error_code": "TOOL_BUN_INVALID"
+      },
+      "forbidden_side_effects_observed": [],
+      "projection_sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a",
+      "canonical_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/path-dynamic-resolution-m1/evidence/EV-004-output.txt",
+          "sha256": "55a2bb06f4aaf81cdb83b1717b38f06a23b81313267017a7538d41ee54e869b5"
+        }
+      ],
+      "completed_at": "2026-07-29T09:22:01.483Z",
+      "observed": "FAIL",
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-004-receipt.json",
+      "sha256": "d563d83e005bd9fa9ad335f42ebd2c04346b89370d1bea3b35e1725f2d836c37"
+    },
+    {
+      "document_kind": "evidence-receipt",
+      "id": "EV-005",
+      "decision_case_id": "DC-005",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev005-runner.ts",
+      "requirement_id": "REQ-002",
+      "polarity": "NEGATIVE",
+      "oracle_id": "ORACLE-002",
+      "fixture_id": "FIXTURE-START-SERVE-NO-OPENCODE-JSON",
+      "evidence_level": "component",
+      "repository_state_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "exit_code": 1,
+      "execution": {
+        "observed": "FAIL",
+        "exit_code": 1,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "REJECTED_WORK_ONE_ROOT_INVALID",
+        "error_code": "WORK_ONE_ROOT_INVALID"
+      },
+      "forbidden_side_effects_observed": [],
+      "projection_sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a",
+      "canonical_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/path-dynamic-resolution-m1/evidence/EV-005-output.txt",
+          "sha256": "23cb22e3125b2b76203c3b0202eb01e116ed4ed7d6b3cdde4183cc8cd7d8fd42"
+        }
+      ],
+      "completed_at": "2026-07-29T09:22:01.526Z",
+      "observed": "FAIL",
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-005-receipt.json",
+      "sha256": "fb76cd05c8c109f6ee47dd367d251aa3ad37e73e1badf5609b5b985e05ac5e3c"
+    },
+    {
+      "document_kind": "evidence-receipt",
+      "id": "EV-006",
+      "decision_case_id": "DC-006",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev006-runner.ts",
+      "requirement_id": "REQ-002",
+      "polarity": "POSITIVE",
+      "oracle_id": "ORACLE-002",
+      "fixture_id": "FIXTURE-LOCAL-PATHS-HAPPY",
+      "evidence_level": "component",
+      "repository_state_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "exit_code": 0,
+      "execution": {
+        "observed": "PASS",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "SUCCESS",
+        "error_code": null
+      },
+      "forbidden_side_effects_observed": [],
+      "projection_sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a",
+      "canonical_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/path-dynamic-resolution-m1/evidence/EV-006-output.txt",
+          "sha256": "d542009fd668de27d0b0462d4ad8d8eba5743eca78100a9c2e3dfb3f0d4b7599"
+        }
+      ],
+      "completed_at": "2026-07-29T09:22:01.576Z",
+      "observed": "PASS",
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-006-receipt.json",
+      "sha256": "2965db44ef9564ee8120595649392f72936df355d83328a1909413d50a426f64"
+    },
+    {
+      "document_kind": "evidence-receipt",
+      "id": "EV-007",
+      "decision_case_id": "DC-007",
+      "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev007-runner.ts",
+      "requirement_id": "REQ-002",
+      "polarity": "POSITIVE",
+      "oracle_id": "ORACLE-002",
+      "fixture_id": "FIXTURE-PHASE-02-VERIFICATION-COMBINED",
+      "evidence_level": "component",
+      "repository_state_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "exit_code": 0,
+      "execution": {
+        "observed": "PASS",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      "domain_observation": {
+        "result": "SUCCESS",
+        "error_code": null
+      },
+      "forbidden_side_effects_observed": [],
+      "projection_sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a",
+      "canonical_sha256": "2cf60061c58393e932fd84b378dad5c99d5326bb93e22554cc67e7e3b88e8f68",
+      "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+      "artifacts": [
+        {
+          "path": "audits/path-dynamic-resolution-m1/evidence/EV-007-output.txt",
+          "sha256": "6059c3589bb66589679f3a8c166d96bf5d93c17f94f7b616fa8a2010544d143c"
+        }
+      ],
+      "completed_at": "2026-07-29T09:22:02.020Z",
+      "observed": "PASS",
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-007-receipt.json",
+      "sha256": "1b5ba4617f2fedb36a8ee8ee083f721dc2923a9f2a0c0a3b063dc254c4da010c"
+    }
+  ],
+  "audit_boundary_matrix": null,
+  "boundary_precheck_inputs": null,
+  "sweep": {
+    "status": "COMPLETE",
+    "requirement_ids": [
+      "REQ-002"
+    ],
+    "files_inspected": [
+      "workspace-paths.ts (resolveWorkspacePaths/validateWorkOneRoot/resolveTool)",
+      "start-serve.ts (resolveWorkDir delegate)",
+      "local-paths.example.json",
+      ".gitignore",
+      "workspace-paths.test.ts",
+      "start-serve-paths.test.ts"
+    ],
+    "commands": [
+      "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun test scripts/lib/__tests__/workspace-paths.test.ts scripts/__tests__/start-serve-paths.test.ts && /home/zhaoge/.bun/bin/bun run typecheck"
+    ],
+    "completed_at": "2026-07-29T09:23:01.157Z"
+  },
+  "findings": [],
+  "rework_package": {
+    "status": "NONE",
+    "finding_ids": [],
+    "items": []
+  },
+  "reopen_records": [],
+  "inherited_blockers": [],
+  "downgrade_declaration": {
+    "reason": "evidence_ceiling=component matches plan declared provenance_level=v3-required with required_evidence_level=component",
+    "ceiling": "component",
+    "unaffected_scope": "REQ-002 exit gate (component tests) unaffected",
+    "affected_scope": "none (component ceiling matches plan declaration; no conclusion downgraded)"
+  },
+  "unclassified_findings": 0,
+  "evidence_ceiling": "component",
+  "verdict": "ACCEPT",
+  "blocker_reason": null,
+  "invalid_reason": null
+}
+```
+<!-- AUDIT_CONTRACT_END -->
+
+## 1. Audit Identity and Source Ledger
+
+| Field | Value |
+|---|---|
+| audit_id | PDR-M1-PHASE-02-20260729 |
+| baseline.commit | 64df828d56611ac121baccfaf666f147980aec85 |
+| scope_lock | audits/path-dynamic-resolution-m1/scope-lock-PHASE-02.json (sha256: 9ccbfe0c9f79...) |
+| pre_change_receipt | audits/path-dynamic-resolution-m1/evidence/pre-change-PHASE-02.json (sha256: b49dad78a3b0...) |
+| verdict_state_receipt | audits/path-dynamic-resolution-m1/evidence/verdict-state-PHASE-02.json (sha256: ccf3ef884128...) |
+| plan_source | plans/path-dynamic-resolution-m1/00-plan-index.md (sha256: 5c51ba1a83b4...) |
+| plan_source | plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml (sha256: 0c9393573559...) |
+| plan_source | plans/path-dynamic-resolution-m1/02-phase-workspace-resolver.md (sha256: bbffd01e107d...) |
+| evidence_ceiling | component |
+
+## 2. Frozen Scope and Exit Contract
+
+### 2.1 IN-SCOPE
+
+| REQ | Behavior | Source |
+|---|---|---|
+| REQ-002 | resolveWorkspacePaths({}) returns { qoderworkRoot, workOneRo | plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements |
+
+### 2.2 OUT-OF-SCOPE
+
+| Item | Why excluded | Destination |
+|---|---|---|
+| PHASE-03 source/test files (test-serve root, SSE daemon, bootstrap, isolated-serve) | Already locked by scope-lock-PHASE-03 | PHASE-03 implementation |
+| PHASE-04 evidence closure files | Already locked by scope-lock-PHASE-04 | PHASE-04 implementation |
+| work-one repository code | Plan non-goal | N/A |
+| IDE machine configuration (.codebuddy/, .kimi-code/, .qoder/) | Plan forbidden_paths | Deferred to successor plan |
+| bare serve or fixed port 4097 | Plan non-goal | N/A |
+| live-E2E workflow under reviewer authorization | Plan non-goal | N/A |
+| bun.lock dependency upgrades | Plan non-goal | N/A |
+| historical evidence under audits/, e2e-evidence/, logs/ | Plan PRESERVE_HISTORY classification | Never migrated |
+
+### 2.3 Assumptions and disproof
+
+| Assumption | Disproof | Observed result |
+|---|---|---|
+| PHASE-01 path-scan.jsonl and path-inventory.json are accepted as frozen input (failedChecks empty array) | rg --hidden --json -F '/home/zhaoge/' re-run shows unclassified rows or inventory failedChecks non-empty | exports present (PASS) |
+| work-one HEAD is unchanged during PHASE-02 implementation (status_entries empty at verdict time) | git -C /home/zhaoge/workspace/opencode/work-one status --short shows non-empty after capture-state.ts verdict run | exports present (PASS) |
+| resolver precedence order CLI > ENV > LOCAL_CONFIG > DEPRECATED_DEFAULT is implementable without modifying test-serve or scripts/.env | workspace-paths.ts must import scripts/.env or modify start-serve.ts in a way that breaks scripts/.env secret loader separation | exports present (PASS) |
+
+### 2.4 Deterministic exit criteria
+
+- scripts/lib/workspace-paths.ts exists and exports resolveWorkspacePaths, validateWorkOneRoot, resolveTool
+- scripts/lib/__tests__/workspace-paths.test.ts passes both PDR-C-101 (relative ENV root fails) and PDR-C-102 (unknown JSON key fails)
+- scripts/__tests__/start-serve-paths.test.ts passes explicit-work-dir precedence and .env separation tests
+- scripts/local-paths.example.json exists with schemaVersion=1 and platforms.{linux,win32}.workOneRoot + tools.{bunBin,codegraphBin}
+- .gitignore contains scripts/local-paths.json entry
+- scripts/local-paths.json does NOT exist (intentionally untracked)
+- bun run typecheck exits 0
+- validate-phase-progression.ts plans/path-dynamic-resolution-m1 PHASE-02 exits 0
+- All 14 PHASE-02 product/test/example/ignore files match plan-index §5 PHASE-02 row exactly (no more, no less)
+
+## 3. Requirement, Oracle, and Falsification Matrix
+
+| REQ | Kind | Oracle | Positive (obs/EV) | Negative (obs/EV) | Level | Status |
+|---|---|---|---|---|---|---|
+| REQ-002 | BEHAVIORAL | ORACLE-002 | PASS/EV-007 | FAIL/EV-005 | component | PASS |
+
+## 4. Full In-Scope Sweep
+
+| REQ | Symbols/paths inspected | Commands | Result |
+|---|---|---|---|
+| REQ-002 | workspace-paths.ts (resolveWorkspacePaths/validateWorkOneRoot/resolveTool) + start-serve.ts (resolveWorkDir delegate) + local-paths.example.json + .gitignore + workspace-paths.test.ts + start-serve-paths.test.ts | cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun test scripts/lib/__tests__/workspace-paths.test.ts scripts/__tests__/start-serve-paths.test.ts && /home/zhaoge/.bun/bin/bun run typecheck | PASS |
+
+Sweep requirement set {REQ-002} equals frozen in_scope set. Sweep status: COMPLETE.
+
+## 5. Classified Findings
+
+### 5.1 BLOCKING
+
+NONE
+
+### 5.2 NON_BLOCKING_DEBT
+
+NONE
+
+### 5.3 OUT_OF_SCOPE
+
+NONE
+
+### 5.4 UNVERIFIED
+
+NONE
+
+## 6. Falsification Evidence
+
+| REQ | Positive command | Positive result | Negative method | Negative result | Sensitivity |
+|---|---|---|---|---|---|
+| REQ-002 | cd /home/zhaoge/workspace/qoderwork/.worktrees/che | PASS (EV-007) | mutate single dimension per PDR-C-101/102/103/104 | FAIL (EV-005) | SENSITIVE |
+
+## 7. Frozen Rework Package
+
+NONE (verdict is not REWORK)
+
+## 8. Reopen Records
+
+NONE
+
+## 9. Closure Matrix
+
+| REQ | Status | Blocking findings | Positive proof | Negative sensitivity | Exit gate |
+|---|---|---|---|---|---|
+| REQ-002 | PASS | none | EV-007 | EV-005 | CLOSED |
+
+## 10. Verdict
+
+**Verdict**: `ACCEPT`
+
+Audit PDR-M1-PHASE-02-20260729 covers 1 requirement(s): REQ-002. Baseline commit: 64df828d56611ac121baccfaf666f147980aec85. Evidence ceiling: component. PHASE-02 implementation complete: workspace-paths.ts resolver (CLI > ENV > LOCAL_CONFIG > DEPRECATED_DEFAULT) + start-serve.ts integration + .env separation. 19 component tests pass + typecheck exit 0. EV-002..EV-007 receipts capture positive + negative controls.
+
+## 11. Validator Evidence
+
+## MODEL_REVIEW
+
+- Approved boundary correctly expressed: PHASE-02 implements workspace-paths.ts resolver + start-serve.ts integration
+- Observed boundary equals approved boundary: All 6 PHASE-02 files match scope-lock allowed_paths; 19 tests pass; typecheck exit 0
+- Exceptions are in scope: REQ-002 classified BEHAVIORAL (component evidence level); positive EV-002/006/007 + negative EV-003/004/005 with distinct commands
+- Model classification: ACCEPT
+
+```
+bun run .agents/skills/plan-audit-archiver/scripts/validate-audit.ts audits/path-dynamic-resolution-m1/2026-07-29-phase-02-audit.md
+valid=true, errors=[]
+```
+
+## 12. Anti-Loop Answers
+
+1. All in-scope requirements satisfied? YES — REQ-002 all PASS
+2. Negative control EV ids: EV-005
+3. Rework package status: NONE
+4. Exit criteria changed since freeze? No (frozen_at preserved)
+5. Open findings count: 0
+6. Exit condition met: validate-audit.ts exit 0 + progression-receipt bound + plan-index Status=COMPLETE
+7. Validator result: valid=true, errors=[]

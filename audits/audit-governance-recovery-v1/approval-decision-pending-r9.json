@@ -1,0 +1,11 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision-pending",
+  "decision_id": "AUDIT-GOVERNANCE-RECOVERY-V1-R9-PENDING-20260801",
+  "plan_id": "AUDIT-GOVERNANCE-RECOVERY-V1-20260730",
+  "governance_profile": "audit-governance-recovery/v1",
+  "decision": "PENDING",
+  "approved_by": null,
+  "approved_artifacts": {},
+  "note": "r9 leaf marker"
+}

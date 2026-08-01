@@ -1,0 +1,37 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "PDR-M1-PHASE-01-20260729",
+  "generation": 1,
+  "id": "EV-001",
+  "decision_case_id": "DC-001",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun -e 'const fs=require(\"fs\"); const root=\"audits/path-dynamic-resolution-m1\"; const checks={approval:JSON.parse(fs.readFileSync(root+\"/approval-decision.json\",\"utf8\")).approved_by===\"ChoGeer\",scope_lock:JSON.parse(fs.readFileSync(root+\"/scope-lock-PHASE-02.json\",\"utf8\")).scope.status===\"FROZEN\",pre_change:JSON.parse(fs.readFileSync(root+\"/evidence/pre-change-PHASE-02.json\",\"utf8\")).phase_id===\"PHASE-02\",scan:fs.statSync(root+\"/evidence/path-scan.jsonl\").size>0,inventory:JSON.parse(fs.readFileSync(root+\"/evidence/path-inventory.json\",\"utf8\")).failedChecks.length===0}; if(Object.values(checks).some(v=>!v)){console.error(\"FAIL\",checks);process.exit(1)} console.log(\"PASS\",JSON.stringify(checks))'",
+  "requirement_id": "REQ-001",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-001",
+  "fixture_id": "FIXTURE-PHASE-01-ARTIFACTS",
+  "evidence_level": "manual",
+  "repository_state_sha256": "6b46d6ef50d61b7309c14271c637562464a10e1848be749056d0fa785d191525",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [],
+  "projection_sha256": "7d161eeb4543eb84f1eb371eda7ad73493238010ad7b8bb075b3fd3648123c8d",
+  "canonical_sha256": "6b46d6ef50d61b7309c14271c637562464a10e1848be749056d0fa785d191525",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-001-output.txt",
+      "sha256": "d6a1d6bdae32ce9ba82a677e9f91b4bc044d937abee9dc4912d8cba73218a80b"
+    }
+  ],
+  "completed_at": "2026-07-29T04:52:06.210Z",
+  "observed": "PASS"
+}

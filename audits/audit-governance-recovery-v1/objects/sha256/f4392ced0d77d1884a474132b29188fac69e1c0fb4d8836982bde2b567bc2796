@@ -1,0 +1,9 @@
+=== STDOUT ===
+WROTE /tmp/local-paths-bad-1785316921435.json
+IMPORTED
+CAUGHT LOCAL_PATHS_INVALID local-paths.json has unknown platform key: tools
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

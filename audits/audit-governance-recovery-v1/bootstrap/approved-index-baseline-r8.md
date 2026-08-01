@@ -9,15 +9,15 @@
 **Provenance level**: `v3-required`
 **Governance profile**: `audit-governance-recovery/v1`
 **Canonical contract**: `plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml`
-**Canonical contract SHA-256**: `4305bed5b4e127c15cbb31ba74d473f7efe39d8c357781594b2366d392d229f6`
-**Approved plan files**: `audits/audit-governance-recovery-v1/approved-plan-files-r9.sha256`
-**Approved plan files SHA-256**: `d046212cb37c3528e18e8446fbeb35961bf65740fc07c97aa3f2bf3da9d179b5`
-**Approved index baseline**: `audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r9.md`
-**Approved index baseline SHA-256**: `PENDING_R9_SELF_REFERENCE`
-**Approval request**: `audits/audit-governance-recovery-v1/approval-request-r9.json`
-**Approval request SHA-256**: `NOT_EMBEDDED_ACYCLIC_PENDING_R9` (request hash embedded in decision, not in index)
-**Approval decision**: `audits/audit-governance-recovery-v1/approval-decision-r9.json`
-**Approval decision SHA-256**: `8149d6d8c2f75dae08d3cccca7f47d8521b75c423bd56b718a2dd633195da480`
+**Canonical contract SHA-256**: `cb26cff477a053de8a1d433dc1d561a5c2fd80499a21c84af1e44dc79fa2b065`
+**Approved plan files**: `audits/audit-governance-recovery-v1/approved-plan-files-r8.sha256`
+**Approved plan files SHA-256**: `99c2d5ba76c3d09584e61e53d9479e38f450e4d21d224a9671f76864d5a6fcb7`
+**Approved index baseline**: `audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r8.md`
+**Approved index baseline SHA-256**: `PENDING_R8_SELF_REFERENCE`
+**Approval request**: `audits/audit-governance-recovery-v1/approval-request-r8.json`
+**Approval request SHA-256**: `NOT_EMBEDDED_ACYCLIC_PENDING_R8` (request hash embedded in decision, not in index)
+**Approval decision**: `audits/audit-governance-recovery-v1/approval-decision-r8.json`
+**Approval decision SHA-256**: `PENDING_R8_SELF_REFERENCE`
 
 This projection is not approval authority; only receipt transactions change status.
 

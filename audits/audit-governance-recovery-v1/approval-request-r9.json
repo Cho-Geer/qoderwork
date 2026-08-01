@@ -1,0 +1,38 @@
+{
+  "schema_version": "audit-governance-approval-request/v3",
+  "document_kind": "approval-request",
+  "request_id": "R9",
+  "plan_id": "AUDIT-GOVERNANCE-RECOVERY-V1-20260730",
+  "governance_profile": "audit-governance-recovery/v1",
+  "status": "PENDING_HUMAN_APPROVAL",
+  "requested_by": "AUDITOR_SESSION_A",
+  "requested_at": "2026-08-01T10:25:00Z",
+  "decision_requested": "APPROVE",
+  "approved_artifacts": {
+    "canonical_contract": {
+      "path": "plans/audit-governance-recovery-v1/canonical-requirements-contract.yaml",
+      "sha256": "4305bed5b4e127c15cbb31ba74d473f7efe39d8c357781594b2366d392d229f6"
+    },
+    "approved_plan_object_set": {
+      "path": "audits/audit-governance-recovery-v1/approved-plan-object-set-r9.json",
+      "sha256": "83185595ec3d5b646fc47a9d13846beebae12c7f90085bd938f91e173145b1e1"
+    },
+    "approved_plan_files": {
+      "path": "audits/audit-governance-recovery-v1/approved-plan-files-r9.sha256",
+      "sha256": "d046212cb37c3528e18e8446fbeb35961bf65740fc07c97aa3f2bf3da9d179b5"
+    },
+    "approved_index_baseline": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/approved-index-baseline-r9.md",
+      "sha256": "a3f631318f88a731be50aaa1a1474a0efd6bc4ea8ee8a6ccc4e180be4878b1f6"
+    },
+    "frozen_m1_files": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/m1-p0-freeze-manifest-r9.json",
+      "sha256": "dc5ea01fef295d44e59bf1efc9ecce24801cfb56cb96752c102dc5a88e5ba7bf"
+    },
+    "p4_boundary": {
+      "path": "audits/audit-governance-recovery-v1/bootstrap/p4-boundary-r9.json",
+      "sha256": "cbfd7864cb57946bdf78ec88e0be6e57e2e506d5ad2674ed40232c56a262adef"
+    }
+  },
+  "plan_text_diff_summary": "r9"
+}

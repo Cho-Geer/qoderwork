@@ -1,0 +1,10 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "repository_realpath": "/home/zhaoge/workspace/opencode/work-one",
+  "phase_id": "PHASE-01",
+  "captured_at": "2026-07-29T09:22:01.131Z",
+  "head": "64df828d56611ac121baccfaf666f147980aec85",
+  "scope_lock_sha256": "f73eba2fbd730c16a8a22f64dccdbdbd7f6b71cff61d570aaccbc5451d46a6ad",
+  "status_entries": []
+}

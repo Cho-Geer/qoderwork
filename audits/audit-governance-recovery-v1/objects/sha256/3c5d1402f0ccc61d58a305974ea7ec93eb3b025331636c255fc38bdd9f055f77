@@ -1,0 +1,46 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "plan_id": "PATH-DYNAMIC-RESOLUTION-M1-20260725",
+  "plan_index_path": "plans/path-dynamic-resolution-m1/00-plan-index.md",
+  "plan_index_sha256": "f3973ce041605ef31dcaf3ff3620afd9d36fa0dcae2932d200a86d2e5416eff6",
+  "canonical_contract_path": "plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml",
+  "canonical_contract_sha256": "0c939357355936ef329b907e75339c38a119791b6dba6fcade5c3e86df2961f2",
+  "decision": "APPROVED",
+  "approved_by": "HUMAN_USER",
+  "approved_at": "2026-07-29T03:55:00Z",
+  "approval_basis": [
+    "Plan index §1 source ledger verifiable",
+    "Atomic requirements REQ-001..005 enumerated",
+    "Decision ledger DEC-001..005 closed",
+    "Phase manifest has 4 phases with explicit dependencies",
+    "Scope manifest marks PHASE-02 as the only implementation path (DEC-001)",
+    "Globally forbidden changes enumerated in plan index §5",
+    "Provenance level declared as v3-required per P-01"
+  ],
+  "approval_evidence": "User provided verbal approval at 2026-07-29 session turn (ZCode). Verified by QoderWork main agent: agent dispatched task-dispatch-router, read plan index + all 4 phase documents + provenance-rules P-01..P-07, surfaced PENDING-HUMAN-APPROVAL as block, requested user confirmation. User responded '我批准'. Agent is not self-approving scope-lock.json; this decision JSON captures the human approval decision; scope-lock.json will be filled with lock_id=PHASE-02 and HUMAN-approved_by=ChoGeer in a separate step.",
+  "scope_lock_anticipated": {
+    "lock_id": "PHASE-02",
+    "allowed_paths": [
+      "scripts/lib/workspace-paths.ts",
+      "scripts/lib/__tests__/workspace-paths.test.ts",
+      "scripts/local-paths.example.json",
+      ".gitignore",
+      "scripts/start-serve.ts",
+      "scripts/__tests__/start-serve-paths.test.ts"
+    ],
+    "forbidden_paths": [
+      ".codebuddy/settings.json",
+      ".codebuddy/settings.local.json",
+      ".kimi-code/mcp.json",
+      ".qoder/settings.local.json"
+    ]
+  },
+  "next_step": "PHASE-01: generate scope-lock-PHASE-02.json, pre-change-PHASE-02.json, path-scan.jsonl, path-inventory.json per 01-phase-freeze-inventory.md",
+  "approved_artifacts": {
+    "canonical-contract": {
+      "path": "plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml",
+      "sha256": "0c939357355936ef329b907e75339c38a119791b6dba6fcade5c3e86df2961f2"
+    }
+  }
+}
