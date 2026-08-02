@@ -1,0 +1,24 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-amendment",
+  "amendment_id": "REPLACE_AMENDMENT_ID",
+  "outcome_id": "REPLACE_OUTCOME_ID",
+  "generation": 2,
+  "from_contract": { "id": "REPLACE_PRIOR_CONTRACT_ID", "path": "REPLACE_PRIOR_CONTRACT_PATH", "sha256": "REPLACE_64_HEX_SHA256", "generation": 1 },
+  "to_contract": { "id": "REPLACE_NEW_CONTRACT_ID", "path": "REPLACE_NEW_CONTRACT_PATH", "sha256": "REPLACE_64_HEX_SHA256", "generation": 2 },
+  "reason": "REPLACE_DESIGN_OR_ACCEPTANCE_CHANGE_REASON",
+  "affected_case_ids": ["REPLACE_AFFECTED_CASE_ID"],
+  "unaffected_case_ids": ["REPLACE_UNAFFECTED_CASE_ID"],
+  "affected_requirement_ids": ["REPLACE_AFFECTED_REQUIREMENT_ID"],
+  "unaffected_requirement_ids": ["REPLACE_UNAFFECTED_REQUIREMENT_ID"],
+  "change_class": "NORMAL",
+  "prior_failures": [],
+  "frozen_diff": {
+    "spec_changed": true,
+    "changed_case_ids": ["REPLACE_AFFECTED_CASE_ID"],
+    "changed_requirement_ids": ["REPLACE_AFFECTED_REQUIREMENT_ID"],
+    "changed_oracle_ids": [],
+    "test_bundle_changed_fields": [],
+    "test_bundle_source_changes": []
+  }
+}

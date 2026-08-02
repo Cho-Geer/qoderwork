@@ -1,0 +1,12 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "acceptance-spec",
+  "spec_id": "REPLACE_ACCEPTANCE_SPEC_ID",
+  "outcome_id": "REPLACE_OUTCOME_ID",
+  "generation": 1,
+  "contract": { "id": "REPLACE_CONTRACT_ID", "path": "REPLACE_CONTRACT_PATH", "generation": 1, "sha256": "REPLACE_64_HEX_SHA256" },
+  "requirements": [{ "id": "REPLACE_REQUIREMENT_ID", "behavior": "REPLACE_OBSERVABLE_ACCEPTANCE_BEHAVIOR", "oracle_id": "REPLACE_ORACLE_ID" }],
+  "oracles": [{ "id": "REPLACE_ORACLE_ID", "description": "REPLACE_INDEPENDENT_ORACLE_DESCRIPTION" }],
+  "cases": [{ "id": "REPLACE_CASE_ID", "test_id": "REPLACE_FIXED_TEST_ID", "requirement_ids": ["REPLACE_REQUIREMENT_ID"], "oracle_id": "REPLACE_ORACLE_ID", "level": "REPLACE_EVIDENCE_LEVEL", "command": "REPLACE_FIXED_RUNNER_COMMAND", "expected": "PASS" }],
+  "test_bundle": { "id": "REPLACE_TEST_BUNDLE_ID", "path": "REPLACE_TEST_BUNDLE_PATH", "generation": 1, "sha256": "REPLACE_64_HEX_SHA256" }
+}

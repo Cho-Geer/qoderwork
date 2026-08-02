@@ -1,0 +1,14 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-ledger-event",
+  "event_id": "REPLACE_EVENT_ID",
+  "sequence": 1,
+  "recorded_at": "REPLACE_ISO_8601_TIMESTAMP",
+  "outcome_id": "REPLACE_OUTCOME_ID",
+  "event_type": "CONTRACT_APPROVED",
+  "approval_anchor": { "id": "REPLACE_APPROVAL_ID", "path": "REPLACE_APPROVAL_PATH", "generation": 1, "sha256": "REPLACE_64_HEX_SHA256" },
+  "contract_ref": { "id": "REPLACE_CONTRACT_ID", "path": "REPLACE_CONTRACT_PATH", "generation": 1, "sha256": "REPLACE_64_HEX_SHA256" },
+  "amendment_ref": null,
+  "run_ref": null,
+  "previous_event": null
+}

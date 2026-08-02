@@ -1,0 +1,33 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-contract",
+  "contract_id": "REPLACE_CONTRACT_ID",
+  "outcome_id": "REPLACE_OUTCOME_ID",
+  "generation": 1,
+  "created_at": "REPLACE_ISO_8601_TIMESTAMP",
+  "target": [{ "document_kind": "REPLACE_TARGET_DOCUMENT_KIND", "id": "REPLACE_TARGET_ID", "generation": 1, "outcome_id": "REPLACE_OUTCOME_ID", "description": "REPLACE_OBSERVABLE_OUTCOME" }],
+  "boundary": {
+    "in_scope": ["REPLACE_IN_SCOPE_BOUNDARY"],
+    "out_of_scope": ["REPLACE_IMPLEMENTATION_STRATEGY_OR_OTHER_EXCLUSION"]
+  },
+  "baseline": {
+    "repository_id": "REPLACE_REPOSITORY_ID",
+    "baseline_tree_sha256": "REPLACE_64_HEX_BASELINE_TREE_SHA256",
+    "configuration_sha256": "REPLACE_64_HEX_CONFIGURATION_SHA256"
+  },
+  "side_effect_boundary": {
+    "allowed": ["REPLACE_ALLOWED_SIDE_EFFECT"],
+    "prohibited": ["REPLACE_PROHIBITED_SIDE_EFFECT"]
+  },
+  "acceptance_strategy": {
+    "objective": "REPLACE_ACCEPTANCE_OBJECTIVE",
+    "boundary": "REPLACE_ACCEPTANCE_BOUNDARY",
+    "acceptance": "REPLACE_FIXED_INDEPENDENT_ACCEPTANCE_METHOD"
+  },
+  "acceptance_spec": {
+    "id": "REPLACE_ACCEPTANCE_SPEC_ID",
+    "path": "REPLACE_ACCEPTANCE_SPEC_PATH",
+    "generation": 1
+  },
+  "supersedes": null
+}

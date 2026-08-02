@@ -1,0 +1,29 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-run-result",
+  "run_id": "REPLACE_RUN_ID",
+  "outcome_contract": { "id": "REPLACE_CONTRACT_ID", "path": "REPLACE_CONTRACT_PATH", "sha256": "REPLACE_64_HEX_SHA256", "generation": 1 },
+  "acceptance_spec": { "id": "REPLACE_ACCEPTANCE_SPEC_ID", "path": "REPLACE_ACCEPTANCE_SPEC_PATH", "sha256": "REPLACE_64_HEX_SHA256", "generation": 1 },
+  "test_bundle": { "id": "REPLACE_TEST_BUNDLE_ID", "path": "REPLACE_TEST_BUNDLE_PATH", "sha256": "REPLACE_BUNDLE_64_HEX_SHA256", "generation": 1 },
+  "approval_anchor": { "id": "REPLACE_APPROVAL_ID", "path": "REPLACE_APPROVAL_PATH", "sha256": "REPLACE_64_HEX_SHA256", "generation": 1 },
+  "candidate_tree_sha256": "REPLACE_CANDIDATE_TREE_64_HEX_SHA256",
+  "environment_hash": "REPLACE_ENVIRONMENT_64_HEX_SHA256",
+  "code_revision": "REPLACE_CODE_REVISION",
+  "environment": "REPLACE_RUNNER_ENVIRONMENT",
+  "environment_manifest": { "path": "REPLACE_ENVIRONMENT_MANIFEST_PATH", "sha256": "REPLACE_64_HEX_SHA256" },
+  "inventory": {
+    "discovered_test_ids": ["REPLACE_FIXED_TEST_ID"],
+    "executed_test_ids": ["REPLACE_FIXED_TEST_ID"],
+    "skipped_test_ids": [],
+    "filtered_test_ids": []
+  },
+  "case_results": [{
+    "case_id": "REPLACE_CASE_ID",
+    "test_id": "REPLACE_FIXED_TEST_ID",
+    "execution_id": "REPLACE_INDEPENDENT_RUNNER_EXECUTION_ID",
+    "execution_status": "PASS",
+    "oracle_observation": "REPLACE_REAL_RUNNER_ORACLE_OBSERVATION",
+    "receipt": { "path": "REPLACE_RUNNER_GENERATED_RECEIPT_PATH", "sha256": "REPLACE_64_HEX_SHA256" }
+  }],
+  "verdict": "PASS"
+}

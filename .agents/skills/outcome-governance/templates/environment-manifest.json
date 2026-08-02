@@ -1,0 +1,5 @@
+{
+  "os": "REPLACE_OS_OR_IMAGE",
+  "runtime": "REPLACE_RUNTIME_VERSION",
+  "configuration": "REPLACE_ENVIRONMENT_DESCRIPTION"
+}

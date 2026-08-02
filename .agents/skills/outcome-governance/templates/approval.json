@@ -1,0 +1,21 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-approval",
+  "approval_id": "REPLACE_APPROVAL_ID",
+  "outcome_id": "REPLACE_OUTCOME_ID",
+  "generation": 1,
+  "contract": { "id": "REPLACE_CONTRACT_ID", "path": "REPLACE_CONTRACT_PATH", "sha256": "REPLACE_64_HEX_SHA256", "generation": 1 },
+  "acceptance_spec": { "id": "REPLACE_ACCEPTANCE_SPEC_ID", "path": "REPLACE_ACCEPTANCE_SPEC_PATH", "sha256": "REPLACE_64_HEX_SHA256", "generation": 1 },
+  "test_bundle": { "id": "REPLACE_TEST_BUNDLE_ID", "path": "REPLACE_TEST_BUNDLE_PATH", "sha256": "REPLACE_BUNDLE_64_HEX_SHA256", "generation": 1 },
+  "amendment": null,
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "REPLACE_HUMAN_APPROVER",
+    "principal_id": "REPLACE_AUTHENTICATED_PRINCIPAL_ID",
+    "trust_domain": "REPLACE_PRIMARY_APPROVER_TRUST_DOMAIN",
+    "approved_at": "REPLACE_ISO_8601_TIMESTAMP",
+    "evidence": "REPLACE_APPROVAL_EVIDENCE"
+  },
+  "weakening_approval": null
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "outcome-test-bundle/v1",
+  "document_kind": "outcome-test-bundle",
+  "bundle_id": "REPLACE_TEST_BUNDLE_ID",
+  "outcome_id": "REPLACE_OUTCOME_ID",
+  "generation": 1,
+  "tests": [{ "path": "REPLACE_TEST_PATH", "sha256": "REPLACE_64_HEX_SHA256" }],
+  "fixtures": [{ "path": "REPLACE_FIXTURE_PATH", "sha256": "REPLACE_64_HEX_SHA256" }],
+  "oracle_sources": [{ "path": "REPLACE_ORACLE_SOURCE_PATH", "sha256": "REPLACE_64_HEX_SHA256" }],
+  "runner_config": [{ "path": "REPLACE_RUNNER_CONFIG_PATH", "sha256": "REPLACE_64_HEX_SHA256" }],
+  "lockfiles": [{ "path": "REPLACE_LOCKFILE_PATH", "sha256": "REPLACE_64_HEX_SHA256" }],
+  "expected_test_ids": ["REPLACE_FIXED_TEST_ID"],
+  "expected_test_count": 1
+}
