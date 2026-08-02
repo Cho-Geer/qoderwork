@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "platforms": {
+    "linux": {
+      "workOneRoot": "/home/your-user/workspace/opencode/work-one"
+    },
+    "win32": {
+      "workOneRoot": "C:\\Users\\your-user\\workspace\\opencode\\work-one"
+    }
+  },
+  "tools": {
+    "bunBin": "",
+    "codegraphBin": ""
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "PDR-M1-PHASE-02-20260729",
+  "generation": 1,
+  "id": "EV-002",
+  "decision_case_id": "DC-002",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun -e 'const fs=require(\"fs\"); const root=process.argv[1]; const x=JSON.parse(fs.readFileSync(root+\"/scope-lock-PHASE-02.json\",\"utf8\")); if(x.scope.status!==\"FROZEN\") process.exit(1); console.log(\"PASS scope frozen\")' /home/zhaoge/workspace/qoderwork/.worktrees/check-plan/audits/path-dynamic-resolution-m1",
+  "requirement_id": "REQ-002",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-002",
+  "fixture_id": "FIXTURE-CLI-ROOT-HAPPY",
+  "evidence_level": "component",
+  "repository_state_sha256": "bb4908d30b9e132eeb25c3a4accda9eaf9b0c94b3bedceccdcda6b1a39fc09a9",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [],
+  "projection_sha256": "a97e2aed8aac6cd32d8e055385c5bf8cc03c885b4fc1c043cc01ec7bca1da403",
+  "canonical_sha256": "bb4908d30b9e132eeb25c3a4accda9eaf9b0c94b3bedceccdcda6b1a39fc09a9",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-002-output.txt",
+      "sha256": "04c04e0654d8aae4e88ad10c25dccc0fc3a9d8d20175ee92f80b7e6f892fb8ba"
+    }
+  ],
+  "completed_at": "2026-07-29T07:11:42.448Z",
+  "observed": "PASS"
+}

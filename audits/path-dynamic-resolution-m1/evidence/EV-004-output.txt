@@ -1,0 +1,8 @@
+=== STDOUT ===
+FIXTURE /tmp/tool-noexec-1785316921476/noexec
+CAUGHT TOOL_BUN_INVALID bunBin absolute path is missing or not executable: /tmp/tool-noexec-1785316921476/noexec
+=== STDERR ===
+=== EXIT_CODE ===
+1
+=== TIMED_OUT ===
+false

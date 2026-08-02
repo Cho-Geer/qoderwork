@@ -1,0 +1,7 @@
+=== STDOUT ===
+PASS — seam fell through to resolver which threw WORK_ONE_ROOT_INVALID
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

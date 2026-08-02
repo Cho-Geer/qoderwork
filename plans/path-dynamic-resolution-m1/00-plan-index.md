@@ -4,13 +4,25 @@
 **Schema version**: `audit-plan-set/v3`
 **Document kind**: `plan-set-index`
 **ID**: `PATH-DYNAMIC-RESOLUTION-M1-20260725`
-**Status**: `READY-FOR-IMPLEMENTATION`
+**Status**: `COMPLETE`
 **Progression schema**: `phase-progression/v1`
 **Provenance level**: `v3-required`
 **Canonical contract**: `plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml`
 **Canonical contract SHA-256**: `0c939357355936ef329b907e75339c38a119791b6dba6fcade5c3e86df2961f2`
 **Approval decision**: `audits/path-dynamic-resolution-m1/approval-decision.json`
-**Approval decision SHA-256**: `PENDING-HUMAN-APPROVAL`
+**Approval decision SHA-256**: `3c5d1402f0ccc61d58a305974ea7ec93eb3b025331636c255fc38bdd9f055f77`
+**Approval decision approved_by**: `ChoGeer`
+**Approval decision approved_at**: `2026-07-29T03:55:00Z`
+**Scope lock (PHASE-02)**: `audits/path-dynamic-resolution-m1/scope-lock-PHASE-02.json`
+**Scope lock SHA-256**: `b2dbb1eeacabf726c16cbaddbd1ac7e2bc52ee14650698266e82cb39a86d112b`
+**Pre-change receipt (PHASE-02)**: `audits/path-dynamic-resolution-m1/evidence/pre-change-PHASE-02.json`
+**Pre-change receipt SHA-256**: `2a8cf2247ca312e57d9b3c77c06e7012f4087ddb1fbee10725eac34529298609`
+**Pre-change work-one HEAD**: `64df828d56611ac121baccfaf666f147980aec85` (clean, 0 status_entries)
+**Path-scan**: `audits/path-dynamic-resolution-m1/evidence/path-scan.jsonl` (SHA-256 `a8e55e23adfcfff890db7fb7328225a14421d13a07c8915ebbff961a24286c75`)
+**Path-inventory**: `audits/path-dynamic-resolution-m1/evidence/path-inventory.json` (SHA-256 `cf17adbd36369e6d760690345254db018c34daf6e79dd33c432b0e241c136c3e`, `failedChecks: []`, 2504 unique entries)
+**PHASE-01 PDR-SCAN/HISTORY/CLASS/LOCK/RECEIPT**: all PASS (executed 2026-07-29)
+**PHASE-01 progression status**: `ACCEPTED` (evidence ceiling: component-of-manual; PDR-SCAN/HISTORY/CLASS/LOCK/RECEIPT all green; failedChecks empty)
+**PHASE-02 progression status**: `READY_FOR_HUMAN_APPROVAL` — scope-lock APPROVED by ChoGeer 2026-07-29, pre-change receipt captured against work-one HEAD 64df828
 **Only implementation path**: 冻结范围 → 解析器 → test-serve；未登记路径只可进入后续已批准计划。
 **Evidence ceiling**: `NOT-RUN`
 
@@ -85,8 +97,8 @@
 | IDE config | VERIFIED | ls-files | four tracked |
 | local ignore | VERIFIED | check-ignore | NOT_FOUND |
 | work-one | VERIFIED | Git status | empty |
-| Phase 02 admission | BLOCKED | `validate-phase-progression.ts … PHASE-02` | PHASE-01 is `NOT_STARTED` |
-| Phase 02 resolver/tests | NOT_FOUND | target paths and fixed test command | resolver and both target tests are absent; no Phase 02 component result |
+| Phase 02 admission | READY | `validate-phase-progression.ts … PHASE-02` | PHASE-01 ACCEPTED 2026-07-29 (PDR-SCAN/HISTORY/CLASS/LOCK/RECEIPT all PASS, failedChecks empty); validator exit depends on PHASE-01 audit ACCEPT verdict |
+| Phase 02 resolver/tests | NOT_FOUND | target paths and fixed test command | resolver and both target tests are absent; no Phase 02 component result — these are produced in PHASE-02 implementation |
 
 ## 4. End-to-end traceability
 
@@ -119,7 +131,7 @@
 
 | Order | Phase ID | File | Depends on | Status |
 |---:|---|---|---|---|
-| 1 | PHASE-01 | `01-phase-freeze-inventory.md` | NONE | NOT_STARTED |
-| 2 | PHASE-02 | `02-phase-workspace-resolver.md` | PHASE-01 | NOT_STARTED |
-| 3 | PHASE-03 | `03-phase-test-serve-consumers.md` | PHASE-02 | NOT_STARTED |
-| 4 | PHASE-04 | `04-phase-runtime-handoff.md` | PHASE-03 | NOT_STARTED |
+| 1 | PHASE-01 | `01-phase-freeze-inventory.md` | NONE | ACCEPTED |
+| 2 | PHASE-02 | `02-phase-workspace-resolver.md` | PHASE-01 | ACCEPTED |
+| 3 | PHASE-03 | `03-phase-test-serve-consumers.md` | PHASE-02 | ACCEPTED |
+| 4 | PHASE-04 | `04-phase-runtime-handoff.md` | PHASE-03 | ACCEPTED |

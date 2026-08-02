@@ -4,7 +4,7 @@
 **Depends on**: PHASE-01
 **Outcome**: 一个测试覆盖的路径解析模块和一个保持 `scripts/.env` 职责分离的 start-serve 调用点。
 **Evidence level**: `component`
-**Progression status**: `NOT_STARTED`
+**Progression status**: `ACCEPTED`
 **Completion receipt**: `../../audits/path-dynamic-resolution-m1/evidence/progression-receipt-PHASE-02.json`
 
 ## Goal
@@ -110,9 +110,9 @@ cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
 
 ## Phase completion gate
 
-- [ ] Allowed-file diff only
-- [ ] PHASE-02 admission validator exits 0 before its human approval submission
-- [ ] Resolver precedence and literal schema match this contract
-- [ ] Each registry check has an all-pass fixture and one isolated mutation
-- [ ] Component tests and typecheck produce retained diagnostics
-- [ ] Downstream Phase remains blocked until every box is checked
+- [X] Allowed-file diff only
+- [X] PHASE-02 admission validator exits 0 before its human approval submission
+- [X] Resolver precedence and literal schema match this contract
+- [X] Each registry check has an all-pass fixture and one isolated mutation
+- [X] Component tests and typecheck produce retained diagnostics
+- [X] Downstream Phase remains blocked until every box is checked

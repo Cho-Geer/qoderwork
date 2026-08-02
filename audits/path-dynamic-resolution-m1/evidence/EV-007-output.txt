@@ -1,0 +1,7 @@
+=== STDOUT ===
+PASS EV-007 combined
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

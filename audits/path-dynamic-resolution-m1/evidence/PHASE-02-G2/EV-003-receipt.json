@@ -1,0 +1,37 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "PDR-M1-PHASE-02-20260729",
+  "generation": 1,
+  "id": "EV-003",
+  "decision_case_id": "DC-003",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev003-runner.ts",
+  "requirement_id": "REQ-002",
+  "polarity": "NEGATIVE",
+  "oracle_id": "ORACLE-002",
+  "fixture_id": "FIXTURE-LOCAL-PATHS-UNKNOWN-KEY",
+  "evidence_level": "component",
+  "repository_state_sha256": "bb4908d30b9e132eeb25c3a4accda9eaf9b0c94b3bedceccdcda6b1a39fc09a9",
+  "exit_code": 1,
+  "execution": {
+    "observed": "FAIL",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "REJECTED_LOCAL_PATHS_INVALID",
+    "error_code": "LOCAL_PATHS_INVALID"
+  },
+  "forbidden_side_effects_observed": [],
+  "projection_sha256": "a97e2aed8aac6cd32d8e055385c5bf8cc03c885b4fc1c043cc01ec7bca1da403",
+  "canonical_sha256": "bb4908d30b9e132eeb25c3a4accda9eaf9b0c94b3bedceccdcda6b1a39fc09a9",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-003-output.txt",
+      "sha256": "e89dc7a1001f69dea6a462cb7232f972f5d667c0ad99e0d3bc7b07a4e08650c8"
+    }
+  ],
+  "completed_at": "2026-07-29T07:17:19.929Z",
+  "observed": "FAIL"
+}

@@ -1,0 +1,167 @@
+{
+  "schema_version": "audit-scope-lock/v3",
+  "lock_id": "PHASE-02",
+  "created_at": "2026-07-29T03:55:00Z",
+  "plan_sources": [
+    {
+      "path": "plans/path-dynamic-resolution-m1/00-plan-index.md",
+      "sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a"
+    },
+    {
+      "path": "plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml",
+      "sha256": "0c939357355936ef329b907e75339c38a119791b6dba6fcade5c3e86df2961f2"
+    },
+    {
+      "path": "plans/path-dynamic-resolution-m1/02-phase-workspace-resolver.md",
+      "sha256": "bbffd01e107d71184f7c0119d31fac3068bf8be2565e6f0d7e505cf15e28744c"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v3-required",
+    "frozen_at": "2026-07-29T05:00:00Z",
+    "in_scope": [
+      "REQ-002"
+    ],
+    "out_of_scope": [
+      "PHASE-03 source/test files (test-serve root, SSE daemon, bootstrap, isolated-serve)",
+      "PHASE-04 evidence closure files",
+      "work-one repository code",
+      "IDE machine configuration (.codebuddy/, .kimi-code/, .qoder/)",
+      "bare serve or fixed port 4097",
+      "live-E2E workflow under reviewer authorization",
+      "bun.lock dependency upgrades",
+      "historical evidence under audits/, e2e-evidence/, logs/"
+    ],
+    "assumptions": [
+      {
+        "statement": "PHASE-01 path-scan.jsonl and path-inventory.json are accepted as frozen input (failedChecks empty array)",
+        "disproof": "rg --hidden --json -F '/home/zhaoge/' re-run shows unclassified rows or inventory failedChecks non-empty"
+      },
+      {
+        "statement": "work-one HEAD is unchanged during PHASE-02 implementation (status_entries empty at verdict time)",
+        "disproof": "git -C /home/zhaoge/workspace/opencode/work-one status --short shows non-empty after capture-state.ts verdict run"
+      },
+      {
+        "statement": "resolver precedence order CLI > ENV > LOCAL_CONFIG > DEPRECATED_DEFAULT is implementable without modifying test-serve or scripts/.env",
+        "disproof": "workspace-paths.ts must import scripts/.env or modify start-serve.ts in a way that breaks scripts/.env secret loader separation"
+      }
+    ],
+    "exit_criteria": [
+      "scripts/lib/workspace-paths.ts exists and exports resolveWorkspacePaths, validateWorkOneRoot, resolveTool",
+      "scripts/lib/__tests__/workspace-paths.test.ts passes both PDR-C-101 (relative ENV root fails) and PDR-C-102 (unknown JSON key fails)",
+      "scripts/__tests__/start-serve-paths.test.ts passes explicit-work-dir precedence and .env separation tests",
+      "scripts/local-paths.example.json exists with schemaVersion=1 and platforms.{linux,win32}.workOneRoot + tools.{bunBin,codegraphBin}",
+      ".gitignore contains scripts/local-paths.json entry",
+      "scripts/local-paths.json does NOT exist (intentionally untracked)",
+      "bun run typecheck exits 0",
+      "validate-phase-progression.ts plans/path-dynamic-resolution-m1 PHASE-02 exits 0",
+      "All 14 PHASE-02 product/test/example/ignore files match plan-index §5 PHASE-02 row exactly (no more, no less)"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-002",
+      "plan_item_id": "PLAN-REQ-002",
+      "kind": "BEHAVIORAL",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "behavior": "resolveWorkspacePaths({}) returns { qoderworkRoot, workOneRoot, workOneSource, bunBin, codegraphBin } with precedence CLI > ENV > LOCAL_CONFIG > DEPRECATED_DEFAULT; validateWorkOneRoot rejects non-absolute, non-git-top-level, and missing opencode.json; resolveTool accepts absolute executable file or PATH basename without separators",
+      "required_evidence_level": "component",
+      "oracle_id": "ORACLE-002",
+      "oracle": "scripts/lib/__tests__/workspace-paths.test.ts PDR-C-101/102 + scripts/__tests__/start-serve-paths.test.ts must run; positive control validates happy fixture, negative control mutates single dimension to trigger WORK_ONE_ROOT_INVALID or LOCAL_PATHS_INVALID"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-002",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-002",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-003",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-003",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-03 implementation is owned by PHASE-03 scope-lock (to be created during PHASE-03) and its own audit generation",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-01.json",
+        "sha256": "f73eba2fbd730c16a8a22f64dccdbdbd7f6b71cff61d570aaccbc5451d46a6ad"
+      }
+    },
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-001",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-01 freeze + inventory owned by PHASE-01 scope-lock and its own audit (already ACCEPTED 2026-07-29)",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-01.json",
+        "sha256": "f73eba2fbd730c16a8a22f64dccdbdbd7f6b71cff61d570aaccbc5451d46a6ad"
+      }
+    },
+    {
+      "plan_item_id": "PLAN-REQ-004",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-004",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-04 evidence closure is owned by PHASE-04 scope-lock (to be created after PHASE-03 ACCEPTED) and its own audit generation",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-01.json",
+        "sha256": "f73eba2fbd730c16a8a22f64dccdbdbd7f6b71cff61d570aaccbc5451d46a6ad"
+      }
+    },
+    {
+      "plan_item_id": "PLAN-REQ-005",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-005",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-04 evidence closure handles continuation register; deferred items belong to PHASE-04 audit",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-01.json",
+        "sha256": "f73eba2fbd730c16a8a22f64dccdbdbd7f6b71cff61d570aaccbc5451d46a6ad"
+      }
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "scripts/lib/workspace-paths.ts",
+      "scripts/lib/__tests__/workspace-paths.test.ts",
+      "scripts/local-paths.example.json",
+      ".gitignore",
+      "scripts/start-serve.ts",
+      "scripts/__tests__/start-serve-paths.test.ts"
+    ],
+    "forbidden_paths": [
+      ".codebuddy/settings.json",
+      ".codebuddy/settings.local.json",
+      ".kimi-code/mcp.json",
+      ".qoder/settings.local.json",
+      "/home/zhaoge/workspace/opencode/work-one",
+      "bun.lock",
+      "scripts/local-paths.json"
+    ]
+  },
+  "impact_analysis": {
+    "modified_functions": [],
+    "shared_functions": [],
+    "caller_scan_command": "codegraph callers resolveWorkspacePaths && codegraph callers validateWorkOneRoot && codegraph callers resolveTool && codegraph callers resolveWorkDir",
+    "caller_files": [
+      "scripts/start-serve.ts",
+      "scripts/test-serve/run-context.ts"
+    ],
+    "caller_tests": [
+      "scripts/lib/__tests__/workspace-paths.test.ts",
+      "scripts/test-serve/__tests__/run-context.test.ts",
+      "scripts/__tests__/start-serve-paths.test.ts"
+    ],
+    "scan_output_sha256": "PENDING-PHASE-02-IMPLEMENTATION"
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "ChoGeer",
+    "approved_at": "2026-07-29T03:55:00Z",
+    "evidence": "audits/path-dynamic-resolution-m1/approval-decision.json (sha256: 95aafa76bf1c7725cda4be58a573065ecfd7692cbcdbcf6282a25beb8f396dcd)"
+  }
+}

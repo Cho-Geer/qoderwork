@@ -1,0 +1,37 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "PDR-M1-PHASE-02-20260729",
+  "generation": 1,
+  "id": "EV-006",
+  "decision_case_id": "DC-006",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun -e '\nconst fs=require(\"fs\"),os=require(\"os\"),path=require(\"path\"),{spawnSync}=require(\"child_process\");\nconst candidate=path.join(os.tmpdir(),\"happy-workone-\"+Date.now());\nfs.mkdirSync(candidate,{recursive:true});\nconst root=fs.realpathSync(candidate);\nfs.writeFileSync(path.join(root,\"opencode.json\"),\"{}\");\nspawnSync(\"git\",[\"init\",\"--quiet\"],{cwd:root});\nconst lp=fs.realpathSync(path.join(os.tmpdir(),\"local-paths-happy-\"+Date.now()+\".json\"));\nfs.writeFileSync(lp, JSON.stringify({schemaVersion:1,platforms:{linux:{workOneRoot:root}}}));\nconst{resolveWorkspacePaths}=require(\"/home/zhaoge/workspace/qoderwork/.worktrees/check-plan/scripts/lib/workspace-paths.ts\");\nconst r=resolveWorkspacePaths({localPathsFile:lp,platform:\"linux\"});\nif(r.workOneRoot===root && r.workOneSource===\"LOCAL_CONFIG\"){console.log(\"PASS positive\");process.exit(0)}\nconsole.error(\"FAIL\",r);process.exit(1)'",
+  "requirement_id": "REQ-002",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-002",
+  "fixture_id": "FIXTURE-LOCAL-PATHS-HAPPY",
+  "evidence_level": "component",
+  "repository_state_sha256": "bb4908d30b9e132eeb25c3a4accda9eaf9b0c94b3bedceccdcda6b1a39fc09a9",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [],
+  "projection_sha256": "a97e2aed8aac6cd32d8e055385c5bf8cc03c885b4fc1c043cc01ec7bca1da403",
+  "canonical_sha256": "bb4908d30b9e132eeb25c3a4accda9eaf9b0c94b3bedceccdcda6b1a39fc09a9",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-006-output.txt",
+      "sha256": "890d9e753b02601aecc1b097f6f07eba60527b9d1715a5795a9e16763c2b9981"
+    }
+  ],
+  "completed_at": "2026-07-29T07:11:42.615Z",
+  "observed": "PASS"
+}

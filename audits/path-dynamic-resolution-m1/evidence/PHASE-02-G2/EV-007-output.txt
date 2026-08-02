@@ -1,0 +1,36 @@
+=== STDOUT ===
+bun test v1.3.14 (0d9b296a)
+=== STDERR ===
+
+scripts/__tests__/start-serve-paths.test.ts:
+(pass) start-serve.ts — resolver integration via runtime spawn > PDR-C-104a positive: --work-dir <fixture> via CLI wins over fallback [3.31ms]
+(pass) start-serve.ts — resolver integration via runtime spawn > PDR-C-104 single-failure mutation: --work-dir fixture without opencode.json throws WORK_ONE_ROOT_INVALID [2.34ms]
+(pass) start-serve.ts — resolver integration via runtime spawn > PDR-C-104b start-serve.ts source imports workspace-paths and uses WorkspacePathsError [0.13ms]
+(pass) start-serve.ts — resolver integration via runtime spawn > .env loader separation: workspace-paths.ts does NOT load or read scripts/.env [0.43ms]
+(pass) start-serve.ts — resolver integration via runtime spawn > scripts/.env secret loader remains in start-serve.ts (loadEnv + ENV_FILE intact) [0.09ms]
+(pass) start-serve.ts — resolver integration via runtime spawn > validateWorkOneRoot happy + integration with start-serve.ts resolveWorkDir path [2.70ms]
+
+scripts/lib/__tests__/workspace-paths.test.ts:
+(pass) resolveWorkspacePaths — precedence chain > PDR-C-101a CLI absolute root wins (positive) [1.04ms]
+(pass) resolveWorkspacePaths — precedence chain > PDR-C-101 single-failure mutation: ENV root is relative throws WORK_ONE_ROOT_INVALID [0.12ms]
+(pass) resolveWorkspacePaths — precedence chain > PDR-C-102a happy: valid local-paths.json (linux platform only) returns LOCAL_CONFIG source [1.38ms]
+(pass) resolveWorkspacePaths — precedence chain > PDR-C-102 single-failure mutation: unknown platform key throws LOCAL_PATHS_INVALID [0.34ms]
+(pass) resolveWorkspacePaths — precedence chain > PDR-C-102b local-paths.json with bad JSON throws LOCAL_PATHS_INVALID [0.17ms]
+(pass) resolveTool > PDR-C-103a happy: resolveTool on absolute executable returns realpath [0.08ms]
+(pass) resolveTool > PDR-C-103 single-failure mutation: absolute path without execute bit throws TOOL_BUN_INVALID [0.11ms]
+(pass) resolveTool > PDR-C-103b resolveTool with PATH basename resolves via PATH [0.03ms]
+(pass) resolveTool > PDR-C-103c resolveTool with empty/undefined returns undefined [0.02ms]
+(pass) resolveTool > PDR-C-103d resolveTool rejects separator-containing string when not absolute [0.02ms]
+(pass) validateWorkOneRoot — explicit CLI value passes through validator > valid fixture passes validateWorkOneRoot and returns realpath [1.14ms]
+(pass) validateWorkOneRoot — explicit CLI value passes through validator > missing opencode.json throws WORK_ONE_ROOT_INVALID [2.14ms]
+(pass) validateWorkOneRoot — explicit CLI value passes through validator > relative path throws WORK_ONE_ROOT_INVALID [0.06ms]
+
+ 19 pass
+ 0 fail
+ 41 expect() calls
+Ran 19 tests across 2 files. [108.00ms]
+$ tsc --noEmit --pretty false
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

@@ -4,7 +4,7 @@
 **Depends on**: NONE
 **Outcome**: 产生可解析的路径清单、经 human reviewer 批准的 PHASE-02 scope lock，以及 work-one 锚点的 pre-change receipt。
 **Evidence level**: `manual`; component is not claimed in this phase.
-**Progression status**: `NOT_STARTED`
+**Progression status**: `ACCEPTED`
 **Completion receipt**: `../../audits/path-dynamic-resolution-m1/evidence/progression-receipt-PHASE-01.json`
 
 ## Goal
@@ -104,9 +104,9 @@ rg --hidden --json -F '/home/zhaoge/' -g '!blueprints/blueprint-dynamic-path-res
 
 ## Phase completion gate
 
-- [ ] Allowed-file diff only
-- [ ] Inventory schema parses and `failedChecks` is empty
-- [ ] Historical prefixes are `PRESERVE_HISTORY`
-- [ ] PHASE-02 lock has a human approval and the exact six allowed source paths
-- [ ] Pre-change receipt is nonempty and binds `PHASE-02`
-- [ ] Downstream Phase remains blocked until every box is checked
+- [X] Allowed-file diff only
+- [X] Inventory schema parses and `failedChecks` is empty
+- [X] Historical prefixes are `PRESERVE_HISTORY`
+- [X] PHASE-02 lock has a human approval and the exact six allowed source paths
+- [X] Pre-change receipt is nonempty and binds `PHASE-02`
+- [X] Downstream Phase remains blocked until every box is checked

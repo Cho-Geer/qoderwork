@@ -4,7 +4,7 @@
 **Depends on**: PHASE-03
 **Outcome**: M1 的证据边界、已迁移文件和未纳入文件形成可解析交接记录；跨平台 IDE 与其余脚本迁移被明确移交给受批准的后续 PLAN_SET。
 **Evidence level**: `manual`; component evidence is retained and runtime-smoke is `NOT-RUN` in M1.
-**Progression status**: `NOT_STARTED`
+**Progression status**: `ACCEPTED`
 **Completion receipt**: `../../audits/path-dynamic-resolution-m1/evidence/progression-receipt-PHASE-04.json`
 
 ## Goal
@@ -109,9 +109,9 @@ git diff --name-only -- .codebuddy/settings.json .codebuddy/settings.local.json 
 
 ## Phase completion gate
 
-- [ ] Allowed-file diff only
-- [ ] Continuation register parses and names each external inventory entry once
-- [ ] Four tracked IDE files are deferred and absent from the diff
-- [ ] Component, runtime-smoke, and live-E2E labels match retained evidence
-- [ ] Log and indexes pass their serial text integrity checks
-- [ ] Successor admission rule is present and no unapproved source migration occurred
+- [X] Allowed-file diff only
+- [X] Continuation register parses and names each external inventory entry once
+- [X] Four tracked IDE files are deferred and absent from the diff
+- [X] Component, runtime-smoke, and live-E2E labels match retained evidence
+- [X] Log and indexes pass their serial text integrity checks
+- [X] Successor admission rule is present and no unapproved source migration occurred

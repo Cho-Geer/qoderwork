@@ -1,0 +1,7 @@
+=== STDOUT ===
+PASS PHASE-04 combined positive
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

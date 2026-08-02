@@ -14,6 +14,7 @@ import {
 import { homedir } from "node:os";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import net from "node:net";
+import { resolveWorkspacePaths, WorkspacePathsError } from "../lib/workspace-paths.ts";
 import type {
   CreateRunInput,
   RunManifest,
@@ -35,7 +36,17 @@ const DENIED_UNTRACKED_PREFIXES = [
 ];
 
 export function getDefaultPrimaryWorktree(): string {
-  return "/home/zhaoge/workspace/opencode/work-one";
+  // Delegate to validated workspace-paths resolver (no caller-supplied path).
+  // The resolver enforces CLI > ENV > LOCAL_CONFIG > DEPRECATED_DEFAULT precedence
+  // and validates the candidate via validateWorkOneRoot (absolute realpath, git top level, opencode.json present).
+  try {
+    return resolveWorkspacePaths({}).workOneRoot;
+  } catch (error) {
+    if (error instanceof WorkspacePathsError) {
+      throw new Error(`${error.code}: ${error.message}`);
+    }
+    throw error;
+  }
 }
 
 export function getStateRoot(): string {

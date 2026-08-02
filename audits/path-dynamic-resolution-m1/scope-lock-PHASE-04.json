@@ -1,0 +1,170 @@
+{
+  "schema_version": "audit-scope-lock/v3",
+  "lock_id": "PHASE-04",
+  "created_at": "2026-07-29T07:30:00Z",
+  "plan_sources": [
+    {
+      "path": "plans/path-dynamic-resolution-m1/00-plan-index.md",
+      "sha256": "5c51ba1a83b41b117c6f88f9684da5a9ef2ab67333b5f7444951595803cafb2a"
+    },
+    {
+      "path": "plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml",
+      "sha256": "0c939357355936ef329b907e75339c38a119791b6dba6fcade5c3e86df2961f2"
+    },
+    {
+      "path": "plans/path-dynamic-resolution-m1/04-phase-runtime-handoff.md",
+      "sha256": "58cb9164a41dc43eb1db3f5f6f44814e8b41ba7725f3e1c93549110222eaf07c"
+    }
+  ],
+  "scope": {
+    "status": "FROZEN",
+    "provenance_level": "v3-required",
+    "frozen_at": "2026-07-29T07:30:00Z",
+    "in_scope": [
+      "REQ-004",
+      "REQ-005"
+    ],
+    "out_of_scope": [
+      "PHASE-02 source/test/example/ignore files (already locked by scope-lock-PHASE-02)",
+      "PHASE-03 source/test files (already locked by scope-lock-PHASE-03)",
+      "work-one repository code",
+      "IDE machine configuration (.codebuddy/, .kimi-code/, .qoder/)",
+      "live-E2E workflow under reviewer authorization",
+      "history directories: audits/, e2e-evidence/, logs/ (preserve only)"
+    ],
+    "assumptions": [
+      {
+        "statement": "PHASE-03 test-serve consumers migration is accepted (run-context.ts resolver delegation, process.ts getSseDaemonPath, bootstrap.ts pathToFileURL, isolated-serve.ts argument-resolution seam)",
+        "disproof": "PHASE-03 audit-report shows open blocking findings or progression-receipt PHASE-03 missing"
+      },
+      {
+        "statement": "work-one HEAD is unchanged during PHASE-04 audit",
+        "disproof": "git -C /home/zhaoge/workspace/opencode/work-one status --short shows non-empty after capture-state.ts verdict run"
+      },
+      {
+        "statement": "documents/INDEX.md and logs/INDEX.md are writable",
+        "disproof": "documents/INDEX.md or logs/INDEX.md does not exist or is read-only"
+      }
+    ],
+    "exit_criteria": [
+      "audits/path-dynamic-resolution-m1/continuation-register.json exists with schema_version=1, m1_paths (14 entries), deferred rows, failedChecks=[]",
+      "Four tracked IDE configuration paths appear in continuation-register.json deferred with classification=LOCAL_CONFIG and required_admission=APPROVED_SUCCESSOR_PLAN",
+      "audits/path-dynamic-resolution-m1/phase-04-audit.md exists with verdict=ACCEPT and component evidence ceiling labels",
+      "documents/INDEX.md has a path-dynamic-resolution reading entry pointing to plans/path-dynamic-resolution-m1/ and audits/path-dynamic-resolution-m1/",
+      "logs/2026-07-29-dynamic-path-m1-implementation.md exists with M1 implementation summary",
+      "logs/INDEX.md has an active log entry for 2026-07-29 and a path-dynamic cluster",
+      "validate-phase-progression.ts plans/path-dynamic-resolution-m1 (no target phase) exits 0",
+      "validate-audit.ts on PHASE-04 audit-report exits 0 (valid=true, errors=[])"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-004",
+      "plan_item_id": "PLAN-REQ-004",
+      "kind": "STATIC",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "behavior": "PHASE-04 retains exact command outputs from PHASE-02 and PHASE-03 component runs; evidence ceiling is 'component'; runtime-smoke and live-E2E are NOT-RUN in M1",
+      "required_evidence_level": "manual",
+      "oracle_id": "ORACLE-004",
+      "oracle": "phase-04-audit.md must contain literal 'component' evidence ceiling labels and explicit 'NOT-RUN' for runtime-smoke and live-E2E"
+    },
+    {
+      "id": "REQ-005",
+      "plan_item_id": "PLAN-REQ-005",
+      "kind": "STATIC",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "behavior": "Every inventory entry not in m1_paths appears once in continuation-register.json deferred with required_admission=APPROVED_SUCCESSOR_PLAN; four tracked IDE config paths (LOCAL_CONFIG) plus 80 DEFERRED test-serve scripts all have deferred rows",
+      "required_evidence_level": "manual",
+      "oracle_id": "ORACLE-005",
+      "oracle": "continuation-register.json schema validation passes and every deferred row has required_admission field"
+    }
+  ],
+  "plan_registry": [
+    {
+      "plan_item_id": "PLAN-REQ-004",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-004",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-005",
+      "disposition": "IN_SCOPE",
+      "requirement_id": "REQ-005",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements"
+    },
+    {
+      "plan_item_id": "PLAN-REQ-002",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-002",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-02 implementation already ACCEPTED",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-02.json",
+        "sha256": "63325f2fef12f6fbd2f9ab81b16723b2ed1d8f01fd52f278a8060e42cbc9d2b6"
+      }
+    },
+    {
+      "plan_item_id": "PLAN-REQ-003",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-003",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-03 implementation already ACCEPTED",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-03.json",
+        "sha256": "433be2c1ed0f046b8b10df5d0cec99cd45dac7810504c549f3f536e0fc80bc2b"
+      }
+    },
+    {
+      "plan_item_id": "PLAN-REQ-001",
+      "disposition": "EXCLUDED",
+      "requirement_id": "REQ-001",
+      "source": "plans/path-dynamic-resolution-m1/00-plan-index.md#Atomic-requirements",
+      "reason": "PHASE-01 freeze + inventory already ACCEPTED",
+      "approval_receipt": {
+        "path": "audits/path-dynamic-resolution-m1/scope-lock-PHASE-01.json",
+        "sha256": "f73eba2fbd730c16a8a22f64dccdbdbd7f6b71cff61d570aaccbc5451d46a6ad"
+      }
+    }
+  ],
+  "repository_scope": {
+    "allowed_paths": [
+      "audits/path-dynamic-resolution-m1/continuation-register.json",
+      "audits/path-dynamic-resolution-m1/phase-04-audit.md",
+      "audits/path-dynamic-resolution-m1/evidence/progression-receipt-PHASE-04.json",
+      "documents/INDEX.md",
+      "logs/2026-07-29-dynamic-path-m1-implementation.md",
+      "logs/INDEX.md",
+      "plans/path-dynamic-resolution-m1/00-plan-index.md",
+      "plans/path-dynamic-resolution-m1/04-phase-runtime-handoff.md"
+    ],
+    "forbidden_paths": [
+      ".codebuddy/settings.json",
+      ".codebuddy/settings.local.json",
+      ".kimi-code/mcp.json",
+      ".qoder/settings.local.json",
+      "/home/zhaoge/workspace/opencode/work-one",
+      "bun.lock",
+      "scripts/lib/workspace-paths.ts",
+      "scripts/start-serve.ts",
+      "scripts/test-serve/run-context.ts",
+      "scripts/test-serve/process.ts",
+      "scripts/test-serve/bootstrap.ts",
+      "scripts/test-serve/isolated-serve.ts"
+    ]
+  },
+  "impact_analysis": {
+    "modified_functions": [],
+    "shared_functions": [],
+    "caller_scan_command": "",
+    "caller_files": [],
+    "caller_tests": [],
+    "scan_output_sha256": ""
+  },
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "ChoGeer",
+    "approved_at": "2026-07-29T07:30:00Z",
+    "evidence": "audits/path-dynamic-resolution-m1/approval-decision.json (sha256: 95aafa76bf1c7725cda4be58a573065ecfd7692cbcdbcf6282a25beb8f396dcd); user verbal approval at ZCode session 2026-07-29 turn"
+  }
+}

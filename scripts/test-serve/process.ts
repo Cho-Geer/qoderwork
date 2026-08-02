@@ -1,12 +1,27 @@
 import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { readRunManifest, releasePortReservation, setRunState, spawnPortReserver, writeRunManifest } from "./run-context";
 import net from "node:net";
 import type { RunManifest, StartChecks, StartRunResult } from "./types";
 
-const SSE_DAEMON_PATH = "/home/zhaoge/workspace/qoderwork/scripts/sse-daemon.ts";
+/**
+ * Resolve the path of scripts/sse-daemon.ts relative to this module.
+ * Throws SSE_DAEMON_PATH_INVALID if the file does not exist or is not a regular file.
+ * The caller must invoke this BEFORE spawn so the error is reported as a
+ * pre-spawn check failure rather than a runtime spawn error.
+ */
+export function getSseDaemonPath(): string {
+  // import.meta.dir is the directory of this file: scripts/test-serve/
+  // sse-daemon.ts is one level up in scripts/sse-daemon.ts
+  const here = dirname(new URL(import.meta.url).pathname);
+  const candidate = resolve(here, "..", "sse-daemon.ts");
+  if (!existsSync(candidate) || !statSync(candidate).isFile()) {
+    throw new Error(`SSE_DAEMON_PATH_INVALID: ${candidate} is missing or not a regular file`);
+  }
+  return candidate;
+}
 
 export interface StartRunProcessesDependencies {
   waitForHealth?: (port: number, timeoutMs: number) => Promise<boolean>;
@@ -74,7 +89,7 @@ export async function startRunProcesses(
     manifest.process.servePid = serve.pid ?? null;
     if (serve.pid) writeFileSync(manifest.paths.servePidPath, `${serve.pid}\n`);
 
-    const sse = spawn(bunBin, ["run", SSE_DAEMON_PATH], {
+    const sse = spawn(bunBin, ["run", getSseDaemonPath()], {
       cwd: manifest.paths.worktreeDir,
       env,
       detached: true,

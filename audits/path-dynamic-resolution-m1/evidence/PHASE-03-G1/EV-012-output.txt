@@ -1,0 +1,7 @@
+=== STDOUT ===
+PASS negative PDR-C-204 (bootstrap contract)
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

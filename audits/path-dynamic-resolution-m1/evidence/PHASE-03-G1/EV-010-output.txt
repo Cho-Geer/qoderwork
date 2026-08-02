@@ -1,0 +1,7 @@
+=== STDOUT ===
+PASS negative PDR-C-202 (sse-daemon path contract)
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false

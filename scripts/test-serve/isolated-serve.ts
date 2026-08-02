@@ -24,7 +24,7 @@ let args = process.argv.slice(3);
 async function main(): Promise<void> {
   switch (command) {
     case "snapshot-source": {
-      const primaryWorktree = getArg("--from") || getDefaultPrimaryWorktree();
+      const primaryWorktree = resolvePrimaryWorktreeFromArgs(args, ["--from"]);
       const outputDir = requiredArg("--output");
       const overlay = snapshotSourceOverlay({
         primaryWorktree,
@@ -36,7 +36,7 @@ async function main(): Promise<void> {
     }
     case "create": {
       const manifest =  await createRunContext({
-        primaryWorktree: getArg("--primary-worktree") || getDefaultPrimaryWorktree(),
+        primaryWorktree: resolvePrimaryWorktreeFromArgs(args, ["--primary-worktree"]),
         commit: requiredArg("--commit"),
         port: Number(requiredArg("--port")),
         testId: requiredArg("--test-id"),
@@ -260,6 +260,26 @@ function requiredArg(flag: string): string {
   const value = getArg(flag);
   if (!value) throw new Error(`missing required arg ${flag}`);
   return value;
+}
+
+/**
+ * Argument-resolution seam (PHASE-03): exposed for tests.
+ * Given an argv tail (e.g., process.argv.slice(3)) and the ordered CLI flag
+ * names that may carry an explicit primary worktree, return the explicit
+ * value if present, otherwise fall back to the resolver default.
+ *
+ * This function does not perform a spawn, write a manifest, or call any
+ * authorization API — it is a pure CLI-parsing helper.
+ */
+export function resolvePrimaryWorktreeFromArgs(
+  argv: string[],
+  flags: string[],
+): string {
+  for (const flag of flags) {
+    const index = argv.indexOf(flag);
+    if (index >= 0 && argv[index + 1]) return argv[index + 1];
+  }
+  return getDefaultPrimaryWorktree();
 }
 
 function getArg(flag: string): string | undefined {

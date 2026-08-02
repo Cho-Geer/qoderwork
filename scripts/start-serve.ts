@@ -15,6 +15,7 @@ import { spawn } from "node:child_process";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, platform, tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { resolveWorkspacePaths, WorkspacePathsError } from "./lib/workspace-paths.ts";
 
 // ── Config ──
 
@@ -105,32 +106,18 @@ function isWSL(): boolean {
 }
 
 function resolveWorkDir(inputDir: string): string {
-  if (inputDir) {
-    if (!existsSync(inputDir)) {
-      throw new Error(`Work directory not found: ${inputDir}`);
+  // Explicit --work-dir wins over resolver-driven sources.
+  try {
+    const resolved = resolveWorkspacePaths({
+      cliWorkOneRoot: inputDir || undefined,
+    });
+    return resolved.workOneRoot;
+  } catch (error) {
+    if (error instanceof WorkspacePathsError) {
+      throw new Error(`${error.code}: ${error.message}`);
     }
-    return inputDir;
+    throw error;
   }
-
-  const home = homedir();
-
-  // Standard WSL/Linux path
-  const wslPath = join(home, "workspace", "opencode", "work-one");
-  if (existsSync(join(wslPath, "opencode.json"))) return wslPath;
-
-  // Windows path (via /mnt/c or direct)
-  if (platform() === "win32") {
-    const winPath = join(home, "workspace", "opencode", "work-one");
-    if (existsSync(join(winPath, "opencode.json"))) return winPath;
-  }
-
-  // Fallback: check relative to script dir (../../opencode/work-one)
-  const relativePath = resolve(SCRIPT_DIR, "..", "..", "opencode", "work-one");
-  if (existsSync(join(relativePath, "opencode.json"))) return relativePath;
-
-  throw new Error(
-    "Cannot auto-detect work-one directory. Use --work-dir to specify."
-  );
 }
 
 function resolveOpencodeBin(): string {

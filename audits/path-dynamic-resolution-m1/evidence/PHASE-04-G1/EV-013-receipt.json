@@ -1,0 +1,37 @@
+{
+  "schema_version": "audit-evidence-receipt/v3",
+  "document_kind": "evidence-receipt",
+  "audit_id": "PDR-M1-PHASE-04-20260729",
+  "generation": 1,
+  "id": "EV-013",
+  "decision_case_id": "DC-013",
+  "command": "cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan && /home/zhaoge/.bun/bin/bun /tmp/ev013-runner.ts",
+  "requirement_id": "REQ-004",
+  "polarity": "POSITIVE",
+  "oracle_id": "ORACLE-004",
+  "fixture_id": "FIXTURE-PHASE-04-VERIFICATION-COMBINED",
+  "evidence_level": "manual",
+  "repository_state_sha256": "1ee870a311c689b37ebffe0d906965b347f784bfaec4060415ea1e31757209bc",
+  "exit_code": 0,
+  "execution": {
+    "observed": "PASS",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "domain_observation": {
+    "result": "SUCCESS",
+    "error_code": null
+  },
+  "forbidden_side_effects_observed": [],
+  "projection_sha256": "f3973ce041605ef31dcaf3ff3620afd9d36fa0dcae2932d200a86d2e5416eff6",
+  "canonical_sha256": "1ee870a311c689b37ebffe0d906965b347f784bfaec4060415ea1e31757209bc",
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "artifacts": [
+    {
+      "path": "audits/path-dynamic-resolution-m1/evidence/EV-013-output.txt",
+      "sha256": "2b0cf25819593e75a739dd9906c1fb0b19c4f07b070b01b041de10ce1408daac"
+    }
+  ],
+  "completed_at": "2026-07-29T08:39:23.493Z",
+  "observed": "PASS"
+}

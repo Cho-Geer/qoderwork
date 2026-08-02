@@ -6,10 +6,12 @@
 # Local dependencies and secrets
 /node_modules/
 scripts/.env
+scripts/local-paths.json
 
 # Tool-specific local state
 .codeartsdoer/
 .zcode/
+/temporary-audits/
 
 # Git worktrees (isolated branch workspaces)
 .worktrees/

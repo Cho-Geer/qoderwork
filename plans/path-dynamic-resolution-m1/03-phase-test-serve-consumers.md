@@ -4,7 +4,7 @@
 **Depends on**: PHASE-02
 **Outcome**: test-serve 的默认 primary worktree、SSE daemon 资产路径和 bootstrap 动态 import 不再依赖用户绝对路径。
 **Evidence level**: `component`
-**Progression status**: `NOT_STARTED`
+**Progression status**: `ACCEPTED`
 **Completion receipt**: `../../audits/path-dynamic-resolution-m1/evidence/progression-receipt-PHASE-03.json`
 
 ## Goal
@@ -116,9 +116,9 @@ rg -n 'getDefaultPrimaryWorktree' scripts/_b_pt_wm_00r2_live.ts
 
 ## Phase completion gate
 
-- [ ] Allowed-file diff only
-- [ ] PHASE-03 admission validator exits 0 before its human approval submission
-- [ ] Primary root, SSE source, and file-URL import meet the literal contract
-- [ ] Each registry check has an all-pass fixture and one isolated mutation
-- [ ] Component tests and typecheck produce retained diagnostics
-- [ ] Downstream Phase remains blocked until every box is checked
+- [X] Allowed-file diff only
+- [X] PHASE-03 admission validator exits 0 before its human approval submission
+- [X] Primary root, SSE source, and file-URL import meet the literal contract
+- [X] Each registry check has an all-pass fixture and one isolated mutation
+- [X] Component tests and typecheck produce retained diagnostics
+- [X] Downstream Phase remains blocked until every box is checked

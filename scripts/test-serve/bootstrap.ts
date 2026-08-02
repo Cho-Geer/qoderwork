@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { isAbsolute, relative, resolve, sep } from "node:path";
+import { pathToFileURL } from "node:url";
 import { randomUUID } from "node:crypto";
 import { Database } from "bun:sqlite";
 import { readRunManifest, setRunState, writeRunManifest } from "./run-context";
@@ -264,7 +265,17 @@ async function createSession(
 }
 
 export async function loadPrivilegeService(manifest: RunManifest): Promise<PrivilegeService> {
-  const module = await import(`${manifest.paths.worktreeDir}/.opencode/service/dispatch/privilege.ts`);
+  // Resolve the privilege module path from the isolated worktree's directory.
+  // Use pathToFileURL().href so the dynamic import receives a valid file URL
+  // (required for Windows paths and absolute paths).
+  const resolvedPrivilegePath = resolve(
+    manifest.paths.worktreeDir,
+    ".opencode",
+    "service",
+    "dispatch",
+    "privilege.ts",
+  );
+  const module = await import(pathToFileURL(resolvedPrivilegePath).href);
   return module as PrivilegeService;
 }
 

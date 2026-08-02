@@ -14,16 +14,16 @@ afterEach(() => {
 });
 
 describe("bootstrap import source regression", () => {
-  test("loadPrivilegeService imports from isolated worktree, not main work-one", async () => {
+  test("loadPrivilegeService imports from isolated worktree via pathToFileURL, not main work-one", async () => {
     const fakeWorktreeDir = join(tempRoot, "isolated-worktree");
     mkdirSync(join(fakeWorktreeDir, ".opencode", "service", "dispatch"), { recursive: true });
-    
+
     const testMarker = "ISOLATED_WORKTREE_MARKER_" + Date.now();
     writeFileSync(
       join(fakeWorktreeDir, ".opencode", "service", "dispatch", "privilege.ts"),
       `
 export const SOURCE_MARKER = "${testMarker}";
-export function createGrant() { 
+export function createGrant() {
   return { id: "isolated-grant-" + SOURCE_MARKER };
 }
 export function bindGrant() {
@@ -31,27 +31,47 @@ export function bindGrant() {
 }
 `
     );
-    
+
     const manifest = {
       paths: { worktreeDir: fakeWorktreeDir },
       env: {},
     };
-    
-    const module = await import(`${manifest.paths.worktreeDir}/.opencode/service/dispatch/privilege.ts`);
-    
+
+    // Use the same import path shape that bootstrap.ts uses after PHASE-03.
+    const { pathToFileURL } = await import("node:url");
+    const { resolve } = await import("node:path");
+    const resolvedPrivilegePath = resolve(
+      manifest.paths.worktreeDir,
+      ".opencode",
+      "service",
+      "dispatch",
+      "privilege.ts",
+    );
+    const module = await import(pathToFileURL(resolvedPrivilegePath).href);
+
     expect(module.SOURCE_MARKER).toBe(testMarker);
     expect(module.createGrant().id).toContain("isolated-grant-");
     expect(module.createGrant().id).toContain(testMarker);
   });
-  
-  test("import path uses manifest.paths.worktreeDir, not hardcoded main path", () => {
+
+  test("PHASE-03 contract: bootstrap uses pathToFileURL(resolvedPrivilegePath).href, no template-string import", () => {
     const bootstrapSrc = readFileSync(
       join(dirname(__dirname), "bootstrap.ts"),
       "utf8"
     );
-    
-    expect(bootstrapSrc).toMatch(/import\(`\$\{manifest\.paths\.worktreeDir\}.*privilege\.ts`\)/);
-    
+
+    // Must use pathToFileURL().href
+    expect(bootstrapSrc).toContain("pathToFileURL(");
+    expect(bootstrapSrc).toMatch(/pathToFileURL\([\s\S]*?\)\.href/);
+    expect(bootstrapSrc).toContain('"node:url"');
+    // Must construct resolvedPrivilegePath with resolve() from manifest.paths.worktreeDir
+    expect(bootstrapSrc).toMatch(/resolve\([\s\S]*?manifest\.paths\.worktreeDir[\s\S]*?"privilege\.ts"/);
+
+    // Must NOT use template-string import for privilege.ts
+    expect(bootstrapSrc).not.toMatch(/import\(`\$\{manifest\.paths\.worktreeDir\}[\s\S]*?privilege\.ts`\)/);
+
+    // Must NOT contain hardcoded work-one path
     expect(bootstrapSrc).not.toContain("/home/zhaoge/workspace/opencode/work-one/.opencode");
+    expect(bootstrapSrc).not.toContain("/home/zhaoge/workspace/qoderwork/");
   });
 });

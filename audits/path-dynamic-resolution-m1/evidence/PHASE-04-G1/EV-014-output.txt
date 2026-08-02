@@ -1,0 +1,7 @@
+=== STDOUT ===
+PASS continuation-register schema
+=== STDERR ===
+=== EXIT_CODE ===
+0
+=== TIMED_OUT ===
+false
