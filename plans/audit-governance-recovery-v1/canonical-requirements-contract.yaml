@@ -34,7 +34,7 @@ baseline:
   implementation_worktree: /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
   historical_governance_plan: plans/audit-governance-evidence-and-status-closure-v3/formal-plan-set
   historical_governance_audit: audits/audit-governance-evidence-and-status-closure-v3
-  m1_failure_freeze: temporary-audits/2026-07-30-path-dynamic-resolution-m1-p0-freeze.md
+  m1_failure_freeze: audits/audit-governance-recovery-v1/bootstrap/2026-07-30-path-dynamic-resolution-m1-p0-freeze.md
   path_namespace_disambiguation: >
     The plan/audit path roots `plans/audit-governance-recovery-v1/` and
     `audits/audit-governance-recovery-v1/` are LOGICAL identifiers that

@@ -26,7 +26,7 @@ This projection is not approval authority; only receipt transactions change stat
 
 | Fact | State | Evidence |
 |---|---|---|
-| P0 freeze | COMPLETE | `temporary-audits/2026-07-30-path-dynamic-resolution-m1-p0-freeze.md` |
+| P0 freeze | COMPLETE | `audits/audit-governance-recovery-v1/bootstrap/2026-07-30-path-dynamic-resolution-m1-p0-freeze.md` |
 | four old M1 reports | `HISTORICAL_INVALID_NONREPAIRABLE` | current `validate-audit` 4/4 `valid:false` |
 | current M1 source | `UNACCEPTED_IMPLEMENTATION_CANDIDATE` | 52 pass/1 fail component aggregate; no valid audits |
 | lock graph | CYCLIC | direct PHASE-01 ↔ PHASE-02 lock references; 15 stale approval hashes |
