@@ -103,7 +103,7 @@ bun run .agents/skills/deterministic-implementation-planning/scripts/validate-pl
 ## 5. 下一会话的安全执行顺序
 
 1. 先读本文件、`AGENTS.md`、`RULES.md`、PHASE-05 计划，以及 validator 源码和测试。
-2. 重新核对 `git status --short`，不要触碰本 handoff 未列出的未跟踪生成物（例如 `gen_*.py`、`*.svg`、`ops.txt`、`.workbuddy/memory/`）。
+2. 重新核对 `git status --short`，不要触碰与本 PHASE-05-G2 任务无关的工作树脏文件。注：本行原列示例 `gen_*.py`、`*.svg`、`ops.txt`、`.workbuddy/memory/` 作为「未跟踪生成物」的前提已于 2026-07-25 失效（`gen_callgraph.py` 自 d3dd5d9（2026-07-24 21:23）已 tracked；其余 7 文件 gen_module_graph.py/gen_ops.py/module-graph.svg/module-ops.txt/ops.txt/task-lens-callgraph.svg/update-ops.txt 在 17b94b4（2026-07-25 12:18）与本 handoff 同批次 tracked）。其后续处理见 2026-08-02 清理裁决（参见 `logs/` 当日相关 handoff + 高精度复审 ACCEPT）。
 3. 向用户取得第 4 节所列的额外授权；未授权时停在 BLOCKED。
 4. 若获授权，先修 validator + test，再以最小语义改动将 index 压到不高于 8000 Unicode characters，并逐文件做文本完整性验证。
 5. 运行完整 `validate-plan.ts`；任一非零即停止，不创建 G2。
