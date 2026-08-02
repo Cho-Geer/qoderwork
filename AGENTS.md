@@ -102,7 +102,6 @@ qoderwork/
 │   │   ├── process.ts        # 进程生命周期
 │   │   └── ...
 │   └── *.ts                  # 各类 E2E、诊断、清理脚本
-├── team-elevation/           # 团队技术提升资料
 ├── temporary-audits/         # 临时审计记录
 ├── AGENTS.md                 # 本文件
 ├── MEMORY.md                 # 长期记忆

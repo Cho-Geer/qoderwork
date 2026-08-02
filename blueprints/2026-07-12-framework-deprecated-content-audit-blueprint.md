@@ -375,7 +375,7 @@ Use exactly this implementation path. Do not invent alternatives:
 2. Remove blanket ignore rules that hide stray backups in normal workflow.
 3. Add one repository-wide stray-backup scanner for both local and CI use.
 4. Wire that scanner into pre-commit and CI only after the protected files are clean.
-5. Update `team-elevation` documents only after the guard is active and the live-path artifacts are gone.
+5. Update `team-elevation` documents only after the guard is active and the live-path artifacts are gone. *(noop — team-elevation/ 已于 2026-08-03 移除)*
 
 ### Allowed Backup Locations
 
@@ -452,8 +452,8 @@ These steps must wait until the protected files are no longer being actively cha
 4. Integrate the scanner into `.opencode/hooks/lib/hook-layers.ts` so pre-commit blocks stray backups.
 5. Integrate the scanner into `.opencode/scripts/ci-semantic-validator.ts` so CI blocks stray backups even when `--no-verify` was used locally.
 6. Update:
-   - `/home/zhaoge/workspace/qoderwork/team-elevation/04-architecture-review.md`
-   - `/home/zhaoge/workspace/qoderwork/team-elevation/README.md`
+   - `/home/zhaoge/workspace/qoderwork/team-elevation/04-architecture-review.md` *(removed 2026-08-03)*
+   - `/home/zhaoge/workspace/qoderwork/team-elevation/README.md` *(removed 2026-08-03)*
 7. Only after all previous serial steps pass, update document wording to:
    - `F5`: historical finding, fixed
    - `F6`: was true, scope was larger than the first three-file description, now fixed by quarantine plus enforcement guard
@@ -502,7 +502,7 @@ Run validation in this order:
 - No live source path contains a backup artifact outside the approved archive/runtime-backup locations.
 - `.gitignore` no longer hides stray backups with blanket rules.
 - Pre-commit and CI both block future stray-backup reintroduction.
-- `team-elevation` documents describe `F5` and `F6` using the corrected historical/current state.
+- `team-elevation` documents describe `F5` and `F6` using the corrected historical/current state. *(noop — directory removed 2026-08-03)*
 
 ## Proposed Cleanup Phases
 
