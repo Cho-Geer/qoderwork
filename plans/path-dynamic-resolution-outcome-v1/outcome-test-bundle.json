@@ -1,0 +1,60 @@
+{
+  "schema_version": "outcome-test-bundle/v1",
+  "document_kind": "outcome-test-bundle",
+  "bundle_id": "PATH-DYNAMIC-TEST-BUNDLE-V1",
+  "outcome_id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-V1",
+  "generation": 1,
+  "tests": [
+    {
+      "path": "scripts/lib/__tests__/workspace-paths.test.ts",
+      "sha256": "bbff2081e293ad76ffee9d2c798eb55ffe521b3fe2c7c1c7ece6ec95143ccb5c"
+    },
+    {
+      "path": "scripts/__tests__/start-serve-paths.test.ts",
+      "sha256": "5857c2f59d21eeb1b0cf75a6a617420dc008a1f6f5c2fbc47c797199a03b573b"
+    },
+    {
+      "path": "scripts/test-serve/__tests__/isolated-serve-paths.test.ts",
+      "sha256": "3f621a587865201f6ea7b9ea4d93d2d7e1b2a841e852ef27d4c1fca92efbf150"
+    },
+    {
+      "path": "scripts/test-serve/__tests__/bootstrap-import-source.test.ts",
+      "sha256": "6e4e2944de75324c2d04595ee441f263040e97b618d40e1da0337431da3c767a"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "scripts/local-paths.example.json",
+      "sha256": "6eea20b2cb4d2422de0afd73535c6fa997b0985139ab19e4f503dcbebd8dafa0"
+    }
+  ],
+  "oracle_sources": [
+    {
+      "path": "plans/path-dynamic-resolution-m1/02-phase-workspace-resolver.md",
+      "sha256": "bbffd01e107d71184f7c0119d31fac3068bf8be2565e6f0d7e505cf15e28744c"
+    },
+    {
+      "path": "plans/path-dynamic-resolution-m1/03-phase-test-serve-consumers.md",
+      "sha256": "8f87f2299384fe242fb22aec2ad192687ef56e2ea3c911644909354d9844ebb6"
+    }
+  ],
+  "runner_config": [
+    {
+      "path": "package.json",
+      "sha256": "c0ad393397e25910fffba8ceedc9a724bee5217bdd88fb1c46d298779bd5d930"
+    }
+  ],
+  "lockfiles": [
+    {
+      "path": "bun.lock",
+      "sha256": "c693200d674042537d905b4a15f2061706d4f218959f3e1b6edeec3d23e79f4d"
+    }
+  ],
+  "expected_test_ids": [
+    "T-001",
+    "T-002",
+    "T-003",
+    "T-004"
+  ],
+  "expected_test_count": 4
+}

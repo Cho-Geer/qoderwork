@@ -1,0 +1,95 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "acceptance-spec",
+  "spec_id": "PATH-DYNAMIC-ACCEPTANCE-SPEC-V1",
+  "outcome_id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-V1",
+  "generation": 1,
+  "contract": {
+    "id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-CONTRACT-V1",
+    "path": "outcome-contract.json",
+    "generation": 1,
+    "sha256": "8fe8fdfbbd33d94053d840b8c813ba3b65f67cee1fbe2a3c40dafe9c86f04929"
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "behavior": "WORK_ONE_ROOT 解析优先级契约：CLI > env > 本地清单 > 弃用默认值；缺失/相对/非 Git 根时 fail-closed 抛 WORK_ONE_ROOT_INVALID",
+      "oracle_id": "O-001"
+    },
+    {
+      "id": "REQ-002",
+      "behavior": "路径与工具校验：未知平台键/坏 JSON/不可执行工具路径被拒绝并抛对应错误（LOCAL_PATHS_INVALID/TOOL_BUN_INVALID）",
+      "oracle_id": "O-001"
+    },
+    {
+      "id": "REQ-003",
+      "behavior": "start-serve 与 bootstrap 消费点：解析器集成、.env 职责分离、pathToFileURL 动态 import（禁止模板字符串 import）",
+      "oracle_id": "O-001"
+    },
+    {
+      "id": "REQ-004",
+      "behavior": "test-serve 消费点：--primary-worktree/--from 显式值原样保留并获胜；无匹配时回落解析器默认",
+      "oracle_id": "O-001"
+    }
+  ],
+  "oracles": [
+    {
+      "id": "O-001",
+      "description": "固定 bun:test 组件断言集（PDR-C-101..204 正例 + 单点失败负例），独立运行；断言违反或 exit 非 0 即 FAIL"
+    }
+  ],
+  "cases": [
+    {
+      "id": "CASE-001",
+      "test_id": "T-001",
+      "requirement_ids": [
+        "REQ-001",
+        "REQ-002"
+      ],
+      "oracle_id": "O-001",
+      "level": "component",
+      "command": "bun test scripts/lib/__tests__/workspace-paths.test.ts",
+      "expected": "PASS"
+    },
+    {
+      "id": "CASE-002",
+      "test_id": "T-002",
+      "requirement_ids": [
+        "REQ-001",
+        "REQ-003"
+      ],
+      "oracle_id": "O-001",
+      "level": "component",
+      "command": "bun test scripts/__tests__/start-serve-paths.test.ts",
+      "expected": "PASS"
+    },
+    {
+      "id": "CASE-003",
+      "test_id": "T-003",
+      "requirement_ids": [
+        "REQ-004"
+      ],
+      "oracle_id": "O-001",
+      "level": "component",
+      "command": "bun test scripts/test-serve/__tests__/isolated-serve-paths.test.ts",
+      "expected": "PASS"
+    },
+    {
+      "id": "CASE-004",
+      "test_id": "T-004",
+      "requirement_ids": [
+        "REQ-003"
+      ],
+      "oracle_id": "O-001",
+      "level": "component",
+      "command": "bun test scripts/test-serve/__tests__/bootstrap-import-source.test.ts",
+      "expected": "PASS"
+    }
+  ],
+  "test_bundle": {
+    "id": "PATH-DYNAMIC-TEST-BUNDLE-V1",
+    "path": "outcome-test-bundle.json",
+    "generation": 1,
+    "sha256": "bec281e5252572387d9a9276a7060a260e29df22ee8cf7f6121630a4e33550d4"
+  }
+}

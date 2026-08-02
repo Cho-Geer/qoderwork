@@ -1,0 +1,20 @@
+
+scripts/lib/__tests__/workspace-paths.test.ts:
+(pass) resolveWorkspacePaths — precedence chain > PDR-C-101a CLI absolute root wins (positive) [6.15ms]
+(pass) resolveWorkspacePaths — precedence chain > PDR-C-101 single-failure mutation: ENV root is relative throws WORK_ONE_ROOT_INVALID [1.39ms]
+(pass) resolveWorkspacePaths — precedence chain > PDR-C-102a happy: valid local-paths.json (linux platform only) returns LOCAL_CONFIG source [2.81ms]
+(pass) resolveWorkspacePaths — precedence chain > PDR-C-102 single-failure mutation: unknown platform key throws LOCAL_PATHS_INVALID [0.48ms]
+(pass) resolveWorkspacePaths — precedence chain > PDR-C-102b local-paths.json with bad JSON throws LOCAL_PATHS_INVALID [0.37ms]
+(pass) resolveTool > PDR-C-103a happy: resolveTool on absolute executable returns realpath [0.60ms]
+(pass) resolveTool > PDR-C-103 single-failure mutation: absolute path without execute bit throws TOOL_BUN_INVALID [0.34ms]
+(pass) resolveTool > PDR-C-103b resolveTool with PATH basename resolves via PATH [0.09ms]
+(pass) resolveTool > PDR-C-103c resolveTool with empty/undefined returns undefined [1.11ms]
+(pass) resolveTool > PDR-C-103d resolveTool rejects separator-containing string when not absolute [0.05ms]
+(pass) validateWorkOneRoot — explicit CLI value passes through validator > valid fixture passes validateWorkOneRoot and returns realpath [1.09ms]
+(pass) validateWorkOneRoot — explicit CLI value passes through validator > missing opencode.json throws WORK_ONE_ROOT_INVALID [2.69ms]
+(pass) validateWorkOneRoot — explicit CLI value passes through validator > relative path throws WORK_ONE_ROOT_INVALID [0.12ms]
+
+ 13 pass
+ 0 fail
+ 24 expect() calls
+Ran 13 tests across 1 file. [184.00ms]

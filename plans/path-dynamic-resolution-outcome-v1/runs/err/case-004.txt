@@ -1,0 +1,9 @@
+
+scripts/test-serve/__tests__/bootstrap-import-source.test.ts:
+(pass) bootstrap import source regression > loadPrivilegeService imports from isolated worktree via pathToFileURL, not main work-one [4.22ms]
+(pass) bootstrap import source regression > PHASE-03 contract: bootstrap uses pathToFileURL(resolvedPrivilegePath).href, no template-string import [0.45ms]
+
+ 2 pass
+ 0 fail
+ 10 expect() calls
+Ran 2 tests across 1 file. [87.00ms]

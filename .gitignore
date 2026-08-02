@@ -12,6 +12,11 @@ scripts/local-paths.json
 .codeartsdoer/
 .zcode/
 /temporary-audits/
+/screenshots/
+
+# Per-user IDE local settings (untracked from index via commit ff0633b)
+/.qoder/settings.local.json
+/.codebuddy/settings.local.json
 
 # Git worktrees (isolated branch workspaces)
 .worktrees/

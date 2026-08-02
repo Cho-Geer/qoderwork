@@ -1,0 +1,62 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-contract",
+  "contract_id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-CONTRACT-V1",
+  "outcome_id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-V1",
+  "generation": 1,
+  "created_at": "2026-08-03T00:00:00Z",
+  "target": [
+    {
+      "document_kind": "path-resolution-outcome",
+      "id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-V1",
+      "generation": 1,
+      "outcome_id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-V1",
+      "description": "路径动态化解析契约保持正确：WORK_ONE_ROOT 优先级解析、路径/工具校验、start-serve 与 test-serve 消费点接入、pathToFileURL 动态 import，由 4 个固定组件测试独立验收"
+    }
+  ],
+  "boundary": {
+    "in_scope": [
+      "workspace-paths 解析器优先级契约（CLI > env > 本地清单 > 弃用默认值）与 fail-closed 校验",
+      "start-serve.ts 解析器集成与 scripts/.env 职责分离",
+      "test-serve 消费点（--primary-worktree/--from 参数缝）",
+      "pathToFileURL 动态 import（隔离 worktree 来源）",
+      "4 个固定组件测试文件与 local-paths.example.json 样例"
+    ],
+    "out_of_scope": [
+      "work-one 业务代码",
+      "IDE 客户端配置适配（deferred，未验证不声明支持）",
+      "runtime smoke 与 live-LLM-E2E",
+      "历史证据（audits/logs/e2e-evidence）路径",
+      "旧蓝图与旧 M1 plan 文件（原位不动，冻结）",
+      "Windows/其他 OS 实机行为"
+    ]
+  },
+  "baseline": {
+    "repository_id": "qoderwork-check-plan",
+    "baseline_tree_sha256": "f26def7e9013e46106f75e42b44db6f63d0358c1",
+    "configuration_sha256": "c0ad393397e25910fffba8ceedc9a724bee5217bdd88fb1c46d298779bd5d930"
+  },
+  "side_effect_boundary": {
+    "allowed": [
+      "只读运行 bun test 组件测试",
+      "创建 outcome 工件目录与文件"
+    ],
+    "prohibited": [
+      "修改 00-plan-index.md / 旧蓝图 / 历史证据",
+      "修改 work-one",
+      "运行 runtime/live-LLM-E2E",
+      "修改 bun.lock"
+    ]
+  },
+  "acceptance_strategy": {
+    "objective": "4 个固定组件测试全部 PASS 且结构校验 exit 0",
+    "boundary": "仅组件级证据，不冒充 runtime/live 层级",
+    "acceptance": "固定 test_id T-001..T-004 的 bun:test 断言集 + validate-outcome-governance.ts 结构校验"
+  },
+  "acceptance_spec": {
+    "id": "PATH-DYNAMIC-ACCEPTANCE-SPEC-V1",
+    "path": "acceptance-spec.json",
+    "generation": 1
+  },
+  "supersedes": null
+}

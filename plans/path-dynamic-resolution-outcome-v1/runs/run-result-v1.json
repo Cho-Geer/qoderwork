@@ -1,0 +1,100 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-run-result",
+  "run_id": "RUN-PATH-DYNAMIC-V1",
+  "outcome_contract": {
+    "id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-CONTRACT-V1",
+    "path": "outcome-contract.json",
+    "sha256": "8fe8fdfbbd33d94053d840b8c813ba3b65f67cee1fbe2a3c40dafe9c86f04929",
+    "generation": 1
+  },
+  "acceptance_spec": {
+    "id": "PATH-DYNAMIC-ACCEPTANCE-SPEC-V1",
+    "path": "acceptance-spec.json",
+    "sha256": "854bd0daf916aa6ac8baba6eb5ac6a7545f4931b9841bc75f94afee154c45f4d",
+    "generation": 1
+  },
+  "test_bundle": {
+    "id": "PATH-DYNAMIC-TEST-BUNDLE-V1",
+    "path": "outcome-test-bundle.json",
+    "sha256": "bec281e5252572387d9a9276a7060a260e29df22ee8cf7f6121630a4e33550d4",
+    "generation": 1
+  },
+  "approval_anchor": {
+    "id": "PATH-DYNAMIC-APPROVAL-V1-GEN1",
+    "path": "outcome-approval.json",
+    "sha256": "5b8e2a487698c3cb26c7ceddfea31c501a4c3d190bf33668c758566c1ffa2d95",
+    "generation": 1
+  },
+  "candidate_tree_sha256": "f26def7e9013e46106f75e42b44db6f63d0358c1",
+  "environment_hash": "2908eb52cd40b7bdaef1af0fae87ae12e5d1939525ad8ed37d3ced4f9f981772",
+  "code_revision": "check-plan HEAD tree f26def7e",
+  "environment": "linux WSL2 / bun 1.3.14 / component runner",
+  "environment_manifest": {
+    "path": "runs/env/manifest-v1.json",
+    "sha256": "2908eb52cd40b7bdaef1af0fae87ae12e5d1939525ad8ed37d3ced4f9f981772"
+  },
+  "inventory": {
+    "discovered_test_ids": [
+      "T-001",
+      "T-002",
+      "T-003",
+      "T-004"
+    ],
+    "executed_test_ids": [
+      "T-001",
+      "T-002",
+      "T-003",
+      "T-004"
+    ],
+    "skipped_test_ids": [],
+    "filtered_test_ids": []
+  },
+  "case_results": [
+    {
+      "case_id": "CASE-001",
+      "test_id": "T-001",
+      "execution_id": "EXEC-PATH-DYNAMIC-CASE-001",
+      "execution_status": "PASS",
+      "oracle_observation": "bun:test reports 13 pass / 0 fail across workspace-paths.test.ts; PDR-C-101..104 正例 + 单点失败负例全部断言通过",
+      "receipt": {
+        "path": "runs/receipt/case-001.json",
+        "sha256": "841a7542c49d4cff2ff508c2765b6b74fecac475fead2edca3a021758a5796e9"
+      }
+    },
+    {
+      "case_id": "CASE-002",
+      "test_id": "T-002",
+      "execution_id": "EXEC-PATH-DYNAMIC-CASE-002",
+      "execution_status": "PASS",
+      "oracle_observation": "6 pass / 0 fail; start-serve 集成 + .env 职责分离 + pathToFileURL 断言通过",
+      "receipt": {
+        "path": "runs/receipt/case-002.json",
+        "sha256": "2e2451ff3288127f4aca10583253583aa57a8908d1246382f49be6583ddd1a5b"
+      }
+    },
+    {
+      "case_id": "CASE-003",
+      "test_id": "T-003",
+      "execution_id": "EXEC-PATH-DYNAMIC-CASE-003",
+      "execution_status": "PASS",
+      "oracle_observation": "7 pass / 0 fail; --primary-worktree/--from 参数缝 + 不 mutate 路径断言通过",
+      "receipt": {
+        "path": "runs/receipt/case-003.json",
+        "sha256": "cf74d78c395e8d489a7f14240576e5ca19570a0ef5863b26c1510459a929a4d0"
+      }
+    },
+    {
+      "case_id": "CASE-004",
+      "test_id": "T-004",
+      "execution_id": "EXEC-PATH-DYNAMIC-CASE-004",
+      "execution_status": "PASS",
+      "oracle_observation": "2 pass / 0 fail; pathToFileURL 动态 import + 禁止模板字符串 import 断言通过",
+      "receipt": {
+        "path": "runs/receipt/case-004.json",
+        "sha256": "b08f0e1918996eebfe05173f3f684a89bc8d28f914faf30a8badd54c9ece9c6b"
+      }
+    }
+  ],
+  "verdict": "PASS"
+}

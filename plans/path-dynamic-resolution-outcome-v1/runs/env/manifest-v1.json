@@ -1,0 +1,5 @@
+{
+  "os": "linux 6.6.87.2-microsoft-standard-WSL2 x64",
+  "runtime": "bun 1.3.14 (/home/zhaoge/.bun/bin/bun)",
+  "configuration": "bun:test component runner; cwd=/home/zhaoge/workspace/qoderwork/.worktrees/check-plan; no H2_AUTHORIZED, no DRY_RUN modification"
+}

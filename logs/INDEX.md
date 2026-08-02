@@ -1,13 +1,14 @@
 # Logs Index
 
-Last updated: 2026-08-02 — 补登 2026-07-30/07-31/08-01 未登记日志（14 个文件：07-30 ×3、07-31 ×5、08-01 ×6；此前仅登记至 07-29）
+Last updated: 2026-08-03 — 路径动态化 Outcome v1 重建（新蓝图 + 5 个 v1 工件 + blueprints/documents INDEX 投影；旧蓝图/旧 plan SUPERSEDED 冻结）
 
-本索引由 `logs-governance` 规则维护。当前活跃窗口为 2026-07-13 至 2026-08-02；不删除或移动日志。
+本索引由 `logs-governance` 规则维护。当前活跃窗口为 2026-07-13 至 2026-08-03；不删除或移动日志。
 
 ## 当前活跃日志（近 14 天）
 
 | 日期 | 数量 | 日志 |
 |---|---:|---|
+| 2026-08-03 | 1 | [2026-08-03-outcome-v1-recreate.md](2026-08-03-outcome-v1-recreate.md) |
 | 2026-08-01 | 6 | [2026-08-01-route-check.md](2026-08-01-route-check.md), [2026-08-01-v1-r7-blueprint-3round-review.md](2026-08-01-v1-r7-blueprint-3round-review.md), [2026-08-01-v1-r7-generation-spec-drift-fix.md](2026-08-01-v1-r7-generation-spec-drift-fix.md), [2026-08-01-v1-r8-check-plan-handoff.md](2026-08-01-v1-r8-check-plan-handoff.md), [2026-08-01-v1-r9-dispatch-session-handoff.md](2026-08-01-v1-r9-dispatch-session-handoff.md), [2026-08-01-v1-stage0a-batch1-and-gaps.md](2026-08-01-v1-stage0a-batch1-and-gaps.md) |
 | 2026-07-31 | 5 | [2026-07-31-v1-handoff-to-next-session.md](2026-07-31-v1-handoff-to-next-session.md), [2026-07-31-v1-plan-text-reanalysis.md](2026-07-31-v1-plan-text-reanalysis.md), [2026-07-31-v1-r6-materialization-complete.md](2026-07-31-v1-r6-materialization-complete.md), [2026-07-31-v1-self-contained-design-confirmation.md](2026-07-31-v1-self-contained-design-confirmation.md), [2026-07-31-v1-toolchain-blocker-status-update.md](2026-07-31-v1-toolchain-blocker-status-update.md) |
 | 2026-07-30 | 3 | [2026-07-30-audit-governance-recovery-v1-plan-text-revision.md](2026-07-30-audit-governance-recovery-v1-plan-text-revision.md), [2026-07-30-v1-plan-text-revision-final.md](2026-07-30-v1-plan-text-revision-final.md), [2026-07-30-v1-plan-text-systematic-gap-analysis.md](2026-07-30-v1-plan-text-systematic-gap-analysis.md) |

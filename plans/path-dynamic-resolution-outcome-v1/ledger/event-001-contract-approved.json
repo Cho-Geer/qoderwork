@@ -1,0 +1,24 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-ledger-event",
+  "event_id": "LEDGER-PATH-DYNAMIC-OUTCOME-V1-001",
+  "sequence": 1,
+  "recorded_at": "2026-08-03T00:00:00Z",
+  "outcome_id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-V1",
+  "event_type": "CONTRACT_APPROVED",
+  "approval_anchor": {
+    "id": "PATH-DYNAMIC-APPROVAL-V1-GEN1",
+    "path": "outcome-approval.json",
+    "generation": 1,
+    "sha256": "5b8e2a487698c3cb26c7ceddfea31c501a4c3d190bf33668c758566c1ffa2d95"
+  },
+  "contract_ref": {
+    "id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-CONTRACT-V1",
+    "path": "outcome-contract.json",
+    "generation": 1,
+    "sha256": "8fe8fdfbbd33d94053d840b8c813ba3b65f67cee1fbe2a3c40dafe9c86f04929"
+  },
+  "amendment_ref": null,
+  "run_ref": null,
+  "previous_event": null
+}

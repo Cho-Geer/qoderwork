@@ -1,0 +1,36 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-approval",
+  "approval_id": "PATH-DYNAMIC-APPROVAL-V1-GEN1",
+  "outcome_id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-V1",
+  "generation": 1,
+  "contract": {
+    "id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-CONTRACT-V1",
+    "path": "outcome-contract.json",
+    "generation": 1,
+    "sha256": "8fe8fdfbbd33d94053d840b8c813ba3b65f67cee1fbe2a3c40dafe9c86f04929"
+  },
+  "acceptance_spec": {
+    "id": "PATH-DYNAMIC-ACCEPTANCE-SPEC-V1",
+    "path": "acceptance-spec.json",
+    "generation": 1,
+    "sha256": "854bd0daf916aa6ac8baba6eb5ac6a7545f4931b9841bc75f94afee154c45f4d"
+  },
+  "test_bundle": {
+    "id": "PATH-DYNAMIC-TEST-BUNDLE-V1",
+    "path": "outcome-test-bundle.json",
+    "generation": 1,
+    "sha256": "bec281e5252572387d9a9276a7060a260e29df22ee8cf7f6121630a4e33550d4"
+  },
+  "amendment": null,
+  "approval": {
+    "status": "APPROVED",
+    "actor_type": "HUMAN",
+    "approved_by": "ChoGeer",
+    "principal_id": "HUMAN:ChoGeer",
+    "trust_domain": "human-primary",
+    "approved_at": "2026-08-03T00:00:00Z",
+    "evidence": "HUMAN instruction 2026-08-03: /goal 启动多智能体模式，新建蓝图与 plan 文件，复审迭代至完成；由主会话审核签发"
+  },
+  "weakening_approval": null
+}

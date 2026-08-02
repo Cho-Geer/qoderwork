@@ -1,0 +1,14 @@
+
+scripts/test-serve/__tests__/isolated-serve-paths.test.ts:
+(pass) resolvePrimaryWorktreeFromArgs — argument-resolution seam > PDR-C-203a happy: --primary-worktree <fixture> wins over resolver default [0.13ms]
+(pass) resolvePrimaryWorktreeFromArgs — argument-resolution seam > PDR-C-204a happy: --from <fixture> wins over resolver default [0.03ms]
+(pass) resolvePrimaryWorktreeFromArgs — argument-resolution seam > PHASE-03 contract: explicit path is preserved verbatim (no mutation, no normalization) [0.02ms]
+(pass) resolvePrimaryWorktreeFromArgs — argument-resolution seam > PDR-C-203 single-failure: unknown flag not in flags[] falls through to resolver default [0.54ms]
+(pass) resolvePrimaryWorktreeFromArgs — argument-resolution seam > PDR-C-204 single-failure: --from with no following value falls through to resolver default [0.09ms]
+(pass) resolvePrimaryWorktreeFromArgs — argument-resolution seam > empty argv: when no CLI flag matches, seam throws WORK_ONE_ROOT_INVALID (resolver has no env in test) [0.54ms]
+(pass) resolvePrimaryWorktreeFromArgs — argument-resolution seam > PHASE-03 contract: seam does not perform spawn, write manifest, or call authorization API [0.27ms]
+
+ 7 pass
+ 0 fail
+ 16 expect() calls
+Ran 7 tests across 1 file. [112.00ms]

@@ -3,7 +3,7 @@
 > PHASE-01 治理看板：三段式登记（活跃 / 已闭环 / 已归档）+ 反向边视图 + 豁免清单。
 > 治理依据：[blueprint-blueprints-governance.md](./blueprint-blueprints-governance.md) v1.0.1 (sha256 `3051a5df...`)。
 > 本 INDEX 由 PHASE-01 首次创建；PHASE-02 已归档 11 文件（5 → `archive/2026-06/`、6 → `archive/2026-07/`）；PHASE-03 已写入 3 条因果边（单边记录于依赖方）+ 反向边视图 + 18 非豁免 root 文件四字段头部回填 + 3 处过期头部纠正。
-> 注册总数：32（活跃 20 + 已归档 11 + 豁免 1）。
+> 注册总数：33（活跃 21 + 已归档 11 + 豁免 1）。
 
 ## 活跃
 
@@ -16,7 +16,8 @@
 | blueprint-cognitive-defense-skill-alignment.md | 已完成 | `audits/cognitive-defense-skill-alignment/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-dispatch-db-canonical.md | 已完成 | `audits/dispatch-db-canonical/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-dispatch-scope-privilege.md | 已完成 | `audits/dispatch-scope-privilege/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
-| blueprint-dynamic-path-resolution.md | 待实施 | 头部自述-未独立验证 | 2026-07-25（设计审计） | 设计经 2026-07-25 审计 + 2026-07-26 复核；M1 plan `plans/path-dynamic-resolution-m1/` READY-FOR-IMPLEMENTATION，4 phase 全 NOT_STARTED；PHASE-03 曾误标为已完成，2026-07-29 纠正回待实施 |
+| blueprint-dynamic-path-resolution-outcome-v1.md | 待实施 | plans/path-dynamic-resolution-outcome-v1/outcome-contract.json（结构校验 exit 0） | 2026-08-03 | 路径动态化 outcome v1 重建（M1 成果冻结为验收基线）；取代 blueprint-dynamic-path-resolution.md |
+| blueprint-dynamic-path-resolution.md | 待实施 | 头部自述-未独立验证 | 2026-07-25（设计审计） | 设计经 2026-07-25 审计 + 2026-07-26 复核；M1 plan `plans/path-dynamic-resolution-m1/` READY-FOR-IMPLEMENTATION，4 phase 全 NOT_STARTED；PHASE-03 曾误标为已完成，2026-07-29 纠正回待实施；2026-08-03 SUPERSEDED_BY_OUTCOME_GOVERNANCE_V1（outcome 重建） |
 | blueprint-impact-analysis-framework.md | 已完成 | `audits/impact-analysis-framework/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-isolated-serve-test-infrastructure.md | 已完成 | `audits/isolated-serve-test-infrastructure/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-opencode-framework-simplification-roadmap.md | 已完成 | `audits/opencode-framework-simplification/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |

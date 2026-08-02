@@ -1,0 +1,13 @@
+
+scripts/__tests__/start-serve-paths.test.ts:
+(pass) start-serve.ts — resolver integration via runtime spawn > PDR-C-104a positive: --work-dir <fixture> via CLI wins over fallback [3.31ms]
+(pass) start-serve.ts — resolver integration via runtime spawn > PDR-C-104 single-failure mutation: --work-dir fixture without opencode.json throws WORK_ONE_ROOT_INVALID [2.04ms]
+(pass) start-serve.ts — resolver integration via runtime spawn > PDR-C-104b start-serve.ts source imports workspace-paths and uses WorkspacePathsError [0.68ms]
+(pass) start-serve.ts — resolver integration via runtime spawn > .env loader separation: workspace-paths.ts does NOT load or read scripts/.env [5.08ms]
+(pass) start-serve.ts — resolver integration via runtime spawn > scripts/.env secret loader remains in start-serve.ts (loadEnv + ENV_FILE intact) [0.09ms]
+(pass) start-serve.ts — resolver integration via runtime spawn > validateWorkOneRoot happy + integration with start-serve.ts resolveWorkDir path [2.86ms]
+
+ 6 pass
+ 0 fail
+ 17 expect() calls
+Ran 6 tests across 1 file. [90.00ms]

@@ -1,0 +1,61 @@
+{
+  "schema_version": "outcome-run-receipt/v1",
+  "document_kind": "outcome-run-receipt",
+  "run_id": "RUN-PATH-DYNAMIC-V1",
+  "case_id": "CASE-003",
+  "test_id": "T-003",
+  "execution_id": "EXEC-PATH-DYNAMIC-CASE-003",
+  "contract": {
+    "id": "PATH-DYNAMIC-RESOLUTION-OUTCOME-CONTRACT-V1",
+    "path": "outcome-contract.json",
+    "generation": 1,
+    "sha256": "8fe8fdfbbd33d94053d840b8c813ba3b65f67cee1fbe2a3c40dafe9c86f04929"
+  },
+  "acceptance_spec": {
+    "id": "PATH-DYNAMIC-ACCEPTANCE-SPEC-V1",
+    "path": "acceptance-spec.json",
+    "generation": 1,
+    "sha256": "854bd0daf916aa6ac8baba6eb5ac6a7545f4931b9841bc75f94afee154c45f4d"
+  },
+  "test_bundle": {
+    "id": "PATH-DYNAMIC-TEST-BUNDLE-V1",
+    "path": "outcome-test-bundle.json",
+    "generation": 1,
+    "sha256": "bec281e5252572387d9a9276a7060a260e29df22ee8cf7f6121630a4e33550d4"
+  },
+  "approval_anchor": {
+    "id": "PATH-DYNAMIC-APPROVAL-V1-GEN1",
+    "path": "outcome-approval.json",
+    "generation": 1,
+    "sha256": "5b8e2a487698c3cb26c7ceddfea31c501a4c3d190bf33668c758566c1ffa2d95"
+  },
+  "candidate_tree_sha256": "f26def7e9013e46106f75e42b44db6f63d0358c1",
+  "environment_manifest": {
+    "path": "runs/env/manifest-v1.json",
+    "sha256": "2908eb52cd40b7bdaef1af0fae87ae12e5d1939525ad8ed37d3ced4f9f981772"
+  },
+  "environment_hash": "2908eb52cd40b7bdaef1af0fae87ae12e5d1939525ad8ed37d3ced4f9f981772",
+  "argv": [
+    "bun",
+    "test",
+    "scripts/test-serve/__tests__/isolated-serve-paths.test.ts"
+  ],
+  "cwd": "/home/zhaoge/workspace/qoderwork/.worktrees/check-plan",
+  "exit_code": 0,
+  "signal": null,
+  "timed_out": false,
+  "execution_status": "PASS",
+  "oracle_observation": "7 pass / 0 fail; --primary-worktree/--from 参数缝 + 不 mutate 路径断言通过",
+  "stdout": {
+    "path": "runs/out/case-003.txt",
+    "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6"
+  },
+  "stderr": {
+    "path": "runs/err/case-003.txt",
+    "sha256": "0835e60c3c906c37d8ace62c2e55dfc3a1e8b2ebb07053b38bfaa62dd92db3c5"
+  },
+  "runner": {
+    "principal_id": "HUMAN:ChoGeer",
+    "trust_domain": "human-primary"
+  }
+}
