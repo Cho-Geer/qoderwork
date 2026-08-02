@@ -3,7 +3,8 @@
 **Plan mode**: `PLAN_SET`
 **Schema version**: `audit-plan-set/v3`
 **Document kind**: `plan-set-index`
-**Status**: `BLOCKED`
+**Status**: `SUPERSEDED_BY_OUTCOME_GOVERNANCE_V1`
+**Superseded by**: `.agents/skills/outcome-governance/SKILL.md` (2026-08-02). This plan's 6 governance ailments are eliminated by design in outcome-governance-v1 (4 eliminated + 2 not applicable). Legacy skill preserved at git tag `legacy-audit-governance-v1` for historical validate-audit replay.
 **Admission state**: `P1_R8_PENDING_REFREEZE` (was P1_R6_PENDING_REFREEZE; superseded by 2026-08-01 r8 PHASE-00/01 split: toolchain implementation separated from audit bootstrap)
 **Progression schema**: `phase-progression/v1`
 **Provenance level**: `v3-required`

@@ -7,9 +7,9 @@
 
 ## Pre-final readiness (no final publication)
 
-Run after PHASE-01..06 `ACCEPTED`; this section does not publish.
+Run after PHASE-00..06 `ACCEPTED`; this section does not publish.
 
-### 0. Final preflight — worktree + bytes-mirror + 9-r5 artifacts must exist
+### 0. Final preflight — worktree + bytes-mirror + 9-r8 artifacts must exist
 
 Before the 99-final verification block runs, Auditor A MUST execute this preflight as a hard-gate check. Any failure exits with code 11 and reports `STATUS_PUBLICATION_UNAUTHORIZED`.
 
@@ -17,18 +17,18 @@ Before the 99-final verification block runs, Auditor A MUST execute this preflig
 set -euo pipefail
 cd /home/zhaoge/workspace/qoderwork/.worktrees/check-plan
 test -d /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap || { echo "BLOCKED: target worktree missing"; exit 11; }
-test -f audits/audit-governance-recovery-v1/approved-plan-files-r5.sha256 || { echo "BLOCKED: r5 manifest missing"; exit 11; }
-test -d audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r5 || { echo "BLOCKED: r5 bytes-mirror missing"; exit 11; }
-test -f audits/audit-governance-recovery-v1/approval-decision-r5.json || { echo "BLOCKED: r5 approval decision missing"; exit 11; }
-sha256sum --check audits/audit-governance-recovery-v1/approved-plan-files-r5.sha256 || { echo "BLOCKED: r5 manifest hash mismatch"; exit 11; }
+test -f audits/audit-governance-recovery-v1/approved-plan-files-r8.sha256 || { echo "BLOCKED: r8 manifest missing"; exit 11; }
+test -d audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8 || { echo "BLOCKED: r8 bytes-mirror missing"; exit 11; }
+test -f audits/audit-governance-recovery-v1/approval-decision-r8.json || { echo "BLOCKED: r8 approval decision missing"; exit 11; }
+sha256sum --check audits/audit-governance-recovery-v1/approved-plan-files-r8.sha256 || { echo "BLOCKED: r8 manifest hash mismatch"; exit 11; }
 ```
 
 The worktree path was renamed from `audit-governance-recovery-v1` to `audit-governance-recovery-v1-bootstrap` to disambiguate from the historical `audit-governance-v2` and `audit-governance-v3` worktrees (which were abandoned predecessor attempts and are not the v1 plan target).
 
 ```bash
 cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
-cd audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r5
-sha256sum --check audits/audit-governance-recovery-v1/approved-plan-files-r5.sha256
+cd audits/audit-governance-recovery-v1/bootstrap/approved-plan-bytes-r8
+sha256sum --check audits/audit-governance-recovery-v1/approved-plan-files-r8.sha256
 cd /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/audit-governance-recovery-v1/formal-plan-set /home/zhaoge/workspace/qoderwork/.worktrees/audit-governance-recovery-v1-bootstrap
 /home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts plans/audit-governance-recovery-v1/formal-plan-set --final-readiness
@@ -74,7 +74,7 @@ bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts --final --st
 
 ### 2. Perform the independent semantic sweep
 
-Auditor A checks canonical, six chains, diff, mirror, graph, tests, conformance, and both roots; only Auditor A writes `audits/audit-governance-recovery-v1/final/g001/auditor-findings.md`. A blocker stops.
+Auditor A checks canonical, seven chains, diff, mirror, graph, tests, conformance, and both roots; only Auditor A writes `audits/audit-governance-recovery-v1/final/g001/auditor-findings.md`. A blocker stops.
 
 ### 3. Capture VERDICT and generate the fixed case set
 
@@ -134,9 +134,9 @@ The wrapper stages, validates, then commits; both live rechecks must return `ok:
 
 ## Final completion gate
 
-- [ ] `GATE-GR-FINAL-001` — exact r5 plan/PHASE-01 decisions.
+- [ ] `GATE-GR-FINAL-001` — exact r8 plan/PHASE-00 toolchain + PHASE-01 bootstrap decisions.
 - [ ] `GATE-GR-FINAL-002` — distinct tasks; waiver consumed once.
-- [ ] `GATE-GR-FINAL-003` — six valid audit/progression/status chains.
+- [ ] `GATE-GR-FINAL-003` — seven valid audit/progression/status chains.
 - [ ] `GATE-GR-FINAL-004` — manifest/tests/conformance/type/diff pass.
 - [ ] `GATE-GR-FINAL-005` — complete hash-valid acyclic graph.
 - [ ] `GATE-GR-FINAL-006` — current final release and dual states.

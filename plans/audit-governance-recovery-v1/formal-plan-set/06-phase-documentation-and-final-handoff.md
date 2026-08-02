@@ -38,7 +38,7 @@ No other file is permitted in this phase. The implementation-evidence log (`logs
 
 ## Auditor implementation log (Auditor Session A only)
 
-The implementation-evidence log `logs/2026-07-30-audit-governance-recovery-implementation.md` is written by Auditor Session A after Implementer B has stopped and the Auditor has independently re-run the PHASE-01..06 fixed-verification commands. This enforces `closed_decisions.DEC-GR-002` (Auditor A may not author governance source changes, but may author post-acceptance evidence logs) and the boundary that "Implementer B cannot author or publish formal audit/progression/status artifacts" (00-plan-index §2 P3 row).
+The implementation-evidence log `logs/2026-07-30-audit-governance-recovery-implementation.md` is written by Auditor Session A after Implementer B has stopped and the Auditor has independently re-run the PHASE-00..06 fixed-verification commands. This enforces `closed_decisions.DEC-GR-002` (Auditor A may not author governance source changes, but may author post-acceptance evidence logs) and the boundary that "Implementer B cannot author or publish formal audit/progression/status artifacts" (00-plan-index §2 P3 row).
 
 **Format** (≤20 lines, AUDIT-GOVERNANCE-RECOVERY-V1 contract):
 
@@ -51,7 +51,7 @@ The implementation-evidence log `logs/2026-07-30-audit-governance-recovery-imple
 - evidence_ceiling: file-integration
 - pre-audit-read-gate: logs/<YYYY-MM-DD>-pre-audit-read-<implementer-task-id>.md (sha256, line count, timestamp)
 - distinct-tasks: Implementer B id != Auditor A id
-- phases: PHASE-01..06 each = ACCEPTED, progression-receipt, scope-lock, audit-report all sha256 listed
+- phases: PHASE-00..06 each = ACCEPTED, progression-receipt, scope-lock, audit-report all sha256 listed
 - m1-artifacts: unchanged/nonrepairable; P0 freeze manifest sha256 listed
 - remaining-gate: 99-final-verification GATE-GR-FINAL-001..010
 - updated-docs: documents/INDEX.md, logs/INDEX.md, plans/audit-governance-recovery-v1/formal-plan-set/*.md, .agents/skills/plan-audit-archiver/provenance-rules.md

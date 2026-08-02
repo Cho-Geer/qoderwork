@@ -3,7 +3,7 @@
 > PHASE-01 治理看板：三段式登记（活跃 / 已闭环 / 已归档）+ 反向边视图 + 豁免清单。
 > 治理依据：[blueprint-blueprints-governance.md](./blueprint-blueprints-governance.md) v1.0.1 (sha256 `3051a5df...`)。
 > 本 INDEX 由 PHASE-01 首次创建；PHASE-02 已归档 11 文件（5 → `archive/2026-06/`、6 → `archive/2026-07/`）；PHASE-03 已写入 3 条因果边（单边记录于依赖方）+ 反向边视图 + 18 非豁免 root 文件四字段头部回填 + 3 处过期头部纠正。
-> 注册总数：31（活跃 19 + 已归档 11 + 豁免 1）。
+> 注册总数：32（活跃 20 + 已归档 11 + 豁免 1）。
 
 ## 活跃
 
@@ -12,6 +12,7 @@
 | 2026-07-12-framework-deprecated-content-audit-blueprint.md | 已完成 | `audits/framework-deprecated-content-audit/LATEST.md`（如存在）或 头部自述-未独立验证 | 2026-07-12（自述） | 治理审计蓝图 |
 | blueprint-agent-read-enforcement.md | 已完成 | `audits/agent-read-enforcement/LATEST.md` 或 头部自述-未独立验证 | 2026-07-28（PHASE-03 头部纠正） | PHASE-03 边已写入（被取代·机制吸收 ← blueprint-permission-template-driven-enforcement.md）；头部状态 待实施 → 已完成 |
 | blueprint-audit-governance-evidence-and-status-closure.md | 已退役 | `audits/audit-governance-evidence-and-status-closure/LATEST.md` | 2026-07-26（v3 ACCEPT） | v1 closure；PHASE-03 边已写入（被取代 ← v3）；modification-ban 检查 6 命中均为治理提及（无 sha256 绑定）→ 可编辑 |
+| blueprint-audit-governance-recovery-v1-r7-and-tiered-provenance.md | 草稿 | 头部自述-未独立验证 | 2026-08-01（3 轮 high-precision 复审 PASS） | v1 r7 generation(修 3 个 spec drift)+ 分级 provenance 独立 proposal；前置依赖 → v3 closure；provenance_level: blueprint-draft；2026-08-02 SUPERSEDED_BY_OUTCOME_GOVERNANCE_V1（6 病灶在新框架已消除，plan 归档） |
 | blueprint-cognitive-defense-skill-alignment.md | 已完成 | `audits/cognitive-defense-skill-alignment/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-dispatch-db-canonical.md | 已完成 | `audits/dispatch-db-canonical/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-dispatch-scope-privilege.md | 已完成 | `audits/dispatch-scope-privilege/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
