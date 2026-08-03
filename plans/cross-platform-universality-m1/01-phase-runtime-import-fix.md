@@ -13,7 +13,7 @@
 |---|---|---|---|
 | Blueprint | `blueprints/blueprint-cross-platform-universality.md` v3 | S2.1 (B layer), S3 Phase 1, S4 XP-T-004 | requirements |
 | Handoff | `handoff/native-windows-verification.md` | S1 (P0#1), 4 TS import lines | runtime evidence |
-| Resolver | `scripts/lib/workspace-paths.ts` | full file (377 lines) | consume, not rewrite |
+| Resolver | `scripts/lib/workspace-paths.ts` | full file (379 lines) | consume, not rewrite |
 | Existing test | `scripts/test-serve/__tests__/bootstrap-import-source.test.ts` | full file | regression baseline |
 
 ## 2. Decisions, scope, and non-goals

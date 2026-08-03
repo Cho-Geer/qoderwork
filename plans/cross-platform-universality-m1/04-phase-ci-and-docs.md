@@ -21,24 +21,23 @@
 
 | ID | Question | Upstream decision | Status |
 |---|---|---|---|
-| P4-DEC-001 | AGENTS.md replacement | 3 `cd` commands → `cd "${WORK_ONE_ROOT}"`; 10 descriptive → generic placeholders | CLOSED |
-| P4-DEC-002 | CI matrix | `os: [windows-latest, ubuntu-latest]`; new file `.github/workflows/cross-platform-universality.yml` (`.github/workflows/` does not exist at planning time) | CLOSED |
+| P4-DEC-001 | AGENTS.md replacement | 3 `cd` cmds → `cd "${WORK_ONE_ROOT}"`; 10 descriptive → generic placeholders | CLOSED |
+| P4-DEC-002 | CI matrix | `os: [windows-latest, ubuntu-latest]`; new file `.github/workflows/cross-platform-universality.yml` (dir absent at planning) | CLOSED |
 | P4-DEC-003 | blueprint INDEX | Verify entry exists; no modification needed | CLOSED |
 | P4-DEC-004 | Log registration | `logs/` per §1.3 vs §3 L135; see §6 Step 4 | BLOCKED-BY-DECISION |
 
 ### In scope
 
 - AGENTS.md: replace 13 `/home/zhaoge` occurrences
-- `.github/workflows/cross-platform-universality.yml`: NEW FILE — create with `os: [windows-latest, ubuntu-latest]` matrix
+- `.github/workflows/cross-platform-universality.yml`: NEW FILE with `os: [windows-latest, ubuntu-latest]` matrix
 - `blueprints/INDEX.md`: verify entry for cross-platform-universality exists
 - `logs/INDEX.md`: **DO NOT MODIFY** — see §6 Step 4
 
 ### Non-goals
 
 - Do not modify `audits/`, `e2e-evidence/`, `logs/` historical evidence (blueprint §1.3 / AGENTS.md forbid)
-- Do not modify `.agents/skills/` files (Phase 2 scope)
-- Do not modify `scripts/` files (Phase 1 scope)
-- Do not modify `logs/INDEX.md` (per DEFECT 4; the `logs/` directory is read-only in this plan-set)
+- Do not modify `.agents/skills/` (Phase 2 scope) or `scripts/` (Phase 1 scope) files
+- Do not modify `logs/INDEX.md` (per DEFECT 4; `logs/` directory is read-only in this plan-set)
 
 ## 3. Verified current baseline
 
@@ -47,7 +46,7 @@
 | AGENTS.md 13 hits | `python -c "print(open('AGENTS.md','rb').read().decode().count('/home/zhaoge'))"` | 13 |
 | 3 `cd` commands at L222/L226/L230 | `python -c "..." scan lines` | 3 cd /home/zhaoge |
 | 10 descriptive references | `python -c "..." scan lines` | L3/L10/L24/L25/L37/L41/L203/L515/L516/L517 |
-| `.github/workflows/` directory exists at planning time | `ls -la .github/workflows/ 2>/dev/null` | NO (at planning time, 2026-08-03); creation of a new workflow file is in-scope |
+| `.github/workflows/` dir at planning time | `ls -la .github/workflows/ 2>/dev/null` | NO (2026-08-03); new workflow file in-scope |
 | blueprints/INDEX.md exists | `test -f blueprints/INDEX.md; echo $?` | check at edit time |
 | logs/INDEX.md modification | FORBIDDEN per blueprint §1.3; this plan does not modify `logs/` | n/a (not edited) |
 
@@ -64,14 +63,14 @@
 | Exact path | Change | Anchor |
 |---|---|---|
 | `AGENTS.md` | replace 13 `/home/zhaoge` occurrences | L3/L10/L24/L25/L37/L41/L203/L222/L226/L230/L515/L516/L517 |
-| `.github/workflows/cross-platform-universality.yml` | NEW FILE — create CI workflow with `os: [windows-latest, ubuntu-latest]` matrix | new file (directory did not exist at planning time, 2026-08-03) |
-| `logs/INDEX.md` | **NOT MODIFIED** — see §6 Step 4 for the BLOCKED-BY-DECISION log creation request | n/a |
+| `.github/workflows/cross-platform-universality.yml` | NEW FILE with `os: [windows-latest, ubuntu-latest]` matrix | new file (dir absent at planning time, 2026-08-03) |
+| `logs/INDEX.md` | **NOT MODIFIED** — see §6 Step 4 BLOCKED-BY-DECISION log creation request | n/a |
 
 ## 6. Numbered edit steps
 
 ### Step 1: Replace AGENTS.md paths
 
-3 `cd` command lines (L222, L226, L230):
+3 `cd` lines (L222, L226, L230):
 - L222: `cd /home/zhaoge/workspace/qoderwork` → `cd "${QODERWORK_ROOT}"`
 - L226: `cd /home/zhaoge/workspace/qoderwork` → `cd "${QODERWORK_ROOT}"`
 - L230: `cd /home/zhaoge/workspace/qoderwork/scripts` → `cd "${QODERWORK_ROOT}/scripts"`
@@ -84,7 +83,7 @@
 
 ### Step 2: Create CI workflow file `.github/workflows/cross-platform-universality.yml` (NEW FILE)
 
-Verified: `.github/workflows/` directory does not exist at planning time (2026-08-03). Therefore this step creates a new file with the matrix.
+Verified: `.github/workflows/` directory does not exist at planning time (2026-08-03). This step creates a new file with the matrix.
 
 Create the directory if missing, then write the workflow file (excerpt; full YAML stored at the named path):
 
@@ -123,7 +122,7 @@ jobs:
 YAML
 ```
 
-Anchor for the matrix addition is the literal `os: [windows-latest, ubuntu-latest]` in the file's `jobs.<name>.strategy.matrix.os` block.
+Anchor for the matrix addition is the literal `os: [windows-latest, ubuntu-latest]` in the file's `jobs.<name>.strategy.matrix.os`.
 
 ### Step 3: Verify blueprint INDEX
 
@@ -136,11 +135,11 @@ If entry exists, no modification needed. If missing, add entry.
 
 ### Step 4: Log creation — `BLOCKED-BY-DECISION` (DEFECT 4)
 
-Blueprint §1.3 L50 forbids modifying `logs/` paths inside frozen evidence; blueprint §3 L135 demands a new log file. **Resolution**: the §1.3/§3 contradiction is treated as a non-binding recommendation. This plan does NOT create `logs/2026-08-03-blueprint-cross-platform-universality.md` and does NOT modify `logs/INDEX.md`. Step 4 remains `BLOCKED-BY-DECISION` until the user lifts the contradiction; no log is required for Phase 4 completion.
+Blueprint §1.3 L50 forbids modifying `logs/` paths inside frozen evidence; blueprint §3 L135 demands a new log file. **Resolution**: §1.3/§3 contradiction treated as non-binding recommendation. This plan does NOT create `logs/2026-08-03-blueprint-cross-platform-universality.md` and does NOT modify `logs/INDEX.md`. Step 4 remains `BLOCKED-BY-DECISION` until the user lifts the contradiction; no log is required for Phase 4 completion.
 
 ### Step 5: Run `capture-state.ts` (P-07 command-level enforcement, DEFECT 8)
 
-After Steps 1–4 (with Step 4 BLOCKED), invoke capture-state for P-07 command-level enforcement. The script lives at `.agents/skills/plan-audit-archiver/scripts/capture-state.ts` (NOT `scripts/`); mandatory flags are `--repository-root`, `--output`, `--scope-lock`, `--phase-id` (no `--plan-set` flag exists).
+After Steps 1–4 (Step 4 BLOCKED), invoke capture-state for P-07 command-level enforcement. Script lives at `.agents/skills/plan-audit-archiver/scripts/capture-state.ts` (NOT `scripts/`); mandatory flags are `--repository-root`, `--output`, `--scope-lock`, `--phase-id` (no `--plan-set` flag).
 
 ```bash
 cd C:\Users\USER\ZCodeProject\qoderwork\.worktrees\check-plan
@@ -151,19 +150,21 @@ bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
   --phase-id PHASE-04
 ```
 
-Expected: capture-state produces a JSON snapshot under `audits/`. The `--repository-root /home/zhaoge/workspace/opencode/work-one` is mandatory. Missing `--output` / `--scope-lock` / `--phase-id` cause the script to throw; surface as `ESCALATION`.
+Expected: capture-state produces a JSON snapshot under `audits/`. `--repository-root /home/zhaoge/workspace/opencode/work-one` is mandatory. Missing `--output` / `--scope-lock` / `--phase-id` cause script to throw; surface as `ESCALATION`.
+
+Note: `/home/zhaoge/workspace/opencode/work-one` here is the P-07 mandated `repository_root` anchor; exempt from Phase 1/2/4 eradication because it is the audit subject, not a runtime path.
 
 ### Step 6: Verification (UNAVAILABLE-handled; see §7)
 
 ## 7. Fixed verification commands
 
-Three outcomes per check (UNAVAILABLE always = FAIL, not pass-by-omission):
+Three outcomes per check (UNAVAILABLE always = FAIL, never pass-by-omission):
 
 | Outcome | Condition | Phase result |
 |---|---|---|
 | FOUND | cmd exits 0 AND query yields positive hit | per-check |
 | NOT_FOUND | cmd exits 0 AND query yields 0 hits | per-check |
-| UNAVAILABLE | cmd exits non-zero (missing binary, IO error, encoding) or output unparseable | **FAIL** — block |
+| UNAVAILABLE | cmd exits non-zero (missing binary, IO error, encoding) or unparseable output | **FAIL** — block |
 
 grep exit codes: rc=0 = FOUND match; rc=1 = NOT_FOUND; rc=2+ = UNAVAILABLE.
 
@@ -236,7 +237,7 @@ except (OSError, IOError, UnicodeDecodeError) as e:
 - **AGENTS.md**: `git checkout -- AGENTS.md`
 - **CI files**: `git checkout -- .github/workflows/*.yml`
 - **Verification**: After rollback, AGENTS.md Python scan returns 13 hits (baseline)
-- **Risk**: Low — AGENTS.md is documentation, CI changes are additive
+- **Risk**: Low — AGENTS.md is documentation, CI changes additive
 
 ## 10. Completion gate
 
@@ -246,6 +247,6 @@ except (OSError, IOError, UnicodeDecodeError) as e:
 - [ ] `blueprints/INDEX.md` has entry for cross-platform-universality
 - [ ] Step 4 (log creation) is annotated `BLOCKED-BY-DECISION` and `logs/INDEX.md` is **not** modified
 - [ ] `bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts --repository-root /home/zhaoge/workspace/opencode/work-one --output audits/cross-platform-universality-m1/evidence/pre-change-PHASE-04.json --scope-lock audits/cross-platform-universality-m1/scope-lock-PHASE-04.json --phase-id PHASE-04` was invoked in Step 5 and produced an `audits/` snapshot
-- [ ] Combined cross-phase scan (scripts/ .ts + .agents/skills/ .md + AGENTS.md) returns 0 hits, with explicit UNAVAILABLE handling per §7
+- [ ] Combined cross-phase scan (scripts/ .ts + .agents/skills/ .md + AGENTS.md) returns 0 hits; explicit UNAVAILABLE handling per §7
 - [ ] Required receipts and hash bindings are retained
 - [ ] This is the final implementation phase — no next phase dependency

@@ -81,7 +81,7 @@ Expected output:
 
 | Phase | Rollback command | Verification after rollback |
 |---|---|---|
-| PHASE-01 | `git checkout -- scripts/cleanup-regress.ts scripts/diag-handover-path.ts scripts/diag-schema.ts scripts/regress-parent-child.ts scripts/test-hybrid-enforcement.ts scripts/_d3_live.ts` | Python scan shows 9 logical imports (8 static ESM imports + 1 dynamic await-import) |
+| PHASE-01 | `git checkout -- scripts/cleanup-regress.ts scripts/diag-handover-path.ts scripts/diag-schema.ts scripts/regress-parent-child.ts scripts/test-hybrid-enforcement.ts scripts/_d3_live.ts` | Python scan shows 10 logical imports (9 static ESM imports + 1 dynamic await-import) |
 | PHASE-02 | `git checkout -- .agents/skills/` | Python scan shows 168 hits |
 | PHASE-03 | `rm scripts/qoderwork.sh` (if created) | N/A |
 | PHASE-04 | `git checkout -- AGENTS.md .github/workflows/` | AGENTS.md Python scan shows 13 hits |
