@@ -1,0 +1,30 @@
+{
+  "schema_version": "audit-governance-approval/v3",
+  "document_kind": "approval-decision",
+  "decision_id": "CROSS-PLATFORM-UNIVERSALITY-M1-APPROVAL-20260803",
+  "decision": "APPROVED",
+  "approved_by": "HUMAN_USER",
+  "approved_at": "2026-08-03T00:00:00Z",
+  "approved_artifacts": {
+    "blueprint": {
+      "path": "blueprints/blueprint-cross-platform-universality.md",
+      "sha256": "c1c2d9e29e2fcebd6ceee44a421d444188df428478afea5b060f788a7ba4ccbd"
+    },
+    "canonical_contract": {
+      "path": "plans/cross-platform-universality-m1/canonical-requirements-contract.yaml",
+      "sha256": "dd400ed2554d0cfa0bb8b12d1cb4a5b822a0d854102b6c1e74cccc023cd56c58"
+    }
+  },
+  "approved_scope": [
+    "Cross-platform universality M1: Windows Git Bash + WSL Ubuntu support",
+    "Runtime import fix in 6 TS files (Phase 1)",
+    "Skill universalization across 18 .md files (Phase 2)",
+    "Optional entrypoint decision (Phase 3, BLOCKED-BY-DECISION)",
+    "CI matrix and documentation update (Phase 4)"
+  ],
+  "limitations": [
+    "Phase 3 remains BLOCKED-BY-DECISION until user chooses to create entrypoint",
+    "This plan does not cover native cmd.exe support",
+    "Each implementation phase remains subject to its own provenance gates"
+  ]
+}
