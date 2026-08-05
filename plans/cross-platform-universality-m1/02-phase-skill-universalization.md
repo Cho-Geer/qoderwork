@@ -1,37 +1,38 @@
 # Phase PHASE-02: Skill Universalization [VERIFICATION]
 
 **Phase ID**: `PHASE-02`
-**Depends on**: NONE (parallel with PHASE-01)
+**Depends on**: NONE
 **Outcome**: 18 skill `.md` files with 168 `/home/zhaoge` occurrences replaced with placeholders
 **Evidence level**: analysis
-**Progression status**: `NOT_STARTED`
-**Completion receipt**: `<receipt-path>` (required when status is `ACCEPTED`)
+**Progression status**: `ACCEPTED`
+**Completion receipt**: `audits/cross-platform-universality-m1/receipts/phase-02.json`
+Note: PHASE-02 runs in parallel with PHASE-01; manifest cell and header express `NONE` so the progression validator parses a clean dependency list.
 
 ## 1. Input contract + source ledger
 
 | Source | Exact path | Sections used | Authority |
 |---|---|---|---|
-| Blueprint | `blueprints/blueprint-cross-platform-universality.md` v3 | S2.1 (C layer), S3 Phase 2, S4 XP-T-003 | requirements |
+| Blueprint | `blueprints/blueprint-cross-platform-universality.md` v3 | S2.1, S3 Phase 2, S4 XP-T-003 | requirements |
 | Handoff | `handoff/native-windows-verification.md` | S2 (18 files, 168 matches), S6-N2/N3 | runtime evidence |
-| Main session | 2026-08-03 verified baseline | actual 168 matches blueprint | re-verified at implementation time |
+| Main session | 2026-08-03 verified baseline | actual 168 matches blueprint | re-verified at impl time |
 
 ### Verified baseline (main session 2026-08-03, Python byte-level)
 
 **Actual counts (matches blueprint)**:
-- Total: 18 files / 168 matches (per-file: 32+30+16+15+12+11+9+8+7+7+5+4+3+3+2+2+1+1 = 168, Python byte-level sum)
-- 6 high-frequency files (>=10): 116 matches (32+30+16+15+12+11)
-- 5 mid-frequency files (5-9): 36 matches (9+8+7+7+5)
-- 7 low-frequency files (1-4): 16 matches (4+3+3+2+2+1+1)
+- Total: 18 files / 168 matches (per-file: 32+30+16+15+12+11+9+8+7+7+5+4+3+3+2+2+1+1 = 168)
+- 6 high-frequency files (>=10): 116 matches
+- 5 mid-frequency files (5-9): 36 matches
+- 7 low-frequency files (1-4): 16 matches
 
-**Bucket classification** (per blueprint S2.1, cross-checked against per-file audit using line-level co-occurrence, not literal counts):
-- 桶1 (command templates): ~87 hits across ~15 files — `${WORK_ONE_ROOT}` / `${QODERWORK_ROOT}` placeholders. (Note: only 43 lines are pure command templates; the additional 44 lines share `wsl -d` with `/home/zhaoge` and are classified below as 桶2 lines.)
-- 桶2 (wsl -d + /home/zhaoge co-occurrence on same line): **10** lines where `wsl -d` and `/home/zhaoge` co-occur on the same line, in 6 files. Replace `wsl -d Ubuntu-24.04` with `wsl -d ${QW_WSL_DISTRO:-Ubuntu-24.04}`. Verified: total `wsl -d` lines = 54, total `/home/zhaoge` lines = 156, intersection = 10.
-- 桶3 (prose + TS constants + JSON): ~71 hits — generic rewrites. Per blueprint §2.1 breakdown: 61 prose + 8 TS constants + 2 JSON.
+**Bucket classification** (per blueprint S2.1, line-level co-occurrence audit):
+- 桶1 (command templates): ~87 hits across ~15 files — `${WORK_ONE_ROOT}` / `${QODERWORK_ROOT}` placeholders. (43 lines are pure command templates; 44 share `wsl -d` with `/home/zhaoge` → classified 桶2.)
+- 桶2 (wsl -d + /home/zhaoge same line): **10** lines in 6 files. Replace `wsl -d Ubuntu-24.04` → `wsl -d ${QW_WSL_DISTRO:-Ubuntu-24.04}`. Verified: `wsl -d` = 54, `/home/zhaoge` = 156, intersection = 10.
+- 桶3 (prose + TS constants + JSON): ~71 hits — per blueprint §2.1: 61 prose + 8 TS + 2 JSON.
 
-**Arithmetic verification**: 桶1 + 桶2 + 桶3 = 87 + 10 + 71 = **168**, matching the per-file Python byte-level sum.
+**Arithmetic**: 桶1 + 桶2 + 桶3 = 87 + 10 + 71 = **168**, matching the byte-level sum.
 
-**N2 fix required**: 1 file (`clean-sessions/SKILL.md:77` matching `走 WSL` + `Windows 侧直连`) with "WSL-only / Linux only / 走 WSL" framing must be updated to "Windows Git Bash + WSL Ubuntu"
-**N3 fix required**: `debug-environment-toolkit/SKILL.md` 12 hits — must be replaced
+**N2 fix required**: `clean-sessions/SKILL.md:77` (`走 WSL` + `Windows 侧直连`) → "Windows Git Bash + WSL Ubuntu"
+**N3 fix required**: `debug-environment-toolkit/SKILL.md` 12 hits — replace
 
 ## 2. Decisions, scope, and non-goals
 
@@ -58,18 +59,16 @@
 - Do not modify `AGENTS.md` (Phase 4 scope)
 - Do not modify `audits/`, `e2e-evidence/`, `logs/`
 - Do not modify `work-one` or IDE config files
-- Do not modify files outside `.agents/skills/` (except N2 text changes are within skill files only)
+- Do not modify files outside `.agents/skills/` (N2 text changes stay within skill files)
 
 ## 3. Verified current baseline
 
 | Claim | Command | Result |
 |---|---|---|
-| 18 skill files with /home/zhaoge | `python -c "import os; d=r'C:\Users\USER\ZCodeProject\qoderwork\.worktrees\check-plan\.agents\skills'; c=0; [exec('c+=open(os.path.join(r,fn),\"rb\").read().decode(\"utf-8\",\"ignore\").count(\"/home/zhaoge\")') for r,_,fs in os.walk(d) for fn in fs if fn.endswith('.md')]; print(c)"` | 168 |
-| High-freq files (>=10) | Per-file Python scan | 6 files / 116 hits |
-| Mid-freq files (5-9) | Per-file Python scan | 5 files / 36 hits |
-| Low-freq files (1-4) | Per-file Python scan | 7 files / 16 hits |
-| wsl -d + /home/zhaoge co-occurrences (桶2) | line-by-line Python scan of `.agents/skills/.md` | 10 lines (in 6 files) where both `wsl -d` and `/home/zhaoge` appear on the same line |
-| N2 "WSL-only" framing | `grep -ril 'WSL-only\|Linux only\|走 WSL\|Windows 侧直连' .agents/skills/` | 1 file (`clean-sessions/SKILL.md:77` matching `走 WSL` + `Windows 侧直连`) |
+| 18 skill files with /home/zhaoge | `python -c "import os; d=r'C:\Users\USER\ZCodeProject\qoderwork\.worktrees\check-plan\.agents\skills'; c=sum(open(os.path.join(r,fn),'rb').read().decode('utf-8','ignore').count('/home/zhaoge') for r,_,fs in os.walk(d) for fn in fs if fn.endswith('.md')); print(c)"` | 168 |
+| High/Mid/Low freq buckets | Per-file Python scan | 6/116, 5/36, 7/16 |
+| wsl -d + /home/zhaoge co-occurrences (桶2) | line-by-line Python scan | 10 lines in 6 files |
+| N2 "WSL-only" framing | `grep -ril 'WSL-only\|Linux only\|走 WSL\|Windows 侧直连' .agents/skills/` | 1 file (`clean-sessions/SKILL.md:77`) |
 | N3 debug-env hits | `python -c "print(open('.agents/skills/debug-environment-toolkit/SKILL.md','rb').read().decode().count('/home/zhaoge'))"` | 12 |
 
 ## 4. End-to-end traceability
@@ -121,35 +120,24 @@
 ### Bucket replacement patterns
 
 **Bucket arithmetic (must hold after every sub-step)**: 桶1 + 桶2 + 桶3 = **168**.
-Verified: 87 (command templates) + 10 (wsl -d + /home/zhaoge co-occurrences) + 71 (prose 61 + TS 8 + JSON 2) = 168.
+Verified: 87 + 10 + 71 = 168.
 
-**桶1 (command templates ~87 hits across ~15 files)**: Replace `/home/zhaoge/workspace/qoderwork` with `${QODERWORK_ROOT}` and `/home/zhaoge/workspace/opencode/work-one` with `${WORK_ONE_ROOT}`.
+**桶1 (command templates ~87 hits)**: Replace `/home/zhaoge/workspace/qoderwork` → `${QODERWORK_ROOT}` and `/home/zhaoge/workspace/opencode/work-one` → `${WORK_ONE_ROOT}`.
+Pattern: `s|/home/zhaoge/workspace/qoderwork|${QODERWORK_ROOT}|g`; `s|/home/zhaoge/workspace/opencode/work-one|${WORK_ONE_ROOT}|g`
 
-Pattern: `s|/home/zhaoge/workspace/qoderwork|${QODERWORK_ROOT}|g` and `s|/home/zhaoge/workspace/opencode/work-one|${WORK_ONE_ROOT}|g`
-
-**桶2 (10 co-occurrence lines: wsl -d + /home/zhaoge on same line, in 6 files)**: Replace `wsl -d Ubuntu-24.04` with `wsl -d ${QW_WSL_DISTRO:-Ubuntu-24.04}`.
-
+**桶2 (10 co-occurrence lines in 6 files)**: Replace `wsl -d Ubuntu-24.04` → `wsl -d ${QW_WSL_DISTRO:-Ubuntu-24.04}`.
 Pattern: `s|wsl -d Ubuntu-24.04|wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}"|g`
 
 **桶3 (prose + TS constants + JSON ~71 hits)**: 
 - Prose paths: replace with "your QoderWork workspace root" or "the work-one project root"
-- TS constants in code examples: replace with `${WORK_ONE_ROOT}` variable reference
-- JSON template fields: replace with placeholder comments
+- TS constants in code examples: replace with `${WORK_ONE_ROOT}`
+- JSON template fields: placeholder comments
 
-If a hit does not fall into 桶1 or 桶2, it MUST be classified into 桶3 to keep the arithmetic closed.
+If a hit is not 桶1 or 桶2, it MUST be 桶3 to keep the arithmetic closed.
 
 ### Step 1: High-frequency files (6 files)
 
-For each of the 6 high-frequency files, apply 桶1 + 桶2 + 桶3 replacements. Use `sed` or manual edit per file.
-
-```bash
-cd C:\Users\USER\ZCodeProject\qoderwork\.worktrees\check-plan
-# Apply 桶1 replacement to all skill files
-for f in .agents/skills/serve-api/reference-operations.md .agents/skills/serve-api/reference.md .agents/skills/opencode-framework-dev/SKILL.md .agents/skills/isolated-serve-test/SKILL.md .agents/skills/debug-environment-toolkit/SKILL.md .agents/skills/plan-audit-archiver/SKILL.md; do
-  sed -i 's|/home/zhaoge/workspace/qoderwork|${QODERWORK_ROOT}|g' "$f"
-  sed -i 's|/home/zhaoge/workspace/opencode/work-one|${WORK_ONE_ROOT}|g' "$f"
-done
-```
+For each of the 6 high-frequency files, apply 桶1 + 桶2 + 桶3 replacements via `sed` or manual edit.
 
 ### Step 2: Mid-frequency files (5 files)
 
@@ -268,12 +256,12 @@ out=$(grep -rn 'wsl -d Ubuntu-24.04' .agents/skills/ --include='*.md' 2>&1); rc=
 - **Verification**: After rollback, Python scan returns 168 hits (baseline)
 - **Risk**: Low — these are documentation/skill files, not runtime code
 
-## 10. Completion gate
+## Phase completion gate
 
-- [ ] Python byte-level scan of `.agents/skills/` `.md` files returns 0 hits for `/home/zhaoge`
-- [ ] grep for "WSL-only" / "Linux only" / "走 WSL" returns NOT_FOUND in skill files
-- [ ] grep for bare `wsl -d Ubuntu-24.04` returns NOT_FOUND (all replaced with variable)
-- [ ] `debug-environment-toolkit/SKILL.md` has 0 `/home/zhaoge` hits (N3 fix)
-- [ ] Mutation test: leaving one `/home/zhaoge` in any skill file causes verification to FAIL
-- [ ] Required receipts and hash bindings are retained
-- [ ] Next Phase prohibition: PHASE-04 depends on PHASE-02 completion (in addition to PHASE-01)
+- [x] Python byte-level scan of `.agents/skills/` `.md` files returns 0 hits for `/home/zhaoge`
+- [x] grep for "WSL-only" / "Linux only" / "走 WSL" returns NOT_FOUND in skill files
+- [x] grep for bare `wsl -d Ubuntu-24.04` returns NOT_FOUND (all replaced with variable)
+- [x] `debug-environment-toolkit/SKILL.md` has 0 `/home/zhaoge` hits (N3 fix)
+- [x] Mutation test: leaving one `/home/zhaoge` in any skill file causes verification to FAIL
+- [x] Required receipts and hash bindings are retained
+- [x] Next Phase prohibition: PHASE-04 depends on PHASE-02 completion (in addition to PHASE-01)

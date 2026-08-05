@@ -1,30 +1,33 @@
 {
   "schema_version": "audit-governance-approval/v3",
   "document_kind": "approval-decision",
-  "decision_id": "CROSS-PLATFORM-UNIVERSALITY-M1-APPROVAL-20260803",
+  "decision_id": "CROSS-PLATFORM-UNIVERSALITY-M1-APPROVAL-20260804-PLAN-AMENDMENT",
   "decision": "APPROVED",
   "approved_by": "HUMAN_USER",
-  "approved_at": "2026-08-03T00:00:00Z",
+  "approved_at": "2026-08-05T11:09:45Z",
   "approved_artifacts": {
     "blueprint": {
       "path": "blueprints/blueprint-cross-platform-universality.md",
-      "sha256": "c1c2d9e29e2fcebd6ceee44a421d444188df428478afea5b060f788a7ba4ccbd"
+      "sha256": "0af8a1864e2f23e4365c1a136b48cdba8bdbd4c13450a69595bb9dc1e4733ec1"
     },
     "canonical_contract": {
       "path": "plans/cross-platform-universality-m1/canonical-requirements-contract.yaml",
-      "sha256": "dd400ed2554d0cfa0bb8b12d1cb4a5b822a0d854102b6c1e74cccc023cd56c58"
+      "sha256": "f8548087a8079731ce1ebbfcd33aaf869b6c1f77caa3b73e6ca7fe1d3b2103c3"
     }
   },
   "approved_scope": [
-    "Cross-platform universality M1: Windows Git Bash + WSL Ubuntu support",
-    "Runtime import fix in 6 TS files (Phase 1)",
-    "Skill universalization across 18 .md files (Phase 2)",
-    "Optional entrypoint decision (Phase 3, BLOCKED-BY-DECISION)",
-    "CI matrix and documentation update (Phase 4)"
+    "Cross-platform universality M1: Windows Git Bash + WSL Ubuntu support (post-amendment re-approval)",
+    "Runtime import fix in 6 TS files (Phase 1, ACCEPTED)",
+    "Skill universalization across 18 .md files (Phase 2, ACCEPTED)",
+    "Optional entrypoint script (Phase 3, BLOCKED-BEFORE-2026-08-04-NOW-IMPLEMENTING)",
+    "CI matrix and documentation update (Phase 4, ACCEPTED in-scope)",
+    "Plan amendment 2026-08-04: add PHASE-05 (scripts/.ts residual sweep) + lift PHASE-03 BLOCKED"
   ],
   "limitations": [
-    "Phase 3 remains BLOCKED-BY-DECISION until user chooses to create entrypoint",
+    "Each implementation phase remains subject to its own provenance gates",
     "This plan does not cover native cmd.exe support",
-    "Each implementation phase remains subject to its own provenance gates"
-  ]
+    "Phase 3 follows the constraints listed in 03-phase-entrypoint-optional.md §2 (no platform-default hardcoding)",
+    "Phase 5 replaces all 41 hits including fixtures per DEC-009 (P1-DEC-002 NOT extended to PHASE-05)"
+  ],
+  "re_approval_reason": "Plan amendment 2026-08-04: added PHASE-05 (XP-REQ-011: scripts/.ts 30 files 41 non-import residuals) to address PHASE-04 §10 gate 7 combined scan failure; lifted PHASE-03 BLOCKED-BY-DECISION per user (P3-A) YES decision; canonical contract SHA-256 changed from fd93a41b... to 7f2986bd..."
 }

@@ -33,7 +33,7 @@ requirements:
 
   - id: XP-REQ-005
     condition: "N2 WSL-only framing fix"
-    required_behavior: "5+ skill files with WSL-only framing updated to Windows Git Bash + WSL Ubuntu"
+    required_behavior: "1 skill file with WSL-only framing (clean-sessions/SKILL.md:77) updated to Windows Git Bash + WSL Ubuntu"
     observable_result: "grep for WSL-only returns NOT_FOUND"
     source: "blueprint S2.1 C layer"
     owning_phase: PHASE-02
@@ -73,6 +73,20 @@ requirements:
     source: "blueprint S2.1 E layer, S3 Phase 4"
     owning_phase: PHASE-04
 
+  - id: XP-REQ-011
+    condition: scripts/.ts residual sweep
+    required_behavior: "41 pre-existing non-import /home/zhaoge hits in 30 scripts/*.ts files replaced with ${WORK_ONE_ROOT} / ${QODERWORK_ROOT} / resolveWorkspacePaths-derived placeholders (per §7 amendment: all 41 replaced, 0 preserved)"
+    observable_result: "Combined scan total (scripts/.ts + .agents/skills/.md + AGENTS.md) = 0"
+    source: "blueprint S2.1 (B layer aftermath); PHASE-04 §10 gate 7 amendment"
+    owning_phase: PHASE-05
+
+  - id: XP-REQ-012
+    condition: PHASE-03 entrypoint script created
+    required_behavior: "scripts/qoderwork.sh created and executable; consumes scripts/lib/workspace-paths.ts via resolveWorkspacePaths; works on both Windows Git Bash and WSL Ubuntu; honors ${QW_WSL_DISTRO:-Ubuntu-24.04}; no hardcoded /home/zhaoge or C:/Users/$USER workspace path literals"
+    observable_result: "test -x scripts/qoderwork.sh exit 0; bash scripts/qoderwork.sh resolve exits 0; absent of literal C:/Users/$USER/workspace/opencode/work-one or /home/$USER/workspace/opencode/work-one in script body"
+    source: "blueprint S2.1 (D layer); DEC-004 lifted 2026-08-04"
+    owning_phase: PHASE-03
+
 decisions:
   - id: DEC-001
     question: Platform scope
@@ -88,7 +102,7 @@ decisions:
 
   - id: DEC-004
     question: "Phase 3 entrypoint"
-    final_contract: "optional; marked BLOCKED-BY-DECISION"
+    final_contract: "optional; marked BLOCKED-BY-DECISION; **lifted 2026-08-04 by user (P3-A) YES decision**; PHASE-03 transitions to NOT_STARTED implementation"
 
   - id: DEC-005
     question: Evidence method
@@ -100,19 +114,28 @@ decisions:
 
   - id: DEC-007
     question: "Test ID namespace"
-    final_contract: "XP-T-001 through XP-T-004; avoid collision with T-001..004"
+    final_contract: "XP-T-001 through XP-T-009; avoid collision with T-001..004"
+
+  - id: DEC-008
+    question: "Phase 5 added"
+    final_contract: "PHASE-05 added 2026-08-04 by amendment to address PHASE-04 §10 gate 7 combined scan failure (41 pre-existing non-import residuals in scripts/*.ts); XP-REQ-011 anchors the in-scope contract"
+
+  - id: DEC-009
+    question: "PHASE-05 fixture handling"
+    final_contract: "P1-DEC-002 (git fixture) allowlist does NOT extend to PHASE-05; PHASE-05 replaces all 41 hits including 2 git fixtures with ${WORK_ONE_ROOT} placeholder comments; combined scan target = 0 (not 2)"
 
 scope:
   - "Phase 1: 6 TS files with static /home/zhaoge imports"
   - "Phase 2: 18 skill .md files with 168 /home/zhaoge occurrences"
-  - "Phase 3: Optional entrypoint scripts/qoderwork.sh (BLOCKED-BY-DECISION)"
+  - "Phase 3: scripts/qoderwork.sh entrypoint (unblocked 2026-08-04)"
   - "Phase 4: AGENTS.md (13 occurrences), CI matrix, blueprint INDEX verification"
+  - "Phase 5 (NEW 2026-08-04): scripts/*.ts 30 files 41 non-import /home/zhaoge residuals"
 
 non_goals:
   - "Modify audits/, e2e-evidence/, logs/, historical evidence"
   - "Introduce QW_ROOT environment variable"
   - "Introduce tree-kill package"
   - "Modify work-one, IDE machine config, bun.lock"
-  - "Modify existing plans under plans/"
+  - "Modify existing plans under plans/ (except via plan amendment)"
   - "Support native cmd.exe (only Git Bash + WSL Ubuntu)"
   - "Modify outcome-contract JSON files under plans/path-dynamic-resolution-outcome-v1/"

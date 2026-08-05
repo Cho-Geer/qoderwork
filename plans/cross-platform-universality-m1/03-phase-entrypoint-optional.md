@@ -1,11 +1,12 @@
-# Phase PHASE-03: Optional Entrypoint (D Layer) [BLOCKED-BY-DECISION]
+# Phase PHASE-03: Optional Entrypoint (D Layer) [VERIFICATION]
 
 **Phase ID**: `PHASE-03`
 **Depends on**: NONE
-**Outcome**: Decision on whether to create `scripts/qoderwork.sh` as a cross-platform entrypoint
-**Evidence level**: N/A — analysis only
-**Progression status**: `BLOCKED-BY-DECISION`
-**Completion receipt**: N/A (blocked until upstream decision)
+**Outcome**: `scripts/qoderwork.sh` created as a cross-platform entrypoint that consumes `scripts/lib/workspace-paths.ts` resolver (no hardcoded platform defaults)
+**Evidence level**: component
+**Progression status**: `ACCEPTED` (previously `BLOCKED-BY-DECISION`; lifted 2026-08-04 by user decision (P3-A); qoderwork.sh created and verified per §7)
+**Completion receipt**: `audits/cross-platform-universality-m1/receipts/phase-03.json`
+**Amendment origin**: 2026-08-04 user decision lifts DEC-004 BLOCKED-BY-DECISION; PHASE-03 transitions to implementation. Created by plan amendment.
 
 ## 1. Input contract + source ledger
 
@@ -18,18 +19,16 @@
 
 ### Decision required from user
 
-**Question**: Should a single entrypoint script `scripts/qoderwork.sh` be created that:
+**Question** (RESOLVED 2026-08-04 → YES): Should a single entrypoint script `scripts/qoderwork.sh` be created that:
 - Detects whether running in Git Bash (`MINGW64_NT`) or WSL Ubuntu
 - Sets `WORK_ONE_ROOT` and `QODERWORK_ROOT` appropriately via `scripts/lib/workspace-paths.ts` (not hardcoded)
 - Proxies to `bun run scripts/lib/workspace-paths.ts` or other entrypoints
 
 This is marked optional in the blueprint (S2.1 D layer: "可选 — 决策：可选择添加 `scripts/qoderwork.sh`，不是强制项").
 
-**Options**:
-1. **YES — create `scripts/qoderwork.sh`** with the constraints listed in §"In scope (if decision is YES)".
-2. **NO — skip Phase 3**. Users rely on existing `WORK_ONE_ROOT` env var + `scripts/local-paths.json` configuration.
+**Resolution**: User chose option 1 (YES) on 2026-08-04, lifting DEC-004 BLOCKED-BY-DECISION. PHASE-03 transitions to implementation per §"In scope (decision is YES)" below.
 
-### In scope (if decision is YES)
+### In scope (decision is YES, as of 2026-08-04)
 
 The implementation worker MUST satisfy ALL of the following constraints. **No platform-default hardcoding is permitted.**
 
@@ -54,21 +53,21 @@ This phase explicitly does NOT contain executable `.sh` body content in the plan
 
 | Claim | Command | Result |
 |---|---|---|
-| No entrypoint script exists | `ls scripts/qoderwork.* 2>/dev/null; echo $?` | NOT_FOUND (exit 1) |
-| No `.cmd` files in scripts/ | `ls scripts/*.cmd 2>/dev/null; echo $?` | NOT_FOUND (exit 1) |
+| No entrypoint script exists | `test -e scripts/qoderwork.sh; echo $?` | NOT_FOUND (exit 1) |
+| No `.cmd` files in scripts/ | `compgen -G 'scripts/*.cmd' >/dev/null; echo $?` | NOT_FOUND (exit 1) |
 
 **Three-state semantics (UNAVAILABLE-aware)**:
 
 | Outcome | Condition | Phase 3 result |
 |---|---|---|
-| FOUND | command exits 0 AND query returns positive hit | per-check |
-| NOT_FOUND | command exits 0 AND query returns 0 hits (exit 1) | per-check (e.g., "no entrypoint = pass") |
-| UNAVAILABLE | command exits non-zero (missing binary, IO error, permission denied) | **FAIL** — phase blocked; not PASS-by-omission |
+| FOUND | probe exits 0 (file/glob match exists) | per-check |
+| NOT_FOUND | probe exits 1 (file/glob absent) | per-check (e.g., "no entrypoint = pass") |
+| UNAVAILABLE | probe exits 2+ (IO error, permission denied) | **FAIL** — phase blocked; not PASS-by-omission |
 
 For each baseline row above:
 
-- `ls scripts/qoderwork.* 2>/dev/null; echo $?` — rc=0 with output (`qoderwork.<ext>` listed) = FOUND entrypoint exists; rc=1 = NOT_FOUND (PASS: no entrypoint yet); rc=2+ = UNAVAILABLE (e.g., `scripts/` dir missing) -> FAIL (block).
-- `ls scripts/*.cmd 2>/dev/null; echo $?` — same three-state semantics. rc=1 = NOT_FOUND (PASS); rc=2+ = UNAVAILABLE -> FAIL.
+- `test -e scripts/qoderwork.sh; echo $?` — rc=0 = FOUND (entrypoint exists); rc=1 = NOT_FOUND (PASS: no entrypoint yet); rc=2+ = UNAVAILABLE (e.g., `scripts/` dir inaccessible) -> FAIL (block). Note: `ls scripts/qoderwork.*` on a non-matching glob returns rc=2 in Git Bash, so it cannot distinguish NOT_FOUND from UNAVAILABLE — `test -e` is the correct probe.
+- `compgen -G 'scripts/*.cmd' >/dev/null; echo $?` — rc=0 = FOUND (≥1 `.cmd` file present); rc=1 = NOT_FOUND (PASS); rc=2+ = UNAVAILABLE -> FAIL. (Bash builtin; `ls scripts/*.cmd` returns rc=2 on a non-matching glob, so `compgen -G` is the correct glob probe.)
 
 The other two rows (`OSTYPE`, `/proc/version` probe) are NOT verification gates — they are contextual notes documenting how the existing environments self-identify. They do not have pass/fail semantics for Phase 3.
 
@@ -76,21 +75,20 @@ The other two rows (`OSTYPE`, `/proc/version` probe) are NOT verification gates 
 
 | Requirement | Check name | Evidence source | Happy fixture | Single mutation | Test ID |
 |---|---|---|---|---|---|
-| XP-REQ-007 | XP-ENTRYPOINT | user decision | N/A | N/A | N/A |
+| XP-REQ-007 | XP-ENTRYPOINT | user decision | YES recorded | N/A | N/A |
+| XP-REQ-012 | XP-ENTRYPOINT-SCRIPT | `test -x scripts/qoderwork.sh` + `bash scripts/qoderwork.sh resolve` | exit 0 | hardcoded literal / non-resolver | XP-T-009 |
 
 ## 5. File change inventory
 
 | Exact path | Change | Anchor |
 |---|---|---|
-| (none at plan-set level) | Phase 3 remains `BLOCKED-BY-DECISION` until user decides | n/a |
+| `scripts/qoderwork.sh` | NEW FILE | bash script calling `resolveWorkspacePaths`; honors `${QW_WSL_DISTRO:-Ubuntu-24.04}` |
 
-If decision is YES, the implementation worker will create `scripts/qoderwork.sh` during execution; that creation is **not** prescribed by this plan-set and will be added only after a new BLOCKED-BY-DECISION lift.
+If decision is YES, the implementation worker will create `scripts/qoderwork.sh` during execution; that creation **is now prescribed** by this plan-set (no longer depends on BLOCKED-BY-DECISION lift).
 
 ## 6. Numbered edit steps
 
-This phase has **no numbered edit steps** at the plan level. Implementation code is out of scope until the user lifts the BLOCKED-BY-DECISION flag and the implementation worker is given explicit go-ahead.
-
-### If decision is YES at execution time, the worker MUST:
+This phase previously had no numbered edit steps at the plan level (BLOCKED-BY-DECISION status). After 2026-08-04 amendment, the worker MUST:
 
 1. Use `scripts/lib/workspace-paths.ts` (via `resolveWorkspacePaths`) as the only source of `WORK_ONE_ROOT` / `QODERWORK_ROOT`. No hardcoded `C:/Users/...` or `/home/$USER/...` literals.
 2. Make the script executable from both Windows Git Bash and WSL Ubuntu (both bash-derived; bash script is OK).
@@ -122,11 +120,14 @@ If decision later becomes YES, the worker's verification row MUST include:
 - **If created**: `rm scripts/qoderwork.sh` or `git checkout -- scripts/qoderwork.sh`
 - **If skipped**: No action needed
 - **Risk**: Low — single file, no dependency from other code
-- **Rollback verification (if created)**: confirm `ls scripts/qoderwork.*` returns rc=1 (NOT_FOUND again). rc=2+ is UNAVAILABLE (e.g., `scripts/` missing) -> FAIL.
+- **Rollback verification (if created)**: confirm `test -e scripts/qoderwork.sh` returns rc=1 (NOT_FOUND again). rc=2+ is UNAVAILABLE (e.g., `scripts/` missing) -> FAIL.
 
-## 10. Completion gate
+## Phase completion gate
 
-- [ ] **BLOCKED-BY-DECISION**: Awaiting user decision on whether to create entrypoint
-- [ ] If YES: script created, executable, consumes `resolveWorkspacePaths()` (no hardcoded platform defaults), works on both Git Bash and WSL Ubuntu, and is verified per §7
-- [ ] If NO: this phase remains BLOCKED-BY-DECISION, no files created, no scripts/qoderwork.sh draft committed
-- [ ] Next Phase prohibition: PHASE-04 does NOT depend on PHASE-03 (PHASE-03 is optional)
+- [x] User decision recorded (YES, 2026-08-04); DEC-004 lifted
+- [x] `scripts/qoderwork.sh` created, executable, consumes `resolveWorkspacePaths()` (no hardcoded platform defaults), works on both Git Bash and WSL Ubuntu, and verified per §7
+- [x] NO hardcoded literal `"C:/Users/$USER/workspace/opencode/work-one"` or `"${HOME}/workspace/opencode/work-one"` in script body
+- [x] NO `QW_ROOT` env var introduced
+- [x] NO `tree-kill` package introduced
+- [x] `bash scripts/qoderwork.sh resolve` runs with `WORK_ONE_ROOT` unset (or set via env) and outputs the resolver's path
+- [x] Next Phase prohibition: PHASE-04 does NOT depend on PHASE-03 (PHASE-03 is optional) — but PHASE-05 added 2026-08-04 is the new final implementation phase

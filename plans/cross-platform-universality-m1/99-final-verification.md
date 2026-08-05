@@ -81,7 +81,7 @@ Expected output:
 
 | Phase | Rollback command | Verification after rollback |
 |---|---|---|
-| PHASE-01 | `git checkout -- scripts/cleanup-regress.ts scripts/diag-handover-path.ts scripts/diag-schema.ts scripts/regress-parent-child.ts scripts/test-hybrid-enforcement.ts scripts/_d3_live.ts` | Python scan shows 10 logical imports (9 static ESM imports + 1 dynamic await-import) |
+| PHASE-01 | `git checkout -- scripts/cleanup-regress.ts scripts/diag-handover-path.ts scripts/diag-schema.ts scripts/regress-parent-child.ts scripts/test-hybrid-enforcement.ts scripts/_d3_live.ts` | Python scan of the 6-file inventory shows 17 hits (10 logical imports + 7 residual) |
 | PHASE-02 | `git checkout -- .agents/skills/` | Python scan shows 168 hits |
 | PHASE-03 | `rm scripts/qoderwork.sh` (if created) | N/A |
 | PHASE-04 | `git checkout -- AGENTS.md .github/workflows/` | AGENTS.md Python scan shows 13 hits |
@@ -89,17 +89,19 @@ Expected output:
 
 ## 9. Final completion gate
 
-- [ ] Phase 1 gate: 0 `/home/zhaoge` in `scripts/` `.ts` files (Python byte-level)
+- [ ] Phase 1 gate: 0 `/home/zhaoge` import-hits in `scripts/` 6-file inventory (Python byte-level, import-scoped regex)
 - [ ] Phase 1 gate: `bun test scripts/test-serve/__tests__/bootstrap-import-source.test.ts` exit 0
 - [ ] Phase 2 gate: 0 `/home/zhaoge` in `.agents/skills/` `.md` files (Python byte-level)
 - [ ] Phase 2 gate: 0 "WSL-only" / "Linux only" framing in skill files (grep)
 - [ ] Phase 2 gate: 0 bare `wsl -d Ubuntu-24.04` in skill files (grep)
 - [ ] Phase 2 gate: `debug-environment-toolkit/SKILL.md` N3 fix verified (0 hits)
-- [ ] Phase 3 gate: BLOCKED-BY-DECISION (awaiting user decision)
+- [ ] Phase 3 gate: `scripts/qoderwork.sh` exists + executable + `bash scripts/qoderwork.sh resolve` exit 0 + no hardcoded literal
 - [ ] Phase 4 gate: 0 `/home/zhaoge` in AGENTS.md (Python byte-level)
-- [ ] Phase 4 gate: CI matrix includes `os: [windows-latest, ubuntu-latest]` (if CI exists)
+- [ ] Phase 4 gate: CI matrix includes `os: [windows-latest, ubuntu-latest]`
 - [ ] Phase 4 gate: `blueprints/INDEX.md` entry for cross-platform-universality verified
-- [ ] Cross-phase composition: combined scan (scripts/.ts + skills/.md + AGENTS.md) returns 0 total
+- [ ] Phase 5 gate (NEW 2026-08-04): combined scan total = 0 (scripts/.ts + .agents/skills/.md + AGENTS.md)
+- [x] Phase 5 gate: 41 hits replaced with `${WORK_ONE_ROOT}` / `${QODERWORK_ROOT}` / `resolveWorkspacePaths`-derived placeholders in 30 scripts/*.ts files
+- [ ] Cross-phase composition: combined scan returns 0 total
 - [ ] Mutation test: each phase's single-failure check causes verification failure
 - [ ] No forbidden publication occurred (audits/, e2e-evidence/, logs/ untouched)
 - [ ] No files outside `plans/cross-platform-universality-m1/` were modified during planning
@@ -109,7 +111,7 @@ Expected output:
 This PLAN_SET is **READY-FOR-IMPLEMENTATION** pending user approval. The plan consists of:
 
 - 4 implementation phases (1, 2, 4) + 1 blocked decision phase (3) + 1 final verification
-- 32 total traceability rows across all phases
+- 20 total traceability rows across all phases
 - 6 files in Phase 1, 18 files in Phase 2, 1 optional file in Phase 3, 3 files in Phase 4
 - All phases use Python byte-level verification (Git Bash compatible)
 - Test ID namespace: `XP-T-001..XP-T-004` reserved strictly for blueprint §4 (Git Bash runtime smoke, WSL Ubuntu runtime smoke, Skill 路径零硬编码, Script 路径零硬编码); Phase 4 additional checks use `XP-T-005..XP-T-007` (XP-DOCS-AGENTS, XP-DOCS-CI, XP-DOCS-INDEX) to avoid blueprint ID reuse. Phase 1 actual scope (script scan) maps to `XP-T-004`; `XP-T-001` and `XP-T-002` are DEFERRED (not in Phase 1 implementation scope)
