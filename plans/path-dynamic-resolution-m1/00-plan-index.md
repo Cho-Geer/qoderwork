@@ -4,7 +4,9 @@
 **Schema version**: `audit-plan-set/v3`
 **Document kind**: `plan-set-index`
 **ID**: `PATH-DYNAMIC-RESOLUTION-M1-20260725`
-**Status**: `COMPLETE`
+**Status**: `SUPERSEDED_BY_OUTCOME_GOVERNANCE_V1` (was `COMPLETE` on 2026-07-29)
+**Superseded at**: `2026-08-03`
+**Superseded by**: `plans/path-dynamic-resolution-outcome-v1/outcome-contract.json` (schema `outcome-governance/v1`, generation=1)
 **Progression schema**: `phase-progression/v1`
 **Provenance level**: `v3-required`
 **Canonical contract**: `plans/path-dynamic-resolution-m1/canonical-requirements-contract.yaml`
