@@ -2,7 +2,9 @@
 
 > 本文件由 QoderWork Session Startup 自动扫描。新增文档时请同步更新此索引。
 >
-> **最近更新**: 2026-07-28 - blueprints-governance PHASE-01~04 实施完成：`blueprints/INDEX.md` 三段看板登记 19 个 root 活跃蓝图 + 11 个归档文件 + closure v3 豁免；11 个退役蓝图按写作月归档 `archive/2026-06|07/`；18 个 root 文件四字段头部回填 + 3 条因果边（单边记录 + 反向边视图）；规范同步至 blueprint-creation skill 模板（四字段/七值状态/三类边/命名/归档/禁令）与 AGENTS.md §3/§11.5。详见 `blueprints/INDEX.md` 与 `blueprints/blueprint-blueprints-governance.md`。
+> **最近更新**: 2026-08-04 - cross-platform-universality M1 plan mutation 完成 (Path 1): 6 个 plan 文件全部更新（+PHASE-05 NEW 301 行；PHASE-03 BLOCKED→NOT_STARTED 134 行；contract +XP-REQ-011/012 +DEC-008/009 141 行；99-final-verification +2 phase gates 120 行；00-plan-index 重算 SHA + 新 manifest 129 行；approval-decision placeholder for user re-sign 33 行）；3 产物 byte-level SHA 三向 MATCH 验证通过；3 validators 全部 EXIT 0 ok=false (fail-closed by design: placeholder + 5 phases NOT_STARTED)；STATUS.md 同步 105 行；下一步 user 填 `approved_at` + 派遣 M3 实施 PHASE-05+03。
+>
+> **历史更新**: 2026-07-28 - blueprints-governance PHASE-01~04 实施完成：`blueprints/INDEX.md` 三段看板登记 19 个 root 活跃蓝图 + 11 个归档文件 + closure v3 豁免；11 个退役蓝图按写作月归档 `archive/2026-06|07/`；18 个 root 文件四字段头部回填 + 3 条因果边（单边记录 + 反向边视图）；规范同步至 blueprint-creation skill 模板（四字段/七值状态/三类边/命名/归档/禁令）与 AGENTS.md §3/§11.5。详见 `blueprints/INDEX.md` 与 `blueprints/blueprint-blueprints-governance.md`。
 >
 > **历史更新**: 2026-07-28 - v3 审计治理升级：`audit-governance-evidence-and-status-closure-v3` 计划 Phase 1-5 全部实施完成（72 pass），v3 ACCEPT 正式签发（`audit-report.json` + CAS LATEST pointer）。**`boundary-contract/v1` 已迁移至 `audit-boundary-matrix/v3`，`v2.1-required` 已升级为 `v3-required`**。详见 `handoff/todo-list.md` §三 与 `plans/audit-governance-evidence-and-status-closure-v3/` 下的 5 个 phase scope-lock。
 >
