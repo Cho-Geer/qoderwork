@@ -163,7 +163,7 @@ grep -rln '/home/zhaoge' scripts/ .agents/skills/ AGENTS.md     # 0 hits
 | NF2 | LOW | approval-decision.json L22 "NOW-IMPLEMENTING" 应改为 "IMPLEMENTED" | `plans/cross-platform-universality-m1/approval-decision.json` |
 | NF3 | LOW | phase-03 receipt `audit_report_path: null` + `_comment` stale | `audits/cross-platform-universality-m1/receipts/phase-03.json` |
 | NF4 | INFO | `validator_output_sha256` post-acceptance 不可复现 (writer 已 notes) | 5 receipts |
-| NF6 | INFO | `**Completion receipt**:` 路径写法 vs validator 期望 (路径约定不匹配, pre-existing structural) | 5 phase docs |
+| NF6 | INFO → **DISPROVED** | 2026-08-05 T4 验证:`bun .agents/skills/.../validate-plan.ts plans/cross-platform-universality-m1 "$(pwd)"` → `ok=true`;`project-audit-verdict.ts` 5/5 phase `receipt_path == receipt_declared_in_phase_doc`(均为 repo-relative `audits/cross-platform-universality-m1/receipts/phase-XX.json`)。**当前路径写法与 validator 期望一致**,无需修改 5 phase docs。 | 5 phase docs (无需修改) |
 | **git 推送** | BLOCKER | 8 commits ahead of origin,**未推送** | `git push origin check-plan` |
 | logs/INDEX.md 零 cross-platform 条目 | MAJOR | §11.1 强制注册未执行 | `logs/INDEX.md` |
 | blueprints/INDEX.md L33 "草稿" stale | MAJOR | 不反映 COMPLETE/PHASE-05/re-sign | `blueprints/INDEX.md` |
@@ -208,8 +208,8 @@ logs/2026-08-05-cross-platform-m1-iter9-iter10-final-accept.md            # iter
 2. **logs/INDEX.md 增补 7 个 cross-platform 条目** (按 §11.1 强制)
 3. **blueprints/INDEX.md L33 改为 "已闭环" + COMPLETE + 2026-08-05 re-sign** (按 §11.5 同步)
 4. **修正 iter9/iter10 log 的 "memory writeback" 假声明** (或真正创建 `.agents/memory/project/iter9-f4-validator-table-false-claim.md`)
-5. **AF2/AF3/NF2/NF3 narrative staleness 清理** (narrative hygiene, 不阻塞)
-6. **NF6 path 约定统一** (pre-existing structural, 5 phase docs `**Completion receipt**:` 改 plan-dir-relative)
+5. **AF2/AF3/NF2/NF3 narrative staleness 清理** — **已完成**(T3b phase-04 ACCEPT/0 + T3d phase-03 qoderwork.sh + T3.5 reverted T3a/T3c 以保留 receipt SHA frozen-snapshot;AF2/NF2 narrative stale 保留为 LOW 已知残留,handoff §6 已明示)
+6. **NF6 path 约定统一** — **已 DISPROVED**(T4 验证:validator `ok=true`,5/5 phase `receipt_path == receipt_declared_in_phase_doc`,路径写法与 validator 期望一致;5 phase docs 无需修改)
 
 ## 9. 用户协议摘要 (本会话所有用户指令时间线)
 
