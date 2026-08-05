@@ -30,7 +30,7 @@
 | blueprint-tool-governance-mvc-refactor.md | 已完成 | `audits/tool-governance-mvc-refactor/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-blueprints-governance.md | 已完成 | `audits/blueprints-governance/LATEST.md` | 2026-07-28（PHASE-05 ACCEPTED） | 本 plan 自身蓝图；PHASE-01~05 全部 ACCEPTED、plan COMPLETE（依 LATEST.md → 2026-07-28-audit-phase-05.md，verdict ACCEPT，invalid_reason null）；按看板规约已完成 blueprint 仍登记于活跃段 |
 | target-structure.md | 草稿 | 头部自述-未独立验证 | 2026-07（自述） | 待后续 PHASE 细化 |
-| blueprint-cross-platform-universality.md | 草稿 | 头部自述-未独立验证 | 2026-08-03（M3+GLM-5.2 双重复审定稿） | 跨平台通用化蓝图：Windows Git Bash + WSL Ubuntu 双兼容；anchor 在 WORK_ONE_ROOT + QODERWORK_ROOT 既有合约；不再发明 QW_ROOT；不引入 tree-kill（实测不需要）；outcome-contract 不需 gen-2 amendment |
+| blueprint-cross-platform-universality.md | 已闭环 | 头部自述-未独立验证 | 2026-08-05（迭代 9/10 双重复审 + user re-sign;5/5 phases ACCEPTED） | 跨平台通用化蓝图：Windows Git Bash + WSL Ubuntu 双兼容；anchor 在 WORK_ONE_ROOT + QODERWORK_ROOT 既有合约；不再发明 QW_ROOT；不引入 tree-kill（实测不需要）；outcome-contract 不需 gen-2 amendment |
 
 ## 已闭环
 

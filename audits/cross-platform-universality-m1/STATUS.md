@@ -1,6 +1,6 @@
 # Cross-Platform Universality M1 — Audit Status Pointer
 
-> 真相源指针：plan-published 阶段 → plan-accepted 阶段（2026-08-04 plan amendment 实施完成）。本 plan 当前 Status=`COMPLETE`（plan-index L7）；5 phase manifest（P01..05 全部 ACCEPTED）。本 STATUS.md 不替代 LATEST.md（legacy `audit-governance/v3` 报告架构产物，不适用本 plan）。
+> 真相源指针 *(aka truth-source pointer)*：plan-published 阶段 → plan-accepted 阶段（2026-08-04 plan amendment 实施完成）。本 plan 当前 Status=`COMPLETE`（plan-index L7）；5 phase manifest（P01..05 全部 ACCEPTED）。本 STATUS.md 不替代 LATEST.md（legacy `audit-governance/v3` 报告架构产物，不适用本 plan）。
 
 ## 最新指针
 
@@ -24,7 +24,7 @@
 |---|---|---|
 | `plans/cross-platform-universality-m1/canonical-requirements-contract.yaml` | `f8548087a8079731ce1ebbfcd33aaf869b6c1f77caa3b73e6ca7fe1d3b2103c3` | re-derived 2026-08-05 after contract amendment (L78: 39 → 41) |
 | `plans/cross-platform-universality-m1/approval-decision.json` | `7ee11e11faabc81ebc5e74721a133da8a22e9bacb42b73b745a1d632ed750658` | re-derived 2026-08-05 after user re-sign + contract SHA re-binding |
-| `blueprints/blueprint-cross-platform-universality.md` | `0af8a1864e2f23e4365c1a136b48cdba8bdbd4c13450a69595bb9dc1e4733ec1` | 13121 (未变) |
+| `blueprints/blueprint-cross-platform-universality.md` | `0af8a1864e2f23e4365c1a136b48cdba8bdbd4c13450a69595bb9dc1e4733ec1` | 13121 (在 commit `bf7ce15` 中实质性更新:14 行 diff,import 计数 / 桶分类 / N2 范围) |
 
 ## Index 三向绑定（contract / approval / blueprint × index header + ledger · re-derived 2026-08-05 after user re-sign）
 

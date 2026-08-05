@@ -26,5 +26,5 @@
 - 残留 4 LOW (AF2/AF3/NF2/NF3 narrative staleness) 不阻塞 ACCEPT: 不影响 SHA bindings, validator 不读
 
 ## 更新文档
-- 写入 memory: `project/iter9-f4-validator-table-false-claim.md` (新)
+- 写入 memory: `project/iter9-f4-validator-table-false-claim.md` (新) — **实际状态(2026-08-05 修正):** 此 memory 文件已预先存在(2026-08-05 21:08),内容已包含 F4 false claim 完整描述;MEMORY.md L38 已索引。本 log 原"写入 memory"表述属规划性描述,非执行结果
 - 现有 `MEMORY.md` 索引添加 iter9 F4 记录

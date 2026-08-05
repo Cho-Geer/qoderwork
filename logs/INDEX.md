@@ -1,14 +1,16 @@
 # Logs Index
 
-Last updated: 2026-08-03 — 路径动态化 Outcome v1 重建（新蓝图 + 5 个 v1 工件 + blueprints/documents INDEX 投影；旧蓝图/旧 plan SUPERSEDED 冻结）
+Last updated: 2026-08-05 — 跨平台通用化 M1 完成（5 phases ACCEPTED + user re-sign）；INDEX 增补 7 个 cross-platform 条目（§11.1 + §11.4 强制）
 
-本索引由 `logs-governance` 规则维护。当前活跃窗口为 2026-07-13 至 2026-08-03；不删除或移动日志。
+本索引由 `logs-governance` 规则维护。当前活跃窗口为 2026-07-13 至 2026-08-05；不删除或移动日志。
 
 ## 当前活跃日志（近 14 天）
 
 | 日期 | 数量 | 日志 |
 |---|---:|---|
-| 2026-08-03 | 1 | [2026-08-03-outcome-v1-recreate.md](2026-08-03-outcome-v1-recreate.md) |
+| 2026-08-05 | 1 | [2026-08-05-cross-platform-m1-iter9-iter10-final-accept.md](2026-08-05-cross-platform-m1-iter9-iter10-final-accept.md) |
+| 2026-08-04 | 5 | [2026-08-04-cross-platform-m1-iter8-final-gate.md](2026-08-04-cross-platform-m1-iter8-final-gate.md), [2026-08-04-cross-platform-m1-phase01-accepted.md](2026-08-04-cross-platform-m1-phase01-accepted.md), [2026-08-04-cross-platform-m1-phase02-04-progress.md](2026-08-04-cross-platform-m1-phase02-04-progress.md), [2026-08-04-cross-platform-m1-plan-mutation.md](2026-08-04-cross-platform-m1-plan-mutation.md), [2026-08-04-cross-platform-m1-user-decisions.md](2026-08-04-cross-platform-m1-user-decisions.md) |
+| 2026-08-03 | 2 | [2026-08-03-outcome-v1-recreate.md](2026-08-03-outcome-v1-recreate.md), [2026-08-03-runtime-model-identification.md](2026-08-03-runtime-model-identification.md) |
 | 2026-08-01 | 6 | [2026-08-01-route-check.md](2026-08-01-route-check.md), [2026-08-01-v1-r7-blueprint-3round-review.md](2026-08-01-v1-r7-blueprint-3round-review.md), [2026-08-01-v1-r7-generation-spec-drift-fix.md](2026-08-01-v1-r7-generation-spec-drift-fix.md), [2026-08-01-v1-r8-check-plan-handoff.md](2026-08-01-v1-r8-check-plan-handoff.md), [2026-08-01-v1-r9-dispatch-session-handoff.md](2026-08-01-v1-r9-dispatch-session-handoff.md), [2026-08-01-v1-stage0a-batch1-and-gaps.md](2026-08-01-v1-stage0a-batch1-and-gaps.md) |
 | 2026-07-31 | 5 | [2026-07-31-v1-handoff-to-next-session.md](2026-07-31-v1-handoff-to-next-session.md), [2026-07-31-v1-plan-text-reanalysis.md](2026-07-31-v1-plan-text-reanalysis.md), [2026-07-31-v1-r6-materialization-complete.md](2026-07-31-v1-r6-materialization-complete.md), [2026-07-31-v1-self-contained-design-confirmation.md](2026-07-31-v1-self-contained-design-confirmation.md), [2026-07-31-v1-toolchain-blocker-status-update.md](2026-07-31-v1-toolchain-blocker-status-update.md) |
 | 2026-07-30 | 3 | [2026-07-30-audit-governance-recovery-v1-plan-text-revision.md](2026-07-30-audit-governance-recovery-v1-plan-text-revision.md), [2026-07-30-v1-plan-text-revision-final.md](2026-07-30-v1-plan-text-revision-final.md), [2026-07-30-v1-plan-text-systematic-gap-analysis.md](2026-07-30-v1-plan-text-systematic-gap-analysis.md) |
@@ -282,6 +284,17 @@ Last updated: 2026-08-03 — 路径动态化 Outcome v1 重建（新蓝图 + 5 �
 - [2026-07-19-skill-bilingual-unification.md](2026-07-19-skill-bilingual-unification.md) — 2026-07-19 — Skill 双语统一为形态B + 字数限制 400→500（31 行）
 
 ### 其他（0）
+
+
+### 跨平台通用化 M1（7）
+
+- [2026-08-03-runtime-model-identification.md](2026-08-03-runtime-model-identification.md) — runtime model 识别（Windows Git Bash + WSL Ubuntu 双兼容验证前置）
+- [2026-08-04-cross-platform-m1-plan-mutation.md](2026-08-04-cross-platform-m1-plan-mutation.md) — cross-platform-universality-m1 plan mutation（+PHASE-05 +XP-REQ-011/012 +DEC-008/009）
+- [2026-08-04-cross-platform-m1-user-decisions.md](2026-08-04-cross-platform-m1-user-decisions.md) — user decisions 记录（10 项授权 + T2c strategy C + PHASE-04 ACCEPTED override）
+- [2026-08-04-cross-platform-m1-phase01-accepted.md](2026-08-04-cross-platform-m1-phase01-accepted.md) — PHASE-01 实施 ACCEPTED（scripts/*.ts import_hits 10→0）
+- [2026-08-04-cross-platform-m1-phase02-04-progress.md](2026-08-04-cross-platform-m1-phase02-04-progress.md) — PHASE-02..04 进度（18 .md 168 hits→0;residual 41 hits transferred）
+- [2026-08-04-cross-platform-m1-iter8-final-gate.md](2026-08-04-cross-platform-m1-iter8-final-gate.md) — iter8 Final Gate（M3 一审 ACCEPT + GLM-5.2 复审 6/7 PASS + AF 记录）
+- [2026-08-05-cross-platform-m1-iter9-iter10-final-accept.md](2026-08-05-cross-platform-m1-iter9-iter10-final-accept.md) — iter9/iter10 双重审核 + F4 false claim 修复 + 5/5 phases ACCEPTED
 
 
 ## 历史归档
