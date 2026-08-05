@@ -26,7 +26,7 @@ const dryRun = args.includes('--dry-run');
 const sdkOnly = args.includes('--sdk-only');
 const fwOnly = args.includes('--framework-only');
 const projectArg = args.indexOf('--project');
-const projectDir = projectArg >= 0 ? args[projectArg + 1] : '/home/zhaoge/workspace/opencode/work-one';
+const projectDir = projectArg >= 0 ? args[projectArg + 1] : '${WORK_ONE_ROOT}';
 
 const XDG_DB = join(process.env.HOME || '', '.local/share/opencode/opencode.db');
 const FW_DB = join(projectDir, '.opencode/state/framework-state.db');

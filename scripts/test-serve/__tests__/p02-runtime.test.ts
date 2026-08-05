@@ -7,7 +7,7 @@
 //
 // 环境变量：
 //   P0_2_PORT_A / P0_2_PORT_B — reviewer 提供的两个不同未占用端口（≥1024）
-//   XDG_STATE_HOME — 持久状态根（默认 /home/zhaoge/.local/state/qoderwork）
+//   XDG_STATE_HOME — 持久状态根（默认 ${HOME}/.local/state/qoderwork）
 //
 // 失败时保留 run 目录，不 cleanup/retry。
 
@@ -20,7 +20,7 @@ import { P02_STAGES } from "../types";
 import type { P02StageResultsFile } from "../types";
 import { readRunManifest } from "../run-context";
 
-const WORK_ONE = "/home/zhaoge/workspace/opencode/work-one";
+const WORK_ONE = "${WORK_ONE_ROOT}";
 const MAIN_FRAMEWORK_DB = join(WORK_ONE, ".opencode/state/framework-state.db");
 
 function git(args: string[], cwd: string): string {

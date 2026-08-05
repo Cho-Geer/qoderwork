@@ -5,8 +5,8 @@
 // ⚠️ 本脚本不适用 serve-api skill §1.1 (本脚本是 in-process handler test，
 //    在验证显式 OPENCODE_ROOT 后动态加载 work-one handler，不经过 serve API)
 //
-// Run: OPENCODE_ROOT=/home/zhaoge/workspace/opencode/work-one \
-//      /home/zhaoge/.bun/bin/bun run /home/zhaoge/workspace/qoderwork/scripts/_b1_live.ts
+// Run: OPENCODE_ROOT=${WORK_ONE_ROOT} \
+//      ${HOME}/.bun/bin/bun run ${QODERWORK_ROOT}/scripts/_b1_live.ts
 
 import { isAbsolute, join } from "node:path";
 

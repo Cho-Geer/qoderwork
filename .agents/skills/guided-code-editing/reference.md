@@ -36,7 +36,7 @@ If you've been reading source code for more than 2 minutes without inserting or 
 3. Execute with explicit PATH:
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin' && cd /home/zhaoge/workspace/opencode/work-one && bun run /tmp/verify.ts"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "export PATH='${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin' && cd ${WORK_ONE_ROOT} && bun run /tmp/verify.ts"
 ```
 
 ### bun test Path Trap

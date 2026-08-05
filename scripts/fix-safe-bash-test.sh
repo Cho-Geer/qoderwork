@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fix the failing safe-bash-core test for Phase 9
-cd /home/zhaoge/workspace/opencode/work-one
+cd ${WORK_ONE_ROOT}
 
 # Use sed to replace the failing test
 python3 -c "

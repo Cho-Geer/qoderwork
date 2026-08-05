@@ -3,15 +3,15 @@
 # sends one prompt, captures the raw SSE stream + parsed artifacts.
 set -uo pipefail
 BASE="http://127.0.0.1:4096"
-EVID="/home/zhaoge/workspace/qoderwork/e2e-evidence"
+EVID="${QODERWORK_ROOT}/e2e-evidence"
 CASE="${1:?usage: oc_e2e_run.sh <case_id> <prompt_text> [timeout_sec]}"
 PROMPT="${2:?prompt required}"
 TIMEOUT="${3:-180}"
 mkdir -p "$EVID/$CASE"
-cd /home/zhaoge/workspace/opencode/work-one || { echo "cd failed"; exit 1; }
+cd ${WORK_ONE_ROOT} || { echo "cd failed"; exit 1; }
 
 echo "[$(date -u +%FT%TZ)] case=$CASE" | tee "$EVID/$CASE/meta.txt"
-CREATE=$(curl -s -m 30 -X POST "$BASE/session" -H "Content-Type: application/json" -d '{"directory":"/home/zhaoge/workspace/opencode/work-one","agent":"Orchestrator"}')
+CREATE=$(curl -s -m 30 -X POST "$BASE/session" -H "Content-Type: application/json" -d '{"directory":"'"${WORK_ONE_ROOT}"'","agent":"Orchestrator"}')
 printf '%s\n' "$CREATE" > "$EVID/$CASE/create.json"
 SID=$(printf '%s' "$CREATE" | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d.get("id",""))' 2>/dev/null)
 echo "SID=$SID" | tee -a "$EVID/$CASE/meta.txt"

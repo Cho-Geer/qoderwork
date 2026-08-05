@@ -1,4 +1,12 @@
-import { getDb } from '/home/zhaoge/workspace/opencode/work-one/.opencode/lib/db-manager';
+import { pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
+import { resolveWorkspacePaths } from './lib/workspace-paths';
+const { workOneRoot } = resolveWorkspacePaths({ env: process.env });
+
+const { getDb } = await (async () => {
+  const target = pathToFileURL(resolve(workOneRoot, '.opencode/lib/db-manager.ts')).href;
+  return await import(target);
+})();
 const db = getDb();
 console.log('=== gate_sessions columns ===');
 const cols = db.query('PRAGMA table_info(gate_sessions)').all() as any[];

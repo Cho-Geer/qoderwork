@@ -409,7 +409,7 @@ describe("bootstrapRun fail-closed (TSI-04)", () => {
       cleanupReportPath: join(rootDir, "cleanup-report.json"),
     };
     [rootDir, dbDir, logsDir, paths.pidsDir, paths.artifactsDir].forEach((dir) => mkdirSync(dir, { recursive: true }));
-    cpSync("/home/zhaoge/workspace/opencode/work-one/.opencode", join(worktreeDir, ".opencode"), {
+    cpSync("${WORK_ONE_ROOT}/.opencode", join(worktreeDir, ".opencode"), {
       recursive: true,
       filter: (source) => !source.includes("/.opencode/state"),
     });

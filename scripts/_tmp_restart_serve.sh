@@ -1,9 +1,9 @@
 #!/bin/bash
-export PATH='/home/zhaoge/.local/bin:/usr/local/bin:/usr/bin:/bin:/home/zhaoge/.bun/bin'
+export PATH="${HOME}/.local/bin:/usr/local/bin:/usr/bin:/bin:${HOME}/.bun/bin"
 set -e
 
 echo "=== [1/3] clean bun cache ==="
-rm -rf /home/zhaoge/.bun/install/cache
+rm -rf ${HOME}/.bun/install/cache
 echo "bun cache removed"
 
 echo "=== [2/3] kill existing opencode serve (PID 2580730 + group) ==="
@@ -15,10 +15,10 @@ echo "remaining serve procs:"
 ps aux | grep 'opencode serve' | grep -v grep | wc -l
 
 echo "=== [3/3] start serve fresh from work-one (loads instrumented skill-summary.ts) ==="
-cd /home/zhaoge/workspace/opencode/work-one
-LOG=/home/zhaoge/workspace/opencode/work-one/.task_temp/_logs/serve-restart.log
+cd ${WORK_ONE_ROOT}
+LOG=${WORK_ONE_ROOT}/.task_temp/_logs/serve-restart.log
 : > "$LOG"
-setsid nohup /home/zhaoge/.opencode/bin/opencode serve --port 4096 > "$LOG" 2>&1 &
+setsid nohup ${HOME}/.opencode/bin/opencode serve --port 4096 > "$LOG" 2>&1 &
 disown
 echo "serve launch pid (setsid child): $!"
 

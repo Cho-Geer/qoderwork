@@ -1,6 +1,6 @@
 #!/bin/bash
 # QoderWork 指导下发脚本 — 直写 DB，零 MCP 依赖
-DB_PATH="/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db"
+DB_PATH="${WORK_ONE_ROOT}/.opencode/state/framework-state.db"
 SESSION_ID="$1"
 GUIDANCE_TEXT="$2"
 if [ -z "$SESSION_ID" ] || [ -z "$GUIDANCE_TEXT" ]; then

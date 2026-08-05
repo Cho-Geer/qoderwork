@@ -17,17 +17,17 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 
 - QoderWork Connector 可用（`mcp__qw-builtin__qw_query` / `mcp__qw-builtin__qw_action`）
 - 飞书 Connector 已连接（用于第五阶段通知）
-- WSL 可访问 `/home/zhaoge/workspace/qoderwork/` 路径
+- WSL 可访问 `${QODERWORK_ROOT}/` 路径
 - 用户级 skill 目录：`~/.workbuddy/skills/`
-- 项目级 skill 目录：`/home/zhaoge/workspace/qoderwork/.workbuddy/skills/`
+- 项目级 skill 目录：`${QODERWORK_ROOT}/.workbuddy/skills/`
 
 ## 关键参数
 
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
 | `USER_SKILLS_DIR` | `~/.workbuddy/skills/` | 用户级 skill 目录 |
-| `PROJECT_SKILLS_DIR` | `/home/zhaoge/workspace/qoderwork/.workbuddy/skills/` | 项目级 skill 目录 |
-| `REPORT_PATH` | `/home/zhaoge/workspace/qoderwork/documents/review/skill-audit-report.md` | 报告输出路径 |
+| `PROJECT_SKILLS_DIR` | `${QODERWORK_ROOT}/.workbuddy/skills/` | 项目级 skill 目录 |
+| `REPORT_PATH` | `${QODERWORK_ROOT}/documents/review/skill-audit-report.md` | 报告输出路径 |
 | `MAX_SKILLS` | `15` | skill 总数最佳区间上限 |
 | `MIN_SKILLS` | `10` | skill 总数最佳区间下限 |
 | `DESC_MIN_CHARS` | `150` | description 最短长度 |
@@ -336,11 +336,11 @@ ACP bridge|ACP 模式|ACP stdio|mcp__acp-bridge|
 
 ### Step 23: 保存报告
 
-将报告保存到 `REPORT_PATH`（默认 `/home/zhaoge/workspace/qoderwork/documents/review/skill-audit-report.md`），覆盖写入。
+将报告保存到 `REPORT_PATH`（默认 `${QODERWORK_ROOT}/documents/review/skill-audit-report.md`），覆盖写入。
 
 ```bash
 # 使用 Write 工具直接写入
-Write({ file_path: "/home/zhaoge/workspace/qoderwork/documents/review/skill-audit-report.md", content: <报告内容> })
+Write({ file_path: "${QODERWORK_ROOT}/documents/review/skill-audit-report.md", content: <报告内容> })
 ```
 
 ### Step 24: 飞书通知
@@ -355,7 +355,7 @@ ACP 残留: X → 0
 修复问题: X 项
 合并: X 组 → Y 个新 skill
 
-详细报告: /home/zhaoge/workspace/qoderwork/documents/review/skill-audit-report.md
+详细报告: ${QODERWORK_ROOT}/documents/review/skill-audit-report.md
 ```
 
 **发送方式**：使用飞书 Connector（`mcp__feishu__send_message` 或对应 MCP 工具）。如果飞书 Connector 未连接，在报告中记录"飞书通知失败，Connector 未连接"，不阻塞流程。

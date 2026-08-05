@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -u
-BUN=/home/zhaoge/.bun/bin/bun
-SCRIPTS=/home/zhaoge/workspace/qoderwork/scripts
+BUN=${HOME}/.bun/bin/bun
+SCRIPTS=${QODERWORK_ROOT}/scripts
 ROOT=ses_0b2c11a8bffeySavHyl3va4pBM
 PORT=5097
 

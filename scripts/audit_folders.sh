@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -u
-cd /home/zhaoge/workspace/opencode/work-one || exit 1
+cd ${WORK_ONE_ROOT} || exit 1
 
 DIRS="
 .opencode/legacy

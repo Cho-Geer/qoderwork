@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Query the framework-state.db. Usage: oc_db.sh "SQL"
 set -uo pipefail
-DB="/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db"
+DB="${WORK_ONE_ROOT}/.opencode/state/framework-state.db"
 SQLF="/tmp/oc_db_query.sql"
 printf '%s\n' "$1" > "$SQLF"
 python3 - "$DB" "$SQLF" <<'PY'

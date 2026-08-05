@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { runP01b, type P01bStageResultsFile } from "../p01b-orchestrator";
 import { readRunManifest } from "../run-context";
 
-const WORK_ONE = "/home/zhaoge/workspace/opencode/work-one";
+const WORK_ONE = "${WORK_ONE_ROOT}";
 
 function git(args: string[], cwd: string): string {
   return execFileSync("git", args, {

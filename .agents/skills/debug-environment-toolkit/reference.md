@@ -263,7 +263,7 @@ Then open the feedback dialog with context.
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "fs";
 import { join } from "path";
 
-const SKILLS_DIR = "/home/zhaoge/workspace/opencode/work-one/.opencode/skills";
+const SKILLS_DIR = "${WORK_ONE_ROOT}/.opencode/skills";
 
 for (const name of readdirSync(SKILLS_DIR)) {
   const dir = join(SKILLS_DIR, name);
@@ -279,7 +279,7 @@ console.log("migration done");
 执行：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/skill-migrate.ts /tmp/skill-migrate.ts && export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin' && cd /home/zhaoge/workspace/opencode/work-one && bun run /tmp/skill-migrate.ts"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/skill-migrate.ts /tmp/skill-migrate.ts && export PATH='${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin' && cd ${WORK_ONE_ROOT} && bun run /tmp/skill-migrate.ts"
 ```
 
 ### 实例 2：验证脚本（.sh）
@@ -288,7 +288,7 @@ wsl -d Ubuntu-24.04 bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/sk
 
 ```bash
 #!/bin/bash
-cd /home/zhaoge/workspace/opencode/work-one
+cd ${WORK_ONE_ROOT}
 echo "=== FULL.md check ==="
 for d in .opencode/skills/*/; do
   name=$(basename "$d")
@@ -305,7 +305,7 @@ done
 执行：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/verify.sh /tmp/verify.sh && bash /tmp/verify.sh"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/verify.sh /tmp/verify.sh && bash /tmp/verify.sh"
 ```
 
 ### 实例 3：长时间任务（.ts + 超时）
@@ -326,7 +326,7 @@ for (const agent of agents) {
 执行（注意设置较长 timeout）：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/acp-verify-tokens.ts /tmp/acp-verify-tokens.ts && export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin' && bun run /tmp/acp-verify-tokens.ts"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/acp-verify-tokens.ts /tmp/acp-verify-tokens.ts && export PATH='${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin' && bun run /tmp/acp-verify-tokens.ts"
 # Bash tool timeout: 300000
 ```
 
@@ -351,7 +351,7 @@ console.log(`Agent MD lines: ${agentMd.split("\n").length}`);
 执行（脚本 + 源文件一起 cp 到 /tmp）：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/analyze-config.ts /tmp/analyze-config.ts && cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/opencode.json /tmp/opencode.json && cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/Coder-BE.md /tmp/Coder-BE.md && export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin' && bun run /tmp/analyze-config.ts"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/analyze-config.ts /tmp/analyze-config.ts && cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/opencode.json /tmp/opencode.json && cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/Coder-BE.md /tmp/Coder-BE.md && export PATH='${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin' && bun run /tmp/analyze-config.ts"
 ```
 
 ### 实例 5：pipe-to-stdin — 绕过 PATH 括号问题
@@ -362,13 +362,13 @@ wsl -d Ubuntu-24.04 bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/an
 
 ```bash
 #!/bin/bash
-export HOME=/home/zhaoge
-export PATH=/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin
+export HOME=${HOME}
+export PATH=${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin
 
 echo "=== schema check ==="
 bun -e '
 const { Database } = require("bun:sqlite");
-const db = new Database("/home/zhaoge/workspace/opencode/work-one/.opencode/service/opencode.db", { readonly: true });
+const db = new Database("${WORK_ONE_ROOT}/.opencode/service/opencode.db", { readonly: true });
 const tables = db.query("SELECT name FROM sqlite_master WHERE type=\"table\"").all();
 console.log("Tables:", tables.map(t => t.name).join(", "));
 db.close();
@@ -378,7 +378,7 @@ db.close();
 通过 PowerShell pipe 到 WSL stdin 执行（无需 cp .sh 文件）：
 
 ```bash
-powershell -Command "Get-Content 'C:\Users\USER\.qoderworkcn\workspace\{id}\check-schema.sh' -Raw | wsl -d Ubuntu-24.04 bash"
+powershell -Command "Get-Content 'C:\Users\USER\.qoderworkcn\workspace\{id}\check-schema.sh' -Raw | wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash"
 ```
 
 注意：.sh 文件仍在 Windows 侧 workspace 中，但不需要 cp 到 /tmp — pipe 模式直接从 stdin 读入脚本内容。如果 .sh 中引用了 .ts 文件，那些 .ts 文件仍需 cp 到 /tmp。

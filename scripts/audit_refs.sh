@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -u
-cd /home/zhaoge/workspace/opencode/work-one || exit 1
+cd ${WORK_ONE_ROOT} || exit 1
 
 # Source tree to scan: framework code + top-level config, excluding deps, runtime, business repo, docs prose, lockfiles
 GREP="grep -rn --exclude-dir=node_modules --exclude-dir=.task_temp --exclude-dir=booking_system_refactor --exclude-dir=.git --exclude-dir=docs --exclude-dir=.opencode/node_modules --exclude-dir=.opencode/state --exclude-dir=dist --exclude=*.lock --exclude=package-lock.json --exclude=bun.lock --exclude=Task.DAG.json --exclude=Task.DAG.index.json --exclude=contract.yaml --include='*.ts' --include='*.json' --include='*.md' --include='*.sh' --include='*.yaml' --include='*.yml'"

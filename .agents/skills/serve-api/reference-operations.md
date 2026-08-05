@@ -41,25 +41,25 @@ QoderWork Bash/Read → tail → /tmp/sse-events.jsonl
 
 ```bash
 # 默认启动（端口 4096，自动检测 work-one 目录）
-bun run /home/zhaoge/workspace/qoderwork/scripts/start-serve.ts
+bun run ${QODERWORK_ROOT}/scripts/start-serve.ts
 
 # 自定义端口
-bun run /home/zhaoge/workspace/qoderwork/scripts/start-serve.ts --port 5000
+bun run ${QODERWORK_ROOT}/scripts/start-serve.ts --port 5000
 
 # 跳过 bun 缓存清理
-bun run /home/zhaoge/workspace/qoderwork/scripts/start-serve.ts --no-cache
+bun run ${QODERWORK_ROOT}/scripts/start-serve.ts --no-cache
 
 # 指定 work-one 目录
-bun run /home/zhaoge/scripts/start-serve.ts --work-dir /path/to/work-one
+bun run ${QODERWORK_ROOT}/scripts/start-serve.ts --work-dir /path/to/work-one
 ```
 
 **WSL 下从 Windows 调用**：
 ```cmd
-wsl.exe -d Ubuntu-24.04 -- bash -c "cd /home/zhaoge/workspace/qoderwork && bun run scripts/start-serve.ts"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -c "cd ${QODERWORK_ROOT} && bun run scripts/start-serve.ts"
 ```
 
-**脚本路径**：`/home/zhaoge/workspace/qoderwork/scripts/start-serve.ts`
-**.env 路径**：`/home/zhaoge/workspace/qoderwork/scripts/.env`（自动加载）
+**脚本路径**：`${QODERWORK_ROOT}/scripts/start-serve.ts`
+**.env 路径**：`${QODERWORK_ROOT}/scripts/.env`（自动加载）
 
 **改完 opencode.json 后必须重启**：serve daemon **不热重载** `opencode.json`。任何对该文件的修改（agent model / permission / skills / prompt 路径）后都要执行 `bun run scripts/start-serve.ts --stop && bun run scripts/start-serve.ts`，否则新 session 仍按旧 config 跑，且子 agent 找不到 model 时会静默降级到 flash（详见 §4.6 Pitfall "opencode.json 变更不热重载"）。
 
@@ -67,22 +67,22 @@ wsl.exe -d Ubuntu-24.04 -- bash -c "cd /home/zhaoge/workspace/qoderwork && bun r
 
 #### 启动
 ```bash
-wsl.exe -d Ubuntu-24.04 -- bash -c "export PATH=/home/zhaoge/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; setsid bun run /home/zhaoge/workspace/qoderwork/scripts/sse-daemon.ts > /tmp/sse-daemon.log 2>&1 < /dev/null &"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -c "export PATH=${HOME}/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; setsid bun run ${QODERWORK_ROOT}/scripts/sse-daemon.ts > /tmp/sse-daemon.log 2>&1 < /dev/null &"
 ```
 
 #### 检查状态
 ```bash
-wsl.exe -d Ubuntu-24.04 -- bash -c "ps aux | grep sse-daemon | grep -v grep"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -c "ps aux | grep sse-daemon | grep -v grep"
 ```
 
 #### 查看日志
 ```bash
-wsl.exe -d Ubuntu-24.04 -- bash -c "cat /tmp/sse-daemon.log"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -c "cat /tmp/sse-daemon.log"
 ```
 
 #### 重启
 ```bash
-wsl.exe -d Ubuntu-24.04 -- bash -c "pkill -f sse-daemon 2>/dev/null; sleep 1; export PATH=/home/zhaoge/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; setsid bun run /home/zhaoge/workspace/qoderwork/scripts/sse-daemon.ts > /tmp/sse-daemon.log 2>&1 < /dev/null &"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -c "pkill -f sse-daemon 2>/dev/null; sleep 1; export PATH=${HOME}/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; setsid bun run ${QODERWORK_ROOT}/scripts/sse-daemon.ts > /tmp/sse-daemon.log 2>&1 < /dev/null &"
 ```
 
 > **⚠️ curl 无法连接 /event endpoint**：`curl -N -s http://localhost:4096/event` 会无限挂起（即使带 `Accept: text/event-stream` header）。serve API 的 SSE 流只能通过 Bun `fetch()` 可靠连接。**sse-daemon.ts 是 SSE 监控的唯一方式**，不能用 raw curl 替代。
@@ -297,8 +297,8 @@ grep "ses_XXXXX" /tmp/sse-events-archive/*.jsonl
 适合 `GET /session`、`GET /question`、`tail` 等不含 JSON body 的操作。用双引号包裹 bash 命令，内部用单引号：
 
 ```powershell
-wsl -d Ubuntu-24.04 bash -c "curl -s http://localhost:4096/session"
-wsl -d Ubuntu-24.04 bash -c "tail -50 /tmp/sse-events.jsonl | grep ses_XXX"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "curl -s http://localhost:4096/session"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "tail -50 /tmp/sse-events.jsonl | grep ses_XXX"
 ```
 
 #### 模式 B：Invoke-RestMethod（PowerShell 原生，推荐用于含 JSON 的操作）
@@ -330,12 +330,12 @@ Invoke-RestMethod -Uri "http://localhost:4096/session/$sid/message" -Method Post
 
 ```bash
 # 1. 在 WSL 内写 JSON 文件
-wsl -d Ubuntu-24.04 bash -c 'cat > /tmp/msg.json << '"'"'EOF'"'"'
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c 'cat > /tmp/msg.json << '"'"'EOF'"'"'
 {"parts":[{"type":"text","text":"尝试执行 gh issue create --repo microsoft/vscode"}]}
 EOF'
 
 # 2. 用 curl -d @file 发送
-wsl -d Ubuntu-24.04 bash -c "curl -s -X POST http://localhost:4096/session/$SID/message -H 'Content-Type: application/json' -d @/tmp/msg.json"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "curl -s -X POST http://localhost:4096/session/$SID/message -H 'Content-Type: application/json' -d @/tmp/msg.json"
 ```
 
 #### 模式 D：Python 脚本统一执行（推荐用于 E2E 测试）
@@ -344,10 +344,10 @@ wsl -d Ubuntu-24.04 bash -c "curl -s -X POST http://localhost:4096/session/$SID/
 
 ```bash
 # 1. 将脚本放在 WSL 本地路径（不经过 Windows 文件系统）
-#    路径示例: /home/zhaoge/workspace/qoderwork/scripts/e2e-test.py
+#    路径示例: ${QODERWORK_ROOT}/scripts/e2e-test.py
 
 # 2. 执行
-wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin' && python3 /home/zhaoge/workspace/qoderwork/scripts/e2e-test.py"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "export PATH='${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin' && python3 ${QODERWORK_ROOT}/scripts/e2e-test.py"
 ```
 
 **选择规则**：
@@ -376,7 +376,7 @@ wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `PROJECT_DIR` | `/home/zhaoge/workspace/opencode/work-one` | OpenCode 框架项目目录 |
+| `PROJECT_DIR` | `${WORK_ONE_ROOT}` | OpenCode 框架项目目录 |
 | `PORT` | `4096` | serve API 监听端口 |
 | `FRAMEWORK_DB` | `$PROJECT_DIR/.opencode/state/framework-state.db` | 框架状态数据库 |
 | `SDK_DB` | `$PROJECT_DIR/.opencode/state/opencode.db` | SDK 数据库 |
@@ -438,7 +438,7 @@ wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/
 - **WSL 路径问题**：`$` 变量需转义为 `\$`，或使用脚本文件方式避免展开问题
 - **PowerShell -> WSL quoting 冲突**：`wsl bash -c "curl -d '{"key":"val"}'"` 中 PowerShell 和 bash 对引号的处理不一致，导致 JSON payload 传递失败。解决方案见上方「Windows/WSL 调用模式」：简单命令用模式 A，含 JSON 用模式 B（Invoke-RestMethod），复杂场景用模式 C 或 D
 - **PowerShell Unicode 编码乱码**：PowerShell `ConvertTo-Json` 会将中文编码为 `\uXXXX` 或 `?????????`，导致 `POST /session/{SID}/message` 发送的中文内容乱码。必须用 `[System.Text.Encoding]::UTF8.GetBytes($body)` + `charset=utf-8` Content-Type（见模式 B）
-- **复杂 E2E 测试推荐 Python 脚本**：含多步 curl + 管道 + JSON 解析的 E2E 测试，不要试图在 PowerShell -> WSL bash -c 中嵌套实现。将完整逻辑写成 Python 脚本放在 WSL 本地路径（`/home/zhaoge/workspace/qoderwork/scripts/`），通过 `wsl python3 /path/script.py` 执行（见模式 D）
+- **复杂 E2E 测试推荐 Python 脚本**：含多步 curl + 管道 + JSON 解析的 E2E 测试，不要试图在 PowerShell -> WSL bash -c 中嵌套实现。将完整逻辑写成 Python 脚本放在 WSL 本地路径（`${QODERWORK_ROOT}/scripts/`），通过 `wsl python3 /path/script.py` 执行（见模式 D）
 
 ---
 
@@ -452,7 +452,7 @@ wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `PROJECT_DIR` | `/home/zhaoge/workspace/opencode/work-one` | OpenCode 框架项目目录 |
+| `PROJECT_DIR` | `${WORK_ONE_ROOT}` | OpenCode 框架项目目录 |
 | `PORT` | `4096` | serve API 监听端口 |
 | `TEMP_DIR` | `/tmp/serve-event-test` | 临时文件目录 |
 | `SSE_FILE` | `$TEMP_DIR/sse-events.txt` | SSE 事件原始输出文件 |
@@ -473,7 +473,7 @@ wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/
 
 ```bash
 # 启动 serve（使用 start-serve.ts 脚本，自动加载 .env + 清理 bun 缓存）
-bun run /home/zhaoge/workspace/qoderwork/scripts/start-serve.ts --port ${PORT}
+bun run ${QODERWORK_ROOT}/scripts/start-serve.ts --port ${PORT}
 
 # 等待 serve 就绪
 for i in $(seq 1 10); do
@@ -483,8 +483,8 @@ done
 
 # 启动 SSE 后台监听（必须在 session 创建之前！）
 # 注意：不能用 curl 连接 /event（会挂起），必须用 sse-daemon.ts
-export PATH=/home/zhaoge/.bun/bin:$PATH
-setsid bun run /home/zhaoge/workspace/qoderwork/scripts/sse-daemon.ts > /tmp/sse-daemon.log 2>&1 < /dev/null &
+export PATH=${HOME}/.bun/bin:$PATH
+setsid bun run ${QODERWORK_ROOT}/scripts/sse-daemon.ts > /tmp/sse-daemon.log 2>&1 < /dev/null &
 echo $! > ${TEMP_DIR}/sse.pid
 ```
 
@@ -533,17 +533,17 @@ echo $! > ${TEMP_DIR}/sse.pid
 
 ```bash
 # 人类可读树
-bun run /home/zhaoge/workspace/qoderwork/scripts/session-tree.ts <ROOT_SID>
+bun run ${QODERWORK_ROOT}/scripts/session-tree.ts <ROOT_SID>
 # 输出示例：
 # ses_0c9798a78ffe4r46ZvYSXZyBWL | Orchestrator | root | sub-session direct messaging test
 # └─ ses_0c9792cbaffeVQhM1254ZgYpqR | Orchestrator | child | Read SKILL.md first 20 lines
 
 # JSON 输出（给其他脚本消费）
-bun run /home/zhaoge/workspace/qoderwork/scripts/session-tree.ts <ROOT_SID> --json
+bun run ${QODERWORK_ROOT}/scripts/session-tree.ts <ROOT_SID> --json
 # 返回: { root, nodes, allIds, leafIds }
 
 # 自定义深度上限和端口
-bun run /home/zhaoge/workspace/qoderwork/scripts/session-tree.ts <ROOT_SID> --depth 3 --port 5000
+bun run ${QODERWORK_ROOT}/scripts/session-tree.ts <ROOT_SID> --depth 3 --port 5000
 ```
 
 **返回字段**：
@@ -563,7 +563,7 @@ curl -s "http://localhost:4096/session/{PARENT_SID}/children"
 同时监控主 agent 和所有子 agent 的状态，自动检测树完成。
 
 ```bash
-bun run /home/zhaoge/workspace/qoderwork/scripts/monitor-tree.ts <ROOT_SID>
+bun run ${QODERWORK_ROOT}/scripts/monitor-tree.ts <ROOT_SID>
 # 每 5s 输出：
 # [08:25:00] root=Orchestrator(idle)    | child=build(working) | pending=0
 # [08:25:05] root=Orchestrator(working) | child=build(idle)    | pending=1
@@ -623,14 +623,14 @@ curl -X POST http://localhost:4096/session/{SID}/prompt_async \
 
 ```bash
 # guide.ts — 轻量指导发送
-bun run /home/zhaoge/workspace/qoderwork/scripts/guide.ts <SID> "<guidance text>"
-bun run /home/zhaoge/workspace/qoderwork/scripts/guide.ts <SID> "<text>" --sync --timeout=60
+bun run ${QODERWORK_ROOT}/scripts/guide.ts <SID> "<guidance text>"
+bun run ${QODERWORK_ROOT}/scripts/guide.ts <SID> "<text>" --sync --timeout=60
 
 # intervene.ts — 统一入口，覆盖 4 种 mode
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts <SID> --mode=guide --text="..."
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts <SID> --mode=reply-qid <QID> --text="..."
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts <SID> --mode=abort
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts <SID> --mode=status
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts <SID> --mode=guide --text="..."
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts <SID> --mode=reply-qid <QID> --text="..."
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts <SID> --mode=abort
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts <SID> --mode=status
 ```
 
 **指导路由规则**（按 question.sessionID 路由）：
@@ -695,8 +695,8 @@ Turn N:  [LLM][tool:question][暂停]───等待 reply───[继续][tool
 - **`GET /children` 返回 HTML**：历史上曾出现，v1.17.13 已修复返回 JSON array；若再次出现，参考蓝图中 SDK DB / SSE / framework DB fallback 路径
 - **opencode.json 变更不热重载**：`opencode.json` 是 agent↔model 映射的**唯一权威源**（每个 agent 的 `model` 字段决定该 agent 实际跑哪个 model，主/子 agent 各自独立），但 **serve daemon 不会热重载该文件**。任何修改（改 model、改 permission、改 agent 配置）后**必须**执行：
   ```bash
-  bun run /home/zhaoge/workspace/qoderwork/scripts/start-serve.ts --stop
-  bun run /home/zhaoge/workspace/qoderwork/scripts/start-serve.ts
+  bun run ${QODERWORK_ROOT}/scripts/start-serve.ts --stop
+  bun run ${QODERWORK_ROOT}/scripts/start-serve.ts
   ```
   否则新 session 仍按旧 config 跑，且子 agent 找不到配置的 model 时会**静默降级**到 flash（实测 build 配 pro 但 daemon 未重启时实际跑 flash）。
 - **先查再发（identity-preserve pattern）**：直发消息给任何 SID 前，**必须**先读该 SID 的真实 agent，再用该 agent 调 `prompt_async`。三步标准流程：

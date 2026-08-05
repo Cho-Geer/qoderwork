@@ -119,7 +119,7 @@ After the user reports the edit is done, guide verification:
 grep -rn "<symbol>" --include="*.ts" .opencode/ | grep -v __tests__
 
 # 2. Run test regression (NOTE: bun test requires ./ prefix for paths)
-cd /home/zhaoge/workspace/opencode/work-one
+cd ${WORK_ONE_ROOT}
 bun test ./.opencode/lib/__tests__/<relevant-test>.ts
 ```
 
@@ -142,7 +142,7 @@ If tests fail or behavior is unexpected, apply Log-First debugging:
 For WSL/Bun execution issues, use the script-to-/tmp pattern:
 ```bash
 # Write .ts to /tmp, run with explicit PATH
-wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin' && cd /home/zhaoge/workspace/opencode/work-one && bun run /tmp/verify.ts"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "export PATH='${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin' && cd ${WORK_ONE_ROOT} && bun run /tmp/verify.ts"
 ```
 
 See [reference.md](reference.md) for detailed debug patterns and WSL script mode.

@@ -61,7 +61,7 @@ const TIMEOUT_MS = argvNum("timeout", 600) * 1000;
 const OPT_CAPSULE = argvFlag("capsule");
 const OPT_SUGGEST = argvFlag("suggest-guide");
 
-const WORK_ONE_ROOT = process.env.WORK_ONE_ROOT || "/home/zhaoge/workspace/opencode/work-one";
+const WORK_ONE_ROOT = process.env.WORK_ONE_ROOT || "${WORK_ONE_ROOT}";
 const FRAMEWORK_DB_PATH = `${WORK_ONE_ROOT}/.opencode/state/framework-state.db`;
 const SSE_FILE = process.env.SSE_FILE || "/tmp/sse-events.jsonl";
 const QUALITY_FILE = process.env.QUALITY_FILE || `${WORK_ONE_ROOT}/.task_temp/_logs/quality.jsonl`;

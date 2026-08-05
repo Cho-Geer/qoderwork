@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Parse a captured serve stream.sse into a readable parts summary.
 set -uo pipefail
-EVID="/home/zhaoge/workspace/qoderwork/e2e-evidence"
+EVID="${QODERWORK_ROOT}/e2e-evidence"
 CASE="${1:?case required}"
 F="$EVID/$CASE/stream.sse"
 [ -f "$F" ] || { echo "no stream for $CASE"; exit 1; }

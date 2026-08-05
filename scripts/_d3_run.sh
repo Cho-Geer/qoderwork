@@ -2,7 +2,7 @@
 set -u
 PORT=4096
 BASE=http://127.0.0.1:$PORT
-W=/home/zhaoge/workspace/opencode/work-one
+W=${WORK_ONE_ROOT}
 CT='Content-Type: application/json'
 
 echo "=== create session ==="
@@ -13,12 +13,12 @@ echo "SID=$SID"
 
 echo "=== send git status (read -> allow) ==="
 curl -s -m 180 -X POST "$BASE/session/$SID/message" -H "$CT" \
-  -d '{"parts":[{"type":"text","text":"Use the safe_shell tool to run EXACTLY this command and report the raw output verbatim: git -C /home/zhaoge/workspace/opencode/work-one status --short"}]}' > /tmp/d3_reply1.txt 2>&1
+  -d '{"parts":[{"type":"text","text":"Use the safe_shell tool to run EXACTLY this command and report the raw output verbatim: git -C '"${WORK_ONE_ROOT}"' status --short"}]}' > /tmp/d3_reply1.txt 2>&1
 echo "reply1 bytes: $(wc -c < /tmp/d3_reply1.txt)"; head -c 200 /tmp/d3_reply1.txt; echo
 
 echo "=== send git commit --allow-empty (write -> block) ==="
 curl -s -m 180 -X POST "$BASE/session/$SID/message" -H "$CT" \
-  -d '{"parts":[{"type":"text","text":"Use the safe_shell tool to run EXACTLY this command and report what the tool returns verbatim: git -C /home/zhaoge/workspace/opencode/work-one commit --allow-empty -m d3-block-test"}]}' > /tmp/d3_reply2.txt 2>&1
+  -d '{"parts":[{"type":"text","text":"Use the safe_shell tool to run EXACTLY this command and report what the tool returns verbatim: git -C '"${WORK_ONE_ROOT}"' commit --allow-empty -m d3-block-test"}]}' > /tmp/d3_reply2.txt 2>&1
 echo "reply2 bytes: $(wc -c < /tmp/d3_reply2.txt)"; head -c 200 /tmp/d3_reply2.txt; echo
 
 sleep 3

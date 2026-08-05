@@ -27,8 +27,8 @@ import { SSEWatcher, SSEWatcherTail } from "./lib/sse-watcher";
 
 const SERVE_URL = "http://localhost:4096";
 const SSE_FILE = "/tmp/sse-events.jsonl";
-const DB_PATH = "/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db";
-const LOG_ROOT = "/home/zhaoge/workspace/opencode/work-one/.task_temp/_logs";
+const DB_PATH = "${WORK_ONE_ROOT}/.opencode/state/framework-state.db";
+const LOG_ROOT = "${WORK_ONE_ROOT}/.task_temp/_logs";
 
 const db = new Database(DB_PATH);
 db.run("PRAGMA journal_mode = WAL");

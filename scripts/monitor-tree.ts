@@ -76,7 +76,7 @@ async function serveGet(path: string): Promise<any> {
   }
 }
 
-const WORK_ONE_ROOT = process.env.WORK_ONE_ROOT || "/home/zhaoge/workspace/opencode/work-one";
+const WORK_ONE_ROOT = process.env.WORK_ONE_ROOT || "${WORK_ONE_ROOT}";
 const FRAMEWORK_DB_PATH = `${WORK_ONE_ROOT}/.opencode/state/framework-state.db`;
 
 /**

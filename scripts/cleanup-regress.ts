@@ -1,4 +1,12 @@
-import { getDb } from '/home/zhaoge/workspace/opencode/work-one/.opencode/lib/db-manager';
+import { pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
+import { resolveWorkspacePaths } from './lib/workspace-paths';
+const { workOneRoot } = resolveWorkspacePaths({ env: process.env });
+
+const { getDb } = await (async () => {
+  const target = pathToFileURL(resolve(workOneRoot, '.opencode/lib/db-manager.ts')).href;
+  return await import(target);
+})();
 
 const GATE_A = 'cg_ses_1783657767464';
 const GATE_B = 'cg_ses_1783657987555';

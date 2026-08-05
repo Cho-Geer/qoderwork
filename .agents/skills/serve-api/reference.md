@@ -7,8 +7,8 @@
 #### 确认基础设施
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
-  test -x /home/zhaoge/.opencode/bin/opencode && echo 'opencode OK' || exit 1
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
+  test -x ${HOME}/.opencode/bin/opencode && echo 'opencode OK' || exit 1
   ! ss -tlnp 2>/dev/null | grep -q ':4096' && echo 'port 4096 OK' || { echo 'port 4096 in use'; exit 1; }
   which sqlite3 >/dev/null 2>&1 && echo 'sqlite3 OK' || { echo 'sqlite3 missing'; exit 1; }
 "
@@ -17,7 +17,7 @@ wsl -d Ubuntu-24.04 bash -c "
 #### 清理旧进程和临时文件
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   pkill -f 'opencode serve' 2>/dev/null; sleep 1
   rm -rf /tmp/serve-e2e-test && mkdir -p /tmp/serve-e2e-test
   echo 'Environment ready'
@@ -27,9 +27,9 @@ wsl -d Ubuntu-24.04 bash -c "
 #### 启动 opencode serve
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
-  cd /home/zhaoge/workspace/opencode/work-one
-  nohup /home/zhaoge/.opencode/bin/opencode serve --port 4096 > /tmp/serve-e2e-test/serve.log 2>&1 &
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
+  cd ${WORK_ONE_ROOT}
+  nohup ${HOME}/.opencode/bin/opencode serve --port 4096 > /tmp/serve-e2e-test/serve.log 2>&1 &
   echo \$! > /tmp/serve-e2e-test/serve.pid
   echo 'serve PID:' \$(cat /tmp/serve-e2e-test/serve.pid)
 "
@@ -38,7 +38,7 @@ wsl -d Ubuntu-24.04 bash -c "
 等待 serve 就绪：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   for i in \$(seq 1 15); do
     curl -s http://localhost:4096/api/health >/dev/null 2>&1 && { echo 'serve ready'; break; }
     [ \$i -eq 15 ] && { echo 'serve timeout'; exit 1; }
@@ -68,8 +68,8 @@ curl -s -X POST http://localhost:4096/session \
 #### 检查 session_map 是否已有记录
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
-  DB='/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db'
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
+  DB='${WORK_ONE_ROOT}/.opencode/state/framework-state.db'
   SESSION_ID='<从 A.2 获取的 session_id>'
   echo '=== session_map 查询 ==='
   sqlite3 \"\$DB\" \"SELECT * FROM session_map WHERE session_id = '\$SESSION_ID';\"
@@ -81,8 +81,8 @@ wsl -d Ubuntu-24.04 bash -c "
 #### 手动 INSERT（如果无记录）
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
-  DB='/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db'
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
+  DB='${WORK_ONE_ROOT}/.opencode/state/framework-state.db'
   SESSION_ID='<session_id>'
   sqlite3 \"\$DB\" \"INSERT OR IGNORE INTO session_map (session_id, agent, created_at, updated_at) VALUES ('\$SESSION_ID', 'Orchestrator', datetime('now'), datetime('now'));\"
   echo 'session_map inserted'
@@ -161,8 +161,8 @@ curl -s "http://localhost:4096/session/{SID}/message?limit=1"
 #### 查看当前 enforcement 状态
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
-  DB='/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db'
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
+  DB='${WORK_ONE_ROOT}/.opencode/state/framework-state.db'
   SESSION_ID='<session_id>'
   echo '=== execution_checklist_runs ==='
   sqlite3 \"\$DB\" \"SELECT id, session_id, status FROM execution_checklist_runs WHERE session_id = '\$SESSION_ID';\" 2>/dev/null || echo 'no checklist runs'
@@ -174,8 +174,8 @@ wsl -d Ubuntu-24.04 bash -c "
 #### 重置 enforcement
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
-  DB='/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db'
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
+  DB='${WORK_ONE_ROOT}/.opencode/state/framework-state.db'
   SESSION_ID='<session_id>'
   sqlite3 \"\$DB\" \"UPDATE execution_checklist_runs SET status = 'completed' WHERE session_id = '\$SESSION_ID';\"
   sqlite3 \"\$DB\" \"DELETE FROM tool_enforcement WHERE session_id = '\$SESSION_ID';\"
@@ -196,8 +196,8 @@ curl -s -X POST http://localhost:4096/session/{SID}/message \
 验证文件存在：
 
 ```bash
-ls -la /home/zhaoge/workspace/opencode/work-one/e2e-test-write.txt && echo 'Write PASS' || echo 'Write FAIL'
-rm -f /home/zhaoge/workspace/opencode/work-one/e2e-test-write.txt
+ls -la ${WORK_ONE_ROOT}/e2e-test-write.txt && echo 'Write PASS' || echo 'Write FAIL'
+rm -f ${WORK_ONE_ROOT}/e2e-test-write.txt
 ```
 
 ### A.10 验证 dispatch（sub-agent 调度）
@@ -272,11 +272,11 @@ curl -s http://localhost:4096/session/{SID}
 ### A.14 清理
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   kill \$(cat /tmp/serve-e2e-test/serve.pid) 2>/dev/null
   sleep 2
   rm -rf /tmp/serve-e2e-test
-  rm -f /home/zhaoge/workspace/opencode/work-one/e2e-test-write.txt
+  rm -f ${WORK_ONE_ROOT}/e2e-test-write.txt
   echo 'Cleanup complete'
 "
 ```
@@ -290,8 +290,8 @@ wsl -d Ubuntu-24.04 bash -c "
 确认 opencode 二进制存在且端口未被占用：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
-  test -x /home/zhaoge/.opencode/bin/opencode && echo 'opencode OK' || exit 1
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
+  test -x ${HOME}/.opencode/bin/opencode && echo 'opencode OK' || exit 1
   ! ss -tlnp 2>/dev/null | grep -q ':${PORT}' && echo 'port ${PORT} OK' || { echo 'port ${PORT} in use'; exit 1; }
 "
 ```
@@ -299,7 +299,7 @@ wsl -d Ubuntu-24.04 bash -c "
 创建临时目录：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "rm -rf ${TEMP_DIR} && mkdir -p ${TEMP_DIR}"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "rm -rf ${TEMP_DIR} && mkdir -p ${TEMP_DIR}"
 ```
 
 ### B.2 启动 serve + SSE 后台监听
@@ -307,9 +307,9 @@ wsl -d Ubuntu-24.04 bash -c "rm -rf ${TEMP_DIR} && mkdir -p ${TEMP_DIR}"
 #### 启动 opencode serve
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   cd ${PROJECT_DIR}
-  nohup /home/zhaoge/.opencode/bin/opencode serve --port ${PORT} > ${TEMP_DIR}/serve.log 2>&1 &
+  nohup ${HOME}/.opencode/bin/opencode serve --port ${PORT} > ${TEMP_DIR}/serve.log 2>&1 &
   echo \$! > ${TEMP_DIR}/serve.pid
   echo 'serve PID:' \$(cat ${TEMP_DIR}/serve.pid)
 "
@@ -318,7 +318,7 @@ wsl -d Ubuntu-24.04 bash -c "
 等待 serve 就绪：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   for i in \$(seq 1 10); do
     curl -s http://localhost:${PORT}/api/health >/dev/null 2>&1 && { echo 'serve ready'; break; }
     sleep 1
@@ -333,9 +333,9 @@ SSE 流必须在创建 session **之前**启动，确保捕获所有事件。
 > **⚠️ 不能用 curl 连接 /event**（会无限挂起）。必须用 sse-daemon.ts（Bun fetch 实现）。
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
-  export PATH=/home/zhaoge/.bun/bin:\$PATH
-  setsid bun run /home/zhaoge/workspace/qoderwork/scripts/sse-daemon.ts > /tmp/sse-daemon.log 2>&1 < /dev/null &
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
+  export PATH=${HOME}/.bun/bin:\$PATH
+  setsid bun run ${QODERWORK_ROOT}/scripts/sse-daemon.ts > /tmp/sse-daemon.log 2>&1 < /dev/null &
   echo \$! > ${TEMP_DIR}/sse.pid
   echo 'SSE daemon PID:' \$(cat ${TEMP_DIR}/sse.pid)
 "
@@ -344,7 +344,7 @@ wsl -d Ubuntu-24.04 bash -c "
 验证 SSE 监听已启动：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   kill -0 \$(cat ${TEMP_DIR}/sse.pid) 2>/dev/null && echo 'SSE listener running' || echo 'SSE listener dead'
 "
 ```
@@ -352,7 +352,7 @@ wsl -d Ubuntu-24.04 bash -c "
 ### B.3 创建 session
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   RESPONSE=\$(curl -s -X POST http://localhost:${PORT}/session \
     -H 'Content-Type: application/json' \
     -d '{\"title\":\"event-verification-test\"}')
@@ -370,7 +370,7 @@ wsl -d Ubuntu-24.04 bash -c "
 发送一条包含 acp_notify 指令的消息：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   SESSION_ID=\$(cat ${TEMP_DIR}/session-id)
   curl -s -X POST http://localhost:${PORT}/session/\${SESSION_ID}/message \
     -H 'Content-Type: application/json' \
@@ -381,7 +381,7 @@ wsl -d Ubuntu-24.04 bash -c "
 等待 agent 处理完成：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "sleep 15 && wc -l ${SSE_FILE}"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "sleep 15 && wc -l ${SSE_FILE}"
 ```
 
 ### B.5 触发 question 事件
@@ -389,7 +389,7 @@ wsl -d Ubuntu-24.04 bash -c "sleep 15 && wc -l ${SSE_FILE}"
 发送一条触发 `ask_user` 工具的消息：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   SESSION_ID=\$(cat ${TEMP_DIR}/session-id)
   curl -s -X POST http://localhost:${PORT}/session/\${SESSION_ID}/message \
     -H 'Content-Type: application/json' \
@@ -400,7 +400,7 @@ wsl -d Ubuntu-24.04 bash -c "
 等待 question 推送：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "sleep 15 && echo 'Wait complete'"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "sleep 15 && echo 'Wait complete'"
 ```
 
 ### B.6 分析验证
@@ -408,7 +408,7 @@ wsl -d Ubuntu-24.04 bash -c "sleep 15 && echo 'Wait complete'"
 #### SSE 事件概览
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   echo '=== Total SSE lines ==='
   wc -l ${SSE_FILE}
   echo ''
@@ -423,25 +423,25 @@ wsl -d Ubuntu-24.04 bash -c "
 #### 验证 message 事件
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "grep -A2 '^event: message' ${SSE_FILE} | head -20"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "grep -A2 '^event: message' ${SSE_FILE} | head -20"
 ```
 
 #### 验证 acp_notify 事件
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "grep -A5 '^event: acp_notify' ${SSE_FILE} | head -30"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "grep -A5 '^event: acp_notify' ${SSE_FILE} | head -30"
 ```
 
 #### 验证 question 事件
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "grep -A5 '^event: question' ${SSE_FILE} | head -30"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "grep -A5 '^event: question' ${SSE_FILE} | head -30"
 ```
 
 #### 可选：DB 交叉验证
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   DB_PATH='${PROJECT_DIR}/.opencode/state/framework-state.db'
   SESSION_ID=\$(cat ${TEMP_DIR}/session-id)
   sqlite3 \"\$DB_PATH\" \"SELECT id, title, created_at FROM session WHERE id = '\$SESSION_ID';\"
@@ -451,7 +451,7 @@ wsl -d Ubuntu-24.04 bash -c "
 ### B.7 清理
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "
   kill \$(cat ${TEMP_DIR}/sse.pid) 2>/dev/null
   kill \$(cat ${TEMP_DIR}/serve.pid) 2>/dev/null
   sleep 2
@@ -470,12 +470,12 @@ wsl -d Ubuntu-24.04 bash -c "
 
 - serve daemon 已启动（`bun run scripts/start-serve.ts`，参考 §A.1 环境准备）
 - bun 1.3+、python3、curl 可用
-- 脚本路径：`/home/zhaoge/workspace/qoderwork/scripts/`
+- 脚本路径：`${QODERWORK_ROOT}/scripts/`
 
 ```bash
 # 健康检查
 curl -s http://localhost:4096/session/status >/dev/null && echo "serve ready" || exit 1
-ls /home/zhaoge/workspace/qoderwork/scripts/{session-tree,monitor-tree,guide,intervene}.ts
+ls ${QODERWORK_ROOT}/scripts/{session-tree,monitor-tree,guide,intervene}.ts
 ```
 
 ### C.1 场景 A：`session-tree.ts` 查询 2 层树
@@ -493,13 +493,13 @@ echo "PARENT=$PARENT"
 # 2. 异步发送派遣 prompt
 curl -s -X POST "http://localhost:4096/session/${PARENT}/prompt_async" \
   -H 'Content-Type: application/json' \
-  -d "{\"parts\":[{\"type\":\"text\",\"text\":\"请用 native Task 派遣一个 build 子 Agent 读取 /home/zhaoge/workspace/opencode/work-one/AGENTS.md 前 10 行并返回摘要，不要自己做。\"}]}"
+  -d "{\"parts\":[{\"type\":\"text\",\"text\":\"请用 native Task 派遣一个 build 子 Agent 读取 ${WORK_ONE_ROOT}/AGENTS.md 前 10 行并返回摘要，不要自己做。\"}]}"
 
 # 3. 等待子 session 创建
 sleep 40
 
 # 4. 查询 session 树
-bun run /home/zhaoge/workspace/qoderwork/scripts/session-tree.ts $PARENT
+bun run ${QODERWORK_ROOT}/scripts/session-tree.ts $PARENT
 ```
 
 **预期输出**：
@@ -512,7 +512,7 @@ ses_PARENT... | Orchestrator | root | tree-test-A
 **JSON 输出**（加 `--json`）：
 
 ```bash
-bun run /home/zhaoge/workspace/qoderwork/scripts/session-tree.ts $PARENT --json | python3 -c "
+bun run ${QODERWORK_ROOT}/scripts/session-tree.ts $PARENT --json | python3 -c "
 import sys, json
 t = json.load(sys.stdin)
 assert t['root'] == '$PARENT'
@@ -534,7 +534,7 @@ print('PASS: root + 1 child + 1 leaf')
 ```bash
 # 1. 复用场景 A 的 PARENT（或新创建 + 派遣）
 # 2. 启动 monitor-tree（interval=3s 加速，timeout=60s）
-bun run /home/zhaoge/workspace/qoderwork/scripts/monitor-tree.ts $PARENT --interval=3 --timeout=60
+bun run ${QODERWORK_ROOT}/scripts/monitor-tree.ts $PARENT --interval=3 --timeout=60
 echo "exit=$?"
 ```
 
@@ -562,7 +562,7 @@ exit=0
 
 ```bash
 # 1. 用 session-tree 拿到 child SID 和真实 agent
-CHILD=$(bun run /home/zhaoge/workspace/qoderwork/scripts/session-tree.ts $PARENT --json \
+CHILD=$(bun run ${QODERWORK_ROOT}/scripts/session-tree.ts $PARENT --json \
   | python3 -c "import sys,json; t=json.load(sys.stdin); print(t['leafIds'][0])")
 echo "CHILD=$CHILD"
 
@@ -571,7 +571,7 @@ AGENT_BEFORE=$(curl -s "http://localhost:4096/session/${CHILD}" \
 echo "AGENT_BEFORE=$AGENT_BEFORE"
 
 # 2. 用 intervene.ts 发 guidance
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts $CHILD \
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts $CHILD \
   --mode=guide --text="[guide-test] please acknowledge receipt"
 
 # 3. 等待处理
@@ -629,7 +629,7 @@ import sys, json
 qs = json.load(sys.stdin)
 print(qs[0]['sessionID'] if qs else '')")
 
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts $TARGET_SID \
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts $TARGET_SID \
   --mode=reply-qid $QID --text="请继续执行主任务。"
 ```
 
@@ -643,7 +643,7 @@ bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts $TARGET_SID \
 ```bash
 # 故意用错误的 SID
 WRONG_SID="ses_0000000000000000000000fake"
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts $WRONG_SID \
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts $WRONG_SID \
   --mode=reply-qid $QID --text="x"
 echo "exit=$?"   # 期望 exit=3
 ```
@@ -661,15 +661,15 @@ SID=$(curl -s -X POST http://localhost:4096/session \
 
 curl -s -X POST "http://localhost:4096/session/${SID}/prompt_async" \
   -H 'Content-Type: application/json' \
-  -d "{\"parts\":[{\"type\":\"text\",\"text\":\"请依次读取 /home/zhaoge/workspace/opencode/work-one/.opencode/skills 下前 5 个 SKILL.md 文件的行数，每次读取后 sleep 3 秒。\"}]}"
+  -d "{\"parts\":[{\"type\":\"text\",\"text\":\"请依次读取 ${WORK_ONE_ROOT}/.opencode/skills 下前 5 个 SKILL.md 文件的行数，每次读取后 sleep 3 秒。\"}]}"
 
 # 2. 在 agent 还在跑 tool 时（约 10s 后）尝试注入 guidance
 sleep 10
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts $SID --mode=status
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts $SID --mode=status
 # 预期输出：working（说明 turn 未结束）
 
 INJECT_TIME=$(date +%s)
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts $SID \
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts $SID \
   --mode=guide --text="[mid-turn-injection] acknowledge when you see this"
 
 # 3. 等待 turn 结束，记录 assistant 实际看到 guidance 的时间
@@ -713,14 +713,14 @@ curl -s -X POST "http://localhost:4096/session/${CHILD}/prompt_async" \
 sleep 15
 
 # 4. 验证 status 是 working
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts $CHILD --mode=status
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts $CHILD --mode=status
 
 # 5. abort
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts $CHILD --mode=abort
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts $CHILD --mode=abort
 
 # 6. 确认 status 不再是 working
 sleep 5
-bun run /home/zhaoge/workspace/qoderwork/scripts/intervene.ts $CHILD --mode=status
+bun run ${QODERWORK_ROOT}/scripts/intervene.ts $CHILD --mode=status
 ```
 
 **预期输出**：

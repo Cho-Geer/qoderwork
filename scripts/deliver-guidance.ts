@@ -9,7 +9,7 @@
  */
 import Database from "bun:sqlite";
 
-const DB_PATH = "/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db";
+const DB_PATH = "${WORK_ONE_ROOT}/.opencode/state/framework-state.db";
 const sid = process.argv[2];
 const text = process.argv[3];
 

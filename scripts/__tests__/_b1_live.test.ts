@@ -4,7 +4,7 @@ import { resolveSkillSummaryModulePath } from "../_b1_live.ts";
 
 describe("B1 explicit handler module path", () => {
   test("explicit_work_one_root_resolves_exact_handler_path", () => {
-    const root = "/home/zhaoge/workspace/opencode/work-one";
+    const root = "${WORK_ONE_ROOT}";
     expect(resolveSkillSummaryModulePath(root)).toBe(join(root, ".opencode", "plugin-handlers", "system", "skill-summary.ts"));
   });
 

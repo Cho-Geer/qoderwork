@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Dump recent rows from key enforcement/observability tables in framework-state.db.
 set -uo pipefail
-DB="/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db"
+DB="${WORK_ONE_ROOT}/.opencode/state/framework-state.db"
 SID="${1:-}"
 python3 - "$DB" "$SID" <<'PY'
 import sys, sqlite3

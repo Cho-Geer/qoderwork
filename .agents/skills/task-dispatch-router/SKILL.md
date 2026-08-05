@@ -4,7 +4,7 @@ description: >-
   Use as the FIRST step before executing any non-trivial task. Evaluates task
   complexity across three dimensions (file scope & coupling, reasoning depth,
   spec determinism) and outputs a dispatch recommendation: SINGLE mode (do it
-  yourself), SUBAGENT mode (dispatch one sub-agent with role + model), or
+  yourself), SUBAGENT mode (dispatch one sub-agent with role + subagent_type), or
   MULTI-AGENT mode (dispatch multiple sub-agents in parallel). References
   dispatching-parallel-agents
   for parallel/sequential decisions — does not duplicate them. Trigger: any task
@@ -158,7 +158,7 @@ MULTI-AGENT 不在决策矩阵中，需要**额外检查**以下全部条件：
    - required evidence: 必须提供的证据
    - completion condition: 完成条件
 
-2. **派遣**：使用 Agent 工具，显式指定 `model` 和 `subagent_type`
+2. **派遣**：使用 Agent 工具，指定 `subagent_type`，**不指定 `model`**（模型由系统按 subagent_type 默认分配）
 
 ### MULTI-AGENT
 
@@ -200,7 +200,7 @@ MULTI-AGENT 不在决策矩阵中，需要**额外检查**以下全部条件：
 | 已有 skill 的功能 | 本 skill 如何处理 |
 |------------------|------------------|
 | dispatching-parallel-agents 的并行/串行决策 | **引用**：输出 "handoff: dispatching-parallel-agents"，不复制决策图 |
-| pre-flight-enforcement 的 skill 选择 | **不涉及**：本 skill 选 MODE/角色/模型，不选 skill |
+| pre-flight-enforcement 的 skill 选择 | **不涉及**：本 skill 只选 MODE/角色，不选 skill、不指定 model |
 | AGENTS.md §4.4/§12 的派遣规则 | **执行**：禁止场景检查直接引用 §12.3 的 5 条规则 |
 | SDD 的 implementer→reviewer 循环 | **不涉及**：本 skill 只做前置决策，不参与执行循环 |
 

@@ -24,7 +24,7 @@
 
 以下结论源自 496 行的 `handoff/native-windows-verification.md` 及后续双重复审，全部经 Python 字节级验证：
 
-**Runtime 代码修复（6 TS 文件 / 8 import 行）**：
+**Runtime 代码修复（6 TS 文件 / 10 logical imports：9 静态 ESM + 1 动态 await-import）**：
 - `cleanup-regress.ts:1`, `diag-handover-path.ts:4`, `diag-schema.ts:1`, `regress-parent-child.ts:4,12`, `test-hybrid-enforcement.ts:60`（await import）, `_d3_live.ts:15,16` — 这些行包含 `/home/zhaoge` 的静态 import，在 Windows Git Bash 下加载即 MODULE_NOT_FOUND，无法用 try/catch 捕获。
 
 **Repo 扫描总量**：
@@ -51,7 +51,7 @@
 - 不支持原生 cmd.exe（仅 Git Bash + WSL Ubuntu，均为 bash 派生）
 - 不发明新的环境变量（`QW_ROOT` 不被引入）
 - 不引入 `tree-kill` 包
-- outcome-contract 不需 gen-2 修订（handoff L294 的内联边界修正已足够）
+- outcome-contract 不需 gen-2 修订（handoff L294 的语义澄清注（用户对 Git Bash 的重分类）已足够覆盖）
 
 ---
 
@@ -65,19 +65,19 @@
 
 复用既有 `WORK_ONE_ROOT` + `QODERWORK_ROOT` 作为根锚点。**明确禁止引入 `QW_ROOT`**。现有 `scripts/lib/workspace-paths.ts` 的 4 级优先级契约不变；新增加的跨平台入口只消费这两个锚点，不创建新锚点。
 
-#### B 层：Runtime 修复（6 TS 文件 / 8 import 行）
+#### B 层：Runtime 修复（6 TS 文件 / 10 logical imports：9 静态 ESM + 1 动态 await-import）
 
-6 个 TypeScript 文件中 8 个静态 `/home/zhaoge` import 行，在 Git Bash 下加载即 MODULE_NOT_FOUND。修复方式：将 import 路径替换为 `${WORK_ONE_ROOT}` / `${QODERWORK_ROOT}` 驱动的动态解析（通过 `pathToFileURL(resolvedPath).href`），保留原有业务逻辑不变。
+6 个 TypeScript 文件中 10 logical imports（9 静态 ESM + 1 动态 await-import），在 Git Bash 下加载即 MODULE_NOT_FOUND。修复方式：将 import 路径替换为 `${WORK_ONE_ROOT}` / `${QODERWORK_ROOT}` 驱动的动态解析（通过 `pathToFileURL(resolvedPath).href`），保留原有业务逻辑不变。
 
 #### C 层：Skill 通用化（3 桶分类法）
 
 总共 18 个 skill .md 文件 / 168 处 `/home/zhaoge` 匹配（Python 字节级验证）。按 3 个桶处理：
 
-- **桶 1（命令模板，约 116 处）**：替换为 `${WORK_ONE_ROOT}` / `${QODERWORK_ROOT}` 占位符
-- **桶 2（54 处 `wsl -d Ubuntu-24.04` 调用，分布在 7 个文件中；主要：`serve-api/reference.md`=26, `debug-environment-toolkit/SKILL.md`=14）**：参数化为 `${QW_WSL_DISTRO:-Ubuntu-24.04}` shell 变量
-- **桶 3（61 处散文 + 8 处 TS 常量 + 2 处 JSON）**：重写为通用表述（"你的 QoderWork workspace 根目录"）
+- **桶 1（命令模板，约 87 处）**：替换为 `${WORK_ONE_ROOT}` / `${QODERWORK_ROOT}` 占位符
+- **桶 2（10 处 `wsl -d` 与 `/home/zhaoge` 同线共现，分布在 6 个文件中；主要：`debug-environment-toolkit/reference.md`=3, `debug-environment-toolkit/SKILL.md`=2, `doc-code-sync/SKILL.md`=2）**：参数化为 `${QW_WSL_DISTRO:-Ubuntu-24.04}` shell 变量
+- **桶 3（71 处散文 + TS 常量 + JSON）**：重写为通用表述（"你的 QoderWork workspace 根目录"）
 
-**必修 N2 修复**：5+ 个 skill 描述仍声称"WSL-only / Linux only / 走 WSL"（如 `clean-sessions/SKILL.md:77` "Windows 侧直连 UNC 路径常失败，走 WSL"）。这些在 Git Bash 语义澄清后直接误导用户，必须修正为"Windows Git Bash + WSL Ubuntu 均支持"。
+**必修 N2 修复**：1 个 skill 描述（`clean-sessions/SKILL.md:77` "Windows 侧直连 UNC 路径常失败，走 WSL"）声称"WSL-only / Linux only / 走 WSL"，在 Git Bash 语义澄清后直接误导用户，必须修正为"Windows Git Bash + WSL Ubuntu 均支持"。
 
 **必修 N3 修复**：`debug-environment-toolkit/SKILL.md` 包含 12 处硬编码 `/home/zhaoge` 路径（Python 字节级验证）— 不在 `scripts/` 或 `audits/` 中，因此被先前轮次遗漏。必须替换为通用占位符。
 
@@ -114,11 +114,11 @@
 
 | 桶 | 文件数 | 匹配数 | 替换策略 |
 |----|--------|--------|----------|
-| 桶 1（命令模板） | ~18 | ~116 | `${WORK_ONE_ROOT}` / `${QODERWORK_ROOT}` |
-| 桶 2（wsl 包装） | 7 | 54 | `${QW_WSL_DISTRO:-Ubuntu-24.04}` |
+| 桶 1（命令模板） | ~15 | ~87 | `${WORK_ONE_ROOT}` / `${QODERWORK_ROOT}` |
+| 桶 2（wsl 包装） | 6 | 10 | `${QW_WSL_DISTRO:-Ubuntu-24.04}` |
 | 桶 3（散文/常量/JSON） | ~18 | 71 | 通用重写 |
 
-**必修 N2**：修正 5+ skill 中的 "WSL-only" 表述
+**必修 N2**：修正 1 skill（`clean-sessions/SKILL.md:77`）中的 "WSL-only" 表述
 **必修 N3**：修复 `debug-environment-toolkit/SKILL.md` 中 12 处硬编码路径
 
 验收标准：grep -r '/home/zhaoge' `.agents/skills/` | wc -l = 0。
@@ -133,7 +133,7 @@
 - 更新 AGENTS.md（13 处）
 - CI 矩阵增加 `os: [windows-latest, ubuntu-latest]`
 - 更新 `blueprints/INDEX.md` 登记本蓝图
-- 创建 `logs/2026-08-03-blueprint-cross-platform-universality.md`
+- 创建 `logs/2026-08-03-blueprint-cross-platform-universality.md` — 注：若 §1.3 "不修改 logs/" 仍然有效，则本行不生效；plan 端已通过 BLOCKED-BY-DECISION 跳过此步
 
 ---
 
@@ -207,7 +207,7 @@
 
 ### 5.4 Outcome-contract 决策
 
-**outcome-contract 不需 gen-2 amendment**：`PATH-DYNAMIC-RESOLUTION-OUTCOME-CONTRACT-V1`（generation=1）已交付。其 `out_of_scope[5]: "Windows/其他 OS 实机行为"` 在用户语义澄清后存在歧义，但 handoff L294 的内联边界修正已足够覆盖。不需要新建 gen-2 合同。
+**outcome-contract 不需 gen-2 amendment**：`PATH-DYNAMIC-RESOLUTION-OUTCOME-CONTRACT-V1`（generation=1）已交付。其 `out_of_scope[5]: "Windows/其他 OS 实机行为"` 在用户语义澄清后存在歧义，但 handoff L294 的语义澄清注（用户对 Git Bash 的重分类）已足够覆盖。不需要新建 gen-2 合同。
 
 ---
 
@@ -226,7 +226,7 @@
 
 - **总 `/home/zhaoge` 匹配数**：`audits/` 占 94.1%（19,939/21,182），`audits/` 冻结不修改
 - **Skill 文件 168 处**：Python 字节级 `rg -c` 逐文件加和，与桶分类合计一致
-- **6 TS 文件 8 import 行**：逐行 Python 字节级验证，非保守估计
+- **6 TS 文件 10 logical imports（9 静态 ESM + 1 动态 await-import）**：逐行 Python 字节级验证，非保守估计
 - **54 处 `wsl -d Ubuntu-24.04`**：7 个文件中，Python 字节级验证
 
 ### 6.3 参考文档

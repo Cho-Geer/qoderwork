@@ -8,6 +8,10 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync, rmSync, existsSync } from "fs";
 import { join } from "path";
+import { pathToFileURL } from "node:url";
+import { resolve } from "node:path";
+import { resolveWorkspacePaths } from "./lib/workspace-paths";
+const { workOneRoot } = resolveWorkspacePaths({ env: process.env });
 
 // ── Setup test DB ──
 const TEST_ROOT = "/tmp/test-hybrid-enforcement";
@@ -57,7 +61,10 @@ const {
   recordResult,
   setConfig,
   closeDb,
-} = await import("/home/zhaoge/workspace/opencode/work-one/.opencode/service/enforcement/tool-tracker.ts");
+} = await (async () => {
+  const target = pathToFileURL(resolve(workOneRoot, '.opencode/service/enforcement/tool-tracker.ts')).href;
+  return await import(target);
+})();
 
 // Ensure config uses test thresholds
 setConfig({ softThreshold: 2, hardThreshold: 4, totalLimit: 15, complianceThreshold: 3, ttlMs: 3600_000 });

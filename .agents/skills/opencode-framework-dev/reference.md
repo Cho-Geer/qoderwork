@@ -10,7 +10,7 @@
 - 当前 `.opencode/agents/` 只有 `Orchestrator.md`；native `build/general/explore/plan` 没有对应 agent md。
 - 当前 active plugin 入口是 5 个 dispatcher/lifecycle 文件：`before-dispatcher.ts`, `after-dispatcher.ts`, `system-dispatcher.ts`, `session.ts`, `tool-def-trimmer.ts`。
 - 当前验证默认用 serve API；ACP token 测量只作为上游协议研究或 context baseline 选项，不是默认 E2E。
-- 当前环境是本地 WSL，优先直接执行 bash 命令；不要机械套 `wsl.exe -d Ubuntu-24.04`。
+- 当前环境是本地 WSL，优先直接执行 bash 命令；不要机械套 `wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}"`。
 - `safe_framework_edit` 当前只应按显式 permission + `dispatch_privilege` grant + CodeGraph double gate 验证。
 
 ---
@@ -165,7 +165,7 @@ stop_injected       INTEGER DEFAULT 0
 ### 状态检查 SQL
 
 ```bash
-wsl.exe -d Ubuntu-24.04 -- bash -lc "bun -e \"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -lc "bun -e \"
 const {Database} = require('bun:sqlite');
 const db = new Database('$DB_PATH');
 const rows = db.query('SELECT session_id, agent, consecutive_failures, total_failures, compliance_blocks, awaiting_guidance, guidance_token, guidance_requested_at, stop_injected FROM tool_enforcement ORDER BY rowid DESC LIMIT 10').all();
@@ -217,8 +217,8 @@ hash 验证方法：对比 `read_audit.content_hash` 与文件实际 hash（`sha
 serve API 的 `GET /message` 不回传 tool_call 事件详情。用 `opencode export` 从 SQLite DB 直接提取完整 transcript：
 
 ```bash
-wsl.exe -d Ubuntu-24.04 -- bash -lc "opencode export <session_id>"
-wsl.exe -d Ubuntu-24.04 -- bash -lc "opencode export <session_id> | grep -A5 'safe_shell\|safe_edit'"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -lc "opencode export <session_id>"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -lc "opencode export <session_id> | grep -A5 'safe_shell\|safe_edit'"
 ```
 
 | export 结果 | serve API message | 结论 |
@@ -269,18 +269,18 @@ console.log(JSON.stringify(result, null, 2));
 ### 清除 Bun 缓存 + 重启 serve
 
 ```bash
-wsl.exe -d Ubuntu-24.04 -- bash -lc "rm -rf ~/.bun/install/cache && echo 'Bun cache cleared'"
-wsl.exe -d Ubuntu-24.04 -- bash -lc "pkill -f 'opencode serve' 2>/dev/null; sleep 1"
-wsl.exe -d Ubuntu-24.04 -- bash -lc "cd $FW_ROOT && setsid /home/zhaoge/.opencode/bin/opencode serve --port 4096 > /tmp/opencode-serve.log 2>&1 &"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -lc "rm -rf ~/.bun/install/cache && echo 'Bun cache cleared'"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -lc "pkill -f 'opencode serve' 2>/dev/null; sleep 1"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -lc "cd $FW_ROOT && setsid ${HOME}/.opencode/bin/opencode serve --port 4096 > /tmp/opencode-serve.log 2>&1 &"
 sleep 3
-wsl.exe -d Ubuntu-24.04 -- bash -lc "curl -s http://localhost:4096/api/session | head -c 100 && echo '... serve OK'"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -lc "curl -s http://localhost:4096/api/session | head -c 100 && echo '... serve OK'"
 ```
 
 ### 确认 plugin load 日志
 
 ```bash
-wsl.exe -d Ubuntu-24.04 -- bash -lc "cat $FW_ROOT/.task_temp/_logs/$(date +%Y-%m-%d)/plugin-*-loaded.log 2>/dev/null | tail -20"
-wsl.exe -d Ubuntu-24.04 -- bash -lc "grep -i 'error\|fail\|cannot find' $FW_ROOT/.task_temp/_logs/$(date +%Y-%m-%d)/_error.log 2>/dev/null | tail -10"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -lc "cat $FW_ROOT/.task_temp/_logs/$(date +%Y-%m-%d)/plugin-*-loaded.log 2>/dev/null | tail -20"
+wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" -- bash -lc "grep -i 'error\|fail\|cannot find' $FW_ROOT/.task_temp/_logs/$(date +%Y-%m-%d)/_error.log 2>/dev/null | tail -10"
 ```
 
 ### serve API 端到端测试
@@ -312,7 +312,7 @@ curl -s -X POST http://localhost:4096/session/$SID/abort
 
 ```javascript
 const fs = require('fs');
-const configPath = '/home/zhaoge/workspace/opencode/work-one/opencode.json';
+const configPath = '${WORK_ONE_ROOT}/opencode.json';
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
 config.mcp['<server-name>'] = {
@@ -338,7 +338,7 @@ bun -e "const c=JSON.parse(require('fs').readFileSync('$BASE/opencode.json','utf
 
 ```javascript
 const fs = require('fs');
-const configPath = '/home/zhaoge/workspace/opencode/work-one/opencode.json';
+const configPath = '${WORK_ONE_ROOT}/opencode.json';
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
 // Current active agent keys in this checkout.
@@ -381,7 +381,7 @@ console.log(ok+'/',agents.length*tools.length,'rules present');
 只在 Orchestrator 需要显式知道新工具或新流程时修改 `Orchestrator.md`：
 
 ```bash
-grep -n '<tool-or-skill-name>' /home/zhaoge/workspace/opencode/work-one/.opencode/agents/Orchestrator.md
+grep -n '<tool-or-skill-name>' ${WORK_ONE_ROOT}/.opencode/agents/Orchestrator.md
 ```
 
 如果缺失，使用正常编辑流程补充一句操作策略，而不是批量创建不存在的 native agent md。
@@ -758,7 +758,7 @@ If all rows have `cleanup_marker = NULL` despite a compactor existing in code, t
 
 ## 审核范围
 - 文件: target-structure.md, context-lazy-loading-plan.md, ...
-- 代码库: /home/zhaoge/workspace/opencode/work-one/.opencode/
+- 代码库: ${WORK_ONE_ROOT}/.opencode/
 
 ## 差异汇总
 

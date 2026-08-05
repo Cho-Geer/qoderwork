@@ -71,7 +71,7 @@ export function bindGrant() {
     expect(bootstrapSrc).not.toMatch(/import\(`\$\{manifest\.paths\.worktreeDir\}[\s\S]*?privilege\.ts`\)/);
 
     // Must NOT contain hardcoded work-one path
-    expect(bootstrapSrc).not.toContain("/home/zhaoge/workspace/opencode/work-one/.opencode");
-    expect(bootstrapSrc).not.toContain("/home/zhaoge/workspace/qoderwork/");
+    expect(bootstrapSrc).not.toContain("${WORK_ONE_ROOT}/.opencode");
+    expect(bootstrapSrc).not.toContain("${QODERWORK_ROOT}/");
   });
 });

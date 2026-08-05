@@ -15,7 +15,7 @@ This is a `[VERIFICATION]` skill: source inspection describes intent, while API 
 
 ## Prepare The Runtime
 
-1. Start or restart the service with `bun run /home/zhaoge/workspace/qoderwork/scripts/start-serve.ts`.
+1. Start or restart the service with `bun run ${QODERWORK_ROOT}/scripts/start-serve.ts`.
 2. Start `scripts/sse-daemon.ts` before creating a session when event evidence is required.
 3. Check `GET http://localhost:4096/session` and the SSE daemon process before proceeding.
 

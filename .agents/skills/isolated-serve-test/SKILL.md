@@ -143,11 +143,11 @@ P0-1B 用于验证 `create → start → bootstrap → execute(plan) → verify-
 **唯一命令**：
 
 ```bash
-COMMIT=$(git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD)
+COMMIT=$(git -C ${WORK_ONE_ROOT} rev-parse HEAD)
 : "${P0_1B_PORT:?reviewer must provide P0_1B_PORT}"
 
-/home/zhaoge/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-1b \
-  --primary-worktree /home/zhaoge/workspace/opencode/work-one \
+${HOME}/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-1b \
+  --primary-worktree ${WORK_ONE_ROOT} \
   --commit "$COMMIT" --port "$P0_1B_PORT" --test-id P0-1B-RUNTIME-SMOKE
 ```
 
@@ -175,22 +175,22 @@ P0-2 验证双 run 隔离、SSE 写入归属、reservation 接管与外部 PID �
 ```bash
 : "${P0_2_PORT_A:?reviewer must provide P0_2_PORT_A}"
 : "${P0_2_PORT_B:?reviewer must provide P0_2_PORT_B}"
-XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork \
+XDG_STATE_HOME=${HOME}/.local/state/qoderwork \
   P0_2_PORT_A="$P0_2_PORT_A" P0_2_PORT_B="$P0_2_PORT_B" \
-  /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/p02-runtime.test.ts
+  ${HOME}/.bun/bin/bun test scripts/test-serve/__tests__/p02-runtime.test.ts
 ```
 
 **入口 B（CLI 子命令，PHASE-06）**：
 
 ```bash
-COMMIT=$(git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD)
+COMMIT=$(git -C ${WORK_ONE_ROOT} rev-parse HEAD)
 : "${P0_2_PORT_A:?reviewer must provide P0_2_PORT_A}"
 : "${P0_2_PORT_B:?reviewer must provide P0_2_PORT_B}"
-/home/zhaoge/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-2 \
-  --primary-worktree /home/zhaoge/workspace/opencode/work-one \
+${HOME}/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-2 \
+  --primary-worktree ${WORK_ONE_ROOT} \
   --commit "$COMMIT" --port-a "$P0_2_PORT_A" --port-b "$P0_2_PORT_B" \
   --test-id P0-2-CLI-SMOKE \
-  --main-framework-db /home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db
+  --main-framework-db ${WORK_ONE_ROOT}/.opencode/state/framework-state.db
 ```
 
 **PASS 唯一标准**（必须同时满足）：
@@ -215,22 +215,22 @@ P0-2 验证双 run 隔离、SSE 写入归属、reservation 接管与外部 PID �
 ```bash
 : "${P0_2_PORT_A:?reviewer must provide P0_2_PORT_A}"
 : "${P0_2_PORT_B:?reviewer must provide P0_2_PORT_B}"
-XDG_STATE_HOME=/home/zhaoge/.local/state/qoderwork \
+XDG_STATE_HOME=${HOME}/.local/state/qoderwork \
   P0_2_PORT_A="$P0_2_PORT_A" P0_2_PORT_B="$P0_2_PORT_B" \
-  /home/zhaoge/.bun/bin/bun test scripts/test-serve/__tests__/p02-runtime.test.ts
+  ${HOME}/.bun/bin/bun test scripts/test-serve/__tests__/p02-runtime.test.ts
 ```
 
 **入口 B（CLI 子命令，PHASE-06）**：
 
 ```bash
-COMMIT=$(git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD)
+COMMIT=$(git -C ${WORK_ONE_ROOT} rev-parse HEAD)
 : "${P0_2_PORT_A:?reviewer must provide P0_2_PORT_A}"
 : "${P0_2_PORT_B:?reviewer must provide P0_2_PORT_B}"
-/home/zhaoge/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-2 \
-  --primary-worktree /home/zhaoge/workspace/opencode/work-one \
+${HOME}/.bun/bin/bun run scripts/test-serve/isolated-serve.ts p0-2 \
+  --primary-worktree ${WORK_ONE_ROOT} \
   --commit "$COMMIT" --port-a "$P0_2_PORT_A" --port-b "$P0_2_PORT_B" \
   --test-id P0-2-CLI-SMOKE \
-  --main-framework-db /home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db
+  --main-framework-db ${WORK_ONE_ROOT}/.opencode/state/framework-state.db
 ```
 
 **PASS 唯一标准**（必须同时满足）：

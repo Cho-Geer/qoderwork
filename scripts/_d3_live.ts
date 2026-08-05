@@ -6,21 +6,32 @@
 //           -> writeLog("tool-governance","runtime") -> plugin-tool-governance-runtime.log
 //           -> writeJsonl("audit")                  -> audit.jsonl
 //
-// Run with: OPENCODE_ROOT=/home/zhaoge/workspace/opencode/work-one \
-//           /home/zhaoge/.bun/bin/bun run _d3_live.ts
+// Run with: OPENCODE_ROOT=${WORK_ONE_ROOT} \
+//           ${HOME}/.bun/bin/bun run _d3_live.ts
 //
 // The handler module is imported from disk (NOT a mock), so this verifies the
 // exact code the serve will load after restart.
 
-import { handle } from "/home/zhaoge/workspace/opencode/work-one/.opencode/plugin-handlers/before/tool-governance-handler.ts";
-import { flushAll, getPluginLogPath } from "/home/zhaoge/workspace/opencode/work-one/.opencode/lib/log-manager.ts";
+import { pathToFileURL } from "node:url";
+import { resolve } from "node:path";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { resolveWorkspacePaths } from "./lib/workspace-paths";
+const { workOneRoot } = resolveWorkspacePaths({ env: process.env });
+
+const { handle } = await (async () => {
+  const target = pathToFileURL(resolve(workOneRoot, ".opencode/plugin-handlers/before/tool-governance-handler.ts")).href;
+  return await import(target);
+})();
+const { flushAll, getPluginLogPath } = await (async () => {
+  const target = pathToFileURL(resolve(workOneRoot, ".opencode/lib/log-manager.ts")).href;
+  return await import(target);
+})();
 
 const SID = "D3-live-" + Date.now();
 const today = new Date().toISOString().slice(0, 10);
 const WORK_ONE_ROOT =
-  process.env.OPENCODE_ROOT || "/home/zhaoge/workspace/opencode/work-one";
+  process.env.OPENCODE_ROOT || "${WORK_ONE_ROOT}";
 
 interface Case {
   label: string;
@@ -32,8 +43,8 @@ interface Case {
 const cases: Case[] = [
   { label: "github-read",  tool: "github_get_issue",   args: { owner: "o", repo: "r", issue_number: 1 }, expect: "allow" },
   { label: "github-write", tool: "github_create_issue", args: { owner: "o", repo: "r", title: "t" },       expect: "block" },
-  { label: "safe-shell-git-status", tool: "safe_shell", args: { command: "git -C /home/zhaoge/workspace/opencode/work-one status --short" }, expect: "allow" },
-  { label: "safe-shell-git-commit", tool: "safe_shell", args: { command: "git -C /home/zhaoge/workspace/opencode/work-one commit --allow-empty -m d3-live-test" }, expect: "block" },
+  { label: "safe-shell-git-status", tool: "safe_shell", args: { command: "git -C \"${WORK_ONE_ROOT}\" status --short" }, expect: "allow" },
+  { label: "safe-shell-git-commit", tool: "safe_shell", args: { command: "git -C \"${WORK_ONE_ROOT}\" commit --allow-empty -m d3-live-test" }, expect: "block" },
 ];
 
 async function runCase(c: Case): Promise<string> {

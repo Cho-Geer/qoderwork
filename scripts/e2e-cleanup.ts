@@ -4,7 +4,7 @@
  */
 import { Database } from "bun:sqlite";
 
-const DB_PATH = "/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db";
+const DB_PATH = "${WORK_ONE_ROOT}/.opencode/state/framework-state.db";
 const db = new Database(DB_PATH);
 db.run("PRAGMA journal_mode = WAL");
 

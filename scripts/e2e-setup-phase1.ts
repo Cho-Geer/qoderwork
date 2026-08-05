@@ -7,7 +7,7 @@
 import { Database } from "bun:sqlite";
 import { randomBytes } from "crypto";
 
-const DB_PATH = "/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db";
+const DB_PATH = "${WORK_ONE_ROOT}/.opencode/state/framework-state.db";
 const sessionId = process.argv[2] || "";
 
 if (!sessionId) {

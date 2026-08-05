@@ -267,7 +267,7 @@ Standard pattern to avoid WSL `bash -c` variable expansion, quote nesting, and p
 
 ### 何时使用
 
-在 Windows 侧通过 `wsl -d Ubuntu-24.04 bash -c "..."` 执行命令时，以下情况应切换为脚本模式：
+在 Windows 侧通过 `wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "..."` 执行命令时，以下情况应切换为脚本模式：
 
 - 命令包含 `$()`、`$var`、`${var}` 等 shell 变量展开
 - 嵌套引号超过 2 层（如 `bash -c "echo \"$(ls \"$dir\")\""`）
@@ -291,7 +291,7 @@ Standard pattern to avoid WSL `bash -c` variable expansion, quote nesting, and p
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 
-const BASE = "/home/zhaoge/workspace/opencode/work-one";
+const BASE = "${WORK_ONE_ROOT}";
 // ... 业务逻辑
 console.log("done");
 ```
@@ -299,7 +299,7 @@ console.log("done");
 #### Step 2: 复制到 WSL /tmp
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{workspaceId}/my-script.ts /tmp/my-script.ts"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{workspaceId}/my-script.ts /tmp/my-script.ts"
 ```
 
 路径映射规则：Windows 的 `C:\Users\USER\.qoderworkcn\workspace\{id}\` 对应 WSL 的 `/mnt/c/Users/USER/.qoderworkcn/workspace/{id}/`。
@@ -322,31 +322,31 @@ console.log(`config keys: ${Object.keys(config).length}, input lines: ${data.spl
 复制命令（脚本 + 源文件一起 cp）：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/process-config.ts /tmp/process-config.ts && cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/opencode.json /tmp/opencode.json && cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/input.md /tmp/input.md"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/process-config.ts /tmp/process-config.ts && cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/opencode.json /tmp/opencode.json && cp /mnt/c/Users/USER/.qoderworkcn/workspace/{id}/input.md /tmp/input.md"
 ```
 
 **要点**：脚本和它需要读取的所有源文件，都应在同一个 `cp` 链中完成复制。脚本内一律用 `/tmp/filename` 绝对路径，不要依赖 cwd 或相对路径。
 
-如果源文件本身就在 WSL 文件系统内（如 `/home/zhaoge/workspace/...`），则无需额外 cp，脚本直接读取即可。
+如果源文件本身就在 WSL 文件系统内（如 `${QODERWORK_ROOT}` 或 `${WORK_ONE_ROOT}` 工作区内的路径），则无需额外 cp，脚本直接读取即可。
 
 #### Step 3: 执行脚本
 
 **bun 脚本（.ts）** — 必须显式设置 PATH，因为 WSL 不继承 Windows 环境变量：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin' && bun run /tmp/my-script.ts"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "export PATH='${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin' && bun run /tmp/my-script.ts"
 ```
 
 **shell 脚本（.sh）**：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "bash /tmp/my-script.sh"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "bash /tmp/my-script.sh"
 ```
 
 如果脚本需要访问特定工作目录，在执行命令中加 `cd`：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin' && cd /home/zhaoge/workspace/opencode/work-one && bun run /tmp/my-script.ts"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "export PATH='${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin' && cd ${WORK_ONE_ROOT} && bun run /tmp/my-script.ts"
 ```
 
 #### Step 3 替代方案: Pipe-to-stdin — 绕过 bash -c 的 PATH/引号问题
@@ -356,15 +356,15 @@ wsl -d Ubuntu-24.04 bash -c "export PATH='/home/zhaoge/.bun/bin:/usr/local/bin:/
 **方式 A：PowerShell Get-Content pipe（推荐）**
 
 ```bash
-powershell -Command "Get-Content 'C:\Users\USER\.qoderworkcn\workspace\{id}\my-script.sh' -Raw | wsl -d Ubuntu-24.04 bash"
+powershell -Command "Get-Content 'C:\Users\USER\.qoderworkcn\workspace\{id}\my-script.sh' -Raw | wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash"
 ```
 
 脚本内部自行设置 PATH 和 HOME：
 
 ```bash
 #!/bin/bash
-export HOME=/home/zhaoge
-export PATH=/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin
+export HOME=${HOME}
+export PATH=${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin
 
 echo "=== running in WSL ==="
 bun run /tmp/my-script.ts
@@ -373,7 +373,7 @@ bun run /tmp/my-script.ts
 **方式 B：cmd type pipe**
 
 ```bash
-type "C:\Users\USER\.qoderworkcn\workspace\{id}\my-script.sh" | wsl -d Ubuntu-24.04 bash
+type "C:\Users\USER\.qoderworkcn\workspace\{id}\my-script.sh" | wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash
 ```
 
 **适用场景**：
@@ -393,20 +393,20 @@ type "C:\Users\USER\.qoderworkcn\workspace\{id}\my-script.sh" | wsl -d Ubuntu-24
 长时间运行的会话中 /tmp 会积累脚本，可在执行后清理：
 
 ```bash
-wsl -d Ubuntu-24.04 bash -c "rm -f /tmp/my-script.ts /tmp/opencode.json /tmp/input.md"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "rm -f /tmp/my-script.ts /tmp/opencode.json /tmp/input.md"
 ```
 
 ### 关键细节
 
-- **PATH 必须显式设置**：WSL 非登录 shell 不继承 Windows 的 PATH，bun 路径 `/home/zhaoge/.bun/bin` 不会自动可用
-- **bun 路径**：`/home/zhaoge/.bun/bin`
-- **HOME 环境变量**：如需 HOME，显式设置 `export HOME='/home/zhaoge'`
+- **PATH 必须显式设置**：WSL 非登录 shell 不继承 Windows 的 PATH，bun 路径 `${HOME}/.bun/bin` 不会自动可用
+- **bun 路径**：`${HOME}/.bun/bin`
+- **HOME 环境变量**：如需 HOME，显式设置 `export HOME=${HOME}`
 - **/tmp 是 WSL 的 /tmp**：不是 Windows 的 `%TEMP%`，两者完全隔离
-- **脚本中用绝对路径**：WSL 内的文件操作一律用 `/home/zhaoge/...` 绝对路径，不要依赖 cwd
+- **脚本中用绝对路径**：WSL 内的文件操作一律用 `${QODERWORK_ROOT}` / `${WORK_ONE_ROOT}` / `${HOME}` 等绝对路径，不要依赖 cwd
 - **Windows 写文件编码**：Write 工具写出的文件是 UTF-8，bun 可正常处理；但如果 shell 脚本含中文，建议用 `cp` 而非 heredoc
 - **源文件可达性**：TS 脚本 `readFileSync` 读取的文件必须在 WSL 文件系统中可达。Windows 侧 workspace 文件通过 `/mnt/c/Users/USER/.qoderworkcn/workspace/{id}/` 可读，但更稳定的做法是先 cp 到 `/tmp`（避免 /mnt/c 挂载偶尔不生效的问题）
 - **pipe-to-stdin 优势**：当 `bash -c "..."` 因 Windows 环境变量泄漏（特别是 PATH 中的括号）导致语法错误时，pipe 模式完全绕过 `bash -c`，脚本从 stdin 读入，无需任何引号转义
-- **CRLF 陷阱（pipe-to-stdin 模式）**：Windows Write 工具创建的文件使用 CRLF（`\r\n`）行尾。当 `.sh` 或 `.ts` 脚本含中文注释并通过 PowerShell `Get-Content -Raw | wsl bash` 管道传入 WSL 时，`\r` 会导致注释行与后续代码行合并（例如 `// 过滤新事件\r\nconst x = ...` 变成单行 `// 过滤新事件  const x = ...`，代码被注释吞掉）。**规避方法**：(1) pipe 模式的脚本中只用 ASCII 字符（注释和日志消息都用英文），或 (2) 在 WSL 内部直接写脚本（`wsl -d Ubuntu-24.04 bash -c "cat > /tmp/script.ts << 'WSLEOF' ... WSLEOF"`），避免 Windows 行尾污染
+- **CRLF 陷阱（pipe-to-stdin 模式）**：Windows Write 工具创建的文件使用 CRLF（`\r\n`）行尾。当 `.sh` 或 `.ts` 脚本含中文注释并通过 PowerShell `Get-Content -Raw | wsl bash` 管道传入 WSL 时，`\r` 会导致注释行与后续代码行合并（例如 `// 过滤新事件\r\nconst x = ...` 变成单行 `// 过滤新事件  const x = ...`，代码被注释吞掉）。**规避方法**：(1) pipe 模式的脚本中只用 ASCII 字符（注释和日志消息都用英文），或 (2) 在 WSL 内部直接写脚本（`wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "cat > /tmp/script.ts << 'WSLEOF' ... WSLEOF"`），避免 Windows 行尾污染
 
 ### 反模式（不要这样做）
 
@@ -414,14 +414,14 @@ wsl -d Ubuntu-24.04 bash -c "rm -f /tmp/my-script.ts /tmp/opencode.json /tmp/inp
 
 ```bash
 # 错误：转义地狱，几乎必定失败
-wsl -d Ubuntu-24.04 bash -c "for f in \$(ls /tmp); do echo \\\$f; done"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "for f in \$(ls /tmp); do echo \\\$f; done"
 ```
 
 **不要用 heredoc 通过 bash -c 传递多行脚本**：
 
 ```bash
 # 错误：heredoc 在 bash -c 中行为不可预测
-wsl -d Ubuntu-24.04 bash -c "cat << 'EOF' > /tmp/test.sh
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "cat << 'EOF' > /tmp/test.sh
 #!/bin/bash
 echo \$HOME
 EOF"
@@ -431,14 +431,14 @@ EOF"
 
 ```bash
 # 错误：bun 找不到
-wsl -d Ubuntu-24.04 bash -c "bun run /tmp/script.ts"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "bun run /tmp/script.ts"
 ```
 
 **不要假设 Windows PATH 不泄漏到 bash -c**：
 
 ```bash
 # 错误：Windows PATH 含括号（如 C:\Program Files\...），泄漏后 bash 报 syntax error
-wsl -d Ubuntu-24.04 bash -c "some-command"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "some-command"
 # 报错：/mnt/c/Program: No such file or directory（PATH 中的空格和括号导致）
 ```
 
@@ -459,7 +459,7 @@ const data = readFileSync("/tmp/config.json", "utf-8");
 ```bash
 # 错误：Write 工具生成 CRLF，PowerShell pipe 到 WSL 后 \r 导致注释吞掉下一行代码
 #!/bin/bash
-export PATH=/home/zhaoge/.bun/bin:/usr/local/bin:/usr/bin:/bin
+export PATH=${HOME}/.bun/bin:/usr/local/bin:/usr/bin:/bin
 # 过滤新事件
 const newEvents = lines.filter(...)  # ← 这行会被上面的中文注释吞掉！
 ```

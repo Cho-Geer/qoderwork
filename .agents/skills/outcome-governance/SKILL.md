@@ -40,7 +40,7 @@ continuing; do not edit an older contract.
 Run the read-only validator as:
 
 ```bash
-/home/zhaoge/.bun/bin/bun run scripts/validate-outcome-governance.ts <outcome-dir> --repository-root <repository-root>
+${HOME}/.bun/bin/bun run scripts/validate-outcome-governance.ts <outcome-dir> --repository-root <repository-root>
 ```
 
 The result is always `mode: "structural"` and

@@ -11,7 +11,7 @@ import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { getDefaultPrimaryWorktree, getStateRoot, readRunManifest } from "./test-serve/run-context";
 
-const CLI = "/home/zhaoge/workspace/qoderwork/scripts/test-serve/isolated-serve.ts";
+const CLI = "${QODERWORK_ROOT}/scripts/test-serve/isolated-serve.ts";
 
 main();
 

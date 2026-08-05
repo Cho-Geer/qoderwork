@@ -1,13 +1,13 @@
 # QoderWork — AI Agent 协作工作区指南
 
-本文件是 QoderWork 项目的全局指引，面向所有在此工作区执行任务的 AI Agent。QoderWork 是围绕 OpenCode 框架构建的本地协作工作区，目标项目为 `/home/zhaoge/workspace/opencode/work-one`（work-one）。本指引替代一切历史版本，并随工作区演进而更新。
+本文件是 QoderWork 项目的全局指引，面向所有在此工作区执行任务的 AI Agent。QoderWork 是围绕 OpenCode 框架构建的本地协作工作区，目标项目为 `${WORK_ONE_ROOT}`（work-one）。本指引替代一切历史版本，并随工作区演进而更新。
 
 
 ## 1. 项目概述
 
 ### 1.1 QoderWork 是什么
 
-QoderWork 是一个本地 AI Agent 协作工作区，位于 WSL Ubuntu-24.04 的 `/home/zhaoge/workspace/qoderwork/`。它不是独立的可部署应用，而是支撑 Agent 对 work-one 进行架构设计、代码修改、测试验证和文档维护的元项目与工具集合。
+QoderWork 是一个本地 AI Agent 协作工作区，位于 WSL Ubuntu-24.04 的 `${QODERWORK_ROOT}`。它不是独立的可部署应用，而是支撑 Agent 对 work-one 进行架构设计、代码修改、测试验证和文档维护的元项目与工具集合。
 
 主要交付物：
 
@@ -21,8 +21,8 @@ QoderWork 是一个本地 AI Agent 协作工作区，位于 WSL Ubuntu-24.04 的
 
 | 项目 | 路径 | 作用 |
 |------|------|------|
-| **QoderWork** | `/home/zhaoge/workspace/qoderwork/` | Agent 协作空间、测试框架、文档与记录 |
-| **work-one** | `/home/zhaoge/workspace/opencode/work-one/` | 实际被开发维护的 OpenCode 多 Agent 框架 |
+| **QoderWork** | `${QODERWORK_ROOT}` | Agent 协作空间、测试框架、文档与记录 |
+| **work-one** | `${WORK_ONE_ROOT}` | 实际被开发维护的 OpenCode 多 Agent 框架 |
 
 QoderWork 的所有操作最终指向 work-one。修改代码前，应先在 QoderWork 完成规划、验证与日志记录，再到 work-one 落地代码变更。
 
@@ -34,11 +34,11 @@ QoderWork 的所有操作最终指向 work-one。修改代码前，应先在 Qod
 
 | 工具 | 版本/位置 | 用途 |
 |------|-----------|------|
-| Bun | `1.3.14`（`/home/zhaoge/.bun/bin/bun`） | 脚本执行、测试运行、类型检查 |
+| Bun | `1.3.14`（`${BUN_BIN:-bun}`） | 脚本执行、测试运行、类型检查 |
 | TypeScript | `^7.0.2`（devDependency） | 类型检查（`tsc --noEmit`） |
 | Node.js 内置模块 | `node:fs`、`node:path`、`node:child_process` 等 | 文件、进程、网络操作 |
 | Git | 系统 Git | worktree 隔离、版本控制 |
-| CodeGraph CLI | `/home/zhaoge/.local/bin/codegraph` | 影响分析、符号查询（MCP server 双重可用，索引 work-one 源码，见 §9） |
+| CodeGraph CLI | `${CODEGRAPH_BIN:-codegraph}` | 影响分析、符号查询（MCP server 双重可用，索引 work-one 源码，见 §9） |
 | 测试框架 | `bun:test` | 组件/集成测试 |
 | 目标框架 | OpenCode v2 原生 Agent + 自定义 Plugin/Tool/Skill | 被开发维护对象 |
 | 目标数据库 | SQLite，schema 当前版本 v37 | 持久化（以 work-one 实测为准） |
@@ -200,7 +200,7 @@ qoderwork/
 
 ## 5. 会话启动例行检查
 
-每次新会话开始时，如果当前工作目录是 `/home/zhaoge/workspace/qoderwork/`，按以下顺序执行：
+每次新会话开始时，如果当前工作目录是 `${QODERWORK_ROOT}`，按以下顺序执行：
 
 1. **读取 `RULES.md`**：遵守输出结构、验证标记、派遣规则等强制约束。
 2. **检查上轮遗漏日志**：
@@ -219,15 +219,15 @@ qoderwork/
 
 ```bash
 # 工作区统一类型检查（noEmit，strict 模式）
-cd /home/zhaoge/workspace/qoderwork
+cd "${QODERWORK_ROOT}"
 bun run typecheck
 
 # 运行隔离 serve 测试运行单元（从 qoderwork 根目录运行组件测试，见下方说明）
-cd /home/zhaoge/workspace/qoderwork
+cd "${QODERWORK_ROOT}"
 bun test scripts/test-serve/__tests__
 
 # 或进入脚本目录后单独运行非 cwd 敏感子集
-cd /home/zhaoge/workspace/qoderwork/scripts
+cd "${QODERWORK_ROOT}/scripts"
 bun test
 
 # 运行隔离 serve 测试运行单元（完整子命令见 --help）
@@ -512,9 +512,9 @@ CodeGraph 的 `serve --mcp` 内置 file watcher，代码文件变更后自动增
 | 脚本入口 | `scripts/` |
 | 隔离测试 CLI | `bun run scripts/test-serve/isolated-serve.ts` |
 | 清理残留 session | `bun run scripts/clean-sessions.ts` |
-| work-one 目标目录 | `/home/zhaoge/workspace/opencode/work-one/` |
-| Bun 路径 | `/home/zhaoge/.bun/bin/bun` |
-| CodeGraph CLI | `/home/zhaoge/.local/bin/codegraph` |
+| work-one 目标目录 | `${WORK_ONE_ROOT}` |
+| Bun 路径 | `${BUN_BIN:-bun}` |
+| CodeGraph CLI | `${CODEGRAPH_BIN:-codegraph}` |
 
 
 ## 15. 审计与实施 provenance 流程约定

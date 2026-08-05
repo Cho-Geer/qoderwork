@@ -112,7 +112,7 @@ async function main() {
   log(`  Verified-by: GET /session/${sid.slice(0, 20)}/children → ${childrenRes.status}, ${children.length} child sessions`);
 
   // 7. Save evidence
-  const evidenceDir = "/home/zhaoge/workspace/qoderwork/e2e-evidence/L3/L3-012-repo-op-deny-rerun";
+  const evidenceDir = "${QODERWORK_ROOT}/e2e-evidence/L3/L3-012-repo-op-deny-rerun";
   mkdirSync(evidenceDir, { recursive: true });
 
   const evidence = {

@@ -30,9 +30,9 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 
 | 资源 | 路径 |
 |------|------|
-| logs 根目录 | `/home/zhaoge/workspace/qoderwork/logs/` |
-| logs 索引 | `/home/zhaoge/workspace/qoderwork/logs/INDEX.md` |
-| logs 归档 | `/home/zhaoge/workspace/qoderwork/logs/archive/` |
+| logs 根目录 | `${QODERWORK_ROOT}/logs/` |
+| logs 索引 | `${QODERWORK_ROOT}/logs/INDEX.md` |
+| logs 归档 | `${QODERWORK_ROOT}/logs/archive/` |
 | 索引模板 | `templates/logs-index-template.md` |
 
 ## 关键参数
@@ -62,7 +62,7 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 - 主题词（从文件名提取，去掉 `YYYY-MM-DD-` 前缀和 `.md` 后缀）
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork/logs && for f in *.md; do
+cd ${QODERWORK_ROOT}/logs && for f in *.md; do
   [ "$f" = "INDEX.md" ] && continue
   lines=$(wc -l < "$f")
   mtime=$(stat -c '%y' "$f" | cut -d'.' -f1)
@@ -163,11 +163,11 @@ done
 
 ```bash
 # 检查 documents/INDEX.md
-grep -l "<filename>" /home/zhaoge/workspace/qoderwork/documents/INDEX.md
+grep -l "<filename>" ${QODERWORK_ROOT}/documents/INDEX.md
 # 检查 plans/
-grep -rl "<filename>" /home/zhaoge/workspace/qoderwork/plans/ 2>/dev/null
+grep -rl "<filename>" ${QODERWORK_ROOT}/plans/ 2>/dev/null
 # 检查 audits/
-grep -rl "<filename>" /home/zhaoge/workspace/qoderwork/audits/ 2>/dev/null
+grep -rl "<filename>" ${QODERWORK_ROOT}/audits/ 2>/dev/null
 ```
 
 `Verified-by: grep 输出 → 有/无引用`

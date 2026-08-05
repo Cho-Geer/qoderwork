@@ -30,7 +30,7 @@ import { SSEWatcher } from "./lib/sse-watcher";
 
 const SERVE_URL = "http://localhost:4096";
 const SSE_FILE = "/tmp/sse-events.jsonl";
-const DB_PATH = "/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db";
+const DB_PATH = "${WORK_ONE_ROOT}/.opencode/state/framework-state.db";
 
 const db = new Database(DB_PATH);
 

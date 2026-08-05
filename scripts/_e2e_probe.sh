@@ -11,6 +11,6 @@ echo ""
 echo "=== wait 5s for hook+LLM ==="
 sleep 5
 echo "=== skill-summary log tail (today) ==="
-tail -n 15 /home/zhaoge/workspace/opencode/work-one/.task_temp/_logs/2026-07-11/plugin-skill-summary-runtime.log 2>/dev/null
+tail -n 15 ${WORK_ONE_ROOT}/.task_temp/_logs/2026-07-11/plugin-skill-summary-runtime.log 2>/dev/null
 echo "=== session messages (raw) ==="
 curl -s -m 5 "$BASE/session/$SID" 2>&1 | head -c 2000

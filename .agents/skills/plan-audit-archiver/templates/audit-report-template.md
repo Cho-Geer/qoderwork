@@ -36,8 +36,8 @@ pre-change state receipt。删除所有 `REPLACE_...` 值；不要删除必填�
     "implementation_base_commit": "REPLACE_40_HEX_COMMIT",
     "commit": "REPLACE_40_HEX_COMMIT",
     "head_at_verdict": "REPLACE_40_HEX_COMMIT",
-    "workspace_root": "/home/zhaoge/workspace/qoderwork",
-    "repository_root": "/home/zhaoge/workspace/opencode/work-one",
+    "workspace_root": "${QODERWORK_ROOT}",
+    "repository_root": "${WORK_ONE_ROOT}",
     "dirty_surface": "REPLACE_GIT_STATUS_SUMMARY",
     "dirty_paths": [
       "REPLACE_EXACT_DIRTY_PATH"
@@ -461,7 +461,7 @@ the added rework explicitly.
 ## 11. Validator Evidence
 
 ```text
-Verified-by: cd /home/zhaoge/workspace/qoderwork && bun run .agents/skills/plan-audit-archiver/scripts/validate-audit.ts audits/REPLACE_REPORT.md -> valid=true, errors=[]
+Verified-by: cd ${QODERWORK_ROOT} && bun run .agents/skills/plan-audit-archiver/scripts/validate-audit.ts audits/REPLACE_REPORT.md -> valid=true, errors=[]
 ```
 
 ## 12. Anti-Loop Answers

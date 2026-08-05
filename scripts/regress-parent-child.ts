@@ -1,18 +1,33 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
-import { getDb } from '/home/zhaoge/workspace/opencode/work-one/.opencode/lib/db-manager';
-import {
-  recordGateCallContext, computeGateArgsHash,
-} from '/home/zhaoge/workspace/opencode/work-one/.opencode/service/gate/session-context-service';
-import {
-  submitDeliverablesWithCrossCheck, approveDeliverablesWithAudit,
-  type SubmitResult, type ApproveResult,
-} from '/home/zhaoge/workspace/opencode/work-one/.opencode/service/gate/mcp-deliverables';
-import { recordRead } from '/home/zhaoge/workspace/opencode/work-one/.opencode/service/file-guard/read-audit-write';
+import { pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
+import { resolveWorkspacePaths } from './lib/workspace-paths';
+const { workOneRoot } = resolveWorkspacePaths({ env: process.env });
+
+const { getDb } = await (async () => {
+  const target = pathToFileURL(resolve(workOneRoot, '.opencode/lib/db-manager.ts')).href;
+  return await import(target);
+})();
+const { recordGateCallContext, computeGateArgsHash } = await (async () => {
+  const target = pathToFileURL(resolve(workOneRoot, '.opencode/service/gate/session-context-service.ts')).href;
+  return await import(target);
+})();
+const mcpDeliv = await (async () => {
+  const target = pathToFileURL(resolve(workOneRoot, '.opencode/service/gate/mcp-deliverables.ts')).href;
+  return await import(target);
+})();
+const { submitDeliverablesWithCrossCheck, approveDeliverablesWithAudit } = mcpDeliv;
+type SubmitResult = (typeof mcpDeliv)["SubmitResult"];
+type ApproveResult = (typeof mcpDeliv)["ApproveResult"];
+const { recordRead } = await (async () => {
+  const target = pathToFileURL(resolve(workOneRoot, '.opencode/service/file-guard/read-audit-write.ts')).href;
+  return await import(target);
+})();
 
 const WORK_ONE_ROOT =
-  process.env.OPENCODE_ROOT || '/home/zhaoge/workspace/opencode/work-one';
+  process.env.OPENCODE_ROOT || '${WORK_ONE_ROOT}';
 const GATE_A = 'cg_ses_1783657767464';
 const GATE_B = 'cg_ses_1783657987555';
 const A  = 'ses_0b5bb313effeDbHTMEjJbn2PDk';  // ParentA

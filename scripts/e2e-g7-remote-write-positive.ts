@@ -3,7 +3,7 @@
  */
 import { randomUUID } from "node:crypto";
 
-const WORK_ONE = "/home/zhaoge/workspace/opencode/work-one";
+const WORK_ONE = "${WORK_ONE_ROOT}";
 process.chdir(WORK_ONE);
 
 const { getDb } = require(`${WORK_ONE}/.opencode/lib/db-manager`);

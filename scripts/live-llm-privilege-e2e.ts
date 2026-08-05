@@ -28,8 +28,8 @@ import { SSEWatcher } from "./lib/sse-watcher";
 
 const SERVE_URL = "http://localhost:4096";
 const SSE_FILE = "/tmp/sse-events.jsonl";
-const DB_PATH = "/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db";
-const WORKTREE = "/home/zhaoge/workspace/opencode/work-one";
+const DB_PATH = "${WORK_ONE_ROOT}/.opencode/state/framework-state.db";
+const WORKTREE = "${WORK_ONE_ROOT}";
 const ISOLATED_DIR = path.join(WORKTREE, ".opencode", "_test_framework");
 const PROBE_TAG = Date.now().toString(36);
 const PROBE_FILE_REL = `.opencode/_test_framework/e2e-probe-${PROBE_TAG}.ts`;

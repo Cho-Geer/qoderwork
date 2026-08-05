@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -u
-cd /home/zhaoge/workspace/opencode/work-one || exit 1
+cd ${WORK_ONE_ROOT} || exit 1
 
 echo "===== TOP-LEVEL src ====="
 ls -la src 2>/dev/null

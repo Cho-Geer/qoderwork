@@ -16,7 +16,7 @@
 import { readFileSync, existsSync } from "fs";
 
 const DEFAULT_LOGS =
-  "/home/zhaoge/workspace/opencode/work-one/.task_temp/_logs";
+  "${WORK_ONE_ROOT}/.task_temp/_logs";
 
 function parseArgs(argv: string[]) {
   let logs = DEFAULT_LOGS;

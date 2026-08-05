@@ -8,11 +8,11 @@
 #
 # Usage:
 #   framework-inventory.sh [WORKONE_DIR]
-#   framework-inventory.sh /home/zhaoge/workspace/opencode/work-one
+#   framework-inventory.sh ${WORK_ONE_ROOT}
 #
 set -euo pipefail
 
-WORKONE="${1:-/home/zhaoge/workspace/opencode/work-one}"
+WORKONE="${1:-${WORK_ONE_ROOT}}"
 cd "$WORKONE"
 
 echo "============================================================"

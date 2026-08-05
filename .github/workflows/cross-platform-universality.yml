@@ -1,0 +1,30 @@
+name: cross-platform-universality
+on: { push: {branches:[main]}, pull_request: {branches:[main]}, workflow_dispatch: {} }
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]   # ANCHOR: cross-platform matrix literal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm install -g bun
+      - name: Resolve workspace paths
+        if: env.WORK_ONE_ROOT != ''
+        shell: bash
+        run: bun run scripts/lib/workspace-paths.ts --work-dir "${WORK_ONE_ROOT}"
+        env:
+          WORK_ONE_ROOT: ${{ secrets.WORK_ONE_ROOT }}
+      - name: TypeScript compile check (typecheck)
+        shell: bash
+        run: bun run typecheck
+      - name: Runtime regression test (bootstrap import source)
+        shell: bash
+        run: bun test scripts/test-serve/__tests__/bootstrap-import-source.test.ts
+      - name: Byte-level scan for /home/zhaoge (combined)
+        shell: bash
+        run: python -c "import os,re,sys; t=sum(len(re.findall(r'/home/zhaoge',open(os.path.join(r,fn),'rb').read().decode('utf-8','ignore')))for r,_,fs in os.walk('scripts')for fn in fs if fn.endswith('.ts'))+sum(open(os.path.join(r,fn),'rb').read().decode('utf-8','ignore').count('/home/zhaoge')for r,_,fs in os.walk('.agents/skills')for fn in fs if fn.endswith('.md'))+open('AGENTS.md','rb').read().decode('utf-8','ignore').count('/home/zhaoge'); sys.exit(1 if t>0 else 0)"

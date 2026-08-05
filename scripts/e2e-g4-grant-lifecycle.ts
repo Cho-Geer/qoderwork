@@ -6,7 +6,7 @@ import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-const WORK_ONE = "/home/zhaoge/workspace/opencode/work-one";
+const WORK_ONE = "${WORK_ONE_ROOT}";
 const FIXTURE_DIR = path.join(WORK_ONE, "src", "_e2e_test_fixture");
 const FIXTURE_FILE = path.join(FIXTURE_DIR, "test-fixture.txt");
 

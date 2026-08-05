@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-LOGROOT=/home/zhaoge/workspace/opencode/work-one/.task_temp/_logs
+LOGROOT=${WORK_ONE_ROOT}/.task_temp/_logs
 echo "=== all log files (any depth) ==="
 find "$LOGROOT" -type f 2>/dev/null | sort
 echo "=== skill-summary file anywhere? ==="

@@ -79,7 +79,7 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
 12. **repository_root clean anchor.** Any Fixed verification command containing
     `capture-state.ts --repository-root` or `generate-evidence-receipt.ts
     --repository-root` must set it to the clean anchor repository (work-one:
-    `/home/zhaoge/workspace/opencode/work-one`), never the audit workspace
+    `${WORK_ONE_ROOT}`), never the audit workspace
     (qoderwork main repo or any `.worktrees/*` worktree). See
     `.agents/skills/plan-audit-archiver/provenance-rules.md` P-07. Violation
     makes the pre-change receipt fail `validate-audit.ts`
@@ -89,10 +89,10 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
     argument to `validate-plan.ts <planPath> <governanceRoot>` is the
     `governanceRoot` - the **qoderwork worktree directory that contains the plan
     and its authority documents** (e.g.
-    `/home/zhaoge/workspace/qoderwork/.worktrees/check-plan`), used to resolve the
+    `${QODERWORK_ROOT}/.worktrees/check-plan`), used to resolve the
     canonical/approval relative paths and to guard against path escape. It is
     **NOT** the P-07 `capture-state.ts --repository-root` clean work-one anchor
-    (`/home/zhaoge/workspace/opencode/work-one`). These are two distinct concepts:
+    (`${WORK_ONE_ROOT}`). These are two distinct concepts:
     `governanceRoot` locates the plan's own artifacts in the qoderwork worktree;
     `repository_root` locates the clean work-one anchor for the pre-change receipt
     symmetric diff. Do not pass work-one as `governanceRoot` (canonical/approval
@@ -114,7 +114,7 @@ gate selects `PLAN_SET`. Use `scripts/validate-plan.ts` after writing the plan.
 
     ```bash
     cd <qoderwork-worktree>
-    /home/zhaoge/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts <plan-dir> <next-phase-id>
+    ${HOME}/.bun/bin/bun run .agents/skills/deterministic-implementation-planning/scripts/validate-phase-progression.ts <plan-dir> <next-phase-id>
     ```
 
     Exit 0 is mandatory. Any missing/duplicate/invalid status, unchecked ACCEPTED

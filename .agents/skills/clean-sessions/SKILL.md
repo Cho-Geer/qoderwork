@@ -74,7 +74,7 @@ sqlite3 "$DB" "SELECT count(*) FROM session_map WHERE session_id LIKE '${PREFIX}
 sqlite3 "$DB" "DELETE FROM session_map WHERE session_id LIKE '${PREFIX}%';"
 sqlite3 "$DB" "SELECT count(*) FROM session_map WHERE session_id LIKE '${PREFIX}%';"  # 应 = 0
 ```
-**Pitfall**：serve 活跃持库，SQLite 并发删除安全（已 COMMIT）；但务必先备份。其他表（session_registry / session_events）通常无该前缀孤儿，删前先 `SELECT` 确认。WSL 内用 `python3`/`sqlite3` 直连；Windows 侧直连 UNC 路径常失败，走 WSL。
+**Pitfall**：serve 活跃持库，SQLite 并发删除安全（已 COMMIT）；但务必先备份。其他表（session_registry / session_events）通常无该前缀孤儿，删前先 `SELECT` 确认。Windows Git Bash + WSL Ubuntu 均可用 `python3`/`sqlite3` 直连（Windows 侧经 UNC 路径访问数据库文件可能失败，此时改用 WSL Ubuntu 执行）。
 
 ## 4. 复测与收尾 `[VERIFICATION]`
 - [ ] 层 A：`GET /session` 中目标前缀计数 = 0。

@@ -12,7 +12,7 @@ Follow the user's language: reply in Chinese for Chinese requests and English fo
 
 ## Overview
 
-Maintain `/home/zhaoge/workspace/qoderwork/documents/INDEX.md` — the master index of all project documents. The skill detects new or changed documents, generates concise Chinese summaries, and rewrites INDEX.md while preserving its established format (header notes + table + scenario recommendations).
+Maintain `${QODERWORK_ROOT}/documents/INDEX.md` — the master index of all project documents. The skill detects new or changed documents, generates concise Chinese summaries, and rewrites INDEX.md while preserving its established format (header notes + table + scenario recommendations).
 
 ## When to Use
 
@@ -25,18 +25,18 @@ Maintain `/home/zhaoge/workspace/qoderwork/documents/INDEX.md` — the master in
 
 | Resource | WSL Path | UNC Path (fallback) |
 |----------|----------|---------------------|
-| Documents dir | `/home/zhaoge/workspace/qoderwork/documents/` | `\\wsl.localhost\Ubuntu-24.04\home\zhaoge\workspace\qoderwork\documents\` |
-| Index file | `.../documents/INDEX.md` | `...\documents\INDEX.md` |
+| Documents dir | `${QODERWORK_ROOT}/documents/` | `//wsl.localhost/Ubuntu-24.04${QODERWORK_ROOT}/documents/` |
+| Index file | `.../documents/INDEX.md` | `.../documents/INDEX.md` |
 
 ## Access Methods
 
 **Method A — WSL bash (preferred, if enabled):**
 ```
-wsl -d Ubuntu-24.04 bash -c "cd /home/zhaoge/workspace/qoderwork/documents && <command>"
+wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "cd ${QODERWORK_ROOT}/documents && <command>"
 ```
 
 **Method B — UNC paths (fallback when WSL is disabled):**
-Use Glob, Read, and Bash tools with `//wsl.localhost/Ubuntu-24.04/home/zhaoge/workspace/qoderwork/...` paths. Bash commands (ls, wc, stat, cp) work on UNC paths from the Windows shell.
+Use Glob, Read, and Bash tools with `//wsl.localhost/Ubuntu-24.04${QODERWORK_ROOT}/...` paths. Bash commands (ls, wc, stat, cp) work on UNC paths from the Windows shell.
 
 > Detect which method is available by attempting a simple WSL command first. If it returns "SYSTEM TOOL DISABLED", switch to Method B for the entire workflow.
 
@@ -51,12 +51,12 @@ List all `.md` files in `documents/` **excluding** `INDEX.md`. For each file, ga
 
 **WSL command:**
 ```bash
-cd /home/zhaoge/workspace/qoderwork/documents && for f in *.md; do [ "$f" = "INDEX.md" ] && continue; lines=$(wc -l < "$f"); mtime=$(stat -c '%y' "$f" | cut -d'.' -f1); echo "$f|$lines|$mtime"; done
+cd ${QODERWORK_ROOT}/documents && for f in *.md; do [ "$f" = "INDEX.md" ] && continue; lines=$(wc -l < "$f"); mtime=$(stat -c '%y' "$f" | cut -d'.' -f1); echo "$f|$lines|$mtime"; done
 ```
 
 **UNC fallback (Bash tool):**
 ```bash
-cd "//wsl.localhost/Ubuntu-24.04/home/zhaoge/workspace/qoderwork/documents" && for f in *.md; do [ "$f" = "INDEX.md" ] && continue; lines=$(wc -l < "$f"); mtime=$(stat -c '%y' "$f" | cut -d'.' -f1); echo "$f|$lines|$mtime"; done
+cd "//wsl.localhost/Ubuntu-24.04${QODERWORK_ROOT}/documents" && for f in *.md; do [ "$f" = "INDEX.md" ] && continue; lines=$(wc -l < "$f"); mtime=$(stat -c '%y' "$f" | cut -d'.' -f1); echo "$f|$lines|$mtime"; done
 ```
 
 Also record INDEX.md's own modification time for the comparison step:
@@ -144,8 +144,8 @@ Reconstruct INDEX.md with this exact structure:
 1. Write the new INDEX.md content to a Windows temp file using the Write tool:
    - Path: `C:\Users\USER\AppData\Local\Temp\doc-index-sync.md`
 2. Copy to the WSL documents directory using Bash:
-   - **WSL method**: `wsl -d Ubuntu-24.04 bash -c "cp /mnt/c/Users/USER/AppData/Local/Temp/doc-index-sync.md /home/zhaoge/workspace/qoderwork/documents/INDEX.md"`
-   - **UNC fallback**: `cp "C:/Users/USER/AppData/Local/Temp/doc-index-sync.md" "//wsl.localhost/Ubuntu-24.04/home/zhaoge/workspace/qoderwork/documents/INDEX.md"`
+   - **WSL method**: `wsl -d "${QW_WSL_DISTRO:-Ubuntu-24.04}" bash -c "cp /mnt/c/Users/USER/AppData/Local/Temp/doc-index-sync.md ${QODERWORK_ROOT}/documents/INDEX.md"`
+   - **UNC fallback**: `cp "C:/Users/USER/AppData/Local/Temp/doc-index-sync.md" "//wsl.localhost/Ubuntu-24.04${QODERWORK_ROOT}/documents/INDEX.md"`
 
 ### Step 7: Report
 

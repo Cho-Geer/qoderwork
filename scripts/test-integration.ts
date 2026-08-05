@@ -46,7 +46,7 @@ db.run(`
   )
 `);
 
-const WORK_ONE = "/home/zhaoge/workspace/opencode/work-one";
+const WORK_ONE = "${WORK_ONE_ROOT}";
 const TEST_SESSION = "ses_integration_001";
 const TEST_AGENT = "test-agent";
 
@@ -166,7 +166,7 @@ rewardReport(TEST_SESSION, TEST_AGENT);
 const guidanceText = "Use approach B instead of A";
 try {
   execSync(
-    `bash /home/zhaoge/workspace/qoderwork/scripts/deliver-guidance.sh ${TEST_SESSION} "${guidanceText}"`,
+    `bash \${QODERWORK_ROOT}/scripts/deliver-guidance.sh ${TEST_SESSION} "${guidanceText}"`,
     { env: { ...process.env, DB_PATH } }
   );
 } catch (e: any) {

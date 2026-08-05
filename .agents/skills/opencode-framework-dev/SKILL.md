@@ -13,8 +13,8 @@ last_verified: 2026-07-07
 Follow the user's language: reply in Chinese for Chinese requests and English for English requests. Provide both only when requested; preserve code, commands, paths, API names, identifiers, and quoted source text exactly.
 
 This skill is for evidence-backed OpenCode framework work from
-`/home/zhaoge/workspace/qoderwork` against the live framework checkout at
-`/home/zhaoge/workspace/opencode/work-one`.
+`${QODERWORK_ROOT}` against the live framework checkout at
+`${WORK_ONE_ROOT}`.
 
 Core rule: treat old docs, old logs, and this skill's `reference.md` as
 hypotheses until the current code/config/DB/logs confirm them.
@@ -30,8 +30,8 @@ Verified on 2026-07-07 against current `work-one`:
 
 | Area | Current fact |
 |------|--------------|
-| Framework root | `/home/zhaoge/workspace/opencode/work-one` |
-| QoderWork root | `/home/zhaoge/workspace/qoderwork` |
+| Framework root | `${WORK_ONE_ROOT}` |
+| QoderWork root | `${QODERWORK_ROOT}` |
 | Active agents in `opencode.json` | `Orchestrator`, native `build`, `general`, `explore`, `plan` |
 | Agent prompt files | `.opencode/agents/Orchestrator.md` only; old role prompts live under `.opencode/legacy/agent-profiles/` |
 | Plugin entrypoints | `before-dispatcher.ts`, `after-dispatcher.ts`, `system-dispatcher.ts`, `session.ts`, `tool-def-trimmer.ts` |
@@ -53,10 +53,10 @@ If this table conflicts with current code, re-audit and update this skill.
 Run these before any non-trivial framework audit or edit:
 
 1. Check recent framework changes:
-   `git -C /home/zhaoge/workspace/opencode/work-one diff --stat`
+   `git -C ${WORK_ONE_ROOT} diff --stat`
 2. Check recent work-one commits:
-   `git -C /home/zhaoge/workspace/opencode/work-one log --oneline -5`
-3. Read `/home/zhaoge/workspace/qoderwork/documents/INDEX.md`.
+   `git -C ${WORK_ONE_ROOT} log --oneline -5`
+3. Read `${QODERWORK_ROOT}/documents/INDEX.md`.
 4. Run CodeGraph before code analysis:
    `codegraph status` and then `codegraph query|impact|callers|callees <symbol>`.
 5. For DB facts, query live SQLite read-only where possible.
@@ -66,12 +66,12 @@ Do not trust a prior blueprint/status claim without live evidence.
 ## 2. Environment Rules
 
 - The current environment is local WSL. Prefer direct shell commands from the
-  relevant directory. Do not wrap every command in `wsl.exe -d Ubuntu-24.04`.
-- Use `/home/zhaoge/.bun/bin/bun` when Bun path matters.
+  relevant directory. Do not wrap every command in `wsl.exe -d "${QW_WSL_DISTRO:-Ubuntu-24.04}"`.
+- Use `${HOME}/.bun/bin/bun` when Bun path matters.
 - Avoid inline `bash -c` quote pyramids for complex scripts. Write or reuse a
   `.ts`/`.sh` script and run it directly.
 - After changing framework TypeScript loaded by OpenCode, clear Bun cache before
-  runtime validation: `rm -rf /home/zhaoge/.cache/bun`.
+  runtime validation: `rm -rf ${HOME}/.cache/bun`.
 - Do not run destructive git commands or revert user changes unless explicitly
   requested.
 
@@ -181,8 +181,8 @@ Audit checklist:
 Useful scripts:
 
 ```bash
-/home/zhaoge/.bun/bin/bun run /home/zhaoge/workspace/qoderwork/scripts/e2e-grant-lifecycle.ts
-/home/zhaoge/.bun/bin/bun run /home/zhaoge/workspace/qoderwork/scripts/integ-grant-session-binding.ts
+${HOME}/.bun/bin/bun run ${QODERWORK_ROOT}/scripts/e2e-grant-lifecycle.ts
+${HOME}/.bun/bin/bun run ${QODERWORK_ROOT}/scripts/integ-grant-session-binding.ts
 ```
 
 ## 7. Question Guidance Audit
@@ -218,7 +218,7 @@ DB paths:
 
 | DB | Path |
 |----|------|
-| Framework DB | `/home/zhaoge/workspace/opencode/work-one/.opencode/state/framework-state.db` |
+| Framework DB | `${WORK_ONE_ROOT}/.opencode/state/framework-state.db` |
 | SDK DB | `${OPENCODE_DB:-$HOME/.local/share/opencode/opencode.db}` |
 
 Use read-only connections for audit. Key checks:
@@ -277,12 +277,12 @@ Useful checks:
 ```bash
 python3 - <<'PY'
 import json
-cfg=json.load(open('/home/zhaoge/workspace/opencode/work-one/opencode.json'))
+cfg=json.load(open('${WORK_ONE_ROOT}/opencode.json'))
 print(cfg.get('instructions'))
 print(sorted((cfg.get('agent') or {}).keys()))
 print(len(cfg.get('mcp') or {}))
 PY
-find /home/zhaoge/workspace/opencode/work-one/.opencode/skills -name SKILL.md -maxdepth 2 -print | wc -l
+find ${WORK_ONE_ROOT}/.opencode/skills -name SKILL.md -maxdepth 2 -print | wc -l
 ```
 
 Current skill behavior should be verified against native OpenCode skill support

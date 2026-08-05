@@ -222,8 +222,8 @@ Confusing them is the most common cause of `INVALID` verdicts.
 
 | 字段 | 含义 | 取值要求 |
 |------|------|---------|
-| `baseline.workspace_root` | 审计工作区绝对路径 | qoderwork 主仓或其 worktree（如 `/home/zhaoge/workspace/qoderwork` 或 `/home/zhaoge/workspace/qoderwork/.worktrees/<branch>`） |
-| `baseline.repository_root` | 干净锚点仓库绝对路径 | 默认 work-one（`/home/zhaoge/workspace/opencode/work-one`）；不能是接收 `audits/`、`plans/`、`evidence/` 写入的工作区本身 |
+| `baseline.workspace_root` | 审计工作区绝对路径 | qoderwork 主仓或其 worktree（如 `${QODERWORK_ROOT}` 或 `${QODERWORK_ROOT}/.worktrees/<branch>`） |
+| `baseline.repository_root` | 干净锚点仓库绝对路径 | 默认 work-one（`${WORK_ONE_ROOT}`）；不能是接收 `audits/`、`plans/`、`evidence/` 写入的工作区本身 |
 | `baseline.commit` | 被审计仓库的 HEAD commit | 必须等于 `git -C <repository_root> rev-parse HEAD` |
 | `baseline.head_at_verdict` | verdict 时点的被审计仓库 HEAD | 必须等于 `baseline.commit` |
 | `baseline.dirty_paths` | 被审计仓库的 git status 路径 | 必须等于 `git -C <repository_root> status --porcelain` 输出，不是 workspace_root 的 |
@@ -234,7 +234,7 @@ Confusing them is the most common cause of `INVALID` verdicts.
 
 ### repository_root 选择规则（强制）
 
-`repository_root` 必须（MUST）设为干净锚点仓库（默认 work-one：`/home/zhaoge/workspace/opencode/work-one`）；禁止（MUST NOT）设为审计工作区（qoderwork 主仓 `/home/zhaoge/workspace/qoderwork` 或其任何 `.worktrees/*` worktree）。无论审计对象是 work-one 本身还是 qoderwork 自身的工具代码（如 `scripts/task-lens/**`），`repository_root` 恒为干净锚点——它的唯一作用是提供一个审计期间不变的 git 基线，证明被审计目标仓库无意外变更。
+`repository_root` 必须（MUST）设为干净锚点仓库（默认 work-one：`${WORK_ONE_ROOT}`）；禁止（MUST NOT）设为审计工作区（qoderwork 主仓 `${QODERWORK_ROOT}` 或其任何 `.worktrees/*` worktree）。无论审计对象是 work-one 本身还是 qoderwork 自身的工具代码（如 `scripts/task-lens/**`），`repository_root` 恒为干净锚点——它的唯一作用是提供一个审计期间不变的 git 基线，证明被审计目标仓库无意外变更。
 
 **worktree 场景**：当在 qoderwork worktree（如 `.worktrees/check-plan`）中实施时，`workspace_root` 是该 worktree 路径，`repository_root` 仍是 work-one。git 在 linked worktree 中 `rev-parse --show-toplevel` 返回 worktree 自身路径，`capture-state.ts` 的 toplevel 校验（L73-75）对 worktree 天然兼容；但 worktree 是接收 `audits/`、`plans/`、`evidence/` 写入的工作区，其 git status 会随审计推进变脏，因此不能作 `repository_root`。
 
@@ -252,7 +252,7 @@ Confusing them is the most common cause of `INVALID` verdicts.
 
 - `capture-state.ts --repository-root` 必须（MUST）传入 work-one 路径
 - `generate-evidence-receipt.ts --repository-root` 必须（MUST）传入 work-one 路径
-- `baseline.commit` / `baseline.head_at_verdict` 填 work-one 的 HEAD（`git -C /home/zhaoge/workspace/opencode/work-one rev-parse HEAD`）
+- `baseline.commit` / `baseline.head_at_verdict` 填 work-one 的 HEAD（`git -C ${WORK_ONE_ROOT} rev-parse HEAD`）
 - 实施范围由 scope-lock 的 `repository_scope.allowed_paths` / `forbidden_paths` 控制，不由 `repository_root` 的 dirty path 检查控制
 
 > **合理化检测**: 如果你发现自己在想「这个 phase 改的是 qoderwork 的测试文件，所以 repository_root 应该填 qoderwork」——停下来，这是跳步信号。`repository_root` 的唯一作用是提供一个 clean 的 git 基线，证明被审计目标仓库无意外变更。实施文件的范围约束由 scope-lock 的 `repository_scope` 字段承担，两者职责不同。
@@ -329,14 +329,14 @@ pre-change state before any implementation write:
 
 ```bash
 # cd 到审计工作区（qoderwork 主仓或其 worktree，如 .worktrees/<branch>）
-cd /home/zhaoge/workspace/qoderwork
+cd ${QODERWORK_ROOT}
 
 # 推荐：--freeze 原子操作（设置 scope.frozen_at + scope.status=FROZEN，然后捕获 pre-change receipt）
 # scope_lock_sha256 绑定到 frozen_at 写入后的最终版本，消除循环依赖
 # --repository-root 必须是干净锚点（work-one），不是当前 worktree（见 provenance-rules.md P-07）
 # --phase-id 必须与 scope-lock 的 lock_id 字段完全相同（validator L1175 校验 phase_id == lock_id）
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
-  --repository-root /home/zhaoge/workspace/opencode/work-one \
+  --repository-root ${WORK_ONE_ROOT} \
   --scope-lock /absolute/path/to/audits/plan-name/scope-lock.json \
   --phase-id LOCK-ID \
   --freeze 2026-07-21T12:00:00Z \
@@ -345,7 +345,7 @@ bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
 # 兼容：不带 --freeze（scope-lock 必须已含 frozen_at 和 status=FROZEN）
 # --phase-id 同样必须等于 scope-lock 的 lock_id
 bun run .agents/skills/plan-audit-archiver/scripts/capture-state.ts \
-  --repository-root /home/zhaoge/workspace/opencode/work-one \
+  --repository-root ${WORK_ONE_ROOT} \
   --scope-lock /absolute/path/to/audits/plan-name/scope-lock.json \
   --phase-id LOCK-ID \
   --output /absolute/path/to/audits/plan-name/evidence/pre-change.json
@@ -537,7 +537,7 @@ mislabelled.
 4. **推荐**：用 `prepare-audit.ts` 生成报告骨架（byte-exact contract + 21-section 结构），然后只编辑 `REPLACE_*` 占位符。手动转录 receipt 字段是 `EVIDENCE_RECEIPT_PAYLOAD_MISMATCH` 的首要原因。
    ```bash
    bun run .agents/skills/plan-audit-archiver/scripts/prepare-audit.ts \
-     --workspace-root /home/zhaoge/workspace/qoderwork \
+     --workspace-root ${QODERWORK_ROOT} \
      --scope-lock audits/<plan>/scope-lock-<PHASE>.json \
      --pre-change audits/<plan>/evidence/pre-change-<PHASE>.json \
      --verdict-state audits/<plan>/evidence/verdict-state-<PHASE>.json \
@@ -559,7 +559,7 @@ mislabelled.
 > **注意**: validator 报错时，错误是 audit contract 本身的问题，不是 validator 的问题。修复方向是改 audit contract，不是绕过 validator。任何 `exit 1` 必须修复 contract 后重新跑两道闸门，禁止用 `--no-verify` 类似参数绕过。
 
 ```bash
-cd /home/zhaoge/workspace/qoderwork
+cd ${QODERWORK_ROOT}
 
 # Gate 1: pre-check evidence files (MUST exit 0 before proceeding)
 bun run .agents/skills/plan-audit-archiver/scripts/pre-check-evidence.ts \
