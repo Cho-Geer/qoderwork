@@ -19,7 +19,7 @@
     "Cross-platform universality M1: Windows Git Bash + WSL Ubuntu support (post-amendment re-approval)",
     "Runtime import fix in 6 TS files (Phase 1, ACCEPTED)",
     "Skill universalization across 18 .md files (Phase 2, ACCEPTED)",
-    "Optional entrypoint script (Phase 3, BLOCKED-BEFORE-2026-08-04-NOW-IMPLEMENTING)",
+    "Optional entrypoint script (Phase 3, IMPLEMENTED 2026-08-04 — qoderwork.sh 在 scripts/qoderwork.sh 落盘)",
     "CI matrix and documentation update (Phase 4, ACCEPTED in-scope)",
     "Plan amendment 2026-08-04: add PHASE-05 (scripts/.ts residual sweep) + lift PHASE-03 BLOCKED"
   ],
@@ -29,5 +29,5 @@
     "Phase 3 follows the constraints listed in 03-phase-entrypoint-optional.md §2 (no platform-default hardcoding)",
     "Phase 5 replaces all 41 hits including fixtures per DEC-009 (P1-DEC-002 NOT extended to PHASE-05)"
   ],
-  "re_approval_reason": "Plan amendment 2026-08-04: added PHASE-05 (XP-REQ-011: scripts/.ts 30 files 41 non-import residuals) to address PHASE-04 §10 gate 7 combined scan failure; lifted PHASE-03 BLOCKED-BY-DECISION per user (P3-A) YES decision; canonical contract SHA-256 changed from fd93a41b... to 7f2986bd..."
+  "re_approval_reason": "Plan amendment 2026-08-04: added PHASE-05 (XP-REQ-011: scripts/.ts 30 files 41 non-import residuals) to address PHASE-04 §10 gate 7 combined scan failure; lifted PHASE-03 BLOCKED-BY-DECISION per user (P3-A) YES decision; canonical contract SHA-256 changed from fd93a41b... to f8548087...(后续 PHASE-05 amendment 触发 iter9 再冻结)"
 }

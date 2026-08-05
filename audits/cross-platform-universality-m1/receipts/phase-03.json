@@ -16,5 +16,5 @@
   "plan_index_path": "plans/cross-platform-universality-m1/00-plan-index.md",
   "approval_decision_sha256": "7ee11e11faabc81ebc5e74721a133da8a22e9bacb42b73b745a1d632ed750658",
   "approval_decision_path": "plans/cross-platform-universality-m1/approval-decision.json",
-  "_comment": "PHASE-03 not implemented (BLOCKED lifted 2026-08-04 but qoderwork.sh script only)"
+  "_comment": "PHASE-03 entrypoint 实施完成 (qoderwork.sh 落盘 scripts/qoderwork.sh);previous BLOCKED 状态通过 P3-A YES 决议解除并 ACCEPT"
 }

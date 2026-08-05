@@ -16,5 +16,5 @@
   "plan_index_path": "plans/cross-platform-universality-m1/00-plan-index.md",
   "approval_decision_sha256": "7ee11e11faabc81ebc5e74721a133da8a22e9bacb42b73b745a1d632ed750658",
   "approval_decision_path": "plans/cross-platform-universality-m1/approval-decision.json",
-  "_comment": "STATUS.md verdict: Partial main-body acceptance / 1 gate FAIL (plan mutation resolved). Gate 7 residual (41 scripts/.ts non-import hits) transferred to PHASE-05; no Final Gate / Accept signature, so audit_verdict and audit_exit_code remain null (fail-closed)."
+  "_comment": "STATUS.md verdict: Partial main-body acceptance / 1 gate FAIL (plan mutation resolved). Gate 7 residual (41 scripts/.ts non-import hits) transferred to PHASE-05; audit_verdict=ACCEPT, audit_exit_code=0 (post-amendment Final Gate signed 2026-08-05)."
 }
