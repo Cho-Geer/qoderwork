@@ -2,7 +2,9 @@
 
 **Plan mode**: `PLAN_SET`
 **ID**: `TASK-LENS-M1-PLANSET-20260723`
-**Status**:`READY-FOR-IMPLEMENTATION`
+**Status**: `SUPERSEDED_BY_OUTCOME_GOVERNANCE_V1` (was `READY-FOR-IMPLEMENTATION`)
+**Superseded at**: `2026-08-05`
+**Superseded by**: `plans/task-lens-outcome-v1/outcome-contract.json` (schema `outcome-governance/v1`, generation=1)
 **Progression schema**: `phase-progression/v1`
 **Only implementation path**: 按 PHASE-01 至 PHASE-07 顺序；gate 失败即停止。
 **Evidence ceiling**: `component`
