@@ -1,0 +1,27 @@
+bun test v1.3.14 (0d9b296a)
+
+scripts/task-lens/__tests__/spine.test.ts:
+(pass) TL-SPINE: deterministic paths > all-pass: primary path from entry to seed [0.62ms]
+(pass) TL-SPINE: deterministic paths > TL-C-208: unknown CLI entry → fallback to graph search [0.11ms]
+(pass) TL-DISPLAY: 20-node gate > TL-C-207: 21 distinct nodes → uncovered + collapsed [1.55ms]
+(pass) TL-DISPLAY: 20-node gate > all-pass: small graph fits within 20 nodes [0.07ms]
+(pass) TL-DISPLAY: 20-node gate > uncovered seeds when no path exists [0.23ms]
+(pass) TL-DISPLAY: 20-node gate > branches sorted by from, path, seedIds [0.14ms]
+
+scripts/task-lens/__tests__/provider-graph.test.ts:
+(pass) TL-PROBE: readonly DB capability probe > all-pass: valid DB opens with complete receipt [60.68ms]
+(pass) TL-PROBE: readonly DB capability probe > TL-C-201: missing edges.metadata column → UNAVAILABLE [33.93ms]
+(pass) TL-FALLBACK: CLI fallback > TL-C-202: duplicate exact symbol → UNAVAILABLE [1.49ms]
+(pass) TL-SEED: hunks + ranges interval join > all-pass: add hunk intersects fn1 [0.14ms]
+(pass) TL-SEED: hunks + ranges interval join > TL-C-203: newLines=0 → NOT_FOUND seed [0.02ms]
+(pass) TL-EDGE-KIND: calls-only filter > all-pass: calls edge included, references excluded [0.11ms]
+(pass) TL-EDGE-KIND: calls-only filter > TL-C-204: self-loop removed [0.04ms]
+(pass) TL-EDGE-META: metadata confidence > TL-C-205: confidence 0.7 → static-low (unverified) [0.04ms]
+(pass) TL-EDGE-META: metadata confidence > confidence 0.9 → not unverified [0.02ms]
+(pass) TL-GRAPH-BUDGET: BFS limits > TL-C-206: 201 nodes → MAX_NODES truncation [7.48ms]
+(pass) Real provider integration chain > resolveSeeds → buildGraph → buildSpineForest with real SQLite DB [112.76ms]
+
+ 17 pass
+ 0 fail
+ 33 expect() calls
+Ran 17 tests across 2 files. [249.00ms]

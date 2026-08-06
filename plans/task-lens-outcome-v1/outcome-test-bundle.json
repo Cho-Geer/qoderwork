@@ -1,0 +1,67 @@
+{
+  "schema_version": "outcome-test-bundle/v1",
+  "document_kind": "outcome-test-bundle",
+  "bundle_id": "TASK-LENS-TEST-BUNDLE-V1",
+  "outcome_id": "TASK-LENS-OUTCOME-V1",
+  "generation": 1,
+  "tests": [
+    {
+      "path": "scripts/task-lens/__tests__/input-diff.test.ts",
+      "sha256": "ed85646005060f082d28f7d4ff043637c0886d184047b83486583382431d6b7e"
+    },
+    {
+      "path": "scripts/task-lens/__tests__/command-security.test.ts",
+      "sha256": "bb058c55736789d1cfff84fb0ef167e7e841132a06fcaa209a54c0ff87d07c74"
+    },
+    {
+      "path": "scripts/task-lens/__tests__/provider-graph.test.ts",
+      "sha256": "2b6e2f76c98015707842d0d126778405c7b65d3837104f5dbea2e7b72d6ada66"
+    },
+    {
+      "path": "scripts/task-lens/__tests__/spine.test.ts",
+      "sha256": "ee4b1777894a5cdb8a6a95714d46eaa4bb8280f78ee60428e3b2c2f40c8925ea"
+    },
+    {
+      "path": "scripts/task-lens/__tests__/coverage-render.test.ts",
+      "sha256": "872248501fcb51d936a623ec5d91a7cd9937fd45fa91a777e987b1055ffb2796"
+    },
+    {
+      "path": "scripts/task-lens/__tests__/artifact-writer.test.ts",
+      "sha256": "8625f921b3127e323ab3ad2d51c68fb2a3059db2f1a3d1ad16bbe488faf6b268"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "scripts/task-lens/presets/work-one.yaml",
+      "sha256": "599ba5dbfa02093d7ab13ee74f507938fc1c0384427e08c4f5e3454e397f72b4"
+    }
+  ],
+  "oracle_sources": [
+    {
+      "path": "plans/task-lens-m1/02-phase-input-safety-diff.md",
+      "sha256": "b12b9b49a0505217d6db1387194c5985ce0292ac8055652e353a6bcab20015f9"
+    },
+    {
+      "path": "plans/task-lens-m1/03-phase-provider-graph-spine.md",
+      "sha256": "f42c5ac34da64d30830cf71a4c220326947c2222142d8bf5d17fe52c78f5f8c6"
+    },
+    {
+      "path": "plans/task-lens-m1/04-phase-coverage-card-artifact.md",
+      "sha256": "11234d5ff94d5d30d81c1461078c58332b74d13ab0f0dbd6b6f0c4e3ffa62bdd"
+    }
+  ],
+  "runner_config": [
+    {
+      "path": "package.json",
+      "sha256": "f57308a35bd0ef5c437ae3a2b2fc3a59d4e3b988bad81a8f71e7155b3c4ec782"
+    }
+  ],
+  "lockfiles": [
+    {
+      "path": "bun.lock",
+      "sha256": "18af84ceccc704ea68d552f6497fab6ebc6045e0e7bdb0d448918891eaf5733e"
+    }
+  ],
+  "expected_test_ids": ["T-001", "T-002", "T-003", "T-004"],
+  "expected_test_count": 4
+}

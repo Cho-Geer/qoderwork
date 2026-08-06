@@ -1,0 +1,33 @@
+bun test v1.3.14 (0d9b296a)
+
+scripts/task-lens/__tests__/command-security.test.ts:
+(pass) TL-CMD-ARGV safe argv + shell=false + minimal env > all-pass: real runCommand git --version returns fixed argv, shell false [5.02ms]
+(pass) TL-CMD-ARGV safe argv + shell=false + minimal env > TL-C-102 single-mutation: executable=bash -> DISALLOWED_EXECUTABLE exit 20 [0.29ms]
+(pass) TL-CMD-ARGV safe argv + shell=false + minimal env > buildChildEnv drops denylisted keys even if present [0.10ms]
+(pass) TL-CMD-ARGV safe argv + shell=false + minimal env > args containing shell metachars are passed verbatim, never interpreted [0.12ms]
+(pass) TL-CMD-RESOURCE timeout / byte-limit / signal classification > timeout -> ProcessFailure TIMEOUT, process tree terminated [301.53ms]
+(pass) TL-CMD-RESOURCE timeout / byte-limit / signal classification > TL-C-107 single-mutation: stdout 5MiB+1 -> TRUNCATED exit 20 [3.17ms]
+(pass) TL-CMD-RESOURCE timeout / byte-limit / signal classification > 5MiB+1 byte ceiling is the documented maximum [0.03ms]
+(pass) TL-CMD-RESOURCE timeout / byte-limit / signal classification > external AbortSignal aborts the child [103.66ms]
+(pass) TL-CMD-RESOURCE timeout / byte-limit / signal classification > non-zero exit -> ProcessFailure NONZERO_EXIT [523.17ms]
+(pass) TL-PATH-OUT output-outside-project boundary > all-pass: out in external parent dir resolves outside project [1.35ms]
+(pass) TL-PATH-OUT output-outside-project boundary > TL-C-103 single-mutation: symlink out -> project -> exit 10 [0.65ms]
+(pass) TL-PATH-OUT output-outside-project boundary > out inside project -> exit 10 [0.30ms]
+(pass) TL-PATH-OUT output-outside-project boundary > out parent inside project -> exit 10 [0.46ms]
+(pass) TL-PATH-OUT output-outside-project boundary > relative out -> exit 10 [0.20ms]
+(pass) TL-PATH-OUT output-outside-project boundary > non-existent out parent -> exit 10 [0.31ms]
+(pass) TL-CONFIG exact-key YAML schema + literal tokens > all-pass: valid YAML with entries + literal tokens [2.09ms]
+(pass) TL-CONFIG exact-key YAML schema + literal tokens > default config when configPath omitted [0.34ms]
+(pass) TL-CONFIG exact-key YAML schema + literal tokens > TL-C-104 single-mutation: add unknown `regex` key -> exit 10 [1.11ms]
+(pass) TL-CONFIG exact-key YAML schema + literal tokens > wrong schemaVersion -> exit 10 [0.48ms]
+(pass) TL-CONFIG exact-key YAML schema + literal tokens > token with regex metachars is kept as a literal (not rejected, not compiled) [0.67ms]
+(pass) TL-CONFIG exact-key YAML schema + literal tokens > empty token string is kept (literal, not rejected) [0.62ms]
+(pass) TL-CONFIG exact-key YAML schema + literal tokens > invalid token kind -> exit 10 [0.75ms]
+(pass) TL-CONFIG exact-key YAML schema + literal tokens > malformed YAML -> exit 10 [0.76ms]
+(pass) TL-CONFIG exact-key YAML schema + literal tokens > relative config path -> exit 10 [0.27ms]
+(pass) TL-CONFIG exact-key YAML schema + literal tokens > configHash is deterministic for canonical form [0.35ms]
+
+ 25 pass
+ 0 fail
+ 60 expect() calls
+Ran 25 tests across 1 file. [973.00ms]

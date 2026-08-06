@@ -1,0 +1,65 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-contract",
+  "contract_id": "TASK-LENS-OUTCOME-CONTRACT-V1",
+  "outcome_id": "TASK-LENS-OUTCOME-V1",
+  "generation": 1,
+  "created_at": "2026-08-05T00:00:00Z",
+  "target": [
+    {
+      "document_kind": "task-lens-outcome",
+      "id": "TASK-LENS-OUTCOME-V1",
+      "generation": 1,
+      "outcome_id": "TASK-LENS-OUTCOME-V1",
+      "description": "Task Lens M1 已交付契约保持正确：输入收据冻结（working-tree/commit 差异语义 + untracked + preimage-only 删除）、命令行/配置/路径 fail-closed 输入安全、provider probe + fallback 构图、lcov 三态、五节卡片与 canonical artifact 写入，由 4 个固定组件测试独立验收"
+    }
+  ],
+  "boundary": {
+    "in_scope": [
+      "输入契约：working-tree/commit 差异语义（显式纳入 untracked、preimage-only 删除）、固定 argv/env/config/path realpath 合同",
+      "输入安全：命令/CLI 注入拒绝、越界/超时/超限 fail-closed",
+      "构图：provider DB capability probe + CLI fallback、hunk∩range 伪 seed 拒绝、搜索预算 200/500/50、单卡≤20",
+      "coverage/card：lcov 三态（covered/unknown/uncovered）、固定五节卡片、仅 literal heuristic 副作用",
+      "artifact/metrics：canonical sort + temp+rename 拒绝覆盖、metrics lock+append+fsync 且绑定 taskId",
+      "6 个现存组件测试文件（input-diff/command-security/provider-graph/spine/coverage-render/artifact-writer）"
+    ],
+    "out_of_scope": [
+      "M1.5/M2/M3、多卡、work-one 写入、bun.lock、新增依赖、服务、LLM 叙事层",
+      "PHASE-05 metrics/feedback（REQ-011/012，状态分裂未裁决，不冻结）",
+      "PHASE-06 双目标集成（REQ-013，NOT_STARTED）",
+      "PHASE-07 10 任务验收（REQ-014，NOT_STARTED）",
+      "runtime smoke 与 live-LLM-E2E",
+      "历史证据（audits/task-lens-m1/）路径",
+      "旧蓝图与旧 M1 plan 文件（原位不动，冻结）",
+      "Windows/其他 OS 实机行为"
+    ]
+  },
+  "baseline": {
+    "repository_id": "qoderwork-check-plan",
+    "baseline_tree_sha256": "297504377ecd64ce01a8779b14fd9f2d28a595ac",
+    "configuration_sha256": "f57308a35bd0ef5c437ae3a2b2fc3a59d4e3b988bad81a8f71e7155b3c4ec782"
+  },
+  "side_effect_boundary": {
+    "allowed": [
+      "只读运行 bun test 组件测试",
+      "创建 outcome 工件目录与文件"
+    ],
+    "prohibited": [
+      "修改旧 plan-index / 旧蓝图 / 历史证据",
+      "修改 work-one",
+      "运行 runtime/live-LLM-E2E",
+      "修改 bun.lock"
+    ]
+  },
+  "acceptance_strategy": {
+    "objective": "4 个固定组件测试（T-001..T-004）全部 PASS 且 validate-outcome-governance.ts 结构校验 exit 0",
+    "boundary": "仅组件级证据，不冒充 runtime/live 层级",
+    "acceptance": "固定 test_id T-001..T-004 的 bun:test 断言集 + validate-outcome-governance.ts 结构校验"
+  },
+  "acceptance_spec": {
+    "id": "TASK-LENS-ACCEPTANCE-SPEC-V1",
+    "path": "acceptance-spec.json",
+    "generation": 1
+  },
+  "supersedes": null
+}

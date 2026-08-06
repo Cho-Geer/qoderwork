@@ -1,0 +1,100 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-run-result",
+  "run_id": "RUN-TASK-LENS-OUTCOME-V1-GEN1-001",
+  "outcome_contract": {
+    "id": "TASK-LENS-OUTCOME-CONTRACT-V1",
+    "path": "outcome-contract.json",
+    "generation": 1,
+    "sha256": "8009501276e739b9a7cd309af3d5d653a74b67ca2f5934f27cdab70fdb7f0db9"
+  },
+  "acceptance_spec": {
+    "id": "TASK-LENS-ACCEPTANCE-SPEC-V1",
+    "path": "acceptance-spec.json",
+    "generation": 1,
+    "sha256": "e3d9f658f1f759e0281da750c9774ca81617a74b87ef34b1f302b12b31fe0be0"
+  },
+  "test_bundle": {
+    "id": "TASK-LENS-TEST-BUNDLE-V1",
+    "path": "outcome-test-bundle.json",
+    "generation": 1,
+    "sha256": "a6ce76f4fb61c6e76e070f372343eef58fe597829baa0ae4dbc87270e6a2b8b1"
+  },
+  "approval_anchor": {
+    "id": "TASK-LENS-APPROVAL-V1-GEN1",
+    "path": "outcome-approval.json",
+    "generation": 1,
+    "sha256": "27301692b4097ce9c6516d442bba6d6f861f9864950d0f096029e5a4d3486446"
+  },
+  "candidate_tree_sha256": "297504377ecd64ce01a8779b14fd9f2d28a595ac",
+  "environment_hash": "e01e7e8b7c8b0abc297dea340290b2349dcd2bc40f83b628eed1163eef94c827",
+  "code_revision": "WSL-Ubuntu-24.04-6.6.87.2-microsoft-standard-WSL2-x86_64-bun-1.3.14",
+  "environment": "Linux (WSL2)",
+  "environment_manifest": {
+    "path": "runs/env/env.json",
+    "sha256": "e01e7e8b7c8b0abc297dea340290b2349dcd2bc40f83b628eed1163eef94c827"
+  },
+  "inventory": {
+    "discovered_test_ids": [
+      "T-001",
+      "T-002",
+      "T-003",
+      "T-004"
+    ],
+    "executed_test_ids": [
+      "T-001",
+      "T-002",
+      "T-003",
+      "T-004"
+    ],
+    "skipped_test_ids": [],
+    "filtered_test_ids": []
+  },
+  "case_results": [
+    {
+      "case_id": "CASE-001",
+      "test_id": "T-001",
+      "execution_id": "exec-2026-08-05T-wsl-gen1-attempt-1-case-001",
+      "execution_status": "PASS",
+      "oracle_observation": "23 pass / 0 fail; input-diff.test.ts frozen SHA-256 ed85646005060f082d28f7d4ff043637c0886d184047b83486583382431d6b7e matches bundle.",
+      "receipt": {
+        "path": "runs/receipt/case-001.json",
+        "sha256": "2c6dc968c02e8c6d2158ec27807042d8ebdf4e8b82a61189a25ff2b08741312c"
+      }
+    },
+    {
+      "case_id": "CASE-002",
+      "test_id": "T-002",
+      "execution_id": "exec-2026-08-05T-wsl-gen1-attempt-1-case-002",
+      "execution_status": "PASS",
+      "oracle_observation": "25 pass / 0 fail; command-security.test.ts frozen SHA-256 bb058c55736789d1cfff84fb0ef167e7e841132a06fcaa209a54c0ff87d07c74 matches bundle.",
+      "receipt": {
+        "path": "runs/receipt/case-002.json",
+        "sha256": "d37afc8f14e25d884f4b0a1814d3b930aa19a96303372fe0d1e8c5d2f396766f"
+      }
+    },
+    {
+      "case_id": "CASE-003",
+      "test_id": "T-003",
+      "execution_id": "exec-2026-08-05T-wsl-gen1-attempt-1-case-003",
+      "execution_status": "PASS",
+      "oracle_observation": "17 pass / 0 fail; provider-graph.test.ts SHA 2b6e2f76c98015707842d0d126778405c7b65d3837104f5dbea2e7b72d6ada66 + spine.test.ts SHA ee4b1777894a5cdb8a6a95714d46eaa4bb8280f78ee60428e3b2c2f40c8925ea match bundle.",
+      "receipt": {
+        "path": "runs/receipt/case-003.json",
+        "sha256": "deac56958d7b8e4303ecef1218db1f43b9eec6a9797486597269863b1d62540e"
+      }
+    },
+    {
+      "case_id": "CASE-004",
+      "test_id": "T-004",
+      "execution_id": "exec-2026-08-05T-wsl-gen1-attempt-1-case-004",
+      "execution_status": "PASS",
+      "oracle_observation": "25 pass / 0 fail; coverage-render.test.ts SHA 872248501fcb51d936a623ec5d91a7cd9937fd45fa91a777e987b1055ffb2796 + artifact-writer.test.ts SHA 8625f921b3127e323ab3ad2d51c68fb2a3059db2f1a3d1ad16bbe488faf6b268 match bundle.",
+      "receipt": {
+        "path": "runs/receipt/case-004.json",
+        "sha256": "815ed5ef11ea9234b1505b7a784789178e843642edc020f38ced1a1089ab93df"
+      }
+    }
+  ],
+  "verdict": "PASS"
+}

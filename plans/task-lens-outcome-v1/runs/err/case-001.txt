@@ -1,0 +1,31 @@
+bun test v1.3.14 (0d9b296a)
+
+scripts/task-lens/__tests__/input-diff.test.ts:
+(pass) TL-DIFF-WT working-tree extraction > all-pass: real runCommand, three change kinds present [39.50ms]
+(pass) TL-DIFF-WT working-tree extraction > TL-C-101 single-mutation: remove live file, keep deletion -> TL-DIFF-DELETE still singleton [43.20ms]
+(pass) TL-DIFF-COMMIT commit extraction > all-pass: full SHA + current HEAD + clean worktree [27.81ms]
+(pass) TL-DIFF-COMMIT commit extraction > TL-C-105 single-mutation: dirty worktree -> exit 10 [30.60ms]
+(pass) TL-DIFF-COMMIT commit extraction > commit mode with non-existent base ref -> ProcessFailure (exit 20), not NOT_FOUND [26.73ms]
+(pass) TL-DIFF-COMMIT commit extraction > commit mode with `-`-prefixed base -> exit 10 (not passed to git) [22.29ms]
+(pass) TL-DIFF-DELETE DeletedRegion parsing > all-pass: hash + range + provenance=preimage-only [24.23ms]
+(pass) TL-DIFF-DELETE DeletedRegion parsing > pure-deletion-only repo still extracts DeletedRegion (no live seed synthesized) [18.18ms]
+(pass) TL-DIFF-DELETE DeletedRegion parsing > empty diff -> EmptyDiffError exit 13 [20.57ms]
+(pass) TL-RECEIPT canonical taskId determinism > TL-C-106 single-mutation: change generatedAt only -> taskId unchanged [0.19ms]
+(pass) TL-RECEIPT canonical taskId determinism > any input field change -> taskId changes [0.10ms]
+(pass) TL-RECEIPT canonical taskId determinism > taskId independently recomputed from canonical JSON matches [0.16ms]
+(pass) TL-CLI parseCli grammar > all-pass: generate parses all flags [0.48ms]
+(pass) TL-CLI parseCli grammar > generate --mode commit requires full-SHA --base [0.05ms]
+(pass) TL-CLI parseCli grammar > feedback parses all flags [0.17ms]
+(pass) TL-CLI parseCli grammar > metrics summarize parses [0.05ms]
+(pass) TL-CLI parseCli grammar > TL-C-108 single-mutation: --base=-x -> exit 10 [0.07ms]
+(pass) TL-CLI parseCli grammar > unknown subcommand -> exit 10 [0.02ms]
+(pass) TL-CLI parseCli grammar > missing required flag -> exit 10 [0.02ms]
+(pass) TL-CLI parseCli grammar > non-absolute project -> exit 10 [0.02ms]
+(pass) TL-CLI parseCli grammar > generate with --base on working-tree mode -> exit 10 [0.02ms]
+(pass) TL-CLI parseCli grammar > issues_guided_by_card > issues_found -> exit 10 [0.07ms]
+(pass) TL-CLI parseCli grammar > metrics non-summarize action -> exit 10 [0.05ms]
+
+ 23 pass
+ 0 fail
+ 70 expect() calls
+Ran 23 tests across 1 file. [325.00ms]

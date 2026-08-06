@@ -1,0 +1,34 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-ledger-event",
+  "event_id": "LEDGER-TASK-LENS-OUTCOME-V1-002",
+  "sequence": 2,
+  "recorded_at": "2026-08-06T00:00:00Z",
+  "outcome_id": "TASK-LENS-OUTCOME-V1",
+  "event_type": "RUN_RECORDED",
+  "approval_anchor": {
+    "id": "TASK-LENS-APPROVAL-V1-GEN1",
+    "path": "outcome-approval.json",
+    "generation": 1,
+    "sha256": "27301692b4097ce9c6516d442bba6d6f861f9864950d0f096029e5a4d3486446"
+  },
+  "contract_ref": {
+    "id": "TASK-LENS-OUTCOME-CONTRACT-V1",
+    "path": "outcome-contract.json",
+    "generation": 1,
+    "sha256": "8009501276e739b9a7cd309af3d5d653a74b67ca2f5934f27cdab70fdb7f0db9"
+  },
+  "amendment_ref": null,
+  "run_ref": {
+    "id": "RUN-TASK-LENS-OUTCOME-V1-GEN1-001",
+    "path": "runs/outcome-run-result.json",
+    "generation": 1,
+    "sha256": "02107cb67c602ec17249943369994e9a4b1b6637e9e393791aab07123f67895e"
+  },
+  "previous_event": {
+    "id": "LEDGER-TASK-LENS-OUTCOME-V1-001",
+    "path": "ledger/event-001-contract-approved.json",
+    "generation": 1,
+    "sha256": "19c5f6739dce6f366acac0ae363201c0f2a891ad19de45f9dd271ab49d685d63"
+  }
+}

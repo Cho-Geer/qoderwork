@@ -1,0 +1,62 @@
+{
+  "schema_version": "outcome-run-receipt/v1",
+  "document_kind": "outcome-run-receipt",
+  "run_id": "RUN-TASK-LENS-OUTCOME-V1-GEN1-001",
+  "case_id": "CASE-004",
+  "test_id": "T-004",
+  "execution_id": "exec-2026-08-05T-wsl-gen1-attempt-1-case-004",
+  "contract": {
+    "id": "TASK-LENS-OUTCOME-CONTRACT-V1",
+    "path": "outcome-contract.json",
+    "generation": 1,
+    "sha256": "8009501276e739b9a7cd309af3d5d653a74b67ca2f5934f27cdab70fdb7f0db9"
+  },
+  "acceptance_spec": {
+    "id": "TASK-LENS-ACCEPTANCE-SPEC-V1",
+    "path": "acceptance-spec.json",
+    "generation": 1,
+    "sha256": "e3d9f658f1f759e0281da750c9774ca81617a74b87ef34b1f302b12b31fe0be0"
+  },
+  "test_bundle": {
+    "id": "TASK-LENS-TEST-BUNDLE-V1",
+    "path": "outcome-test-bundle.json",
+    "generation": 1,
+    "sha256": "a6ce76f4fb61c6e76e070f372343eef58fe597829baa0ae4dbc87270e6a2b8b1"
+  },
+  "approval_anchor": {
+    "id": "TASK-LENS-APPROVAL-V1-GEN1",
+    "path": "outcome-approval.json",
+    "generation": 1,
+    "sha256": "27301692b4097ce9c6516d442bba6d6f861f9864950d0f096029e5a4d3486446"
+  },
+  "candidate_tree_sha256": "297504377ecd64ce01a8779b14fd9f2d28a595ac",
+  "environment_manifest": {
+    "path": "runs/env/env.json",
+    "sha256": "e01e7e8b7c8b0abc297dea340290b2349dcd2bc40f83b628eed1163eef94c827"
+  },
+  "environment_hash": "e01e7e8b7c8b0abc297dea340290b2349dcd2bc40f83b628eed1163eef94c827",
+  "argv": [
+    "bun",
+    "test",
+    "scripts/task-lens/__tests__/coverage-render.test.ts",
+    "scripts/task-lens/__tests__/artifact-writer.test.ts"
+  ],
+  "cwd": "/home/zhaoge/qoderwork-wsl",
+  "exit_code": 0,
+  "signal": null,
+  "timed_out": false,
+  "execution_status": "PASS",
+  "oracle_observation": "25 pass / 0 fail; coverage-render.test.ts SHA 872248501fcb51d936a623ec5d91a7cd9937fd45fa91a777e987b1055ffb2796 + artifact-writer.test.ts SHA 8625f921b3127e323ab3ad2d51c68fb2a3059db2f1a3d1ad16bbe488faf6b268 match bundle.",
+  "stdout": {
+    "path": "runs/out/case-004.txt",
+    "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6"
+  },
+  "stderr": {
+    "path": "runs/err/case-004.txt",
+    "sha256": "318c7a94de55aff8d12314faf9ca257542a311dd03acd948991dd84f07d526b9"
+  },
+  "runner": {
+    "principal_id": "HUMAN:ChoGeer-via-main-session",
+    "trust_domain": "agent-dispatch"
+  }
+}

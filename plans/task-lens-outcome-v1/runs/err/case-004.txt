@@ -1,0 +1,35 @@
+bun test v1.3.14 (0d9b296a)
+
+scripts/task-lens/__tests__/coverage-render.test.ts:
+(pass) TL-COV-FN: FN/FNDA coverage parsing > positive: observed function with FNDA count > 0 [2.22ms]
+(pass) TL-COV-FN: FN/FNDA coverage parsing > not-observed: FNDA count = 0 [0.53ms]
+(pass) TL-COV-FN: FN/FNDA coverage parsing > TL-C-301: duplicate FN same name different lines → unknown [0.60ms]
+(pass) TL-COV-DA: DA line-level coverage fallback > observed: DA with count > 0 in function range [0.58ms]
+(pass) TL-COV-DA: DA line-level coverage fallback > not-observed: all DA counts = 0 in function range [0.52ms]
+(pass) TL-COV-DA: DA line-level coverage fallback > unknown: no DA in function range [0.51ms]
+(pass) TL-COV-BIND: companion binding validation > TL-C-303: diffHash mismatch → COVERAGE_UNALIGNED, all unknown [0.43ms]
+(pass) TL-EFFECT: side-effect detection > detects builtin DB token [0.18ms]
+(pass) TL-EFFECT: side-effect detection > detects multiple builtin types [0.36ms]
+(pass) TL-EFFECT: side-effect detection > detects config-side tokens [0.04ms]
+(pass) TL-EFFECT: side-effect detection > TL-C-304: source without fetch token → no NET fetch effect [0.01ms]
+(pass) TL-EFFECT: side-effect detection > deduplicates identical tokens [0.02ms]
+(pass) TL-CARD: card rendering > card has all five required Chinese headings [0.67ms]
+(pass) TL-CARD: card rendering > function row contains location, signature, observation [0.07ms]
+(pass) TL-CARD: card rendering > low confidence node (< 0.8) has static-low label [0.09ms]
+(pass) TL-CARD: card rendering > uncovered seeds appear in section 三 [0.17ms]
+(pass) TL-CARD: card rendering > TL-C-305: empty graph generates card with placeholder text [0.06ms]
+
+scripts/task-lens/__tests__/artifact-writer.test.ts:
+(pass) TL-CANON: stable canonical serialization > same graph produces identical hash across 3 serializations [0.19ms]
+(pass) TL-CANON: stable canonical serialization > TL-C-306: graph containing a Map rejects with ArtifactError [1.04ms]
+(pass) TL-CANON: stable canonical serialization > TL-C-306 variant: Set rejected by deep guard [0.44ms]
+(pass) TL-ATOMIC: real writeArtifacts > successful atomic write produces 3 files with correct receipt [17.05ms]
+(pass) TL-CONFLICT: conflict detection > TL-C-307: pre-existing taskId directory causes TL-CONFLICT [0.62ms]
+(pass) TL-CONFLICT: conflict detection > TL-C-308: second write with same taskId fails with TL-CONFLICT [12.82ms]
+(pass) FAKE-INJECTION: artifact writer with injected fault > deep guard catches undefined in graph [0.96ms]
+(pass) FAKE-INJECTION: artifact writer with injected fault > deep guard catches function in graph [0.61ms]
+
+ 25 pass
+ 0 fail
+ 80 expect() calls
+Ran 25 tests across 2 files. [69.00ms]
