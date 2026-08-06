@@ -25,7 +25,8 @@
 | blueprint-phase-progression-audit-gate.md | 已完成 | `audits/phase-progression-audit-gate/LATEST.md` 或 头部自述-未独立验证 | 2026-07-28（PHASE-03 头部纠正） | PHASE-03 边已写入（前置依赖 → v3 closure，2026-07-28 已满足）；头部状态 待实施 → 已完成 |
 | blueprint-question-hybrid-enforcement.md | 已完成 | `audits/question-hybrid-enforcement/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-serve-api-session-tree-optimization.md | 已完成 | `audits/serve-api-session-tree-optimization/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
-| blueprint-task-lens-m1.md | 实施中 | `audits/task-lens-m1/LATEST.md` | 2026-07-28（PHASE-03 头部纠正） | PHASE-03 过期头部已纠正（实施中；依 audits/task-lens-m1/LATEST.md PHASE-05 ACCEPTED） |
+| blueprint-task-lens-m1.md | 已退役 | `audits/task-lens-m1/LATEST.md` | 2026-07-28（PHASE-03 头部纠正）→ 2026-08-06（outcome-v1 退役标记 + m1 头文件同步更新） | PHASE-03 过期头部已纠正（实施中；依 audits/task-lens-m1/LATEST.md PHASE-05 ACCEPTED）；2026-08-06 SUPERSEDED_BY_OUTCOME_GOVERNANCE_V1（outcome 重建；新蓝图 blueprint-task-lens-outcome-v1.md 取代） |
+| blueprint-task-lens-outcome-v1.md | 已完成 | `audits/task-lens-outcome-v1/LATEST.md` | 2026-08-05（创建）→ 2026-08-06（outcome-governance v1 ACCEPT, 90/90 tests pass） | 新框架 outcome-v1 重建（参照 blueprint-task-lens-m1.md）；取代 blueprint-task-lens-m1.md；状态投影自 audits/task-lens-outcome-v1/LATEST.md (audit ACCEPT 签发事件) |
 | blueprint-todowrite-driven-weak-agent-supervision.md | 已完成 | `audits/todowrite-driven-weak-agent-supervision/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-tool-governance-mvc-refactor.md | 已完成 | `audits/tool-governance-mvc-refactor/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-blueprints-governance.md | 已完成 | `audits/blueprints-governance/LATEST.md` | 2026-07-28（PHASE-05 ACCEPTED） | 本 plan 自身蓝图；PHASE-01~05 全部 ACCEPTED、plan COMPLETE（依 LATEST.md → 2026-07-28-audit-phase-05.md，verdict ACCEPT，invalid_reason null）；按看板规约已完成 blueprint 仍登记于活跃段 |
