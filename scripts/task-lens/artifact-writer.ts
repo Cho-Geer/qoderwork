@@ -238,7 +238,9 @@ function writeVerified(
   fs.writeFileSync(filePath, content, { flag: "wx", mode: 0o600 });
 
   // fsync the file
-  const fd = fs.openSync(filePath, "r");
+  // Windows: a read-only ("r") handle fails fsync with EPERM; "r+" (write-capable)
+  // handle fsyncs successfully. POSIX behavior is unchanged ("r+" ≈ "r" there).
+  const fd = fs.openSync(filePath, "r+");
   fs.fsyncSync(fd);
   fs.closeSync(fd);
 
@@ -377,8 +379,14 @@ export async function writeArtifacts(
     }
 
     // --- 6. fsync staging dir ---
+    // Windows: directory fsync always EPERM (no dir-fsync semantics in libuv).
+    // Skip EPERM only; rethrow anything else. POSIX dir fsync still runs.
     const stagingFd = fs.openSync(stagingDir, "r");
-    fs.fsyncSync(stagingFd);
+    try {
+      fs.fsyncSync(stagingFd);
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException)?.code !== "EPERM") throw err;
+    }
     fs.closeSync(stagingFd);
 
     // --- 7. rename(staging, final) — atomic on same filesystem ---
@@ -391,8 +399,13 @@ export async function writeArtifacts(
     }
 
     // --- 8. fsync OUT dir ---
+    // Windows: directory fsync always EPERM; skip EPERM only. POSIX unchanged.
     const outFd = fs.openSync(outDir, "r");
-    fs.fsyncSync(outFd);
+    try {
+      fs.fsyncSync(outFd);
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException)?.code !== "EPERM") throw err;
+    }
     fs.closeSync(outFd);
 
     // Build receipt

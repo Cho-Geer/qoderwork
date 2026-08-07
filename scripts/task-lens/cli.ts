@@ -1,8 +1,12 @@
 // scripts/task-lens/cli.ts
-// REQ-004-B — CLI grammar (generate/feedback/metrics) + main orchestrator.
-// PHASE-02: generate captures the input stage (config + diff + receipt) and
-// returns NOT_IMPLEMENTED_AFTER_INPUT; no graph/card/artifact is produced.
+// CLI grammar (generate/feedback/metrics) + main orchestrator.
+// PHASE-05-v2: generate runs the full deterministic pipeline
+// (config → diff → provider → graph → spine → coverage → card → artifacts →
+// generated-event append); feedback and metrics summarize are wired to the
+// metrics module. Exit precedence: 21 > 20 > 12 > 10 > 13 > 2 > 1.
 
+import fs from "node:fs";
+import path from "node:path";
 import {
   type CliRequest,
   type Clock,
@@ -10,14 +14,32 @@ import {
   type GenerateRequest,
   type FeedbackRequest,
   type MetricsRequest,
-  type NotImplementedAfterInput,
   CliError,
+  DEFAULT_GRAPH_BUDGET,
   PROVIDER_PLACEHOLDER,
   ProcessFailure,
+  TASK_GRAPH_SCHEMA_VERSION,
+  type TaskGraphV1,
 } from "./types.ts";
-import { ConfigError, resolveConfig, assertOutputOutsideProject } from "./config.ts";
+import { ConfigError, resolveConfig, assertOutputOutsideProject, sha256Hex } from "./config.ts";
 import { extractDiff, createInputReceipt, EmptyDiffError, DiffInputError } from "./diff-extractor.ts";
 import { runCommand } from "./command-runner.ts";
+import { writeArtifacts, ArtifactError } from "./artifact-writer.ts";
+import { renderCard } from "./card-renderer.ts";
+import { CodeGraphProvider, ProviderUnavailableError } from "./codegraph-provider.ts";
+import { resolveSeeds } from "./seed-resolver.ts";
+import { buildGraph } from "./graph-builder.ts";
+import { buildSpineForest } from "./spine.ts";
+import { readCoverage, type CoverageBinding } from "./coverage-reader.ts";
+import {
+  appendFeedback,
+  appendGenerated,
+  buildGeneratedEvent,
+  summarizeMetrics,
+  MetricsError,
+  METRICS_SCHEMA_VERSION,
+  type FeedbackEvent,
+} from "./metrics.ts";
 
 // ---------------------------------------------------------------------------
 // parseCli
@@ -160,14 +182,29 @@ function parseMetrics(tokens: string[]): MetricsRequest {
   if (action !== "summarize") {
     throw new CliError(`unknown metrics action: "${action}"`);
   }
-  const m = parsePairs(tokens.slice(1));
+  // `--json` is a bare flag (presence = true); strip it before strict parsing.
+  let json = false;
+  const rest: string[] = [];
+  for (const t of tokens.slice(1)) {
+    if (t === "--json") {
+      json = true;
+    } else {
+      rest.push(t);
+    }
+  }
+  const m = parsePairs(rest);
   const known = new Set(["out"]);
   for (const k of m.keys()) {
     if (!known.has(k)) throw new CliError(`unknown flag --${k}`);
   }
   const out = required(m, "out");
   if (!isAbsolutePath(out)) throw new CliError(`--out must be absolute: "${out}"`);
-  return { subcommand: "metrics", action: "summarize", out };
+  return {
+    subcommand: "metrics",
+    action: "summarize",
+    out,
+    json,
+  } as MetricsRequest;
 }
 
 function isAbsolutePath(p: string): boolean {
@@ -175,9 +212,9 @@ function isAbsolutePath(p: string): boolean {
 }
 
 function parseBool(v: string, label: string): boolean {
-  if (v === "true") return true;
-  if (v === "false") return false;
-  throw new CliError(`--${label} must be true|false, got "${v}"`);
+  if (v === "true" || v === "yes") return true;
+  if (v === "false" || v === "no") return false;
+  throw new CliError(`--${label} must be yes|no (or true|false), got "${v}"`);
 }
 
 /** Parse argv (excluding the script name) into a CliRequest or throw CliError. */
@@ -192,23 +229,43 @@ export function parseCli(argv: string[]): CliRequest {
 }
 
 // ---------------------------------------------------------------------------
-// main
+// generate — full deterministic pipeline
 // ---------------------------------------------------------------------------
 
-async function runGenerate(
+/** nodeKey must match coverage-reader's internal key format. */
+function nodeKey(node: { file: string; name: string; startLine: number; endLine: number }): string {
+  return `${node.file}:${node.name}:${node.startLine}:${node.endLine}`;
+}
+
+async function runGenerateFull(
   req: GenerateRequest,
   runner: CommandRunner,
   clock: Clock,
-): Promise<{ result: NotImplementedAfterInput; exit: number }> {
-  const { config: _config, projectRealpath, hash: configHash } = await resolveConfig(
+): Promise<number> {
+  // 1. Config + out boundary.
+  const { config, projectRealpath, hash: configHash } = await resolveConfig(
     req.project,
     req.config,
   );
-  assertOutputOutsideProject(req.out, projectRealpath);
+  const outReal = assertOutputOutsideProject(req.out, projectRealpath);
+
+  // 2. Diff extraction.
   const diff = await extractDiff(
     { projectRealpath, mode: req.mode, baseSha: req.base },
     runner,
   );
+
+  // 3. Coverage hash (optional).
+  let coverageHash: string | null = null;
+  if (req.coverage !== undefined) {
+    try {
+      coverageHash = sha256Hex(await Bun.file(req.coverage).text());
+    } catch {
+      coverageHash = null;
+    }
+  }
+
+  // 4. Input receipt (taskId excludes generatedAt; coverageHash included).
   const receipt = createInputReceipt(
     {
       projectRealpath,
@@ -217,21 +274,146 @@ async function runGenerate(
       headSha: diff.headSha,
       diffHash: diff.diffHash,
       configHash,
-      coverageHash: null,
+      coverageHash,
       provider: PROVIDER_PLACEHOLDER,
     },
     clock,
   );
-  return {
-    result: { status: "NOT_IMPLEMENTED_AFTER_INPUT", receipt },
-    exit: 2,
+
+  // 5. Ensure out dir exists (writeArtifacts requires an existing outDir).
+  fs.mkdirSync(outReal, { recursive: true });
+
+  // 6. Provider (exit 12 on unavailability).
+  const provider = await CodeGraphProvider.open(projectRealpath);
+  try {
+    // 7. Seeds from live hunks ∩ function ranges.
+    const files = [
+      ...new Set(
+        diff.hunks
+          .filter((h) => h.kind === "add" || h.kind === "modify")
+          .map((h) => h.newPath),
+      ),
+    ];
+    const ranges = await provider.getFunctionRanges(files);
+    const seedResult = resolveSeeds(diff.hunks, ranges);
+
+    // 8. Graph.
+    const graphResult = await buildGraph(provider, seedResult.seeds);
+
+    // 9. Spine (CLI --entry first, then config entries).
+    const entries = [req.entry, ...config.entries].filter(
+      (e): e is string => typeof e === "string" && e.length > 0,
+    );
+    const spine = buildSpineForest(
+      graphResult,
+      seedResult.seeds,
+      entries,
+      DEFAULT_GRAPH_BUDGET,
+    );
+
+    // 10. Coverage → observations.
+    const observations = new Map<string, "observed" | "not-observed" | "unknown">();
+    let coverageUnverified: readonly string[] = [];
+    if (req.coverage !== undefined) {
+      const binding: CoverageBinding = {
+        producer: null,
+        fileSha256: coverageHash ?? "",
+        mtimeMs: 0,
+        targetHeadSha: diff.headSha,
+        diffHash: diff.diffHash,
+        proofState: "ALIGNED",
+      };
+      const cov = await readCoverage(req.coverage, binding, [...graphResult.nodes]);
+      for (const [k, v] of cov.observations) observations.set(k, v);
+      coverageUnverified = cov.unverified;
+    }
+
+    // 11. Final graph (observations merged, coverage unverified appended).
+    const nodes = graphResult.nodes.map((n) => ({
+      ...n,
+      observation: observations.get(nodeKey(n)) ?? ("unknown" as const),
+    }));
+    const graph: TaskGraphV1 = {
+      schemaVersion: TASK_GRAPH_SCHEMA_VERSION,
+      taskId: receipt.taskId,
+      seeds: graphResult.seeds,
+      deletedRegions: diff.deletedRegions,
+      nodes,
+      edges: graphResult.edges,
+      spine,
+      truncation: graphResult.truncation,
+      unverified: [...new Set([...graphResult.unverified, ...coverageUnverified])].sort(),
+    };
+
+    // 12. Card + artifacts.
+    const card = renderCard(graph, receipt);
+    const artifactReceipt = await writeArtifacts({
+      taskId: receipt.taskId,
+      outDir: outReal,
+      card,
+      graph,
+      receipt,
+    });
+    const artifactHashes = {
+      card: artifactReceipt.files.find((f) => f.path.endsWith("card.md"))!.sha256,
+      graph: artifactReceipt.files.find((f) => f.path.endsWith("graph.json"))!.sha256,
+      receipt: artifactReceipt.files.find((f) => f.path.endsWith("receipt.json"))!.sha256,
+    };
+
+    // 13. Generated event (post-commit) — verified recovery on retry.
+    const event = buildGeneratedEvent(graph, receipt, artifactHashes);
+    await appendGenerated(outReal, event);
+    return event.exitCode;
+  } finally {
+    provider.close();
+  }
+}
+
+// ---------------------------------------------------------------------------
+// feedback
+// ---------------------------------------------------------------------------
+
+async function runFeedback(req: FeedbackRequest, clock: Clock): Promise<number> {
+  const event: FeedbackEvent = {
+    schemaVersion: METRICS_SCHEMA_VERSION,
+    event: "feedback",
+    taskId: req.taskId,
+    recordedAt: clock(),
+    useful: req.useful,
+    loadReduced: req.loadReduced,
+    issuesFound: req.issuesFound,
+    issuesGuidedByCard: req.issuesGuidedByCard,
+    reviewMinutes: req.reviewMinutes,
+    notes: req.notes ?? "",
   };
+  await appendFeedback(req.out, event);
+  return 0;
+}
+
+// ---------------------------------------------------------------------------
+// metrics summarize
+// ---------------------------------------------------------------------------
+
+async function runMetricsSummarize(
+  req: MetricsRequest,
+  json: boolean,
+): Promise<number> {
+  const summary = await summarizeMetrics(req.out);
+  if (json) {
+    console.log(JSON.stringify(summary, null, 2));
+  } else {
+    console.log(
+      `generated=${summary.generatedCount} feedback=${summary.feedbackCount} usefulAndReduced=${summary.usefulAndReducedCount} gate=${summary.gate}`,
+    );
+  }
+  if (summary.gate === "PASS") return 0;
+  if (summary.gate === "FAIL") return 1;
+  return 2; // INCOMPLETE
 }
 
 /**
- * Entry point. Returns the exit code. generate captures input then returns
- * NOT_IMPLEMENTED_AFTER_INPUT (exit 2); feedback/metrics are recognized grammar
- * but not implemented in PHASE-02 (exit 2).
+ * Entry point. Returns the exit code. Exit precedence:
+ * 21 > 20 > 12 > 10 > 13 > 2 > 1.
  */
 export async function main(argv: string[]): Promise<number> {
   let req: CliRequest;
@@ -246,14 +428,15 @@ export async function main(argv: string[]): Promise<number> {
     return 1;
   }
   try {
+    const clock: Clock = () => new Date().toISOString();
     if (req.subcommand === "generate") {
-      const clock: Clock = () => new Date().toISOString();
-      const { result } = await runGenerate(req, runCommand, clock);
-      console.error(`NOT_IMPLEMENTED_AFTER_INPUT taskId=${result.receipt.taskId}`);
-      return 2;
+      return await runGenerateFull(req, runCommand, clock);
     }
-    console.error(`NOT_IMPLEMENTED: ${req.subcommand}`);
-    return 2;
+    if (req.subcommand === "feedback") {
+      return await runFeedback(req, clock);
+    }
+    const json = (req as MetricsRequest & { json?: boolean }).json ?? false;
+    return await runMetricsSummarize(req, json);
   } catch (e) {
     if (e instanceof ConfigError || e instanceof DiffInputError) {
       console.error(e.message);
@@ -266,6 +449,18 @@ export async function main(argv: string[]): Promise<number> {
     if (e instanceof ProcessFailure) {
       console.error(e.message);
       return 20;
+    }
+    if (e instanceof ProviderUnavailableError) {
+      console.error(e.message);
+      return e.exitCode;
+    }
+    if (e instanceof ArtifactError) {
+      console.error(e.message);
+      return e.exitCode;
+    }
+    if (e instanceof MetricsError) {
+      console.error(e.message);
+      return e.exitCode;
     }
     console.error(String(e));
     return 1;
