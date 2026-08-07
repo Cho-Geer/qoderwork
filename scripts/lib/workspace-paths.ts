@@ -19,6 +19,7 @@
 import { existsSync, realpathSync, statSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, isAbsolute, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 
 /**
  * Normalize a filesystem path to forward-slash form for cross-platform comparison.
@@ -285,7 +286,10 @@ function loadLocalPaths(filePath: string): LocalPathsJson | null {
 
 function deriveQoderworkRoot(): string {
   // workspace-paths.ts lives in scripts/lib/; the qoderwork root is its parent's parent.
-  const here = dirname(new URL(import.meta.url).pathname);
+  // Use fileURLToPath to correctly handle Windows file:///C:/... URL→path conversion
+  // (new URL(...).pathname returns "/C:/..." which on Windows resolves to "C:\C:\..." via
+  // path.resolve due to the leading slash being treated as absolute path on the C: drive).
+  const here = dirname(fileURLToPath(import.meta.url));
   return resolve(here, "..", "..");
 }
 
