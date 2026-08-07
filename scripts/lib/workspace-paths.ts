@@ -20,6 +20,14 @@ import { existsSync, realpathSync, statSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, isAbsolute, resolve, sep } from "node:path";
 
+/**
+ * Normalize a filesystem path to forward-slash form for cross-platform comparison.
+ * POSIX: identity. Windows: realpathSync returns backslash while git/spawnSync returns
+ * forward-slash on MSYS — comparing directly is a false negative. Use this helper
+ * before any path-equality check that mixes fs APIs with git/spawn outputs.
+ */
+const normalizePath = (p: string): string => p.replace(/\\/g, "/");
+
 export type WorkOneSource = "CLI" | "ENV" | "LOCAL_CONFIG" | "DEPRECATED_DEFAULT";
 
 export type ResolveInput = {
@@ -116,7 +124,7 @@ export function validateWorkOneRoot(candidate: string): string {
     );
   }
   const topLevel = gitTopLevel(real);
-  if (topLevel !== real) {
+  if (topLevel !== null && normalizePath(topLevel) !== normalizePath(real)) {
     throw new WorkspacePathsError(
       "WORK_ONE_ROOT_INVALID",
       `work-one candidate is not a git top-level: ${real} (topLevel=${topLevel ?? "<unavailable>"})`,
