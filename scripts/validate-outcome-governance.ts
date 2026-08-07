@@ -19,7 +19,7 @@ const bad = (...errors: string[]): OutcomeCliResult => ({ ok: false, mode: "stru
 const uniqueStrings = (value: unknown): value is string[] => Array.isArray(value) && value.every((item) => typeof item === "string" && item.length > 0) && new Set(value).size === value.length;
 const sameSet = (left: string[], right: string[]): boolean => uniqueStrings(left) && uniqueStrings(right)
   && left.length === right.length && left.every((item) => right.includes(item));
-const auxiliaryRunArtifact = (path: string): boolean => /^runs\/(?:receipt|env|out|err)(?:[-.]|\/)/.test(path);
+const auxiliaryRunArtifact = (path: string): boolean => /^runs[\/\\](?:receipt|env|out|err)(?:[-.][\/\\]?|[\/\\])/.test(path);
 
 function safeBelow(root: string, path: string): string | null {
   if (!path || isAbsolute(path) || path.includes("\0")) return null;
@@ -58,7 +58,7 @@ function itemReference(item: Item): ArtifactReference | null {
 function documentReference(index: Map<string, Item>, root: string, reference: ArtifactReference, errors: string[], expectedKind: OutcomeDocumentV1["document_kind"], outcomeId: string | undefined, label: string): Item | null {
   const absolute = safeBelow(root, reference.path);
   if (!absolute) { errors.push(`REFERENCE_ESCAPE_OR_MISSING:${reference.path}`); return null; }
-  const item = index.get(relative(root, absolute));
+  const item = index.get(relative(root, absolute).split("\\").join("/"));
   if (!item) { errors.push(`REFERENCE_MISSING:${reference.path}`); return null; }
   if (sha(item.bytes) !== reference.sha256) errors.push(`REFERENCE_HASH_MISMATCH:${reference.path}`);
   const identity = documentIdentity(item);
@@ -212,7 +212,7 @@ export function validateOutcomeDirectory(outcomeDirectory: string, repositoryRoo
     if (!/^[a-f0-9]{40,64}$/i.test(gitTree)) return bad("GIT_TREE_INVALID");
     const errors: string[] = []; const index = new Map<string, Item>();
     for (const absolute of jsonFiles(root)) {
-      const bytes = readFileSync(absolute); const path = relative(root, absolute); let raw: unknown;
+      const bytes = readFileSync(absolute); const path = relative(root, absolute).split("\\").join("/"); let raw: unknown;
       try { raw = JSON.parse(bytes.toString("utf8")); } catch { errors.push(`JSON_INVALID:${path}`); continue; }
       const parsed = parseOutcomeDocument(raw);
       if (!parsed.ok) { if (!auxiliaryRunArtifact(path)) errors.push(`DOCUMENT_INVALID:${path}`); continue; }
