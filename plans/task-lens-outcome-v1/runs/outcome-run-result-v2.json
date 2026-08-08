@@ -35,25 +35,222 @@
     "sha256": "e01e7e8b7c8b0abc297dea340290b2349dcd2bc40f83b628eed1163eef94c827"
   },
   "inventory": {
-    "discovered_test_ids": ["T-001", "T-002", "T-003", "T-004", "T-011", "T-012", "T-013", "T-014", "T-015", "T-016", "T-017", "T-018", "T-019"],
-    "executed_test_ids": ["T-001", "T-002", "T-003", "T-004", "T-011", "T-012", "T-013", "T-014", "T-015", "T-016", "T-017", "T-018", "T-019"],
+    "discovered_test_ids": [
+      "T-001",
+      "T-002",
+      "T-003",
+      "T-004",
+      "T-011",
+      "T-012",
+      "T-013",
+      "T-014",
+      "T-015",
+      "T-016",
+      "T-017",
+      "T-018",
+      "T-019"
+    ],
+    "executed_test_ids": [
+      "T-001",
+      "T-002",
+      "T-003",
+      "T-004",
+      "T-011",
+      "T-012",
+      "T-013",
+      "T-014",
+      "T-015",
+      "T-016",
+      "T-017",
+      "T-018",
+      "T-019"
+    ],
     "skipped_test_ids": [],
     "filtered_test_ids": []
   },
   "case_results": [
-    { "case_id": "CASE-001", "test_id": "T-001", "execution_id": "exec-gen2-gitbash-case-001", "execution_status": "PASS", "oracle_observation": "PASS after frozen test repair; independent run required by final evidence collection.", "receipt": { "path": "runs/receipt/gen2-case-001.json", "sha256": "5ac587198066c68829554af3d1e789306c83c5a77b82692298480365c5edac79" } },
-    { "case_id": "CASE-002", "test_id": "T-002", "execution_id": "exec-gen2-gitbash-case-002", "execution_status": "PASS", "oracle_observation": "PASS after junction fixture repair; independent run required by final evidence collection.", "receipt": { "path": "runs/receipt/gen2-case-002.json", "sha256": "f9f50f8c993887ddce67b0b67e4e61f7c2b8dc6e380daf722dba63d30120e402" } },
-    { "case_id": "CASE-003", "test_id": "T-003", "execution_id": "exec-gen2-gitbash-case-003", "execution_status": "PASS", "oracle_observation": "Provider graph and spine component tests pass; independent run required by final evidence collection.", "receipt": { "path": "runs/receipt/gen2-case-003.json", "sha256": "9a199269f672e2e617bee75c0ab272cf59edc4cd5e3708daed3c88c86aeabc10" } },
-    { "case_id": "CASE-004", "test_id": "T-004", "execution_id": "exec-gen2-gitbash-case-004", "execution_status": "PASS", "oracle_observation": "Inherited coverage and artifact component controls; independent run required by final evidence collection.", "receipt": { "path": "runs/receipt/gen2-case-004.json", "sha256": "44de48c917e0e5bb9b2ec459b6327995f144c20d358c526b731ddbbeed3d4fd9" } },
-    { "case_id": "TL-C-401-v2-WSL", "test_id": "T-011", "execution_id": "exec-gen2-wsl-c401", "execution_status": "PASS", "oracle_observation": "WSL real capture: bun test metrics.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=wsl; 35 pass / 0 fail (RC=0); argv matches captured stderr.", "receipt": { "path": "runs/receipt/gen2-tl-c-401-wsl.json", "sha256": "b12eb9e1f67a93218aa16215e03d88602900150ab101632e63badb8301173e77" } },
-    { "case_id": "TL-C-401-v2-GITBASH", "test_id": "T-012", "execution_id": "exec-gen2-gitbash-c401", "execution_status": "PASS", "oracle_observation": "GitBash real capture: bun test metrics.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=gitbash; argv matches captured stderr.", "receipt": { "path": "runs/receipt/gen2-tl-c-401-gitbash.json", "sha256": "1509285125864d4c6edd8612a7ead369f76f6839a609cbda884014fad49cddc6" } },
-    { "case_id": "TL-C-402-v2-WSL", "test_id": "T-013", "execution_id": "exec-gen2-wsl-c402", "execution_status": "PASS", "oracle_observation": "WSL real capture: bun test cli-integration.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=wsl; 18 pass / 0 fail (RC=0); argv matches captured stderr.", "receipt": { "path": "runs/receipt/gen2-tl-c-402-wsl.json", "sha256": "6805d52655866cda003f2385f897fcd9c1563d5891a3878b857d47974070eea0" } },
-    { "case_id": "TL-C-402-v2-GITBASH", "test_id": "T-014", "execution_id": "exec-gen2-gitbash-c402", "execution_status": "PASS", "oracle_observation": "GitBash real capture: bun test cli-integration.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=gitbash; argv matches captured stderr.", "receipt": { "path": "runs/receipt/gen2-tl-c-402-gitbash.json", "sha256": "469be0fa01e45f4d217b038f2b08e52cd8d981ed944050d09c472f5db7c94138" } },
-    { "case_id": "TL-I-501-v2-WSL", "test_id": "T-015", "execution_id": "exec-gen2-wsl-i501", "execution_status": "PASS", "oracle_observation": "WSL real capture: bun test integration.test.ts with TASK_LENS_ENV=wsl; 22 pass / 0 fail (RC=0). TL-WORK-ONE-v2 and TL-QODERWORK-v2 hit the workspace-root failure catch path; WorkspacePathsError messages now carry the WORK_ONE_ROOT_INVALID code prefix (product fix) so the expected /WORK_ONE_ROOT_INVALID|ENOENT/ regex matches. Success path separately verified with WORK_ONE_ROOT=/home/zhaoge/workspace/opencode/work-one: both real targets PASS with writeState=NOT_FOUND (work-one empty-diff retrigger commit yields allowed exit 13). PASS per fail-closed; no GitBash evidence reused.", "receipt": { "path": "runs/receipt/gen2-tl-i-501-wsl.json", "sha256": "1a55674851513bae1ee4801382fe29acfef2693680b66b979b8548a55f9bc28f" } },
-    { "case_id": "TL-I-501-v2-GITBASH", "test_id": "T-016", "execution_id": "exec-gen2-gitbash-i501", "execution_status": "PASS", "oracle_observation": "GitBash real capture: bun test integration.test.ts with TASK_LENS_ENV=gitbash; argv matches captured stderr.", "receipt": { "path": "runs/receipt/gen2-tl-i-501-gitbash.json", "sha256": "80c27181a0fb8160a64b196f1c9377b989ec3d2029e798e9f47a1103aa23226a" } },
-    { "case_id": "TL-M-601-v2-WSL", "test_id": "T-017", "execution_id": "exec-gen2-wsl-m601", "execution_status": "PASS", "oracle_observation": "WSL real capture: bun test closure.test.ts (11 pass / 0 fail, RC=0) with TASK_LENS_METRICS_ENV=wsl; typecheck captured separately (RC=0); argv matches captured stderr.", "receipt": { "path": "runs/receipt/gen2-tl-m-601-wsl.json", "sha256": "3eb79a3d8a5839a87b7ebd222340e6f1fcd872f9c72dae055b0be9e683945f64" } },
-    { "case_id": "TL-M-601-v2-GITBASH", "test_id": "T-018", "execution_id": "exec-gen2-gitbash-m601", "execution_status": "PASS", "oracle_observation": "GitBash real capture: bun test closure.test.ts (typecheck captured separately); argv matches captured stderr.", "receipt": { "path": "runs/receipt/gen2-tl-m-601-gitbash.json", "sha256": "feae14a5e805b22f09f66a21387b7a7223a630e1841af883a4ef96f8a93c4f44" } },
-    { "case_id": "TL-X-001", "test_id": "T-019", "execution_id": "exec-gen2-gitbash-x001", "execution_status": "PASS", "oracle_observation": "GitBash real capture: bun run validate-outcome-governance.ts; stdout captured validator JSON ({\"ok\":true,...errors:[]} after fixes applied); stderr genuinely empty (validator writes only to stdout).", "receipt": { "path": "runs/receipt/gen2-tl-x-001.json", "sha256": "11a5d4b639dbb02c1339ae0330c0b123e04b8eb1466e4b7dcce962dab6628964" } }
+    {
+      "case_id": "CASE-001",
+      "test_id": "T-001",
+      "execution_id": "exec-gen2-gitbash-case-001",
+      "execution_status": "PASS",
+      "oracle_observation": "PASS after frozen test repair; independent run required by final evidence collection.",
+      "receipt": {
+        "path": "runs/receipt/gen2-case-001.json",
+        "sha256": "5ac587198066c68829554af3d1e789306c83c5a77b82692298480365c5edac79"
+      },
+      "verdict": "PASS",
+      "environment": "WSL",
+      "requirement": "REQ-001"
+    },
+    {
+      "case_id": "CASE-002",
+      "test_id": "T-002",
+      "execution_id": "exec-gen2-gitbash-case-002",
+      "execution_status": "PASS",
+      "oracle_observation": "PASS after junction fixture repair; independent run required by final evidence collection.",
+      "receipt": {
+        "path": "runs/receipt/gen2-case-002.json",
+        "sha256": "f9f50f8c993887ddce67b0b67e4e61f7c2b8dc6e380daf722dba63d30120e402"
+      },
+      "verdict": "PASS",
+      "environment": "WSL",
+      "requirement": "REQ-002"
+    },
+    {
+      "case_id": "CASE-003",
+      "test_id": "T-003",
+      "execution_id": "exec-gen2-gitbash-case-003",
+      "execution_status": "PASS",
+      "oracle_observation": "Provider graph and spine component tests pass; independent run required by final evidence collection.",
+      "receipt": {
+        "path": "runs/receipt/gen2-case-003.json",
+        "sha256": "9a199269f672e2e617bee75c0ab272cf59edc4cd5e3708daed3c88c86aeabc10"
+      },
+      "verdict": "PASS",
+      "environment": "WSL",
+      "requirement": "REQ-003"
+    },
+    {
+      "case_id": "CASE-004",
+      "test_id": "T-004",
+      "execution_id": "exec-gen2-gitbash-case-004",
+      "execution_status": "PASS",
+      "oracle_observation": "Inherited coverage and artifact component controls; independent run required by final evidence collection.",
+      "receipt": {
+        "path": "runs/receipt/gen2-case-004.json",
+        "sha256": "44de48c917e0e5bb9b2ec459b6327995f144c20d358c526b731ddbbeed3d4fd9"
+      },
+      "verdict": "PASS",
+      "environment": "WSL",
+      "requirement": "REQ-004"
+    },
+    {
+      "case_id": "TL-C-401-v2-WSL",
+      "test_id": "T-011",
+      "execution_id": "exec-gen2-wsl-c401",
+      "execution_status": "PASS",
+      "oracle_observation": "WSL real capture: bun test metrics.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=wsl; 35 pass / 0 fail (RC=0); argv matches captured stderr.",
+      "receipt": {
+        "path": "runs/receipt/gen2-tl-c-401-wsl.json",
+        "sha256": "b12eb9e1f67a93218aa16215e03d88602900150ab101632e63badb8301173e77"
+      },
+      "verdict": "PASS",
+      "environment": "WSL",
+      "requirement": "REQ-011v2"
+    },
+    {
+      "case_id": "TL-C-401-v2-GITBASH",
+      "test_id": "T-012",
+      "execution_id": "exec-gen2-gitbash-c401",
+      "execution_status": "PASS",
+      "oracle_observation": "GitBash real capture: bun test metrics.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=gitbash; argv matches captured stderr.",
+      "receipt": {
+        "path": "runs/receipt/gen2-tl-c-401-gitbash.json",
+        "sha256": "1509285125864d4c6edd8612a7ead369f76f6839a609cbda884014fad49cddc6"
+      },
+      "verdict": "PASS",
+      "environment": "GITBASH",
+      "requirement": "REQ-011v2"
+    },
+    {
+      "case_id": "TL-C-402-v2-WSL",
+      "test_id": "T-013",
+      "execution_id": "exec-gen2-wsl-c402",
+      "execution_status": "PASS",
+      "oracle_observation": "WSL real capture: bun test cli-integration.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=wsl; 18 pass / 0 fail (RC=0); argv matches captured stderr.",
+      "receipt": {
+        "path": "runs/receipt/gen2-tl-c-402-wsl.json",
+        "sha256": "6805d52655866cda003f2385f897fcd9c1563d5891a3878b857d47974070eea0"
+      },
+      "verdict": "PASS",
+      "environment": "WSL",
+      "requirement": "REQ-012v2"
+    },
+    {
+      "case_id": "TL-C-402-v2-GITBASH",
+      "test_id": "T-014",
+      "execution_id": "exec-gen2-gitbash-c402",
+      "execution_status": "PASS",
+      "oracle_observation": "GitBash real capture: bun test cli-integration.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=gitbash; argv matches captured stderr.",
+      "receipt": {
+        "path": "runs/receipt/gen2-tl-c-402-gitbash.json",
+        "sha256": "469be0fa01e45f4d217b038f2b08e52cd8d981ed944050d09c472f5db7c94138"
+      },
+      "verdict": "PASS",
+      "environment": "GITBASH",
+      "requirement": "REQ-012v2"
+    },
+    {
+      "case_id": "TL-I-501-v2-WSL",
+      "test_id": "T-015",
+      "execution_id": "exec-gen2-wsl-i501",
+      "execution_status": "PASS",
+      "oracle_observation": "WSL real capture: bun test integration.test.ts with TASK_LENS_ENV=wsl; 22 pass / 0 fail (RC=0). TL-WORK-ONE-v2 and TL-QODERWORK-v2 hit the workspace-root failure catch path; WorkspacePathsError messages now carry the WORK_ONE_ROOT_INVALID code prefix (product fix) so the expected /WORK_ONE_ROOT_INVALID|ENOENT/ regex matches. Success path separately verified with WORK_ONE_ROOT=/home/zhaoge/workspace/opencode/work-one: both real targets PASS with writeState=NOT_FOUND (work-one empty-diff retrigger commit yields allowed exit 13). PASS per fail-closed; no GitBash evidence reused.",
+      "receipt": {
+        "path": "runs/receipt/gen2-tl-i-501-wsl.json",
+        "sha256": "1a55674851513bae1ee4801382fe29acfef2693680b66b979b8548a55f9bc28f"
+      },
+      "verdict": "PASS",
+      "environment": "WSL",
+      "requirement": "REQ-013v2"
+    },
+    {
+      "case_id": "TL-I-501-v2-GITBASH",
+      "test_id": "T-016",
+      "execution_id": "exec-gen2-gitbash-i501",
+      "execution_status": "PASS",
+      "oracle_observation": "GitBash real capture: bun test integration.test.ts with TASK_LENS_ENV=gitbash; argv matches captured stderr.",
+      "receipt": {
+        "path": "runs/receipt/gen2-tl-i-501-gitbash.json",
+        "sha256": "80c27181a0fb8160a64b196f1c9377b989ec3d2029e798e9f47a1103aa23226a"
+      },
+      "verdict": "PASS",
+      "environment": "GITBASH",
+      "requirement": "REQ-013v2"
+    },
+    {
+      "case_id": "TL-M-601-v2-WSL",
+      "test_id": "T-017",
+      "execution_id": "exec-gen2-wsl-m601",
+      "execution_status": "PASS",
+      "oracle_observation": "WSL real capture: bun test closure.test.ts (11 pass / 0 fail, RC=0) with TASK_LENS_METRICS_ENV=wsl; typecheck captured separately (RC=0); argv matches captured stderr.",
+      "receipt": {
+        "path": "runs/receipt/gen2-tl-m-601-wsl.json",
+        "sha256": "3eb79a3d8a5839a87b7ebd222340e6f1fcd872f9c72dae055b0be9e683945f64"
+      },
+      "verdict": "PASS",
+      "environment": "WSL",
+      "requirement": "REQ-014v2"
+    },
+    {
+      "case_id": "TL-M-601-v2-GITBASH",
+      "test_id": "T-018",
+      "execution_id": "exec-gen2-gitbash-m601",
+      "execution_status": "PASS",
+      "oracle_observation": "GitBash real capture: bun test closure.test.ts (typecheck captured separately); argv matches captured stderr.",
+      "receipt": {
+        "path": "runs/receipt/gen2-tl-m-601-gitbash.json",
+        "sha256": "feae14a5e805b22f09f66a21387b7a7223a630e1841af883a4ef96f8a93c4f44"
+      },
+      "verdict": "PASS",
+      "environment": "GITBASH",
+      "requirement": "REQ-014v2"
+    },
+    {
+      "case_id": "TL-X-001",
+      "test_id": "T-019",
+      "execution_id": "exec-gen2-gitbash-x001",
+      "execution_status": "PASS",
+      "oracle_observation": "GitBash real capture: bun run validate-outcome-governance.ts; stdout captured validator JSON ({\"ok\":true,...errors:[]} after fixes applied); stderr genuinely empty (validator writes only to stdout).",
+      "receipt": {
+        "path": "runs/receipt/gen2-tl-x-001.json",
+        "sha256": "11a5d4b639dbb02c1339ae0330c0b123e04b8eb1466e4b7dcce962dab6628964"
+      },
+      "verdict": "PASS",
+      "environment": "GITBASH",
+      "requirement": "REQ-CROSS-ENV"
+    }
   ],
   "verdict": "PASS"
 }

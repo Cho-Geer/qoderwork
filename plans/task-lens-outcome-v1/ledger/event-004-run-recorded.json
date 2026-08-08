@@ -23,7 +23,7 @@
     "id": "RUN-TASK-LENS-OUTCOME-V1-GEN2-001",
     "path": "runs/outcome-run-result-v2.json",
     "generation": 2,
-    "sha256": "a884a7c6beb08056ae29072a44179711b0fc656855db8d7836b19e65cc2743fe"
+    "sha256": "fd8ef19cd4295cbd1a85742779abe6d2acb32c4e4012d27dcb1e48e19361c8cf"
   },
   "previous_event": {
     "id": "LEDGER-TASK-LENS-OUTCOME-V1-003",
