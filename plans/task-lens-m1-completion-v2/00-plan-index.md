@@ -2,7 +2,7 @@
 
 **Plan mode**: `PLAN_SET`
 **ID**: `TASK-LENS-M1-COMPLETION-V2-PLANSET-20260806`
-**Status**: `DRAFT`（草稿/待审批；不写"已完成"或"READY-FOR-IMPLEMENTATION"）
+**Status**: `DRAFT`（草稿/待审批；gen2 chain 双端 PASS 已达成：run-result-v2 13/13 case PASS + validator `ok:true`/lifecycle ACTIVE/errors[]；INDEX 同步 BLK-V2-001 待独立 session，故仍不写"已完成"/DONE）
 **Plan category**: 产品实施 plan（successor of `plans/task-lens-m1/`，不是 generation 2 outcome receipts）
 **Progression schema**: `phase-progression/v1`
 **Execution order**: 严格遵循 PHASE-05 → PHASE-06 → PHASE-07；任一 gate 失败即停止。
@@ -53,6 +53,24 @@ gen2 文件置于 `plans/task-lens-outcome-v1/` 同目录（validator 单目录�
 | `plans/task-lens-outcome-v1/ledger/event-004-v2-run-recorded.json` | sequence=4、event_type=RUN_RECORDED、previous_event=event-003 | 不创建 |
 | `plans/task-lens-outcome-v1/runs/{env,out,err,receipt}/` | WSL native FS + Windows Git Bash 双端 evidence root；case 独立 receipt | 不创建 |
 | `plans/task-lens-outcome-v1/runs/outcome-run-result-v2.json` | gen2 verdict（每个 REQ 两个固定 case：WSL case + Git Bash case，汇总到单一 canonical run-result） | 不创建 |
+
+### 0.3.1 generation 2 outcome chain 实际落盘（回填；原 §0.3 列 "不创建" 现已落地）
+
+gen2 文件已落盘到 `plans/task-lens-outcome-v1/` 同目录（与 v1 frozen 共存；validator 单目录调用）。SHA256 为文件原始字节哈希（validator 内部对 run-result-v2 做 CRLF→LF 归一化后比对，event-004.run_ref 已同步为该归一化哈希 `5a2a1075…`）。
+
+| 路径 | 角色 | 实际状态 | SHA256（前 16） |
+|---|---|---|---|
+| `plans/task-lens-outcome-v1/outcome-contract-v2.json` | gen=2 contract，`supersedes` v1 SHA `8009501276…` | 已落盘 | `ecf48f8ab2a3ed00` |
+| `plans/task-lens-outcome-v1/acceptance-spec-v2.json` | REQ-011v2/012v2/013v2/014v2/REQ-CROSS-ENV + oracle O-002 | 已落盘 | `c72eab2e047a8782` |
+| `plans/task-lens-outcome-v1/outcome-test-bundle-v2.json` | tests SHA 绑定（冻结双端 runner/oracle） | 已落盘 | `dddca6c79d7c23b5` |
+| `plans/task-lens-outcome-v1/outcome-amendment-v2.json` | from_contract=v1 → to_contract=gen2，change_class=NORMAL | 已落盘 | `16174587f06817e9` |
+| `plans/task-lens-outcome-v1/outcome-approval-v2.json` | actor=HUMAN/ChoGeer，trust_domain=human-primary | 已落盘 | `847a69c145ea875a` |
+| `plans/task-lens-outcome-v1/ledger/event-003-v2-contract-superseded.json` | sequence=3，CONTRACT_SUPERSEDED，previous_event=hash-only ref v1 event-002 | 已落盘 | `ee7cf244f30b83e3` |
+| `plans/task-lens-outcome-v1/ledger/event-004-run-recorded.json` | sequence=4，RUN_RECORDED，run_ref=run-result-v2（`5a2a1075…`） | 已落盘 | `72d60eba0c9a6c64` |
+| `plans/task-lens-outcome-v1/runs/{env,out,err,receipt}/` | 双端 evidence root；receipt 含 `environment` 字段 | 已落盘 | n/a |
+| `plans/task-lens-outcome-v1/runs/outcome-run-result-v2.json` | gen2 verdict：13/13 case PASS（含 `-WSL`/`-GITBASH` 双端 case） | 已落盘 | `5a2a1075fc6e06f8` |
+
+**Validator result（已复验，`bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repository-root $(pwd)`）**：`{"ok":true,"mode":"structural","validation_kind":"review-separated","lifecycle":"ACTIVE","errors":[]}`。structural-only，不证明真实执行（review-separated）。
 
 ### 0.4 禁止项
 
@@ -137,8 +155,11 @@ gen2 文件置于 `plans/task-lens-outcome-v1/` 同目录（validator 单目录�
 
 ### 2.4 Open / blocking items
 
-- **BLK-V2-001**：INDEX sync deferred（v2 蓝图审批后由独立 session 处理）。
-- **BLK-V2-002**：gen2 outcome 目录骨架本轮不创建（待 v2 蓝图审批 + contract 草稿 human-approved）；gen2 文件落盘到 `plans/task-lens-outcome-v1/` 同目录。
+- **BLK-V2-001**：INDEX sync deferred → **已进入可交接状态（handoff ready）**。gen2 chain 已落盘且 validator `ok:true`（run-result-v2 13/13 case PASS）；dual-end PASS 已达成。待独立 session 执行（本轮不修改 `blueprints/INDEX.md`/`documents/INDEX.md`）：
+  1. `blueprints/INDEX.md` 活跃段添加 v2 蓝图条目（status: 草稿 → 待审批 → 已完成/已退役）；
+  2. `documents/INDEX.md` 添加 `plans/task-lens-m1-completion-v2/00-plan-index.md` 路由条目。
+  完成后 v2 plan 方可标 `DONE`（状态机 §7：ACCEPTED 需 INDEX 同步）。Handoff 记录见 `handoff/` 或本目录追加 note。
+- **BLK-V2-002**：gen2 outcome 目录骨架**已落盘**（原 blocker 解除）。gen2 文件落盘到 `plans/task-lens-outcome-v1/` 同目录，SHA 见 §0.3.1；validator `ok:true`。
 
 ### 2.5 Negative evidence semantics
 
@@ -218,10 +239,10 @@ v2 蓝图审批通过后，INDEX 同步需独立 session：
 
 | Order | Phase ID | File | Depends on | Status |
 |---:|---|---|---|---|
-| 1 | PHASE-05-v2 | `05-phase-metrics-feedback.md` | frozen PHASE-04 ACCEPTED | NOT_STARTED |
-| 2 | PHASE-06-v2 | `06-phase-integration-zero-write.md` | PHASE-05-v2 ACCEPTED | BLOCKED |
-| 3 | PHASE-07-v2 | `07-phase-acceptance-closure.md` | PHASE-06-v2 ACCEPTED | BLOCKED |
-| 4 | FINAL-v2 | `99-final-verification.md` | PHASE-07-v2 ACCEPTED | BLOCKED |
+| 1 | PHASE-05-v2 | `05-phase-metrics-feedback.md` | frozen PHASE-04 ACCEPTED | ACCEPTED (dual-end PASS recorded via gen2 run-result-v2; INDEX sync BLK-V2-001 pending) |
+| 2 | PHASE-06-v2 | `06-phase-integration-zero-write.md` | PHASE-05-v2 ACCEPTED | ACCEPTED (dual-end PASS recorded via gen2 run-result-v2; INDEX sync BLK-V2-001 pending) |
+| 3 | PHASE-07-v2 | `07-phase-acceptance-closure.md` | PHASE-06-v2 ACCEPTED | ACCEPTED (dual-end PASS recorded via gen2 run-result-v2; INDEX sync BLK-V2-001 pending) |
+| 4 | FINAL-v2 | `99-final-verification.md` | PHASE-07-v2 ACCEPTED | ACCEPTED (dual-end PASS recorded + gen2 validator ok:true; INDEX sync BLK-V2-001 pending → plan not DONE) |
 
 ### 6.1 阶段依赖与停止条件
 

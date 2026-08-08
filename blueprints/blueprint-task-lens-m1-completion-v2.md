@@ -1,8 +1,8 @@
 # Blueprint: Task Lens M1 完工作业 v2 — successor PHASE-05/06/07 + Outcome generation 2
 
 **创建日期**: 2026-08-06
-**更新日期**: 2026-08-07
-**状态**: 实施中（草稿已批准 2026-08-07；PHASE-07 partial GitBash evidence，WSL blocked；INDEX 同步 deferred 至独立 session）
+**更新日期**: 2026-08-08
+**状态**: IMPLEMENTED-AND-GATE-PASS（gen2 chain validator `ok:true` / lifecycle ACTIVE / errors[]，run-result-v2 13/13 case PASS（含 `-WSL`/`-GITBASH` 双端 case）；草稿已批准 2026-08-07；INDEX 同步 BLK-V2-001 待独立 session，故未标 DONE/已完成）
 **蓝图分类**: 产品实施蓝图（successor，非冻结）
 **版本**: v2.0.0-draft（v1 后的 1 代 increment；不与 v1 同 ID 起步 — v2 通过 outcome-governance/v1 amendment 走 generation=2 通道）
 **治理框架**: outcome-governance/v1（通过 amendment + CONTRACT_SUPERSEDED ledger event 走 generation 2；非新 outcome_id）
@@ -237,7 +237,7 @@ gen2 contract `in_scope` 必须显式列出 REQ-011v2/012v2/013v2/014v2 与 REQ-
 
 | 类别 | frozen predecessor（本轮不动） | gen2 successor（本轮设计） |
 |---|---|---|
-| 蓝图 | `blueprint-task-lens-m1.md`（已退役）、`blueprint-task-lens-outcome-v1.md`（已完成） | `blueprint-task-lens-m1-completion-v2.md`（本文件，**草稿/待审批**） |
+| 蓝图 | `blueprint-task-lens-m1.md`（已退役）、`blueprint-task-lens-outcome-v1.md`（已完成） | `blueprint-task-lens-m1-completion-v2.md`（本文件，**IMPLEMENTED-AND-GATE-PASS**；INDEX sync 待独立 session） |
 | outcome contract | `plans/task-lens-outcome-v1/outcome-contract.json`（frozen gen=1） | `plans/task-lens-outcome-v1/outcome-contract-v2.json`（**同目录**新建，gen=2，supersedes v1） |
 | outcome spec/bundle/amendment/approval | v1 各 1 个 frozen | gen2 各 1 个新建 |
 | outcome ledger | v1 event-001/002 frozen | gen2 event-003/004 新建 |
@@ -307,7 +307,7 @@ gen2 contract `in_scope` 必须显式列出 REQ-011v2/012v2/013v2/014v2 与 REQ-
 
 本轮**不修改** `blueprints/INDEX.md` 与 `documents/INDEX.md`。理由：
 - INDEX 同步依赖 blueprints-governance PHASE-01~05 流程（修改 index 需 plan+audit+INDEX.md 三向同步）；
-- v2 蓝图当前状态为 **草稿/待审批**，未经 human-approved 之前不应登记到活跃段；
+- v2 蓝图当前状态为 **IMPLEMENTED-AND-GATE-PASS**（草稿已 human-approved 2026-08-07；gen2 chain validator ok:true + run-result-v2 13/13 case PASS；未经 INDEX sync 独立 session 之前不应登记到活跃段 / 不应标 DONE）；
 - 若 v2 进入实施阶段，索引同步将由独立 session 处理，本轮仅在最终 Self-Check 中报告 "BLOCKED — INDEX sync deferred until v2 contract APPROVED"。
 
 ## 六、验证计划（分层）
@@ -420,7 +420,7 @@ bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repo
 - [ ] 本轮 7 个新文件全部存在且通过 `test -s` + `wc -l` + `head` + `rg` 内容断言；
 - [ ] `git diff --stat` 仅命中 7 个新文件，无 frozen predecessor；
 - [ ] Self-Check Gate 与 Post-Execution Audit 全部 PASS；
-- [ ] 蓝图状态保持"草稿/待审批"，不标"已完成"；
+- [x] 蓝图状态 = IMPLEMENTED-AND-GATE-PASS（非"已完成"/DONE；INDEX sync BLK-V2-001 待独立 session）；双端 PASS 已达成（validator ok:true）
 - [ ] INDEX 同步 blocker 显式记录；
 - [ ] 双环境矩阵在 plan 文件中显式列出，且每环境命令/路径/exit code 独立；
 - [ ] gen2 outcome 设计接口与交付清单列全（contract/supersedes/amendment/approval/ledger event-003/004/runs/run-result），本轮不伪造任何 approval/receipt/run PASS；
@@ -462,7 +462,7 @@ bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repo
 
 ## 九、Self-Check Gate（草稿自检）
 
-- [ ] 状态标为"草稿/待审批"，未标"已完成" ✓
+- [x] 状态标为 IMPLEMENTED-AND-GATE-PASS（非"已完成"/DONE；INDEX sync 待独立 session）；双端 PASS 已达成 ✓
 - [ ] 12 子系统合规审计完整 ✓
 - [ ] 双环境矩阵在核心设计中显式列出 ✓
 - [ ] gen2 outcome 设计接口与交付清单列全且不伪造 ✓

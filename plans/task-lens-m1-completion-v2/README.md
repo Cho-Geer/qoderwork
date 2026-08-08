@@ -95,6 +95,6 @@ Git Bash mkdir 路径契约：`mkdir -p "$LOCALAPPDATA/qoderwork/task-lens/..."`
 - [x] 目录目的 + frozen-predecessor + INDEX blocker 声明完整
 - [x] 双端 evidence root 表 + gen2 chain 摘要 + 命令契约完整
 - [x] plan-vs-outcome 区分 + status-split disposition 完整
-- [ ] 实施后回填 6 行 evidence root 实际路径
-- [ ] 双端 PASS 后回填 2 行 actual verdict
-- [ ] gen2 落盘后回填 contract/bundle SHA
+- [x] 实施后回填 6 行 evidence root 实际路径（WSL: `${HOME}/.local/state/qoderwork/task-lens/{m1-validation/PHASE-05-v2,m1-validation/PHASE-06-v2,m1-acceptance}`；Git Bash: `%LOCALAPPDATA%\qoderwork\task-lens\{...}`；gen2 证据 root: `plans/task-lens-outcome-v1/runs/{env,out,err,receipt}/`，receipt 含 `environment` 字段区分 wsl/gitbash）
+- [x] 双端 PASS 后回填 2 行 actual verdict（WSL case verdict: PASS；Git Bash case verdict: PASS；run-result-v2 13/13 case_results 全 PASS；case_id 含 `-WSL`/`-GITBASH` 后缀；validator `ok:true`）
+- [x] gen2 落盘后回填 contract/bundle SHA（contract-v2: `ecf48f8a…`；acceptance-spec-v2: `c72eab2e…`；test-bundle-v2: `dddca6c79…`；approval-v2: `847a69c1…`；run-result-v2: `5a2a1075…`；ledger event-003: `ee7cf244…`；event-004: `72d60eba…`）
