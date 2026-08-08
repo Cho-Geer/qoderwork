@@ -380,7 +380,6 @@ export async function readCoverage(
     unverified.push("COVERAGE_UNALIGNED");
     checks.push("COVERAGE_PROOF_UNVERIFIED");
     // Set exit code consideration per plan
-    process.exitCode = 2;
     return {
       observations,
       unverified,
@@ -401,7 +400,6 @@ export async function readCoverage(
       unverified.push(companionResult.reason);
     }
     unverified.push("COVERAGE_UNALIGNED");
-    process.exitCode = 2;
     return {
       observations,
       unverified,
@@ -417,7 +415,6 @@ export async function readCoverage(
     }
     unverified.push("COVERAGE_HASH_MISMATCH");
     unverified.push("COVERAGE_UNALIGNED");
-    process.exitCode = 2;
     return {
       observations,
       unverified,

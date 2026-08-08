@@ -17,8 +17,8 @@
   "exit_code": 0,
   "signal": null,
   "timed_out": false,
-  "execution_status": "PASS",
-  "oracle_observation": "Dual-end closure test covers ten unique pairs and TL-C-401 through TL-C-409; WSL execution evidence pending.",
+  "execution_status": "BLOCKED",
+  "oracle_observation": "WSL environment not executed in PHASE-07 session; PHASE-08 will collect independent WSL evidence. GitBash receipt is reference-only.",
   "stdout": { "path": "runs/out/case-001.txt", "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6" },
   "stderr": { "path": "runs/err/case-001.txt", "sha256": "cee9a52b660e46f3dbe008fe6a22c4043fd0547dbc0daf404b0504217f6bd792" },
   "runner": { "principal_id": "HUMAN:ChoGeer-via-main-session", "trust_domain": "agent-dispatch" }

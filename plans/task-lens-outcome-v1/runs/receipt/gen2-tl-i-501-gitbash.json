@@ -18,8 +18,8 @@
   "signal": null,
   "timed_out": false,
   "execution_status": "PASS",
-  "oracle_observation": "Existing integration.test.ts passed in the PHASE-06 baseline; current closure rerun required before ACCEPT.",
-  "stdout": { "path": "runs/out/case-002.txt", "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6" },
-  "stderr": { "path": "runs/err/case-002.txt", "sha256": "5743ceae1bd0be9d63a76e633df22fc6a62160cabe0ced28487553b44b86a3c4" },
+  "oracle_observation": "GitBash real capture: bun test integration.test.ts with TASK_LENS_ENV=gitbash; argv matches captured stderr.",
+  "stdout": { "path": "runs/out/gen2-tl-i-501-gitbash.txt", "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6" },
+  "stderr": { "path": "runs/err/gen2-tl-i-501-gitbash.txt", "sha256": "d4c59fed95f7ae3e7a22340eafec9927095068d5a8a3341ae41d9b0e0b856ede" },
   "runner": { "principal_id": "HUMAN:ChoGeer-via-main-session", "trust_domain": "agent-dispatch" }
 }

@@ -18,8 +18,8 @@
   "signal": null,
   "timed_out": false,
   "execution_status": "PASS",
-  "oracle_observation": "Canonical dual-case rule: one endpoint failure must derive overall FAIL; validator execution is pending final artifact closure.",
-  "stdout": { "path": "runs/out/case-002.txt", "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6" },
-  "stderr": { "path": "runs/err/case-002.txt", "sha256": "5743ceae1bd0be9d63a76e633df22fc6a62160cabe0ced28487553b44b86a3c4" },
+  "oracle_observation": "GitBash real capture: bun run validate-outcome-governance.ts; stdout captured validator JSON ({\"ok\":true,...errors:[]} after fixes applied); stderr genuinely empty (validator writes only to stdout).",
+  "stdout": { "path": "runs/out/gen2-tl-x-001.txt", "sha256": "32d668252bf8eb4ac3ad0c628ae3735df6ce73ca7d2f845caf1bd6740e5f08ce" },
+  "stderr": { "path": "runs/err/gen2-tl-x-001.txt", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
   "runner": { "principal_id": "HUMAN:ChoGeer-via-main-session", "trust_domain": "agent-dispatch" }
 }

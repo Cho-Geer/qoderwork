@@ -1,0 +1,19 @@
+
+scripts\task-lens\__tests__\closure.test.ts:
+(pass) PHASE-07 closure dual-end acceptance > 10 unique pairs dual-end (WSL + Git Bash), at least 7/10 useful+reduced on each end [549.64ms]
+(pass) PHASE-07 closure dual-end acceptance > TL-C-401 single-failure matrix: truncated JSONL is unavailable on both ends [49.05ms]
+(pass) PHASE-07 closure dual-end acceptance > TL-C-402 single-failure matrix: pre-created lock times out [5063.44ms]
+(pass) PHASE-07 closure dual-end acceptance > TL-C-403 single-failure matrix: altered artifact hash blocks recovery [51.57ms]
+(pass) PHASE-07 closure dual-end acceptance > TL-C-404 single-failure matrix: guided issues greater than found is rejected [49.47ms]
+(pass) PHASE-07 closure dual-end acceptance > TL-C-405 single-failure matrix: duplicate feedback is rejected [89.86ms]
+(pass) PHASE-07 closure dual-end acceptance > TL-C-406 single-failure matrix: 7/10 becomes 6/10 after one useful mutation [658.39ms]
+(pass) PHASE-07 closure dual-end acceptance > TL-C-407 single-failure matrix: append EACCES is N/A-EXPLAINED on Windows Git Bash [0.19ms]
+(pass) PHASE-07 closure dual-end acceptance > TL-C-408 single-failure matrix: feedback without generated event is rejected [40.09ms]
+(pass) PHASE-07 closure dual-end acceptance > TL-C-409 single-failure matrix: one failed end makes the dual-case verdict FAIL [0.34ms]
+(pass) PHASE-07 closure dual-end acceptance > closure fixtures leave no metrics lock behind [33.85ms]
+
+ 11 pass
+ 0 fail
+ 49 expect() calls
+Ran 11 tests across 1 file. [6.62s]
+$ tsc --noEmit --pretty false

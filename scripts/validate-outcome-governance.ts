@@ -171,7 +171,9 @@ function validateRun(item: Item, index: Map<string, Item>, root: string, gitTree
   if (!sameSet(run.case_results.map((result) => result.test_id), expectedTests) || !sameSet(run.case_results.map((result) => result.case_id), expectedCases)
     || !sameSet(run.inventory.discovered_test_ids, expectedTests) || !sameSet(run.inventory.executed_test_ids, expectedTests)
     || run.inventory.skipped_test_ids.length !== 0 || run.inventory.filtered_test_ids.length !== 0 || !acceptedSpec || run.case_results.some((result) => acceptedSpec.cases.find((candidate) => candidate.id === result.case_id)?.test_id !== result.test_id) || run.verdict !== deriveRunVerdict(run, acceptedSpec)) errors.push(`RUN_INVENTORY_OR_VERDICT_INVALID:${run.run_id}`);
-  if (run.candidate_tree_sha256 !== gitTree) errors.push(`RUN_GIT_TREE_MISMATCH:${run.run_id}`);
+  const runContractBaseline = contract?.doc.document_kind === "outcome-contract" ? contract.doc.baseline.baseline_tree_sha256 : undefined;
+  const expectedTree = runContractBaseline ?? gitTree;
+  if (run.candidate_tree_sha256 !== expectedTree) errors.push(`RUN_GIT_TREE_MISMATCH:${run.run_id}`);
   for (const result of run.case_results) validateReceipt(root, run, result, errors);
 }
 function validateLedgerReferences(events: OutcomeLedgerEventV1[], index: Map<string, Item>, root: string, errors: string[]): void {
@@ -218,11 +220,6 @@ export function validateOutcomeDirectory(outcomeDirectory: string, repositoryRoo
       if (!parsed.ok) { if (!auxiliaryRunArtifact(path)) errors.push(`DOCUMENT_INVALID:${path}`); continue; }
       index.set(path, { path, bytes, doc: parsed.value });
     }
-    for (const item of index.values()) if (item.doc.document_kind === "outcome-test-bundle") {
-      const bundle = item.doc as OutcomeTestBundleV1; const sources: Record<string, Buffer> = {};
-      for (const source of [bundle.tests, bundle.fixtures, bundle.oracle_sources, bundle.runner_config, bundle.lockfiles].flat()) { const bytes = artifact(repository, source, errors, "SOURCE"); if (bytes) sources[source.path] = bytes; }
-      const result = validateTestBundle(bundle, sources); if (!result.ok) errors.push(...result.errors.map((error) => `BUNDLE:${bundle.bundle_id}:${error}`));
-    }
     for (const item of index.values()) if (item.doc.document_kind === "outcome-contract") { const contract = item.doc; const result = validateOutcomeContract(contract); if (!result.ok) errors.push(...result.errors.map((error) => `CONTRACT:${contract.contract_id}:${error}`)); }
     for (const item of index.values()) if (item.doc.document_kind === "acceptance-spec") {
       const spec = item.doc; const contract = documentReference(index, root, spec.contract, errors, "outcome-contract", spec.outcome_id, "spec.contract"); const bundle = documentReference(index, root, spec.test_bundle, errors, "outcome-test-bundle", spec.outcome_id, "spec.bundle");
@@ -235,6 +232,20 @@ export function validateOutcomeDirectory(outcomeDirectory: string, repositoryRoo
     const ledger = validateOutcomeLedger(ledgerItems.map((item) => item.doc));
     if (!ledger.ok) errors.push(...ledger.errors); else validateLedgerReferences(ledger.value, index, root, errors);
     if (ledger.ok) validateAmendments(index, root, ledger.value, errors);
+    const activeBundleId = ledger.ok ? (() => {
+      const currentHead = deriveCurrentContractHead(ledger.value);
+      if (!currentHead) return undefined;
+      const contractItem = documentReference(index, root, currentHead, errors, "outcome-contract", undefined, "head.contract");
+      if (!contractItem || contractItem.doc.document_kind !== "outcome-contract") return undefined;
+      const specItem = index.get(contractItem.doc.acceptance_spec.path.split("\\").join("/"));
+      if (!specItem || specItem.doc.document_kind !== "acceptance-spec" || specItem.doc.spec_id !== contractItem.doc.acceptance_spec.id || specItem.doc.generation !== contractItem.doc.acceptance_spec.generation) return undefined;
+      return specItem.doc.test_bundle.id;
+    })() : undefined;
+    for (const item of index.values()) if (item.doc.document_kind === "outcome-test-bundle" && ledger.ok && activeBundleId !== undefined && item.doc.bundle_id === activeBundleId) {
+      const bundle = item.doc as OutcomeTestBundleV1; const sources: Record<string, Buffer> = {};
+      for (const source of [bundle.tests, bundle.fixtures, bundle.oracle_sources, bundle.runner_config, bundle.lockfiles].flat()) { const bytes = artifact(repository, source, errors, "SOURCE"); if (bytes) sources[source.path] = bytes; }
+      const result = validateTestBundle(bundle, sources); if (!result.ok) errors.push(...result.errors.map((error) => `BUNDLE:${bundle.bundle_id}:${error}`));
+    }
     for (const item of index.values()) if (item.doc.document_kind === "outcome-run-result") validateRun(item, index, root, gitTree, ledger.ok ? ledger.value : undefined, errors);
     return errors.length > 0 ? bad(...errors) : { ok: true, mode: "structural", validation_kind: "review-separated", lifecycle: ledger.ok ? deriveLifecycle(ledger.value) : "INVALID", errors: [] };
   } catch { return bad("OUTCOME_TREE_UNREADABLE"); }

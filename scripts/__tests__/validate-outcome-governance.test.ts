@@ -62,11 +62,44 @@ function supersededFixture() {
   json(join(f.outcome, "ledger/3.json"), { schema_version: "outcome-governance/v1", document_kind: "outcome-ledger-event", event_id: "event-3", sequence: 3, recorded_at: "2026-08-02T00:03:00Z", outcome_id: "out-1", event_type: "CONTRACT_SUPERSEDED", approval_anchor: ref("approval-2", "approval-2.json", 2, approval2Out.bytes), contract_ref: ref("contract-2", "contract-2.json", 2, contract2Out.bytes), amendment_ref: ref("amendment-2", "amendment-2.json", 2, amendmentOut.bytes), run_ref: null, previous_event: ref("event-2", "ledger/2.json", 2, ledger2Out.bytes) });
   return { ...f, paths: { ...f.paths, ledger2: join(f.outcome, "ledger/2.json"), ledger3: join(f.outcome, "ledger/3.json") } };
 }
+
+function supersededBundleDriftFixture() {
+  const f = supersededFixture();
+  const source = "mutated\n";
+  writeFileSync(f.paths.source, source);
+  const bundlePath = join(f.outcome, "bundle-2.json");
+  const bundle2 = JSON.parse(readFileSync(bundlePath, "utf8"));
+  const predecessorSourceSha = bundle2.tests.find((item: { path: string }) => item.path === "src/test.ts").sha256;
+  bundle2.tests = bundle2.tests.map((item: { path: string; sha256: string }) => item.path === "src/test.ts" ? { ...item, sha256: sha(source) } : item);
+  const bundle2Out = json(bundlePath, bundle2);
+  const specPath = join(f.outcome, "spec-2.json");
+  const spec2 = JSON.parse(readFileSync(specPath, "utf8"));
+  spec2.test_bundle = ref("bundle-2", "bundle-2.json", 2, bundle2Out.bytes);
+  const spec2Out = json(specPath, spec2);
+  const amendmentPath = join(f.outcome, "amendment-2.json");
+  const amendment = JSON.parse(readFileSync(amendmentPath, "utf8"));
+  amendment.frozen_diff.test_bundle_changed_fields = ["tests"];
+  amendment.frozen_diff.test_bundle_source_changes = [{ path: "src/test.ts", from_sha256: predecessorSourceSha, to_sha256: sha(source) }];
+  const amendmentOut = json(amendmentPath, amendment);
+  const approvalPath = join(f.outcome, "approval-2.json");
+  const approval2 = JSON.parse(readFileSync(approvalPath, "utf8"));
+  approval2.acceptance_spec = ref("spec-2", "spec-2.json", 2, spec2Out.bytes);
+  approval2.test_bundle = ref("bundle-2", "bundle-2.json", 2, bundle2Out.bytes);
+  approval2.amendment = ref("amendment-2", "amendment-2.json", 2, amendmentOut.bytes);
+  const approval2Out = json(approvalPath, approval2);
+  const ledger3Path = f.paths.ledger3;
+  const ledger3 = JSON.parse(readFileSync(ledger3Path, "utf8"));
+  ledger3.approval_anchor = ref("approval-2", "approval-2.json", 2, approval2Out.bytes);
+  json(ledger3Path, ledger3);
+  return f;
+}
 afterEach(() => { while (roots.length) rmSync(roots.pop()!, { recursive: true, force: true }); });
 
 describe("validate outcome governance v2", () => {
   test("validates complete raw fixture structurally, never as admission", () => { const f = fixture(); expect(validateOutcomeDirectory(f.outcome, f.repo)).toEqual({ ok: true, mode: "structural", validation_kind: "review-separated", lifecycle: "ACTIVE", errors: [] }); });
   test("keeps a historical FAIL run while superseding to a distinct new approval and active head", () => { const f = supersededFixture(); expect(validateOutcomeDirectory(f.outcome, f.repo)).toEqual({ ok: true, mode: "structural", validation_kind: "review-separated", lifecycle: "ACTIVE", errors: [] }); });
+  test("accepts superseded v1 bundle drift recorded by the amendment", () => { const f = supersededBundleDriftFixture(); const r = validateOutcomeDirectory(f.outcome, f.repo); expect(r.errors.some((x) => x.includes("SOURCE_HASH_MISMATCH") || x.includes("BUNDLE:TASK-LENS-TEST-BUNDLE-V1"))).toBe(false); });
+  test("rejects a candidate tree that differs from its contract baseline", () => { const f = fixture(); const run = JSON.parse(readFileSync(f.paths.run, "utf8")); run.candidate_tree_sha256 = "0".repeat(40); json(f.paths.run, run); const r = validateOutcomeDirectory(f.outcome, f.repo); expect(r.errors).toContain("RUN_GIT_TREE_MISMATCH:run-1"); });
   test("rejects reusing the predecessor approval for a supersede event", () => { const f = supersededFixture(); const event = JSON.parse(readFileSync(f.paths.ledger3, "utf8")); event.approval_anchor = JSON.parse(readFileSync(f.paths.ledger2, "utf8")).approval_anchor; json(f.paths.ledger3, event); const r = validateOutcomeDirectory(f.outcome, f.repo); expect(r.ok).toBe(false); expect(r.errors).toContain("LEDGER_SUPERSESSION_BINDING_INVALID:event-3"); });
   test("detects independent candidate tree and immutable bundle source drift", () => { const f = fixture(); writeFileSync(f.paths.source, "mutated\n"); const r = validateOutcomeDirectory(f.outcome, f.repo); expect(r.ok).toBe(false); expect(r.errors.some((x) => x.startsWith("SOURCE_HASH_MISMATCH"))).toBe(true); });
   test("rejects malformed run JSON instead of skipping it", () => { const f = fixture(); writeFileSync(f.paths.run, "{broken"); const r = validateOutcomeDirectory(f.outcome, f.repo); expect(r.ok).toBe(false); expect(r.errors).toContain("JSON_INVALID:runs/run.json"); });

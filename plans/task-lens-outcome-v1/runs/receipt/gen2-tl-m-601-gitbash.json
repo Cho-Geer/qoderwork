@@ -18,8 +18,8 @@
   "signal": null,
   "timed_out": false,
   "execution_status": "PASS",
-  "oracle_observation": "Windows Git Bash closure test passed; typecheck exit 0 required and independently captured.",
-  "stdout": { "path": "runs/out/case-004.txt", "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6" },
-  "stderr": { "path": "runs/err/case-004.txt", "sha256": "318c7a94de55aff8d12314faf9ca257542a311dd03acd948991dd84f07d526b9" },
+  "oracle_observation": "GitBash real capture: bun test closure.test.ts (typecheck captured separately); argv matches captured stderr.",
+  "stdout": { "path": "runs/out/gen2-tl-m-601-gitbash.txt", "sha256": "d6684989b8dd63b37d2f1954270826fbe1bd89a8debd12bcacf03ed1c6140ef6" },
+  "stderr": { "path": "runs/err/gen2-tl-m-601-gitbash.txt", "sha256": "40b12e777d9acd10547774a5f58bbcc7b2333cbb03e219332d8af0ce0d9cd35c" },
   "runner": { "principal_id": "HUMAN:ChoGeer-via-main-session", "trust_domain": "agent-dispatch" }
 }

@@ -1,0 +1,29 @@
+
+scripts\task-lens\__tests__\integration.test.ts:
+(pass) TL-INT-WT-v2 fixture working-tree repo > all-pass: staged+unstaged+untracked+rename+function-add complete fixture runs full CLI [611.62ms]
+(pass) TL-INT-WT-v2 fixture working-tree repo > TL-I-501 mutation: remove untracked node -> fixture artifacts still resolve, but untracked count drops [767.97ms]
+(pass) TL-INT-COMMIT-v2 fixture commit repo > all-pass: two-commit clean tree, deterministic base/head; re-run yields equal canonical hash [871.17ms]
+(pass) TL-INT-COMMIT-v2 fixture commit repo > TL-I-502 mutation: dirty commit (uncommitted file) -> exit 10 [502.70ms]
+(pass) TL-INT-DELETED-v2 delete-only fixture > all-pass: pure-delete yields DeletedRegion + exit 2 [685.57ms]
+(pass) TL-INT-DELETED-v2 delete-only fixture > TL-I-503 mutation: inject fake live seed on delete-only run still yields exit 2 + DeletedRegion [623.49ms]
+(pass) TL-INT-COVERAGE-v2 coverage + provider fixture > WSL only: aligned + unaligned coverage yields three-state observations [0.40ms]
+(pass) TL-INT-COVERAGE-v2 coverage + provider fixture > Git Bash N/A-EXPLAINED: coverage check is marked N/A-EXPLAINED on this env [0.10ms]
+(pass) TL-INT-COVERAGE-v2 coverage + provider fixture > TL-I-504 WSL only: aligned lcov with companion targetHeadSha mutated -> exit 2/unknown [0.12ms]
+(pass) TL-INT-SAFETY-v2 safety negative paths > all-pass: --project outside-out -> exit 10 (project dir sanity) [135.90ms]
+(pass) TL-INT-SAFETY-v2 safety negative paths > all-pass: --out inside project -> exit 10 [305.28ms]
+(pass) TL-INT-SAFETY-v2 safety negative paths > all-pass: existing artifact dir -> exit 21 (TL-CONFLICT) [733.19ms]
+(pass) TL-INT-SAFETY-v2 safety negative paths > all-pass: dual-provider fail -> exit 12 (provider unavailable) [426.79ms]
+(pass) TL-INT-SAFETY-v2 safety negative paths > TL-I-505: external out with symlink into project -> exit 10/no final [304.96ms]
+(pass) TL-WORK-ONE-v2 + TL-QODERWORK-v2 + TL-ZERO-WRITE-v2 dual real-target cases > TL-WORK-ONE-v2: real-target invocation produces valid current run receipt with writeState=NOT_FOUND [2531.49ms]
+(pass) TL-WORK-ONE-v2 + TL-QODERWORK-v2 + TL-ZERO-WRITE-v2 dual real-target cases > TL-QODERWORK-v2: real-target invocation produces valid current run receipt with writeState=NOT_FOUND [2539.06ms]
+(pass) TL-WORK-ONE-v2 + TL-QODERWORK-v2 + TL-ZERO-WRITE-v2 dual real-target cases > TL-ZERO-WRITE-v2: writeState=NOT_FOUND for both real targets (no writes) [5050.96ms]
+(pass) TL-WORK-ONE-v2 + TL-QODERWORK-v2 + TL-ZERO-WRITE-v2 dual real-target cases > TL-I-506 sensitive reverse case: write a sentinel file in fixture (would FAIL TL-ZERO-WRITE-v2) [636.56ms]
+(pass) TL-WORK-ONE-v2 + TL-QODERWORK-v2 + TL-ZERO-WRITE-v2 dual real-target cases > TL-I-507 sensitive reverse case: unreadable file in fixture → snapshot UNAVAILABLE [324.15ms]
+(pass) TL-WORK-ONE-v2 + TL-QODERWORK-v2 + TL-ZERO-WRITE-v2 dual real-target cases > TL-I-509 cross-env: dual cases per REQ — one FAIL + one OK injected → overall FAIL [1265.89ms]
+(pass) TL-MANUAL-CARD-v2 manual card review placeholders > all-pass: five-section card is readable; placeholder for human verdict is PENDING_HUMAN_REVIEW [2587.65ms]
+(pass) TL-MANUAL-CARD-v2 manual card review placeholders > TL-I-508 mutation: remove card heading in copy → review FAIL [2534.39ms]
+
+ 22 pass
+ 0 fail
+ 61 expect() calls
+Ran 22 tests across 1 file. [23.48s]
