@@ -6,7 +6,7 @@
 // metrics module. Exit precedence: 21 > 20 > 12 > 10 > 13 > 2 > 1.
 
 import fs from "node:fs";
-import path from "node:path";
+import { isAbsolute } from "node:path";
 import {
   type CliRequest,
   type Clock,
@@ -207,8 +207,8 @@ function parseMetrics(tokens: string[]): MetricsRequest {
   } as MetricsRequest;
 }
 
-function isAbsolutePath(p: string): boolean {
-  return p.startsWith("/");
+export function isAbsolutePath(p: string): boolean {
+  return isAbsolute(p);
 }
 
 function parseBool(v: string, label: string): boolean {
