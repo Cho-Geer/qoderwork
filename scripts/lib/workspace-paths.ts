@@ -52,7 +52,10 @@ const LOCAL_PATHS_TOOL_KEYS = new Set(["bunBin", "codegraphBin"]);
 
 export class WorkspacePathsError extends Error {
   constructor(public readonly code: string, message: string) {
-    super(message);
+    // Prefix the machine-readable code into the message so callers that only
+    // inspect `message` (e.g. cross-platform test assertions) can still match
+    // it; `code` remains available as a structured property.
+    super(`${code}: ${message}`);
     this.name = "WorkspacePathsError";
   }
 }

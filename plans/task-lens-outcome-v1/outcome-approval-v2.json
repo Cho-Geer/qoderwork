@@ -8,25 +8,25 @@
     "id": "TASK-LENS-OUTCOME-CONTRACT-V2",
     "path": "outcome-contract-v2.json",
     "generation": 2,
-    "sha256": "8445729975c37c0a0ac82a61e173d6b7f05440b838c160b590b91c732f36c001"
+    "sha256": "ecf48f8ab2a3ed0068161a039ef6f73fb105947ca11af1c6505049f641d3219a"
   },
   "acceptance_spec": {
     "id": "TASK-LENS-ACCEPTANCE-SPEC-V2",
     "path": "acceptance-spec-v2.json",
     "generation": 2,
-    "sha256": "164f6a604f5afa3bb6c80a3e93e9fa495f536577f2a4f287bd0d77ea96a25b6a"
+    "sha256": "c72eab2e047a87821d8b31bc6ed80f660582ead21c22d9febd195141e98c57da"
   },
   "test_bundle": {
     "id": "TASK-LENS-TEST-BUNDLE-V2",
     "path": "outcome-test-bundle-v2.json",
     "generation": 2,
-    "sha256": "7bece186f9bd23deb206c0f8eb20b6aff3e692637b5a0994d697f6b51c00d51b"
+    "sha256": "dddca6c79d7c23b5dc36846dd250a59b77e4029395f26b68c98d7b7639dd9327"
   },
   "amendment": {
     "id": "TASK-LENS-AMENDMENT-V2",
     "path": "outcome-amendment-v2.json",
     "generation": 2,
-    "sha256": "5d0bbef247f8c2046917860c21c83ceacbfa5b644f49df8b5b0adea63f4ee2b1"
+    "sha256": "16174587f06817e96ad6d853e7cd942563f84401813c85474c2233683956b9ec"
   },
   "approval": {
     "status": "APPROVED",

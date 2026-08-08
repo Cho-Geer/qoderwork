@@ -38,7 +38,7 @@
   "baseline": {
     "repository_id": "qoderwork-check-plan",
     "baseline_tree_sha256": "54464fe6438b68824387f556e9c9c1acec291bc2",
-    "configuration_sha256": "f57308a35bd0ef5c437ae3a2b2fc3a59d4e3b988bad81a8f71e7155b3c4ec782"
+    "configuration_sha256": "c0ad393397e25910fffba8ceedc9a724bee5217bdd88fb1c46d298779bd5d930"
   },
   "side_effect_boundary": {
     "allowed": [

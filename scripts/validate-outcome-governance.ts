@@ -14,7 +14,13 @@ import {
 
 export type OutcomeCliResult = { ok: boolean; mode: "structural"; validation_kind: "review-separated"; lifecycle: "ACTIVE" | "RETIRED" | "INVALID"; errors: string[] };
 type Item = { path: string; bytes: Buffer; doc: OutcomeDocumentV1 };
-const sha = (bytes: string | Uint8Array): string => createHash("sha256").update(bytes).digest("hex");
+const sha = (bytes: string | Uint8Array): string => {
+  // Line-ending-insensitive hash: normalize CRLF to LF before hashing so a
+  // chain frozen on a Windows checkout (CRLF) validates identically on a POSIX
+  // checkout (LF). All hashed artifacts here are text (JSON/MD/test sources).
+  const text = typeof bytes === "string" ? bytes : Buffer.from(bytes).toString("utf8");
+  return createHash("sha256").update(text.replace(/\r\n/g, "\n"), "utf8").digest("hex");
+};
 const bad = (...errors: string[]): OutcomeCliResult => ({ ok: false, mode: "structural", validation_kind: "review-separated", lifecycle: "INVALID", errors: [...new Set(errors)].sort() });
 const uniqueStrings = (value: unknown): value is string[] => Array.isArray(value) && value.every((item) => typeof item === "string" && item.length > 0) && new Set(value).size === value.length;
 const sameSet = (left: string[], right: string[]): boolean => uniqueStrings(left) && uniqueStrings(right)

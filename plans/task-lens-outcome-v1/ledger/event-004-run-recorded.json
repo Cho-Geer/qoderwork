@@ -10,25 +10,25 @@
     "id": "TASK-LENS-APPROVAL-V2-GEN2",
     "path": "outcome-approval-v2.json",
     "generation": 2,
-    "sha256": "90f7ac927221be1b2b608c44131a88fc9c293267b0fc816f82b0eb28826e69a8"
+    "sha256": "847a69c145ea875a2daad358294e37beb9d1ff28e530579b4acbea264736207d"
   },
   "contract_ref": {
     "id": "TASK-LENS-OUTCOME-CONTRACT-V2",
     "path": "outcome-contract-v2.json",
     "generation": 2,
-    "sha256": "8445729975c37c0a0ac82a61e173d6b7f05440b838c160b590b91c732f36c001"
+    "sha256": "ecf48f8ab2a3ed0068161a039ef6f73fb105947ca11af1c6505049f641d3219a"
   },
   "amendment_ref": null,
   "run_ref": {
     "id": "RUN-TASK-LENS-OUTCOME-V1-GEN2-001",
     "path": "runs/outcome-run-result-v2.json",
     "generation": 2,
-    "sha256": "fbc936e84ed7640a73ca01f6ce1c7c7af507c0888164077deb267cf5dafe979f"
+    "sha256": "a884a7c6beb08056ae29072a44179711b0fc656855db8d7836b19e65cc2743fe"
   },
   "previous_event": {
     "id": "LEDGER-TASK-LENS-OUTCOME-V1-003",
     "path": "ledger/event-003-v2-contract-superseded.json",
     "generation": 3,
-    "sha256": "231b0f492eb5e1500ad4bce5a54a90e7cee1f399daa66622855fcb5fe5f05c2c"
+    "sha256": "ee7cf244f30b83e380f1156e9df1ee0b1ae9327dc1f19945c21f7b4f02124e5f"
   }
 }

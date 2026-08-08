@@ -8,7 +8,7 @@
     "id": "TASK-LENS-OUTCOME-CONTRACT-V2",
     "path": "outcome-contract-v2.json",
     "generation": 2,
-    "sha256": "8445729975c37c0a0ac82a61e173d6b7f05440b838c160b590b91c732f36c001"
+    "sha256": "ecf48f8ab2a3ed0068161a039ef6f73fb105947ca11af1c6505049f641d3219a"
   },
   "requirements": [
     { "id": "REQ-001", "behavior": "输入契约：working-tree/commit 差异语义（显式纳入 untracked、preimage-only 删除）；固定 argv/env/config/path realpath 合同", "oracle_id": "O-001" },
@@ -44,6 +44,6 @@
     "id": "TASK-LENS-TEST-BUNDLE-V2",
     "path": "outcome-test-bundle-v2.json",
     "generation": 2,
-    "sha256": "7bece186f9bd23deb206c0f8eb20b6aff3e692637b5a0994d697f6b51c00d51b"
+    "sha256": "dddca6c79d7c23b5dc36846dd250a59b77e4029395f26b68c98d7b7639dd9327"
   }
 }

@@ -208,7 +208,11 @@ function parseMetrics(tokens: string[]): MetricsRequest {
 }
 
 export function isAbsolutePath(p: string): boolean {
-  return isAbsolute(p);
+  // POSIX absolute ("/x"), Windows drive-letter ("C:/x", "C:\x"), or UNC
+  // ("\\server\share"). node:path.isAbsolute covers only the host platform;
+  // accept all forms so the CLI grammar is cross-platform regardless of where
+  // it runs (WSL or Git Bash).
+  return isAbsolute(p) || /^[A-Za-z]:[\\/]/.test(p) || /^\\\\/.test(p);
 }
 
 function parseBool(v: string, label: string): boolean {

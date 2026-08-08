@@ -14,7 +14,7 @@
     "id": "TASK-LENS-OUTCOME-CONTRACT-V2",
     "path": "outcome-contract-v2.json",
     "generation": 2,
-    "sha256": "8445729975c37c0a0ac82a61e173d6b7f05440b838c160b590b91c732f36c001"
+    "sha256": "ecf48f8ab2a3ed0068161a039ef6f73fb105947ca11af1c6505049f641d3219a"
   },
   "reason": "Expand v1 component-only acceptance to gen2 integration plus manual verification for metrics/feedback, dual real-target zero-write integration, and independent WSL and Windows Git Bash closure. The inherited metrics write contract remains unchanged; PHASE-05 metrics/feedback acceptance is new gen2 scope. Windows fixture corrections update the frozen test bindings without weakening any expected PASS case.",
   "affected_case_ids": ["TL-C-401-v2-WSL", "TL-C-401-v2-GITBASH", "TL-C-402-v2-WSL", "TL-C-402-v2-GITBASH", "TL-I-501-v2-WSL", "TL-I-501-v2-GITBASH", "TL-M-601-v2-WSL", "TL-M-601-v2-GITBASH", "TL-X-001"],
@@ -25,20 +25,30 @@
   "prior_failures": [],
   "frozen_diff": {
     "spec_changed": true,
-    "changed_case_ids": ["TL-C-401-v2-GITBASH", "TL-C-401-v2-WSL", "TL-C-402-v2-GITBASH", "TL-C-402-v2-WSL", "TL-I-501-v2-GITBASH", "TL-I-501-v2-WSL", "TL-M-601-v2-GITBASH", "TL-M-601-v2-WSL", "TL-X-001"],
-    "changed_requirement_ids": ["REQ-011v2", "REQ-012v2", "REQ-013v2", "REQ-014v2", "REQ-CROSS-ENV"],
+    "changed_case_ids": ["TL-C-401-v2-GITBASH","TL-C-401-v2-WSL","TL-C-402-v2-GITBASH","TL-C-402-v2-WSL","TL-I-501-v2-GITBASH","TL-I-501-v2-WSL","TL-M-601-v2-GITBASH","TL-M-601-v2-WSL","TL-X-001"],
+    "changed_requirement_ids": ["REQ-011v2","REQ-012v2","REQ-013v2","REQ-014v2","REQ-CROSS-ENV"],
     "changed_oracle_ids": ["O-002"],
-    "test_bundle_changed_fields": ["tests", "oracle_sources", "expected_test_ids", "expected_test_count"],
+    "test_bundle_changed_fields": ["tests","fixtures","oracle_sources","runner_config","lockfiles","expected_test_ids","expected_test_count"],
     "test_bundle_source_changes": [
-      { "path": "plans/task-lens-m1-completion-v2/05-phase-metrics-feedback.md", "from_sha256": null, "to_sha256": "54c2f50063ecbf2e25f3ccbad5624f23416ee2d6a28b1fb926ba8aa82593f112" },
+      { "path": "bun.lock", "from_sha256": "18af84ceccc704ea68d552f6497fab6ebc6045e0e7bdb0d448918891eaf5733e", "to_sha256": "c693200d674042537d905b4a15f2061706d4f218959f3e1b6edeec3d23e79f4d" },
+      { "path": "package.json", "from_sha256": "f57308a35bd0ef5c437ae3a2b2fc3a59d4e3b988bad81a8f71e7155b3c4ec782", "to_sha256": "c0ad393397e25910fffba8ceedc9a724bee5217bdd88fb1c46d298779bd5d930" },
+      { "path": "plans/task-lens-m1-completion-v2/05-phase-metrics-feedback.md", "from_sha256": null, "to_sha256": "3320512d42d3f23411f463437c54c7dc2ae3deb8c2e14987d3e8fd00596b5bbc" },
       { "path": "plans/task-lens-m1-completion-v2/06-phase-integration-zero-write.md", "from_sha256": null, "to_sha256": "5cf15ccec605a3cc14bf040c6be76e6190f84af47972019449a1e950a48e065e" },
       { "path": "plans/task-lens-m1-completion-v2/07-phase-acceptance-closure.md", "from_sha256": null, "to_sha256": "56e31fcb1f17b7d7919f7b2b3a4bdb5a9a6e49044a9448f40b8d3b11e8313ca4" },
+      { "path": "plans/task-lens-m1/02-phase-input-safety-diff.md", "from_sha256": "b12b9b49a0505217d6db1387194c5985ce0292ac8055652e353a6bcab20015f9", "to_sha256": "4b62c1ad93cddb8e6256282f5a001013c7eb042fc4e434f04421acf85002d5c1" },
+      { "path": "plans/task-lens-m1/03-phase-provider-graph-spine.md", "from_sha256": "f42c5ac34da64d30830cf71a4c220326947c2222142d8bf5d17fe52c78f5f8c6", "to_sha256": "d3f8e745368e68329be72fe114d4a7a6b2bfa9e979565ff48dd64e02070859db" },
+      { "path": "plans/task-lens-m1/04-phase-coverage-card-artifact.md", "from_sha256": "11234d5ff94d5d30d81c1461078c58332b74d13ab0f0dbd6b6f0c4e3ffa62bdd", "to_sha256": "d2f4f617096b044f9c9fa1b269b15c500753b800f0f2b03bcf38c6af88a43f29" },
+      { "path": "scripts/task-lens/__tests__/artifact-writer.test.ts", "from_sha256": "8625f921b3127e323ab3ad2d51c68fb2a3059db2f1a3d1ad16bbe488faf6b268", "to_sha256": "c345030a5ad6a2e8af2d55390514a99bf8a408de56f7af57aff98ca037b31b7f" },
       { "path": "scripts/task-lens/__tests__/cli-integration.test.ts", "from_sha256": null, "to_sha256": "7783e0fae6322694670bf67ff2809ddf39149b38a5c2f47ab29dcc7312a4f738" },
       { "path": "scripts/task-lens/__tests__/closure.test.ts", "from_sha256": null, "to_sha256": "2acbdbbd6db27574708b22e2a375ab9560a32056ea23c107296eb92d6a2d3589" },
-      { "path": "scripts/task-lens/__tests__/command-security.test.ts", "from_sha256": "bb058c55736789d1cfff84fb0ef167e7e841132a06fcaa209a54c0ff87d07c74", "to_sha256": "c1a4b218ac238a51e84f552af8f346f0d130cbe168a668dfd9e8beab1d5fdcc2" },
+      { "path": "scripts/task-lens/__tests__/command-security.test.ts", "from_sha256": "bb058c55736789d1cfff84fb0ef167e7e841132a06fcaa209a54c0ff87d07c74", "to_sha256": "36196fc34ee13f1109d8733339607f09770179ed5a270f213747719ad1ac324c" },
+      { "path": "scripts/task-lens/__tests__/coverage-render.test.ts", "from_sha256": "872248501fcb51d936a623ec5d91a7cd9937fd45fa91a777e987b1055ffb2796", "to_sha256": "1bed46555175c58fb01802fe72a1f2f279bd702f2c9f55b1e7bca95a9285c58f" },
+      { "path": "scripts/task-lens/__tests__/input-diff.test.ts", "from_sha256": "ed85646005060f082d28f7d4ff043637c0886d184047b83486583382431d6b7e", "to_sha256": "1956f4a678b14a071a31a98ddcb241f64a4f1b4053a7b88b5ea2cee8ec913c0e" },
       { "path": "scripts/task-lens/__tests__/integration.test.ts", "from_sha256": null, "to_sha256": "273efb6fa4cba459afac9d8465b9d1a993b7fa062cc7bb25815f3f72a3967b30" },
       { "path": "scripts/task-lens/__tests__/metrics.test.ts", "from_sha256": null, "to_sha256": "9a0e8b39d44ba24c97d68fce65baff45fa141c64b578785860cce7b64bc36d56" },
-      { "path": "scripts/task-lens/__tests__/provider-graph.test.ts", "from_sha256": "2b6e2f76c98015707842d0d126778405c7b65d3837104f5dbea2e7b72d6ada66", "to_sha256": "e5de2a511fde9fc0a13f94ca2b9828463b94e076c242a655e6000cbbeb2ffaf4" }
+      { "path": "scripts/task-lens/__tests__/provider-graph.test.ts", "from_sha256": "2b6e2f76c98015707842d0d126778405c7b65d3837104f5dbea2e7b72d6ada66", "to_sha256": "e8f6af1af13d666a24ce3da813e95b94a6d5d3f655ae955c09d947b81d782d3d" },
+      { "path": "scripts/task-lens/__tests__/spine.test.ts", "from_sha256": "ee4b1777894a5cdb8a6a95714d46eaa4bb8280f78ee60428e3b2c2f40c8925ea", "to_sha256": "79b9a93680c38ba6a1b782825f5189670fff79675b56fb99e08f3ed6448b571b" },
+      { "path": "scripts/task-lens/presets/work-one.yaml", "from_sha256": "599ba5dbfa02093d7ab13ee74f507938fc1c0384427e08c4f5e3454e397f72b4", "to_sha256": "54f3b9a3fede3e7d42001fdcfd9488b52e00d93176b1060a4af521eda8175c23" }
     ]
   }
 }
