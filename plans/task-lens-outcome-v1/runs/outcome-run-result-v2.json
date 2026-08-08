@@ -78,10 +78,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-case-001.json",
         "sha256": "5ac587198066c68829554af3d1e789306c83c5a77b82692298480365c5edac79"
-      },
-      "verdict": "PASS",
-      "environment": "WSL",
-      "requirement": "REQ-001"
+      }
     },
     {
       "case_id": "CASE-002",
@@ -92,10 +89,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-case-002.json",
         "sha256": "f9f50f8c993887ddce67b0b67e4e61f7c2b8dc6e380daf722dba63d30120e402"
-      },
-      "verdict": "PASS",
-      "environment": "WSL",
-      "requirement": "REQ-002"
+      }
     },
     {
       "case_id": "CASE-003",
@@ -106,10 +100,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-case-003.json",
         "sha256": "9a199269f672e2e617bee75c0ab272cf59edc4cd5e3708daed3c88c86aeabc10"
-      },
-      "verdict": "PASS",
-      "environment": "WSL",
-      "requirement": "REQ-003"
+      }
     },
     {
       "case_id": "CASE-004",
@@ -120,10 +111,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-case-004.json",
         "sha256": "44de48c917e0e5bb9b2ec459b6327995f144c20d358c526b731ddbbeed3d4fd9"
-      },
-      "verdict": "PASS",
-      "environment": "WSL",
-      "requirement": "REQ-004"
+      }
     },
     {
       "case_id": "TL-C-401-v2-WSL",
@@ -134,10 +122,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-tl-c-401-wsl.json",
         "sha256": "b12eb9e1f67a93218aa16215e03d88602900150ab101632e63badb8301173e77"
-      },
-      "verdict": "PASS",
-      "environment": "WSL",
-      "requirement": "REQ-011v2"
+      }
     },
     {
       "case_id": "TL-C-401-v2-GITBASH",
@@ -148,10 +133,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-tl-c-401-gitbash.json",
         "sha256": "1509285125864d4c6edd8612a7ead369f76f6839a609cbda884014fad49cddc6"
-      },
-      "verdict": "PASS",
-      "environment": "GITBASH",
-      "requirement": "REQ-011v2"
+      }
     },
     {
       "case_id": "TL-C-402-v2-WSL",
@@ -162,10 +144,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-tl-c-402-wsl.json",
         "sha256": "6805d52655866cda003f2385f897fcd9c1563d5891a3878b857d47974070eea0"
-      },
-      "verdict": "PASS",
-      "environment": "WSL",
-      "requirement": "REQ-012v2"
+      }
     },
     {
       "case_id": "TL-C-402-v2-GITBASH",
@@ -176,10 +155,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-tl-c-402-gitbash.json",
         "sha256": "469be0fa01e45f4d217b038f2b08e52cd8d981ed944050d09c472f5db7c94138"
-      },
-      "verdict": "PASS",
-      "environment": "GITBASH",
-      "requirement": "REQ-012v2"
+      }
     },
     {
       "case_id": "TL-I-501-v2-WSL",
@@ -190,10 +166,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-tl-i-501-wsl.json",
         "sha256": "1a55674851513bae1ee4801382fe29acfef2693680b66b979b8548a55f9bc28f"
-      },
-      "verdict": "PASS",
-      "environment": "WSL",
-      "requirement": "REQ-013v2"
+      }
     },
     {
       "case_id": "TL-I-501-v2-GITBASH",
@@ -204,10 +177,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-tl-i-501-gitbash.json",
         "sha256": "80c27181a0fb8160a64b196f1c9377b989ec3d2029e798e9f47a1103aa23226a"
-      },
-      "verdict": "PASS",
-      "environment": "GITBASH",
-      "requirement": "REQ-013v2"
+      }
     },
     {
       "case_id": "TL-M-601-v2-WSL",
@@ -218,10 +188,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-tl-m-601-wsl.json",
         "sha256": "3eb79a3d8a5839a87b7ebd222340e6f1fcd872f9c72dae055b0be9e683945f64"
-      },
-      "verdict": "PASS",
-      "environment": "WSL",
-      "requirement": "REQ-014v2"
+      }
     },
     {
       "case_id": "TL-M-601-v2-GITBASH",
@@ -232,10 +199,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-tl-m-601-gitbash.json",
         "sha256": "feae14a5e805b22f09f66a21387b7a7223a630e1841af883a4ef96f8a93c4f44"
-      },
-      "verdict": "PASS",
-      "environment": "GITBASH",
-      "requirement": "REQ-014v2"
+      }
     },
     {
       "case_id": "TL-X-001",
@@ -246,10 +210,7 @@
       "receipt": {
         "path": "runs/receipt/gen2-tl-x-001.json",
         "sha256": "11a5d4b639dbb02c1339ae0330c0b123e04b8eb1466e4b7dcce962dab6628964"
-      },
-      "verdict": "PASS",
-      "environment": "GITBASH",
-      "requirement": "REQ-CROSS-ENV"
+      }
     }
   ],
   "verdict": "PASS"
