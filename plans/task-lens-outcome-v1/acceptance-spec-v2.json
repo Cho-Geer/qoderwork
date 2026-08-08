@@ -1,0 +1,49 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "acceptance-spec",
+  "spec_id": "TASK-LENS-ACCEPTANCE-SPEC-V2",
+  "outcome_id": "TASK-LENS-OUTCOME-V1",
+  "generation": 2,
+  "contract": {
+    "id": "TASK-LENS-OUTCOME-CONTRACT-V2",
+    "path": "outcome-contract-v2.json",
+    "generation": 2,
+    "sha256": "8445729975c37c0a0ac82a61e173d6b7f05440b838c160b590b91c732f36c001"
+  },
+  "requirements": [
+    { "id": "REQ-001", "behavior": "输入契约：working-tree/commit 差异语义（显式纳入 untracked、preimage-only 删除）；固定 argv/env/config/path realpath 合同", "oracle_id": "O-001" },
+    { "id": "REQ-002", "behavior": "输入安全：命令/CLI 注入拒绝、越界/超时/超限 fail-closed exit 10/20", "oracle_id": "O-001" },
+    { "id": "REQ-003", "behavior": "构图：provider DB capability probe + CLI fallback、hunk∩range 伪 seed 拒绝、搜索预算 200/500/50、单卡≤20 超限 truncation/uncovered exit 2", "oracle_id": "O-001" },
+    { "id": "REQ-004", "behavior": "coverage/card/artifact：lcov 三态、固定五节卡片、canonical sort + temp+rename 拒绝覆盖、metrics lock+append+fsync 绑定 taskId", "oracle_id": "O-001" },
+    { "id": "REQ-011v2", "behavior": "Metrics and feedback integration records valid generated and feedback events with lock, recovery, validation, and summary behavior.", "oracle_id": "O-002" },
+    { "id": "REQ-012v2", "behavior": "Single-failure diagnostics and CLI wiring fail closed with exact exit behavior.", "oracle_id": "O-002" },
+    { "id": "REQ-013v2", "behavior": "Fixture and dual real-target integration preserves target purity and zero-write behavior.", "oracle_id": "O-002" },
+    { "id": "REQ-014v2", "behavior": "Each endpoint produces ten unique task pairs, at least seven useful-and-reduced pairs, full tests, and typecheck exit 0.", "oracle_id": "O-002" },
+    { "id": "REQ-CROSS-ENV", "behavior": "WSL and Windows Git Bash are independent cases; both endpoints must pass for the canonical verdict to pass.", "oracle_id": "O-002" }
+  ],
+  "oracles": [
+    { "id": "O-001", "description": "固定 bun:test 组件断言集（input-diff/command-security/provider-graph/spine/coverage-render/artifact-writer），独立运行；断言违反或 exit 非 0 即 FAIL" },
+    { "id": "O-002", "description": "Dual-end integration and manual verification oracle; each endpoint is independently observed and the canonical run result is PASS only when every expected case is PASS." }
+  ],
+  "cases": [
+    { "id": "CASE-001", "test_id": "T-001", "requirement_ids": ["REQ-001"], "oracle_id": "O-001", "level": "component", "command": "bun test scripts/task-lens/__tests__/input-diff.test.ts", "expected": "PASS" },
+    { "id": "CASE-002", "test_id": "T-002", "requirement_ids": ["REQ-002"], "oracle_id": "O-001", "level": "component", "command": "bun test scripts/task-lens/__tests__/command-security.test.ts", "expected": "PASS" },
+    { "id": "CASE-003", "test_id": "T-003", "requirement_ids": ["REQ-003"], "oracle_id": "O-001", "level": "component", "command": "bun test scripts/task-lens/__tests__/provider-graph.test.ts scripts/task-lens/__tests__/spine.test.ts", "expected": "PASS" },
+    { "id": "CASE-004", "test_id": "T-004", "requirement_ids": ["REQ-004"], "oracle_id": "O-001", "level": "component", "command": "bun test scripts/task-lens/__tests__/coverage-render.test.ts scripts/task-lens/__tests__/artifact-writer.test.ts", "expected": "PASS" },
+    { "id": "TL-C-401-v2-WSL", "test_id": "T-011", "requirement_ids": ["REQ-011v2"], "oracle_id": "O-002", "level": "integration", "command": "TASK_LENS_METRICS_ENV=wsl bun test scripts/task-lens/__tests__/metrics.test.ts scripts/task-lens/__tests__/closure.test.ts", "expected": "PASS" },
+    { "id": "TL-C-401-v2-GITBASH", "test_id": "T-012", "requirement_ids": ["REQ-011v2"], "oracle_id": "O-002", "level": "integration", "command": "TASK_LENS_METRICS_ENV=gitbash bun test scripts/task-lens/__tests__/metrics.test.ts scripts/task-lens/__tests__/closure.test.ts", "expected": "PASS" },
+    { "id": "TL-C-402-v2-WSL", "test_id": "T-013", "requirement_ids": ["REQ-012v2"], "oracle_id": "O-002", "level": "integration", "command": "TASK_LENS_METRICS_ENV=wsl bun test scripts/task-lens/__tests__/cli-integration.test.ts scripts/task-lens/__tests__/closure.test.ts", "expected": "PASS" },
+    { "id": "TL-C-402-v2-GITBASH", "test_id": "T-014", "requirement_ids": ["REQ-012v2"], "oracle_id": "O-002", "level": "integration", "command": "TASK_LENS_METRICS_ENV=gitbash bun test scripts/task-lens/__tests__/cli-integration.test.ts scripts/task-lens/__tests__/closure.test.ts", "expected": "PASS" },
+    { "id": "TL-I-501-v2-WSL", "test_id": "T-015", "requirement_ids": ["REQ-013v2"], "oracle_id": "O-002", "level": "integration", "command": "TASK_LENS_ENV=wsl bun test scripts/task-lens/__tests__/integration.test.ts", "expected": "PASS" },
+    { "id": "TL-I-501-v2-GITBASH", "test_id": "T-016", "requirement_ids": ["REQ-013v2"], "oracle_id": "O-002", "level": "integration", "command": "TASK_LENS_ENV=gitbash bun test scripts/task-lens/__tests__/integration.test.ts", "expected": "PASS" },
+    { "id": "TL-M-601-v2-WSL", "test_id": "T-017", "requirement_ids": ["REQ-014v2"], "oracle_id": "O-002", "level": "manual", "command": "TASK_LENS_METRICS_ENV=wsl bun test scripts/task-lens/__tests__/closure.test.ts && bun run typecheck", "expected": "PASS" },
+    { "id": "TL-M-601-v2-GITBASH", "test_id": "T-018", "requirement_ids": ["REQ-014v2"], "oracle_id": "O-002", "level": "manual", "command": "TASK_LENS_METRICS_ENV=gitbash bun test scripts/task-lens/__tests__/closure.test.ts && bun run typecheck", "expected": "PASS" },
+    { "id": "TL-X-001", "test_id": "T-019", "requirement_ids": ["REQ-CROSS-ENV"], "oracle_id": "O-002", "level": "structural", "command": "bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repository-root $(pwd)", "expected": "PASS" }
+  ],
+  "test_bundle": {
+    "id": "TASK-LENS-TEST-BUNDLE-V2",
+    "path": "outcome-test-bundle-v2.json",
+    "generation": 2,
+    "sha256": "7bece186f9bd23deb206c0f8eb20b6aff3e692637b5a0994d697f6b51c00d51b"
+  }
+}

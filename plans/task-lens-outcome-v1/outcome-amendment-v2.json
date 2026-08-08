@@ -1,0 +1,44 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-amendment",
+  "amendment_id": "TASK-LENS-AMENDMENT-V2",
+  "outcome_id": "TASK-LENS-OUTCOME-V1",
+  "generation": 2,
+  "from_contract": {
+    "id": "TASK-LENS-OUTCOME-CONTRACT-V1",
+    "path": "outcome-contract.json",
+    "generation": 1,
+    "sha256": "8009501276e739b9a7cd309af3d5d653a74b67ca2f5934f27cdab70fdb7f0db9"
+  },
+  "to_contract": {
+    "id": "TASK-LENS-OUTCOME-CONTRACT-V2",
+    "path": "outcome-contract-v2.json",
+    "generation": 2,
+    "sha256": "8445729975c37c0a0ac82a61e173d6b7f05440b838c160b590b91c732f36c001"
+  },
+  "reason": "Expand v1 component-only acceptance to gen2 integration plus manual verification for metrics/feedback, dual real-target zero-write integration, and independent WSL and Windows Git Bash closure. The inherited metrics write contract remains unchanged; PHASE-05 metrics/feedback acceptance is new gen2 scope. Windows fixture corrections update the frozen test bindings without weakening any expected PASS case.",
+  "affected_case_ids": ["TL-C-401-v2-WSL", "TL-C-401-v2-GITBASH", "TL-C-402-v2-WSL", "TL-C-402-v2-GITBASH", "TL-I-501-v2-WSL", "TL-I-501-v2-GITBASH", "TL-M-601-v2-WSL", "TL-M-601-v2-GITBASH", "TL-X-001"],
+  "unaffected_case_ids": ["CASE-001", "CASE-002", "CASE-003", "CASE-004"],
+  "affected_requirement_ids": ["REQ-011v2", "REQ-012v2", "REQ-013v2", "REQ-014v2", "REQ-CROSS-ENV"],
+  "unaffected_requirement_ids": ["REQ-001", "REQ-002", "REQ-003", "REQ-004"],
+  "change_class": "NORMAL",
+  "prior_failures": [],
+  "frozen_diff": {
+    "spec_changed": true,
+    "changed_case_ids": ["TL-C-401-v2-GITBASH", "TL-C-401-v2-WSL", "TL-C-402-v2-GITBASH", "TL-C-402-v2-WSL", "TL-I-501-v2-GITBASH", "TL-I-501-v2-WSL", "TL-M-601-v2-GITBASH", "TL-M-601-v2-WSL", "TL-X-001"],
+    "changed_requirement_ids": ["REQ-011v2", "REQ-012v2", "REQ-013v2", "REQ-014v2", "REQ-CROSS-ENV"],
+    "changed_oracle_ids": ["O-002"],
+    "test_bundle_changed_fields": ["tests", "oracle_sources", "expected_test_ids", "expected_test_count"],
+    "test_bundle_source_changes": [
+      { "path": "plans/task-lens-m1-completion-v2/05-phase-metrics-feedback.md", "from_sha256": null, "to_sha256": "54c2f50063ecbf2e25f3ccbad5624f23416ee2d6a28b1fb926ba8aa82593f112" },
+      { "path": "plans/task-lens-m1-completion-v2/06-phase-integration-zero-write.md", "from_sha256": null, "to_sha256": "5cf15ccec605a3cc14bf040c6be76e6190f84af47972019449a1e950a48e065e" },
+      { "path": "plans/task-lens-m1-completion-v2/07-phase-acceptance-closure.md", "from_sha256": null, "to_sha256": "56e31fcb1f17b7d7919f7b2b3a4bdb5a9a6e49044a9448f40b8d3b11e8313ca4" },
+      { "path": "scripts/task-lens/__tests__/cli-integration.test.ts", "from_sha256": null, "to_sha256": "7783e0fae6322694670bf67ff2809ddf39149b38a5c2f47ab29dcc7312a4f738" },
+      { "path": "scripts/task-lens/__tests__/closure.test.ts", "from_sha256": null, "to_sha256": "2acbdbbd6db27574708b22e2a375ab9560a32056ea23c107296eb92d6a2d3589" },
+      { "path": "scripts/task-lens/__tests__/command-security.test.ts", "from_sha256": "bb058c55736789d1cfff84fb0ef167e7e841132a06fcaa209a54c0ff87d07c74", "to_sha256": "c1a4b218ac238a51e84f552af8f346f0d130cbe168a668dfd9e8beab1d5fdcc2" },
+      { "path": "scripts/task-lens/__tests__/integration.test.ts", "from_sha256": null, "to_sha256": "273efb6fa4cba459afac9d8465b9d1a993b7fa062cc7bb25815f3f72a3967b30" },
+      { "path": "scripts/task-lens/__tests__/metrics.test.ts", "from_sha256": null, "to_sha256": "9a0e8b39d44ba24c97d68fce65baff45fa141c64b578785860cce7b64bc36d56" },
+      { "path": "scripts/task-lens/__tests__/provider-graph.test.ts", "from_sha256": "2b6e2f76c98015707842d0d126778405c7b65d3837104f5dbea2e7b72d6ada66", "to_sha256": "e5de2a511fde9fc0a13f94ca2b9828463b94e076c242a655e6000cbbeb2ffaf4" }
+    ]
+  }
+}

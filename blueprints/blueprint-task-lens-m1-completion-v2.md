@@ -2,7 +2,7 @@
 
 **创建日期**: 2026-08-06
 **更新日期**: 2026-08-07
-**状态**: 待实施（草稿已批准 2026-08-07；INDEX 同步 deferred 至 v2 contract APPROVED 阶段 — §5.3）
+**状态**: 实施中（草稿已批准 2026-08-07；PHASE-07 partial GitBash evidence，WSL blocked；INDEX 同步 deferred 至独立 session）
 **蓝图分类**: 产品实施蓝图（successor，非冻结）
 **版本**: v2.0.0-draft（v1 后的 1 代 increment；不与 v1 同 ID 起步 — v2 通过 outcome-governance/v1 amendment 走 generation=2 通道）
 **治理框架**: outcome-governance/v1（通过 amendment + CONTRACT_SUPERSEDED ledger event 走 generation 2；非新 outcome_id）

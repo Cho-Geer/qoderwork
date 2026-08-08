@@ -1,7 +1,7 @@
 # Task Lens M1 完工作业 v2 — Final Verification
 
 **Plan ID**: `TASK-LENS-M1-COMPLETION-V2-PLANSET-20260806`
-**Current status**: `NOT-RUN`（本轮 plan 撰写阶段；v2 蓝图仍为 DRAFT；不宣称已通过）
+**Current status**: `PARTIAL`（PHASE-07 GitBash 端 evidence 已收集，WSL 端 evidence 未独立采集；run-v2 verdict=FAIL per fail-closed；详见 `logs/2026-08-08-phase-07-fail-closed-closure.md`，PHASE-08 待 WSL 环境完成）
 **First executable Phase**: `PHASE-05-v2`（等 DRAFT → READY-FOR-IMPLEMENTATION 后由独立 session 派遣）
 
 > 本文件不是 `plans/task-lens-m1/99-final-verification.md` 的修改或替代品。两份 final verification 并存；frozen predecessor 不动。
@@ -12,12 +12,12 @@
 |---|---|---|---|---|---|
 | structural | `bun run .agents/skills/deterministic-implementation-planning/scripts/validate-plan.ts plans/task-lens-m1-completion-v2 "$(pwd)"`（USAGE 2 argv，已实测；详见 §2.1/§2.2） | PLAN_SET 完整 | errors=0 | validator JSON | planning gate only |
 | governance | phase-local `capture-state.ts`（双端各） | human-approved lock | HEAD/phase/lock hash 匹配 | scope-lock/pre-change | NOT-RUN |
-| component | `bun test scripts/task-lens`（双端各） | PHASE-05-v2 ACCEPTED | 0 fail；所有 mutation sensitive | test output | NOT-RUN |
+| component | `bun test scripts/task-lens`（双端各） | PHASE-05-v2 ACCEPTED | 0 fail；所有 mutation sensitive | test output | PARTIAL（GitBash 端 154/0 PASS；WSL 端待 PHASE-08） |
 | integration | `TASK_LENS_REAL_TARGETS=1 bun test scripts/task-lens/__tests__/integration.test.ts`（双端各） | PHASE-06-v2 ACCEPTED | fixtures + 2 real targets + dual case verdict | run roots/receipts | NOT-RUN |
 | build | `bun run typecheck`（双端各） | 当前 HEAD 实测 EXIT=0（v2 不容忍 exit≠0） | **exit 0** | tsc output | OK（HEAD 当前状态） |
 | manual | 2 cards × 2 envs + 10 feedback × 2 envs | artifacts readable | human receipts 完整 | review receipts | NOT-RUN |
-| acceptance | `bun run task-lens metrics summarize --out <root> --json`（双端各） | 10 real task pairs 双端各 | gate PASS；≥7 yes/yes | metrics/summary | NOT-RUN |
-| chain | `bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repository-root "$(pwd)"`（USAGE 3 argv，已实测；详见 §2.1/§2.2） | gen2 contract human-approved | `ok: true`、`mode: structural`、`validation_kind: review-separated`、`lifecycle: ACTIVE`、errors=[] | gen2 chain files | NOT-RUN |
+| acceptance | `bun run task-lens metrics summarize --out <root> --json`（双端各） | 10 real task pairs 双端各 | gate PASS；≥7 yes/yes | metrics/summary | PARTIAL（GitBash 端 closure.test.ts 11/0 PASS 含 7/10 yes；WSL 端待 PHASE-08） |
+| chain | `bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repository-root "$(pwd)"`（USAGE 3 argv，已实测；详见 §2.1/§2.2） | gen2 contract human-approved | `ok: true`、`mode: structural`、`validation_kind: review-separated`、`lifecycle: ACTIVE`、errors=[] | gen2 chain files | PARTIAL（gen2 chain 8 文件创建；validator rc=1 含 4 INFORMATIONAL errors 需 validator per-generation scoping fix；run-v2 verdict=FAIL per fail-closed） |
 
 ### 1.1 Git Bash 端命令对照
 structural + chain 两端同；governance 端 `${HOME}/.local/state/...` ↔ Git Bash 端 `%LOCALAPPDATA%\...`（`mkdir -p "$LOCALAPPDATA/qoderwork/..."` 或 cygpath 转换；**禁 PowerShell**）；acceptance `--out` 与 evidence root 路径不可翻译（用 cygpath 或直接 `${HOME}`/`$LOCALAPPDATA` 切换）。

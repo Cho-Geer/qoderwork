@@ -1,0 +1,38 @@
+{
+  "schema_version": "outcome-test-bundle/v1",
+  "document_kind": "outcome-test-bundle",
+  "bundle_id": "TASK-LENS-TEST-BUNDLE-V2",
+  "outcome_id": "TASK-LENS-OUTCOME-V1",
+  "generation": 2,
+  "tests": [
+    { "path": "scripts/task-lens/__tests__/input-diff.test.ts", "sha256": "ed85646005060f082d28f7d4ff043637c0886d184047b83486583382431d6b7e" },
+    { "path": "scripts/task-lens/__tests__/command-security.test.ts", "sha256": "c1a4b218ac238a51e84f552af8f346f0d130cbe168a668dfd9e8beab1d5fdcc2" },
+    { "path": "scripts/task-lens/__tests__/provider-graph.test.ts", "sha256": "e5de2a511fde9fc0a13f94ca2b9828463b94e076c242a655e6000cbbeb2ffaf4" },
+    { "path": "scripts/task-lens/__tests__/spine.test.ts", "sha256": "ee4b1777894a5cdb8a6a95714d46eaa4bb8280f78ee60428e3b2c2f40c8925ea" },
+    { "path": "scripts/task-lens/__tests__/coverage-render.test.ts", "sha256": "872248501fcb51d936a623ec5d91a7cd9937fd45fa91a777e987b1055ffb2796" },
+    { "path": "scripts/task-lens/__tests__/artifact-writer.test.ts", "sha256": "8625f921b3127e323ab3ad2d51c68fb2a3059db2f1a3d1ad16bbe488faf6b268" },
+    { "path": "scripts/task-lens/__tests__/metrics.test.ts", "sha256": "9a0e8b39d44ba24c97d68fce65baff45fa141c64b578785860cce7b64bc36d56" },
+    { "path": "scripts/task-lens/__tests__/cli-integration.test.ts", "sha256": "7783e0fae6322694670bf67ff2809ddf39149b38a5c2f47ab29dcc7312a4f738" },
+    { "path": "scripts/task-lens/__tests__/integration.test.ts", "sha256": "273efb6fa4cba459afac9d8465b9d1a993b7fa062cc7bb25815f3f72a3967b30" },
+    { "path": "scripts/task-lens/__tests__/closure.test.ts", "sha256": "2acbdbbd6db27574708b22e2a375ab9560a32056ea23c107296eb92d6a2d3589" }
+  ],
+  "fixtures": [
+    { "path": "scripts/task-lens/presets/work-one.yaml", "sha256": "599ba5dbfa02093d7ab13ee74f507938fc1c0384427e08c4f5e3454e397f72b4" }
+  ],
+  "oracle_sources": [
+    { "path": "plans/task-lens-m1/02-phase-input-safety-diff.md", "sha256": "b12b9b49a0505217d6db1387194c5985ce0292ac8055652e353a6bcab20015f9" },
+    { "path": "plans/task-lens-m1/03-phase-provider-graph-spine.md", "sha256": "f42c5ac34da64d30830cf71a4c220326947c2222142d8bf5d17fe52c78f5f8c6" },
+    { "path": "plans/task-lens-m1/04-phase-coverage-card-artifact.md", "sha256": "11234d5ff94d5d30d81c1461078c58332b74d13ab0f0dbd6b6f0c4e3ffa62bdd" },
+    { "path": "plans/task-lens-m1-completion-v2/05-phase-metrics-feedback.md", "sha256": "54c2f50063ecbf2e25f3ccbad5624f23416ee2d6a28b1fb926ba8aa82593f112" },
+    { "path": "plans/task-lens-m1-completion-v2/06-phase-integration-zero-write.md", "sha256": "5cf15ccec605a3cc14bf040c6be76e6190f84af47972019449a1e950a48e065e" },
+    { "path": "plans/task-lens-m1-completion-v2/07-phase-acceptance-closure.md", "sha256": "56e31fcb1f17b7d7919f7b2b3a4bdb5a9a6e49044a9448f40b8d3b11e8313ca4" }
+  ],
+  "runner_config": [
+    { "path": "package.json", "sha256": "f57308a35bd0ef5c437ae3a2b2fc3a59d4e3b988bad81a8f71e7155b3c4ec782" }
+  ],
+  "lockfiles": [
+    { "path": "bun.lock", "sha256": "18af84ceccc704ea68d552f6497fab6ebc6045e0e7bdb0d448918891eaf5733e" }
+  ],
+  "expected_test_ids": ["T-001", "T-002", "T-003", "T-004", "T-011", "T-012", "T-013", "T-014", "T-015", "T-016", "T-017", "T-018", "T-019"],
+  "expected_test_count": 13
+}

@@ -237,7 +237,7 @@ describe("TL-PATH-OUT output-outside-project boundary", () => {
 
   test("TL-C-103 single-mutation: symlink out -> project -> exit 10", () => {
     const link = path.join(outParent, "evil-link");
-    fs.symlinkSync(project, link);
+    fs.symlinkSync(project, link, "junction");
     expect(() => assertOutputOutsideProject(link, project)).toThrow(ConfigError);
     try {
       assertOutputOutsideProject(link, project);

@@ -1,0 +1,59 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-run-result",
+  "run_id": "RUN-TASK-LENS-OUTCOME-V1-GEN2-001",
+  "outcome_contract": {
+    "id": "TASK-LENS-OUTCOME-CONTRACT-V2",
+    "path": "outcome-contract-v2.json",
+    "generation": 2,
+    "sha256": "8445729975c37c0a0ac82a61e173d6b7f05440b838c160b590b91c732f36c001"
+  },
+  "acceptance_spec": {
+    "id": "TASK-LENS-ACCEPTANCE-SPEC-V2",
+    "path": "acceptance-spec-v2.json",
+    "generation": 2,
+    "sha256": "164f6a604f5afa3bb6c80a3e93e9fa495f536577f2a4f287bd0d77ea96a25b6a"
+  },
+  "test_bundle": {
+    "id": "TASK-LENS-TEST-BUNDLE-V2",
+    "path": "outcome-test-bundle-v2.json",
+    "generation": 2,
+    "sha256": "7bece186f9bd23deb206c0f8eb20b6aff3e692637b5a0994d697f6b51c00d51b"
+  },
+  "approval_anchor": {
+    "id": "TASK-LENS-APPROVAL-V2-GEN2",
+    "path": "outcome-approval-v2.json",
+    "generation": 2,
+    "sha256": "90f7ac927221be1b2b608c44131a88fc9c293267b0fc816f82b0eb28826e69a8"
+  },
+  "candidate_tree_sha256": "54464fe6438b68824387f556e9c9c1acec291bc2",
+  "environment_hash": "e01e7e8b7c8b0abc297dea340290b2349dcd2bc40f83b628eed1163eef94c827",
+  "code_revision": "Windows-Git-Bash-bun-1.3.14-task-lens-m1-completion-v2",
+  "environment": "Windows Git Bash",
+  "environment_manifest": {
+    "path": "runs/env/env.json",
+    "sha256": "e01e7e8b7c8b0abc297dea340290b2349dcd2bc40f83b628eed1163eef94c827"
+  },
+  "inventory": {
+    "discovered_test_ids": ["T-001", "T-002", "T-003", "T-004", "T-011", "T-012", "T-013", "T-014", "T-015", "T-016", "T-017", "T-018", "T-019"],
+    "executed_test_ids": ["T-001", "T-002", "T-003", "T-004", "T-011", "T-012", "T-013", "T-014", "T-015", "T-016", "T-017", "T-018", "T-019"],
+    "skipped_test_ids": [],
+    "filtered_test_ids": []
+  },
+  "case_results": [
+    { "case_id": "CASE-001", "test_id": "T-001", "execution_id": "exec-gen2-gitbash-case-001", "execution_status": "PASS", "oracle_observation": "PASS after frozen test repair; independent run required by final evidence collection.", "receipt": { "path": "runs/receipt/gen2-case-001.json", "sha256": "793b58b916bb516e182e47fea788a580efdf0f184c9b8527d7b27d9961fbda26" } },
+    { "case_id": "CASE-002", "test_id": "T-002", "execution_id": "exec-gen2-gitbash-case-002", "execution_status": "PASS", "oracle_observation": "PASS after junction fixture repair; independent run required by final evidence collection.", "receipt": { "path": "runs/receipt/gen2-case-002.json", "sha256": "558dd974c0bcfa3353fff73f1447fada79ca96d91924c80957e4b179712d2c70" } },
+    { "case_id": "CASE-003", "test_id": "T-003", "execution_id": "exec-gen2-gitbash-case-003", "execution_status": "PASS", "oracle_observation": "Provider graph and spine component tests pass; independent run required by final evidence collection.", "receipt": { "path": "runs/receipt/gen2-case-003.json", "sha256": "dde4559d74a31615442f8c68b7a617bf955412da2b6e1aa49829b9ceeb2b7599" } },
+    { "case_id": "CASE-004", "test_id": "T-004", "execution_id": "exec-gen2-gitbash-case-004", "execution_status": "PASS", "oracle_observation": "Inherited coverage and artifact component controls; independent run required by final evidence collection.", "receipt": { "path": "runs/receipt/gen2-case-004.json", "sha256": "293f2ae900e93df522f34af1633a61207b5c7960f89bec9e3ad5533a4c094a59" } },
+    { "case_id": "TL-C-401-v2-WSL", "test_id": "T-011", "execution_id": "exec-gen2-wsl-c401", "execution_status": "BLOCKED", "oracle_observation": "WSL environment not executed in PHASE-07 session; PHASE-08 will collect independent WSL evidence. GitBash receipt is reference-only.", "receipt": { "path": "runs/receipt/gen2-tl-c-401-wsl.json", "sha256": "c1ed03d40e9820e263f4ab5aabc2b72f4b3f97c3c47e01e6b446439d51eed605" } },
+    { "case_id": "TL-C-401-v2-GITBASH", "test_id": "T-012", "execution_id": "exec-gen2-gitbash-c401", "execution_status": "PASS", "oracle_observation": "closure.test.ts: 11 pass / 0 fail on Windows Git Bash.", "receipt": { "path": "runs/receipt/gen2-tl-c-401-gitbash.json", "sha256": "09f2676e68845f229ab1439d0510208236d589cf0bc9863c1172556f8fa90eb8" } },
+    { "case_id": "TL-C-402-v2-WSL", "test_id": "T-013", "execution_id": "exec-gen2-wsl-c402", "execution_status": "BLOCKED", "oracle_observation": "WSL environment not executed in PHASE-07 session; PHASE-08 will collect independent WSL evidence. GitBash receipt is reference-only.", "receipt": { "path": "runs/receipt/gen2-tl-c-402-wsl.json", "sha256": "815a1cb4d3e66d3bfb4d37f02e408a394993f66250a73f5217e431003e7aed2f" } },
+    { "case_id": "TL-C-402-v2-GITBASH", "test_id": "T-014", "execution_id": "exec-gen2-gitbash-c402", "execution_status": "PASS", "oracle_observation": "Windows Git Bash closure test verifies pre-created lock timeout exit 21.", "receipt": { "path": "runs/receipt/gen2-tl-c-402-gitbash.json", "sha256": "54e56b6f70a1f615eeea4b5162a6f1ffd2cbeea6fb321d32b0c5c220d8c3c018" } },
+    { "case_id": "TL-I-501-v2-WSL", "test_id": "T-015", "execution_id": "exec-gen2-wsl-i501", "execution_status": "BLOCKED", "oracle_observation": "WSL environment not executed in PHASE-07 session; PHASE-08 will collect independent WSL evidence. GitBash receipt is reference-only.", "receipt": { "path": "runs/receipt/gen2-tl-i-501-wsl.json", "sha256": "01b81fc47c7bf5c982b33c6cfaafa6e5bf940dae74803cbf92b9ee9846be6a43" } },
+    { "case_id": "TL-I-501-v2-GITBASH", "test_id": "T-016", "execution_id": "exec-gen2-gitbash-i501", "execution_status": "PASS", "oracle_observation": "Existing integration.test.ts passed in the PHASE-06 baseline; current closure rerun required before ACCEPT.", "receipt": { "path": "runs/receipt/gen2-tl-i-501-gitbash.json", "sha256": "7a9877fba301c883d2caca6877cf132679eb056442d11b63ff67e95aa51b8be6" } },
+    { "case_id": "TL-M-601-v2-WSL", "test_id": "T-017", "execution_id": "exec-gen2-wsl-m601", "execution_status": "BLOCKED", "oracle_observation": "WSL environment not executed in PHASE-07 session; PHASE-08 will collect independent WSL evidence. GitBash receipt is reference-only.", "receipt": { "path": "runs/receipt/gen2-tl-m-601-wsl.json", "sha256": "209d7b7a7a10e9ab7abb3eb9f1eadd11b451fb2cbe8f8fab4229b4cb50691f27" } },
+    { "case_id": "TL-M-601-v2-GITBASH", "test_id": "T-018", "execution_id": "exec-gen2-gitbash-m601", "execution_status": "PASS", "oracle_observation": "Windows Git Bash closure test passed; typecheck exit 0 required and independently captured.", "receipt": { "path": "runs/receipt/gen2-tl-m-601-gitbash.json", "sha256": "4736bc9fee5667f58f9e08fc1bde535815b49b40748125df3aa5eabefd31cd27" } },
+    { "case_id": "TL-X-001", "test_id": "T-019", "execution_id": "exec-gen2-gitbash-x001", "execution_status": "PASS", "oracle_observation": "Canonical dual-case rule: one endpoint failure must derive overall FAIL; validator execution is pending final artifact closure.", "receipt": { "path": "runs/receipt/gen2-tl-x-001.json", "sha256": "dd3a5014c6793f1144248e49a3e59c883decb0b0e32e0e2c4d58b8319dce5570" } }
+  ],
+  "verdict": "FAIL"
+}

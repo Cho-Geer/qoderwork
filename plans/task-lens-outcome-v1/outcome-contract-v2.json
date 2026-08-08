@@ -1,0 +1,73 @@
+{
+  "schema_version": "outcome-governance/v1",
+  "document_kind": "outcome-contract",
+  "contract_id": "TASK-LENS-OUTCOME-CONTRACT-V2",
+  "outcome_id": "TASK-LENS-OUTCOME-V1",
+  "generation": 2,
+  "created_at": "2026-08-08T00:00:00Z",
+  "target": [
+    {
+      "document_kind": "task-lens-outcome",
+      "id": "task-lens-m1-completion",
+      "generation": 2,
+      "outcome_id": "TASK-LENS-OUTCOME-V1",
+      "description": "Task Lens M1 completion across metrics/feedback, dual real-target integration, and dual-end acceptance closure."
+    }
+  ],
+  "boundary": {
+    "in_scope": [
+      "REQ-011v2 metrics and feedback integration: lock, append, recovery, validation, and summary",
+      "REQ-012v2 single-failure diagnostics and CLI wiring",
+      "REQ-013v2 fixture plus work-one and qoderwork real-target integration with zero-write verification",
+      "REQ-014v2 dual-end acceptance: ten unique task pairs, seven-of-ten useful-and-reduced gate, full tests, and typecheck exit 0",
+      "REQ-CROSS-ENV independent WSL and Windows Git Bash evidence with dual cases per requirement",
+      "gen2 outcome chain validation and canonical dual-end run result"
+    ],
+    "out_of_scope": [
+      "M1.5/M2/M3 features",
+      "multi-card output",
+      "work-one writes",
+      "bun.lock changes",
+      "new dependencies",
+      "services or live LLM E2E",
+      "legacy audits/task-lens-m1/** historical paths as acceptance evidence",
+      "Windows or other operating-system behavior outside the WSL and Git Bash endpoints",
+      "unrelated repository refactors"
+    ]
+  },
+  "baseline": {
+    "repository_id": "qoderwork-check-plan",
+    "baseline_tree_sha256": "54464fe6438b68824387f556e9c9c1acec291bc2",
+    "configuration_sha256": "f57308a35bd0ef5c437ae3a2b2fc3a59d4e3b988bad81a8f71e7155b3c4ec782"
+  },
+  "side_effect_boundary": {
+    "allowed": [
+      "read-only task-lens tests and typecheck",
+      "creation of gen2 outcome artifacts under plans/task-lens-outcome-v1/",
+      "creation of isolated temporary test fixtures"
+    ],
+    "prohibited": [
+      "modification of v1 outcome artifacts",
+      "modification of legacy plans or blueprints",
+      "writes to work-one or qoderwork-main",
+      "runtime or live-LLM-E2E execution",
+      "bun.lock modification"
+    ]
+  },
+  "acceptance_strategy": {
+    "objective": "Validate the gen2 integration and dual-end acceptance contract with fixed test IDs, independent WSL and Windows Git Bash cases, and a canonical run result.",
+    "boundary": "integration + manual verification",
+    "acceptance": "All expected cases must independently report PASS; the canonical verdict is PASS only when both endpoints pass every requirement."
+  },
+  "acceptance_spec": {
+    "id": "TASK-LENS-ACCEPTANCE-SPEC-V2",
+    "path": "acceptance-spec-v2.json",
+    "generation": 2
+  },
+  "supersedes": {
+    "id": "TASK-LENS-OUTCOME-CONTRACT-V1",
+    "path": "outcome-contract.json",
+    "generation": 1,
+    "sha256": "8009501276e739b9a7cd309af3d5d653a74b67ca2f5934f27cdab70fdb7f0db9"
+  }
+}

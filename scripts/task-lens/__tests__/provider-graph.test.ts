@@ -3,7 +3,7 @@
 
 import { test, expect, describe, beforeEach, afterEach } from "bun:test";
 import { mkdtempSync, rmSync, mkdirSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { Database } from "bun:sqlite";
 import { CodeGraphProvider, CliStructureProvider, ProviderUnavailableError } from "../codegraph-provider.ts";
@@ -78,7 +78,7 @@ function insertEdge(db: Database, source: string, target: string, kind: string, 
 describe("TL-PROBE: readonly DB capability probe", () => {
   test("all-pass: valid DB opens with complete receipt", async () => {
     const { dbPath, cleanup } = createTempCodeGraphDB();
-    const dir = dbPath.replace("/.codegraph/codegraph.db", "");
+    const dir = dirname(dirname(dbPath));
     try {
       const provider = await CodeGraphProvider.open(dir);
       expect(provider.receipt.provider).toBe("codegraph-sqlite");
@@ -266,7 +266,7 @@ describe("TL-GRAPH-BUDGET: BFS limits", () => {
 describe("Real provider integration chain", () => {
   test("resolveSeeds → buildGraph → buildSpineForest with real SQLite DB", async () => {
     const { dbPath, cleanup } = createTempCodeGraphDB();
-    const dir = dbPath.replace("/.codegraph/codegraph.db", "");
+    const dir = dirname(dirname(dbPath));
     const db = new Database(dbPath);
 
     // Insert test nodes (writable connection)
