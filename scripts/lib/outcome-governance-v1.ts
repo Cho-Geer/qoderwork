@@ -99,7 +99,13 @@ const HASH = /^[a-f0-9]{64}$/i;
 const TREE = /^[a-f0-9]{40,64}$/i;
 const STATUSES: readonly ExecutionStatus[] = ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "INVALID"];
 
-export const sha256 = (bytes: string | Uint8Array): string => createHash("sha256").update(bytes).digest("hex");
+export const sha256 = (bytes: string | Uint8Array): string => {
+  // Line-ending-insensitive hash: normalize CRLF to LF before hashing so an
+  // outcome chain frozen on a Windows checkout (CRLF) validates identically
+  // on a POSIX checkout (LF). All hashed artifacts here are text.
+  const text = typeof bytes === "string" ? bytes : Buffer.from(bytes).toString("utf8");
+  return createHash("sha256").update(text.replace(/\r\n/g, "\n"), "utf8").digest("hex");
+};
 const object = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 const nonEmpty = (value: unknown): value is string => typeof value === "string" && value.length > 0;
 const positiveInteger = (value: unknown): value is number => typeof value === "number" && Number.isInteger(value) && value > 0;
