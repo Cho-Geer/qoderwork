@@ -283,10 +283,10 @@ bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repo
 ## 13. Phase completion gate
 
 - [ ] PHASE-06-v2 双端 Freeze Gate 与全部 caller tests 完整；
-- [ ] fixture WT/commit/delete/coverage/safety checks 双端全 PASS；
+- [x] fixture WT/commit/delete/coverage/safety checks 双端全 PASS；
 - [ ] work-one 与 qoderwork-main 各两份 current run receipt（双端各一份）完整；
 - [ ] TL-ZERO-WRITE-v2 敏感反例双端均先 FAIL，真实两目标后 PASS；
 - [ ] 双端各两份 Human manual card review PASS（reviewer 凭证不共用）；
-- [ ] typecheck exit 0（v2 严格），bun.lock 无 diff，allowed-file diff only；
-- [ ] 双端 case verdict 独立汇总到单一 canonical outcome-run-result-v2.json；任一 FAIL = 整体 FAIL；
-- [ ] PHASE-07-v2 在全部勾选前保持 BLOCKED。
+- [x] typecheck exit 0（v2 严格），bun.lock 无 diff，allowed-file diff only；
+- [x] 双端 case verdict 独立汇总到单一 canonical outcome-run-result-v2.json；任一 FAIL = 整体 FAIL；
+- [x] PHASE-07-v2 在全部勾选前保持 BLOCKED。

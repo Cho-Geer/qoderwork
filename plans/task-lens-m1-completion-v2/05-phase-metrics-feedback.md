@@ -242,11 +242,11 @@ bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repo
 ## 13. Phase completion gate
 
 - [ ] PHASE-05-v2 双端 Freeze Gate 与 caller tests 完整；
-- [ ] lock/JSONL/generated/recovery/feedback/summary/CLI/dual-case checks 双端全 PASS；
-- [ ] WSL 端两独立 Bun subprocess 真实竞争；Git Bash 端 lock 互斥行为 PASS；
-- [ ] 坏 JSONL 与 duplicate 均 fail-closed；
-- [ ] 每个 check 有 all-pass + single mutation，failedChecks 精确 singleton；
-- [ ] typecheck exit 0（v2 严格），bun.lock 无 diff，allowed-file diff only；
-- [ ] 双端 evidence 各落盘到独立 root，verdict 不合并；
-- [ ] gen2 outcome bundle 冻结双端 runner/oracle 元数据（v2 实施阶段）；
-- [ ] PHASE-06-v2 在全部勾选前保持 BLOCKED。
+- [x] lock/JSONL/generated/recovery/feedback/summary/CLI/dual-case checks 双端全 PASS；
+- [x] WSL 端两独立 Bun subprocess 真实竞争；Git Bash 端 lock 互斥行为 PASS；
+- [x] 坏 JSONL 与 duplicate 均 fail-closed；
+- [x] 每个 check 有 all-pass + single mutation，failedChecks 精确 singleton；
+- [x] typecheck exit 0（v2 严格），bun.lock 无 diff，allowed-file diff only；
+- [x] 双端 evidence 各落盘到独立 root，verdict 不合并；
+- [x] gen2 outcome bundle 冻结双端 runner/oracle 元数据（v2 实施阶段）；
+- [x] PHASE-06-v2 在全部勾选前保持 BLOCKED。

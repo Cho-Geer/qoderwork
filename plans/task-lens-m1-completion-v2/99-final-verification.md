@@ -1,7 +1,7 @@
 # Task Lens M1 完工作业 v2 — Final Verification
 
 **Plan ID**: `TASK-LENS-M1-COMPLETION-V2-PLANSET-20260806`
-**Current status**: `VERIFIED-DUAL-END-PASS`（WSL 端已独立采集：2026-08-08 原生 WSL 重跑 `bun test scripts/task-lens` = 156/0、`bun run typecheck` exit 0、`validate-outcome-governance.ts` ok:true；GitBash 端 committed receipts 全 PASS；run-result-v2.json 经 T2 回填后 13 case 全 PASS → 顶层 verdict=PASS；INDEX 同步 BLK-V2-001 仍待独立 session）
+**Current status**: `VERIFIED-DUAL-END-PASS`（WSL 端已独立采集：2026-08-08 原生 WSL 重跑 `bun test scripts/task-lens` = 156/0、`bun run typecheck` exit 0、`validate-outcome-governance.ts` ok:true；GitBash 端 committed receipts 全 PASS；run-result-v2.json 经 T2 回填后 13 case 全 PASS → 顶层 verdict=PASS；Group D CRLF 归一化修复后 2026-08-14 Windows Git Bash 实跑 validator EXIT=0（ok:true/lifecycle:ACTIVE/errors:[]）；05/06/07-v2 §13 与 §6 final completion gate ticks 已应用（05:8/9、06:4/8、07:6/9、99 §6:13/19）；INDEX 同步 BLK-V2-001 仍待独立 session；注：本 label 为 2026-08-14 evidence snapshot 自述，非 final gate PASS（§6 仍 6 项未勾 13/19；full transition deferred to §7 ACCEPTED commit）；WSL 端 validator 数据为 2026-08-08 录制，2026-08-14 未复跑（UNVERIFIED））
 **First executable Phase**: `PHASE-05-v2`（等 DRAFT → READY-FOR-IMPLEMENTATION 后由独立 session 派遣）
 
 > 本文件不是 `plans/task-lens-m1/99-final-verification.md` 的修改或替代品。两份 final verification 并存；frozen predecessor 不动。
@@ -140,25 +140,25 @@ bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repo
 
 ## 6. Final completion gate
 
-- [ ] 每个 index requirement 由 v2 successor phase 拥有；与 frozen predecessor REQ 编号体系不冲突（v2 用 `REQ-XXXv2` 命名）；
+- [x] 每个 index requirement 由 v2 successor phase 拥有；与 frozen predecessor REQ 编号体系不冲突（v2 用 `REQ-XXXv2` 命名）；
 - [ ] PHASE-05/06/07-v2 双端 completion gates 全部有当前 evidence；
-- [ ] Phase execution 严格遵循 manifest dependency order；
+- [x] Phase execution 严格遵循 manifest dependency order；
 - [ ] 每个 v2 code Phase 有双端 human-approved scope-lock 和 pre-change receipt；
-- [ ] 每个 shared function 的 caller tests 已纳入 fixed verification，fake 与真实路径区分；
-- [ ] 每个 negative check 区分 FOUND/NOT_FOUND/UNAVAILABLE 且 mutation sensitive；
+- [x] 每个 shared function 的 caller tests 已纳入 fixed verification，fake 与真实路径区分；
+- [x] 每个 negative check 区分 FOUND/NOT_FOUND/UNAVAILABLE 且 mutation sensitive；
 - [ ] `bun test scripts/task-lens` 与 real-target integration 双端均无 skip/失败；
 - [ ] work-one / qoderwork-main 双端 before/after status/tree hashes 相等；
-- [ ] 双端 `bun run typecheck` exit 0（v2 比 predecessor 严格，DEC-V2-006；当前 HEAD 实测 EXIT=0，约束可达）；
-- [ ] 双端各 10 unique task pairs、10 feedback、≥7 yes/yes，sensitivity control 双端 PASS；
+- [x] 双端 `bun run typecheck` exit 0（v2 比 predecessor 严格，DEC-V2-006；当前 HEAD 实测 EXIT=0，约束可达）；
+- [x] 双端各 10 unique task pairs、10 feedback、≥7 yes/yes，sensitivity control 双端 PASS；
 - [ ] 双端 `validate-outcome-governance.ts plans/task-lens-outcome-v1 --repository-root "$(pwd)"` exit 0，输出 `mode: structural` / `validation_kind: review-separated` / `lifecycle: ACTIVE`；
-- [ ] gen2 outcome chain（contract-v2/spec-v2/bundle-v2/amendment-v2/approval-v2/ledger event-003+004/runs/outcome-run-result-v2）置于 `plans/task-lens-outcome-v1/` 同目录；ledger event-003.previous_event SHA 引用 v1 event-002（hash-only，不修改 v1）；
-- [ ] 双端 case verdict 独立汇总到单一 canonical outcome-run-result-v2.json；任一 case FAIL = 整体 FAIL；
+- [x] gen2 outcome chain（contract-v2/spec-v2/bundle-v2/amendment-v2/approval-v2/ledger event-003+004/runs/outcome-run-result-v2）置于 `plans/task-lens-outcome-v1/` 同目录；ledger event-003.previous_event SHA 引用 v1 event-002（hash-only，不修改 v1）；
+- [x] 双端 case verdict 独立汇总到单一 canonical outcome-run-result-v2.json；任一 case FAIL = 整体 FAIL；
 - [ ] blueprint / documents index / implementation log / logs index 状态一致（INDEX 同步是 blocker，非本 plan 解决）；
-- [ ] No lower-level result is reported as a higher-level PASS；
-- [ ] v2 不修改 frozen predecessor；v2 不冒充 v1 已存在的 approval/receipt/run PASS；
-- [ ] 不可执行命令全部标 `[POST-IMPLEMENTATION; CURRENTLY NON-EXISTENT]` + preflight `test -f`；
-- [ ] 55-pass predecessor 历史 claim 与 v1 4-case frozen outcome 严格区分；predecessor 状态分裂不再裁决（DEC-V2-009）；
-- [ ] `validate-audit.ts` 与 P-01..P-07 v2.1 audit 模板不在 v2 引用范围内。
+- [x] No lower-level result is reported as a higher-level PASS；
+- [x] v2 不修改 frozen predecessor；v2 不冒充 v1 已存在的 approval/receipt/run PASS；
+- [x] 不可执行命令全部标 `[POST-IMPLEMENTATION; CURRENTLY NON-EXISTENT]` + preflight `test -f`；
+- [x] 55-pass predecessor 历史 claim 与 v1 4-case frozen outcome 严格区分；predecessor 状态分裂不再裁决（DEC-V2-009）；
+- [x] `validate-audit.ts` 与 P-01..P-07 v2.1 audit 模板不在 v2 引用范围内。
 
 **Final status rule**（v2）：任一未勾选项 → v2 PLAN_SET incomplete；`IMPLEMENTED-AND-GATE-PASS` 只允许全部勾选 + 双端 receipts + gen2 chain 后写入；INDEX 同步完成后才可登记 `blueprints/INDEX.md` 活跃段。
 

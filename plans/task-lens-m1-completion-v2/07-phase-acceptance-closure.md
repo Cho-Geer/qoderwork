@@ -274,11 +274,11 @@ bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repo
 ## 13. Phase completion gate
 
 - [ ] PHASE-07-v2 双端 Freeze Gate 与 10-task selection receipt 完整；
-- [ ] TL-10TASK-v2、TL-7OF10-v2、TL-SENSITIVE-v2 双端全 PASS；
-- [ ] full tests、root typecheck（**exit 0**）、bun.lock/diff、双目标 purity 双端全 PASS；
-- [ ] gen2 outcome chain（contract-v2/spec-v2/bundle-v2/amendment-v2/approval-v2/ledger event-003+004/runs/outcome-run-result-v2）双端创建；ledger event-003.previous_event SHA 引用 v1 event-002；双 case 汇总到单一 canonical run-result；
+- [x] TL-10TASK-v2、TL-7OF10-v2、TL-SENSITIVE-v2 双端全 PASS；
+- [x] full tests、root typecheck（**exit 0**）、bun.lock/diff、双目标 purity 双端全 PASS；
+- [x] gen2 outcome chain（contract-v2/spec-v2/bundle-v2/amendment-v2/approval-v2/ledger event-003+004/runs/outcome-run-result-v2）双端创建；ledger event-003.previous_event SHA 引用 v1 event-002；双 case 汇总到单一 canonical run-result；
 - [ ] `validate-outcome-governance.ts` 双端 exit 0；`mode: structural`、`validation_kind: review-separated`、`lifecycle: ACTIVE`；structural-only，不证真实执行；
 - [ ] blueprint/documents/log/log index 状态一致（INDEX 同步是 blocker，非本 phase 解决）；
-- [ ] 任一端 case FAIL = 整体 FAIL，不允许单端 PASS；
-- [ ] M1.5/M2 仅按 gate 规则描述，M2/M3 未被写成已实现；
-- [ ] 任一未勾选项则 M1 v2 不得关闭。
+- [x] 任一端 case FAIL = 整体 FAIL，不允许单端 PASS；
+- [x] M1.5/M2 仅按 gate 规则描述，M2/M3 未被写成已实现；
+- [x] 任一未勾选项则 M1 v2 不得关闭。
