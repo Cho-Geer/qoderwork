@@ -2,7 +2,7 @@
 
 **Plan mode**: `PLAN_SET`
 **ID**: `TASK-LENS-M1-COMPLETION-V2-PLANSET-20260806`
-**Status**: `DRAFT`（草稿/待审批；gen2 chain 双端 PASS 已达成：run-result-v2 13/13 case PASS + validator `ok:true`/lifecycle ACTIVE/errors[]；INDEX 同步 BLK-V2-001 待独立 session，故仍不写"已完成"/DONE）
+**Status**: `DRAFT`（草稿/待审批；gen2 数据层已落盘（run-result-v2.json 13/13 case 数据层 PASS + 8 gen2 文件 SHA 归一化后一致）；validator 实跑已恢复 `ok:true`/`lifecycle:ACTIVE`/EXIT=0（2026-08-14 Windows Git Bash 复验：Group D CRLF 归一化修复（scripts/lib/outcome-governance-v1.ts）落地后复跑通过 — 修复前 2026-08-10 实测 `ok:false`/`lifecycle:INVALID`（BUNDLE_HASH_MISMATCH + SPEC_INVALID，根因：CLI line 252-253 sources 未做 CRLF→LF 归一化，见 plans/task-lens-validator-crlf-fix/）；05/06/07-v2 §13 与 99 §6 final completion gate ticks 已勾选（05:8/9、06:4/8、07:6/9、99 §6:13/19），阶段状态仍按状态机保持；§6 phase manifest 为 NOT_STARTED/BLOCKED/BLOCKED/BLOCKED；INDEX 同步 BLK-V2-001 待 §2.4 + §7 状态机要求 INDEX sync session）
 **Plan category**: 产品实施 plan（successor of `plans/task-lens-m1/`，不是 generation 2 outcome receipts）
 **Progression schema**: `phase-progression/v1`
 **Execution order**: 严格遵循 PHASE-05 → PHASE-06 → PHASE-07；任一 gate 失败即停止。
@@ -56,21 +56,21 @@ gen2 文件置于 `plans/task-lens-outcome-v1/` 同目录（validator 单目录�
 
 ### 0.3.1 generation 2 outcome chain 实际落盘（回填；原 §0.3 列 "不创建" 现已落地）
 
-gen2 文件已落盘到 `plans/task-lens-outcome-v1/` 同目录（与 v1 frozen 共存；validator 单目录调用）。SHA256 为文件原始字节哈希（validator 内部对 run-result-v2 做 CRLF→LF 归一化后比对，event-004.run_ref 已同步为该归一化哈希 `5a2a1075…`）。
+gen2 文件已落盘到 `plans/task-lens-outcome-v1/` 同目录（与 v1 frozen 共存；validator 单目录调用）。SHA256 为文件 LF 归一化字节哈希（crlf→lf；Windows checkout 因 core.autocrlf=true 会显示 raw 不一致，LF 归一化后 8/8 一致）（修复前 validator 内部对 run-result-v2 的 sha256 计算未做 CRLF→LF 归一化（scripts/lib/outcome-governance-v1.ts:102），导致 Windows Git Bash 上 raw 字节哈希与声明 LF 哈希不一致 → TEST_BUNDLE_HASH_MISMATCH → SPEC_INVALID（同一根因的两个表现）；2026-08-14 Group D CRLF 归一化修复落地后 Git Bash 复跑 EXIT=0；event-004.run_ref 已同步为该归一化哈希 `37ea4b40…`）。
 
 | 路径 | 角色 | 实际状态 | SHA256（前 16） |
 |---|---|---|---|
 | `plans/task-lens-outcome-v1/outcome-contract-v2.json` | gen=2 contract，`supersedes` v1 SHA `8009501276…` | 已落盘 | `ecf48f8ab2a3ed00` |
-| `plans/task-lens-outcome-v1/acceptance-spec-v2.json` | REQ-011v2/012v2/013v2/014v2/REQ-CROSS-ENV + oracle O-002 | 已落盘 | `c72eab2e047a8782` |
-| `plans/task-lens-outcome-v1/outcome-test-bundle-v2.json` | tests SHA 绑定（冻结双端 runner/oracle） | 已落盘 | `dddca6c79d7c23b5` |
-| `plans/task-lens-outcome-v1/outcome-amendment-v2.json` | from_contract=v1 → to_contract=gen2，change_class=NORMAL | 已落盘 | `16174587f06817e9` |
-| `plans/task-lens-outcome-v1/outcome-approval-v2.json` | actor=HUMAN/ChoGeer，trust_domain=human-primary | 已落盘 | `847a69c145ea875a` |
-| `plans/task-lens-outcome-v1/ledger/event-003-v2-contract-superseded.json` | sequence=3，CONTRACT_SUPERSEDED，previous_event=hash-only ref v1 event-002 | 已落盘 | `ee7cf244f30b83e3` |
-| `plans/task-lens-outcome-v1/ledger/event-004-run-recorded.json` | sequence=4，RUN_RECORDED，run_ref=run-result-v2（`5a2a1075…`） | 已落盘 | `72d60eba0c9a6c64` |
-| `plans/task-lens-outcome-v1/runs/{env,out,err,receipt}/` | 双端 evidence root；receipt 含 `environment` 字段 | 已落盘 | n/a |
-| `plans/task-lens-outcome-v1/runs/outcome-run-result-v2.json` | gen2 verdict：13/13 case PASS（含 `-WSL`/`-GITBASH` 双端 case） | 已落盘 | `5a2a1075fc6e06f8` |
+| `plans/task-lens-outcome-v1/acceptance-spec-v2.json` | REQ-011v2/012v2/013v2/014v2/REQ-CROSS-ENV + oracle O-002 | 已落盘 | `0aa14348796878d3` |
+| `plans/task-lens-outcome-v1/outcome-test-bundle-v2.json` | tests SHA 绑定（冻结双端 runner/oracle） | 已落盘 | `8c80a844dfc73c72` |
+| `plans/task-lens-outcome-v1/outcome-amendment-v2.json` | from_contract=v1 → to_contract=gen2，change_class=NORMAL | 已落盘 | `b06fb7041384f7a0` |
+| `plans/task-lens-outcome-v1/outcome-approval-v2.json` | actor=HUMAN/ChoGeer，trust_domain=human-primary | 已落盘 | `792eaf90ca74f434` |
+| `plans/task-lens-outcome-v1/ledger/event-003-v2-contract-superseded.json` | sequence=3，CONTRACT_SUPERSEDED，previous_event=hash-only ref v1 event-002 | 已落盘 | `aca40962b07cdadc` |
+| `plans/task-lens-outcome-v1/ledger/event-004-run-recorded.json` | sequence=4，RUN_RECORDED，run_ref=run-result-v2（`37ea4b40…`） | 已落盘 | `7f01edee30e30107` |
+| `plans/task-lens-outcome-v1/runs/{env,out,err,receipt}/` | 双端 evidence root；receipt 通过 `case_id` 后缀（`-WSL`/`-GITBASH`）和 payload 内 `cwd` 字段区分 wsl/gitbash | 已落盘 | n/a |
+| `plans/task-lens-outcome-v1/runs/outcome-run-result-v2.json` | gen2 verdict：13/13 case PASS（含 `-WSL`/`-GITBASH` 双端 case） | 已落盘 | `37ea4b40289b2b38` |
 
-**Validator result（已复验，`bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repository-root $(pwd)`）**：`{"ok":true,"mode":"structural","validation_kind":"review-separated","lifecycle":"ACTIVE","errors":[]}`。structural-only，不证明真实执行（review-separated）。
+**Validator result（已复验，`bun run scripts/validate-outcome-governance.ts plans/task-lens-outcome-v1 --repository-root $(pwd)`；结果源：2026-08-08 WSL native FS run 录制（LF 字节）+ 2026-08-14 Windows Git Bash 复验 EXIT=0（Group D CRLF 归一化修复（scripts/lib/outcome-governance-v1.ts）落地后；修复前 2026-08-10 Git Bash 实跑 `ok:false`/`lifecycle:INVALID`/EXIT=1 — 历史）；WSL 端 2026-08-14 复验 UNVERIFIED）**：`{"ok":true,"mode":"structural","validation_kind":"review-separated","lifecycle":"ACTIVE","errors":[]}`。structural-only，不证明真实执行（review-separated）。
 
 ### 0.4 禁止项
 
@@ -155,11 +155,12 @@ gen2 文件已落盘到 `plans/task-lens-outcome-v1/` 同目录（与 v1 frozen 
 
 ### 2.4 Open / blocking items
 
-- **BLK-V2-001**：INDEX sync deferred → **已进入可交接状态（handoff ready）**。gen2 chain 已落盘且 validator `ok:true`（run-result-v2 13/13 case PASS）；dual-end PASS 已达成。待独立 session 执行（本轮不修改 `blueprints/INDEX.md`/`documents/INDEX.md`）：
+- **BLK-V2-001**：INDEX sync deferred → **已进入可交接状态（handoff ready）**。gen2 chain 已落盘（run-result-v2 13/13 case PASS 数据层）；dual-end PASS 已达成（数据层）；validator 实跑已恢复 ACTIVE（2026-08-14 Git Bash EXIT=0；WSL 端 UNVERIFIED）。BLK-V2-001 INDEX sync 仍 pending；将作为 Group F 在独立 session 中以 logs/ + handoff/ 旁证 commit 化（见 Phase manifest §6）：
   1. `blueprints/INDEX.md` 活跃段添加 v2 蓝图条目（status: 草稿 → 待审批 → 已完成/已退役）；
   2. `documents/INDEX.md` 添加 `plans/task-lens-m1-completion-v2/00-plan-index.md` 路由条目。
   完成后 v2 plan 方可标 `DONE`（状态机 §7：ACCEPTED 需 INDEX 同步）。Handoff 记录见 `handoff/` 或本目录追加 note。
-- **BLK-V2-002**：gen2 outcome 目录骨架**已落盘**（原 blocker 解除）。gen2 文件落盘到 `plans/task-lens-outcome-v1/` 同目录，SHA 见 §0.3.1；validator `ok:true`。
+- **BLK-V2-002**：gen2 outcome 目录骨架**已落盘**（原 blocker 解除）。gen2 文件落盘到 `plans/task-lens-outcome-v1/` 同目录，SHA 见 §0.3.1；validator 实跑已恢复 ACTIVE（2026-08-14 Git Bash EXIT=0；WSL 端 UNVERIFIED）。
+→ 详见独立 plan：plans/task-lens-validator-crlf-fix/00-plan-index.md（TASK-LENS-VALIDATOR-CRLF-FIX-20260814）与 handoff/2026-08-14-task-lens-m1-completion-v2-validator-crlf-handoff.md
 
 ### 2.5 Negative evidence semantics
 
@@ -239,10 +240,10 @@ v2 蓝图审批通过后，INDEX 同步需独立 session：
 
 | Order | Phase ID | File | Depends on | Status |
 |---:|---|---|---|---|
-| 1 | PHASE-05-v2 | `05-phase-metrics-feedback.md` | frozen PHASE-04 ACCEPTED | ACCEPTED (dual-end PASS recorded via gen2 run-result-v2; INDEX sync BLK-V2-001 pending) |
-| 2 | PHASE-06-v2 | `06-phase-integration-zero-write.md` | PHASE-05-v2 ACCEPTED | ACCEPTED (dual-end PASS recorded via gen2 run-result-v2; INDEX sync BLK-V2-001 pending) |
-| 3 | PHASE-07-v2 | `07-phase-acceptance-closure.md` | PHASE-06-v2 ACCEPTED | ACCEPTED (dual-end PASS recorded via gen2 run-result-v2; INDEX sync BLK-V2-001 pending) |
-| 4 | FINAL-v2 | `99-final-verification.md` | PHASE-07-v2 ACCEPTED | ACCEPTED (dual-end PASS recorded + gen2 validator ok:true; INDEX sync BLK-V2-001 pending → plan not DONE) |
+| 1 | PHASE-05-v2 | `05-phase-metrics-feedback.md` | frozen PHASE-04 ACCEPTED | NOT_STARTED (gen2 data落盘 + 13/13 case PASS 数据层记录；§13 Phase completion gate 8/9（2026-08-14 Git Bash 实测 PASS）；状态机 §7 禁止 DRAFT 状态声称 ACCEPTED) |
+| 2 | PHASE-06-v2 | `06-phase-integration-zero-write.md` | PHASE-05-v2 NOT_STARTED | BLOCKED (依赖 PHASE-05-v2 升 ACCEPTED；validator 实跑已恢复 ACTIVE（2026-08-14 Git Bash EXIT=0；WSL 端 UNVERIFIED）) |
+| 3 | PHASE-07-v2 | `07-phase-acceptance-closure.md` | PHASE-06-v2 BLOCKED | BLOCKED (依赖 PHASE-06-v2 升 ACCEPTED；validator 实跑已恢复 ACTIVE（2026-08-14 Git Bash EXIT=0；WSL 端 UNVERIFIED）) |
+| 4 | FINAL-v2 | `99-final-verification.md` | PHASE-07-v2 BLOCKED | BLOCKED (validator 实跑已恢复 ACTIVE（2026-08-14 Git Bash EXIT=0；WSL 端 UNVERIFIED）；§6 Final completion gate 13/19（2026-08-14 Git Bash 实测 PASS）；INDEX sync BLK-V2-001 pending → plan not DONE) |
 
 ### 6.1 阶段依赖与停止条件
 
@@ -323,3 +324,7 @@ bun test scripts/task-lens/__tests__/metrics.test.ts ...
 - [x] 非现有文件命令标 `[POST-IMPLEMENTATION; CURRENTLY NON-EXISTENT]`+ preflight `test -f`（§8.3）
 - [x] predecessor 状态分裂仅作为历史输入（DEC-V2-009）
 - [x] 55-pass predecessor 历史 claim 与 v1 4-case frozen outcome 明确区分（§2.6 + §1 source ledger 行）
+
+## 10. Cross-plan handoff note（Group D — validator CRLF 归一化修复）
+
+validator CRLF 归一化缺口的根本修复将作为独立 plan 在 Group D 处理（不在本 plan 范围内，因 §5.1 禁止 `scripts/**` 修改）；修复完成前，本 plan 在 Windows Git Bash 上 validator 持续返回 INVALID/EXIT=1；WSL native FS 上 validator 应返回 ACTIVE（LF 字节哈希与声明一致）。
