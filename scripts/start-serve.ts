@@ -260,6 +260,9 @@ function stopOrphanServe(opts: { silent?: boolean; bestEffort?: boolean } = {}):
   let servePids: number[] = [];
   try {
     const port = parseArgs().port || "4096";
+    if (!/^\d+$/.test(port)) {
+      throw new Error(`invalid port for shell lookup: ${port}`);
+    }
     // Prefer `ss` (always available), fall back to `lsof`
     let out = "";
     try {
@@ -336,6 +339,9 @@ function stopOrphanServe(opts: { silent?: boolean; bestEffort?: boolean } = {}):
 function checkPortConflict(port: string): boolean {
   try {
     const { execSync } = require("node:child_process");
+    if (!/^\d+$/.test(port)) {
+      throw new Error(`invalid port for conflict check: ${port}`);
+    }
     if (platform() === "win32") {
       const result = execSync(`netstat -ano | findstr ":${port}"`, { encoding: "utf-8" });
       return result.trim().length > 0;
