@@ -12,19 +12,19 @@
     "id": "TASK-LENS-ACCEPTANCE-SPEC-V2",
     "path": "acceptance-spec-v2.json",
     "generation": 2,
-    "sha256": "c72eab2e047a87821d8b31bc6ed80f660582ead21c22d9febd195141e98c57da"
+    "sha256": "0aa14348796878d34a9f5461e18b5f015f86b9d0807e8e0c659e6482510de225"
   },
   "test_bundle": {
     "id": "TASK-LENS-TEST-BUNDLE-V2",
     "path": "outcome-test-bundle-v2.json",
     "generation": 2,
-    "sha256": "dddca6c79d7c23b5dc36846dd250a59b77e4029395f26b68c98d7b7639dd9327"
+    "sha256": "8c80a844dfc73c72427f20f084647d30ab1976c8818d1a0e3a6676accbbff207"
   },
   "approval_anchor": {
     "id": "TASK-LENS-APPROVAL-V2-GEN2",
     "path": "outcome-approval-v2.json",
     "generation": 2,
-    "sha256": "847a69c145ea875a2daad358294e37beb9d1ff28e530579b4acbea264736207d"
+    "sha256": "792eaf90ca74f434bae9c6ff8a706cf2228353e58e9eef81c926351f9ceaef8c"
   },
   "candidate_tree_sha256": "54464fe6438b68824387f556e9c9c1acec291bc2",
   "environment_hash": "e01e7e8b7c8b0abc297dea340290b2349dcd2bc40f83b628eed1163eef94c827",
@@ -77,7 +77,7 @@
       "oracle_observation": "PASS after frozen test repair; independent run required by final evidence collection.",
       "receipt": {
         "path": "runs/receipt/gen2-case-001.json",
-        "sha256": "5ac587198066c68829554af3d1e789306c83c5a77b82692298480365c5edac79"
+        "sha256": "8875ca8960340fe06634213bdcff789039fc9c423cd955d7a49f8e4b2c213275"
       }
     },
     {
@@ -88,7 +88,7 @@
       "oracle_observation": "PASS after junction fixture repair; independent run required by final evidence collection.",
       "receipt": {
         "path": "runs/receipt/gen2-case-002.json",
-        "sha256": "f9f50f8c993887ddce67b0b67e4e61f7c2b8dc6e380daf722dba63d30120e402"
+        "sha256": "1e2cd2a1ef2b5c720c2b98a0a47b61b98649b566a8c9a2f67749c9287bb7f5b3"
       }
     },
     {
@@ -99,7 +99,7 @@
       "oracle_observation": "Provider graph and spine component tests pass; independent run required by final evidence collection.",
       "receipt": {
         "path": "runs/receipt/gen2-case-003.json",
-        "sha256": "9a199269f672e2e617bee75c0ab272cf59edc4cd5e3708daed3c88c86aeabc10"
+        "sha256": "035df39c6e042b9d3fbb9c40cfda9e6ac6df436a568f21d6065ad28765b750ee"
       }
     },
     {
@@ -110,7 +110,7 @@
       "oracle_observation": "Inherited coverage and artifact component controls; independent run required by final evidence collection.",
       "receipt": {
         "path": "runs/receipt/gen2-case-004.json",
-        "sha256": "44de48c917e0e5bb9b2ec459b6327995f144c20d358c526b731ddbbeed3d4fd9"
+        "sha256": "41eadbb3a3ef90cde35327824a6068a7d8f517872706bc705db6706e2114e7be"
       }
     },
     {
@@ -121,7 +121,7 @@
       "oracle_observation": "WSL real capture: bun test metrics.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=wsl; 35 pass / 0 fail (RC=0); argv matches captured stderr.",
       "receipt": {
         "path": "runs/receipt/gen2-tl-c-401-wsl.json",
-        "sha256": "b12eb9e1f67a93218aa16215e03d88602900150ab101632e63badb8301173e77"
+        "sha256": "56fd630d4365d68ce39594e3466960cf8f395bbe0ff98c2637770a3f1fed1794"
       }
     },
     {
@@ -132,7 +132,7 @@
       "oracle_observation": "GitBash real capture: bun test metrics.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=gitbash; argv matches captured stderr.",
       "receipt": {
         "path": "runs/receipt/gen2-tl-c-401-gitbash.json",
-        "sha256": "1509285125864d4c6edd8612a7ead369f76f6839a609cbda884014fad49cddc6"
+        "sha256": "f65e5da3357d32ae4f46b27946110178a4cd2ba8993072360bd7cdf531db52f6"
       }
     },
     {
@@ -143,7 +143,7 @@
       "oracle_observation": "WSL real capture: bun test cli-integration.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=wsl; 18 pass / 0 fail (RC=0); argv matches captured stderr.",
       "receipt": {
         "path": "runs/receipt/gen2-tl-c-402-wsl.json",
-        "sha256": "6805d52655866cda003f2385f897fcd9c1563d5891a3878b857d47974070eea0"
+        "sha256": "3828d17114bc09fba11665234e4e0147b3e1681e1bf91dfc2e153930f21b6abe"
       }
     },
     {
@@ -154,7 +154,7 @@
       "oracle_observation": "GitBash real capture: bun test cli-integration.test.ts closure.test.ts with TASK_LENS_METRICS_ENV=gitbash; argv matches captured stderr.",
       "receipt": {
         "path": "runs/receipt/gen2-tl-c-402-gitbash.json",
-        "sha256": "469be0fa01e45f4d217b038f2b08e52cd8d981ed944050d09c472f5db7c94138"
+        "sha256": "e91405b24abe6b7cb47b9a9f4906dce7c584e4fcceb227ed85e9985d23960209"
       }
     },
     {
@@ -165,7 +165,7 @@
       "oracle_observation": "WSL real capture: bun test integration.test.ts with TASK_LENS_ENV=wsl; 22 pass / 0 fail (RC=0). TL-WORK-ONE-v2 and TL-QODERWORK-v2 hit the workspace-root failure catch path; WorkspacePathsError messages now carry the WORK_ONE_ROOT_INVALID code prefix (product fix) so the expected /WORK_ONE_ROOT_INVALID|ENOENT/ regex matches. Success path separately verified with WORK_ONE_ROOT=/home/zhaoge/workspace/opencode/work-one: both real targets PASS with writeState=NOT_FOUND (work-one empty-diff retrigger commit yields allowed exit 13). PASS per fail-closed; no GitBash evidence reused.",
       "receipt": {
         "path": "runs/receipt/gen2-tl-i-501-wsl.json",
-        "sha256": "1a55674851513bae1ee4801382fe29acfef2693680b66b979b8548a55f9bc28f"
+        "sha256": "6d5c9759ced6599cb3f76e061f6f1f27665b97668af4cc8c11f270854d6f30cf"
       }
     },
     {
@@ -176,7 +176,7 @@
       "oracle_observation": "GitBash real capture: bun test integration.test.ts with TASK_LENS_ENV=gitbash; argv matches captured stderr.",
       "receipt": {
         "path": "runs/receipt/gen2-tl-i-501-gitbash.json",
-        "sha256": "80c27181a0fb8160a64b196f1c9377b989ec3d2029e798e9f47a1103aa23226a"
+        "sha256": "fe0a3f966de36b91305dbc61ce2325f93aed0f7f4e43c4cd520921f40f97fc62"
       }
     },
     {
@@ -187,7 +187,7 @@
       "oracle_observation": "WSL real capture: bun test closure.test.ts (11 pass / 0 fail, RC=0) with TASK_LENS_METRICS_ENV=wsl; typecheck captured separately (RC=0); argv matches captured stderr.",
       "receipt": {
         "path": "runs/receipt/gen2-tl-m-601-wsl.json",
-        "sha256": "3eb79a3d8a5839a87b7ebd222340e6f1fcd872f9c72dae055b0be9e683945f64"
+        "sha256": "69d7c093886a9beba2f1a1667dff2916fcce0b69028f06bf3b777ac89a24a81a"
       }
     },
     {
@@ -198,7 +198,7 @@
       "oracle_observation": "GitBash real capture: bun test closure.test.ts (typecheck captured separately); argv matches captured stderr.",
       "receipt": {
         "path": "runs/receipt/gen2-tl-m-601-gitbash.json",
-        "sha256": "feae14a5e805b22f09f66a21387b7a7223a630e1841af883a4ef96f8a93c4f44"
+        "sha256": "82d8feb768c83bdbdd8ac247967da389878defd9561df6f5efea1a7cb0c0bbf5"
       }
     },
     {
@@ -209,7 +209,7 @@
       "oracle_observation": "GitBash real capture: bun run validate-outcome-governance.ts; stdout captured validator JSON ({\"ok\":true,...errors:[]} after fixes applied); stderr genuinely empty (validator writes only to stdout).",
       "receipt": {
         "path": "runs/receipt/gen2-tl-x-001.json",
-        "sha256": "11a5d4b639dbb02c1339ae0330c0b123e04b8eb1466e4b7dcce962dab6628964"
+        "sha256": "55a062e4630e127c3866c0a17a771248702a90558f7c4daaa8ffcdd4e302c9f9"
       }
     }
   ],

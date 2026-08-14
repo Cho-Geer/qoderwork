@@ -32,9 +32,9 @@
     "test_bundle_source_changes": [
       { "path": "bun.lock", "from_sha256": "18af84ceccc704ea68d552f6497fab6ebc6045e0e7bdb0d448918891eaf5733e", "to_sha256": "c693200d674042537d905b4a15f2061706d4f218959f3e1b6edeec3d23e79f4d" },
       { "path": "package.json", "from_sha256": "f57308a35bd0ef5c437ae3a2b2fc3a59d4e3b988bad81a8f71e7155b3c4ec782", "to_sha256": "c0ad393397e25910fffba8ceedc9a724bee5217bdd88fb1c46d298779bd5d930" },
-      { "path": "plans/task-lens-m1-completion-v2/05-phase-metrics-feedback.md", "from_sha256": null, "to_sha256": "3320512d42d3f23411f463437c54c7dc2ae3deb8c2e14987d3e8fd00596b5bbc" },
-      { "path": "plans/task-lens-m1-completion-v2/06-phase-integration-zero-write.md", "from_sha256": null, "to_sha256": "5cf15ccec605a3cc14bf040c6be76e6190f84af47972019449a1e950a48e065e" },
-      { "path": "plans/task-lens-m1-completion-v2/07-phase-acceptance-closure.md", "from_sha256": null, "to_sha256": "56e31fcb1f17b7d7919f7b2b3a4bdb5a9a6e49044a9448f40b8d3b11e8313ca4" },
+      { "path": "plans/task-lens-m1-completion-v2/05-phase-metrics-feedback.md", "from_sha256": null, "to_sha256": "cf61a25c049818f33fa46877c17d2f1557202e8cb002431db9bb6b705daed009" },
+      { "path": "plans/task-lens-m1-completion-v2/06-phase-integration-zero-write.md", "from_sha256": null, "to_sha256": "0bbf4aba9557ec16784edbcd305b9516b829e7ee27c1ad21b56fcb618424a853" },
+      { "path": "plans/task-lens-m1-completion-v2/07-phase-acceptance-closure.md", "from_sha256": null, "to_sha256": "97a5949e586f0323c6c42348d9ef950ec9550572ca8ead1cd131ec50236d84b0" },
       { "path": "plans/task-lens-m1/02-phase-input-safety-diff.md", "from_sha256": "b12b9b49a0505217d6db1387194c5985ce0292ac8055652e353a6bcab20015f9", "to_sha256": "4b62c1ad93cddb8e6256282f5a001013c7eb042fc4e434f04421acf85002d5c1" },
       { "path": "plans/task-lens-m1/03-phase-provider-graph-spine.md", "from_sha256": "f42c5ac34da64d30830cf71a4c220326947c2222142d8bf5d17fe52c78f5f8c6", "to_sha256": "d3f8e745368e68329be72fe114d4a7a6b2bfa9e979565ff48dd64e02070859db" },
       { "path": "plans/task-lens-m1/04-phase-coverage-card-artifact.md", "from_sha256": "11234d5ff94d5d30d81c1461078c58332b74d13ab0f0dbd6b6f0c4e3ffa62bdd", "to_sha256": "d2f4f617096b044f9c9fa1b269b15c500753b800f0f2b03bcf38c6af88a43f29" },

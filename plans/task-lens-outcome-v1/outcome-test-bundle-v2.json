@@ -23,9 +23,9 @@
     { "path": "plans/task-lens-m1/02-phase-input-safety-diff.md", "sha256": "4b62c1ad93cddb8e6256282f5a001013c7eb042fc4e434f04421acf85002d5c1" },
     { "path": "plans/task-lens-m1/03-phase-provider-graph-spine.md", "sha256": "d3f8e745368e68329be72fe114d4a7a6b2bfa9e979565ff48dd64e02070859db" },
     { "path": "plans/task-lens-m1/04-phase-coverage-card-artifact.md", "sha256": "d2f4f617096b044f9c9fa1b269b15c500753b800f0f2b03bcf38c6af88a43f29" },
-    { "path": "plans/task-lens-m1-completion-v2/05-phase-metrics-feedback.md", "sha256": "3320512d42d3f23411f463437c54c7dc2ae3deb8c2e14987d3e8fd00596b5bbc" },
-    { "path": "plans/task-lens-m1-completion-v2/06-phase-integration-zero-write.md", "sha256": "5cf15ccec605a3cc14bf040c6be76e6190f84af47972019449a1e950a48e065e" },
-    { "path": "plans/task-lens-m1-completion-v2/07-phase-acceptance-closure.md", "sha256": "56e31fcb1f17b7d7919f7b2b3a4bdb5a9a6e49044a9448f40b8d3b11e8313ca4" }
+    { "path": "plans/task-lens-m1-completion-v2/05-phase-metrics-feedback.md", "sha256": "cf61a25c049818f33fa46877c17d2f1557202e8cb002431db9bb6b705daed009" },
+    { "path": "plans/task-lens-m1-completion-v2/06-phase-integration-zero-write.md", "sha256": "0bbf4aba9557ec16784edbcd305b9516b829e7ee27c1ad21b56fcb618424a853" },
+    { "path": "plans/task-lens-m1-completion-v2/07-phase-acceptance-closure.md", "sha256": "97a5949e586f0323c6c42348d9ef950ec9550572ca8ead1cd131ec50236d84b0" }
   ],
   "runner_config": [
     { "path": "package.json", "sha256": "c0ad393397e25910fffba8ceedc9a724bee5217bdd88fb1c46d298779bd5d930" }

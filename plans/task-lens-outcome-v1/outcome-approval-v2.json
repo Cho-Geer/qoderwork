@@ -14,19 +14,19 @@
     "id": "TASK-LENS-ACCEPTANCE-SPEC-V2",
     "path": "acceptance-spec-v2.json",
     "generation": 2,
-    "sha256": "c72eab2e047a87821d8b31bc6ed80f660582ead21c22d9febd195141e98c57da"
+    "sha256": "0aa14348796878d34a9f5461e18b5f015f86b9d0807e8e0c659e6482510de225"
   },
   "test_bundle": {
     "id": "TASK-LENS-TEST-BUNDLE-V2",
     "path": "outcome-test-bundle-v2.json",
     "generation": 2,
-    "sha256": "dddca6c79d7c23b5dc36846dd250a59b77e4029395f26b68c98d7b7639dd9327"
+    "sha256": "8c80a844dfc73c72427f20f084647d30ab1976c8818d1a0e3a6676accbbff207"
   },
   "amendment": {
     "id": "TASK-LENS-AMENDMENT-V2",
     "path": "outcome-amendment-v2.json",
     "generation": 2,
-    "sha256": "16174587f06817e96ad6d853e7cd942563f84401813c85474c2233683956b9ec"
+    "sha256": "b06fb7041384f7a088890d405ef2ec55eb4b85e3ae143db94c17d94cdf4b68a1"
   },
   "approval": {
     "status": "APPROVED",
