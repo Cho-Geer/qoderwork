@@ -33,3 +33,4 @@ scripts/local-paths.json
 .DS_Store
 Thumbs.db
 .vscode/settings.json
+.mimosa/
