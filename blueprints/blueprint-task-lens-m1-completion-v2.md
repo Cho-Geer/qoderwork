@@ -1,8 +1,9 @@
 # Blueprint: Task Lens M1 完工作业 v2 — successor PHASE-05/06/07 + Outcome generation 2
 
 **创建日期**: 2026-08-06
-**更新日期**: 2026-08-08
-**状态**: IMPLEMENTED-AND-GATE-PASS（gen2 chain validator `ok:true` / lifecycle ACTIVE / errors[]，run-result-v2 13/13 case PASS（含 `-WSL`/`-GITBASH` 双端 case）；草稿已批准 2026-08-07；INDEX 同步 BLK-V2-001 待独立 session，故未标 DONE/已完成）
+**更新日期**: 2026-08-14
+**状态**: IMPLEMENTED-AND-GATE-PASS（gen2 chain validator `ok:true` / lifecycle ACTIVE / errors[]；WSL native FS run 已录制（LF 字节）；Windows Git Bash 经 Wave 4 复验：Group D CRLF 归一化修复（scripts/lib/outcome-governance-v1.ts:102）落地后 2026-08-14 实跑 EXIT=0/ok:true/lifecycle:ACTIVE/errors:[]（修复前 Git Bash 实跑 `ok:false`/`lifecycle:INVALID`/EXIT=1 — 历史）；Wave 1-4 审计返工 amendments 已并入（05/06/07-v2 §13 与 99 §6 final completion gate ticks 勾选：05:8/9、06:4/8、07:6/9、99 §6:13/19，与 gen2 bundle 冻结 SHA 一致）；run-result-v2 13/13 case PASS（含 `-WSL`/`-GITBASH` 双端 case）；草稿已批准 2026-08-07；INDEX 同步 BLK-V2-001 待独立 session，故未标 DONE/已完成；§6 6项未勾（2026-08-14 audit snapshot）；full transition deferred to §7 ACCEPTED commit）
+**复核注记（2026-08-14，审计返工波）**: 本文件更新日期已于 2026-08-14 更新（Wave 4 收尾；此前最后一次编辑为 2026-08-08）；此后下游事件已发生：2026-08-10 §6 manifest 回退 + 99-final 头部改 BLOCKED；2026-08-14 audit fix wave（R2 复核：F1..F6 确认、NF-1 本注记 / NF-2 INDEX pending 对齐 / NF-3 EOF newline 应用）；上方 `ok:true`/lifecycle:ACTIVE/errors:[] 现为双端一致结果（WSL 录制 + 2026-08-14 Git Bash 复验），但 INDEX sync 仍 pending（见 plans/task-lens-m1-completion-v2/00-plan-index.md L158）
 **蓝图分类**: 产品实施蓝图（successor，非冻结）
 **版本**: v2.0.0-draft（v1 后的 1 代 increment；不与 v1 同 ID 起步 — v2 通过 outcome-governance/v1 amendment 走 generation=2 通道）
 **治理框架**: outcome-governance/v1（通过 amendment + CONTRACT_SUPERSEDED ledger event 走 generation 2；非新 outcome_id）
