@@ -82,6 +82,7 @@
 - **执行隔离 serve 的 runtime/live/mutation 测试** → blueprints/blueprint-isolated-serve-test-infrastructure.md
 - **实施跨 phase 审计状态闭环** → blueprints/blueprint-phase-progression-audit-gate.md
 - **理解或实施 Task Lens M1** → blueprints/blueprint-task-lens-m1.md → handoff/task-lens-resume.md → plans/task-lens-m1/00-plan-index.md
+- **理解或实施 Task Lens M1 completion v2（successor plan）** → blueprints/blueprint-task-lens-m1-completion-v2.md → plans/task-lens-m1-completion-v2/00-plan-index.md → plans/task-lens-m1-completion-v2/README.md（PHASE-05-v2 NOT_STARTED；gen2 数据层已落盘但 validator INVALID — 2026-08-10 snapshot；current state 2026-08-14：Group D CRLF 归一化修复落地后 validator Git Bash 实跑 EXIT=0/ACTIVE，§6 gate 13/19，见 00-plan-index.md）
 - **理解蓝图生命周期治理（四字段元数据/七值状态/因果边/归档禁令）** → blueprints/INDEX.md → blueprints/blueprint-blueprints-governance.md
 - **创建新 blueprint（模板与登记规范）** → .agents/skills/blueprint-creation/SKILL.md → blueprints/INDEX.md
 - **理解 DB-only & DB-Canonical 设计** → opencode-framework/opencode-db-canonical-design.md

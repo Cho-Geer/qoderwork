@@ -3,7 +3,7 @@
 > PHASE-01 治理看板：三段式登记（活跃 / 已闭环 / 已归档）+ 反向边视图 + 豁免清单。
 > 治理依据：[blueprint-blueprints-governance.md](./blueprint-blueprints-governance.md) v1.0.1 (sha256 `3051a5df...`)。
 > 本 INDEX 由 PHASE-01 首次创建；PHASE-02 已归档 11 文件（5 → `archive/2026-06/`、6 → `archive/2026-07/`）；PHASE-03 已写入 3 条因果边（单边记录于依赖方）+ 反向边视图 + 18 非豁免 root 文件四字段头部回填 + 3 处过期头部纠正。
-> 注册总数：33（活跃 21 + 已归档 11 + 豁免 1）。
+> 注册总数：34（活跃 22 + 已归档 11 + 豁免 1；2026-08-10 新增 v2 successor blueprint）。
 
 ## 活跃
 
@@ -27,6 +27,7 @@
 | blueprint-serve-api-session-tree-optimization.md | 已完成 | `audits/serve-api-session-tree-optimization/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-task-lens-m1.md | 已退役 | `audits/task-lens-m1/LATEST.md` | 2026-07-28（PHASE-03 头部纠正）→ 2026-08-06（outcome-v1 退役标记 + m1 头文件同步更新） | PHASE-03 过期头部已纠正（实施中；依 audits/task-lens-m1/LATEST.md PHASE-05 ACCEPTED）；2026-08-06 SUPERSEDED_BY_OUTCOME_GOVERNANCE_V1（outcome 重建；新蓝图 blueprint-task-lens-outcome-v1.md 取代） |
 | blueprint-task-lens-outcome-v1.md | 已完成 | `audits/task-lens-outcome-v1/LATEST.md` | 2026-08-05（创建）→ 2026-08-06（outcome-governance v1 ACCEPT, 90/90 tests pass） | 新框架 outcome-v1 重建（参照 blueprint-task-lens-m1.md）；取代 blueprint-task-lens-m1.md；状态投影自 audits/task-lens-outcome-v1/LATEST.md (audit ACCEPT 签发事件) |
+| blueprint-task-lens-m1-completion-v2.md | 草稿 | `plans/task-lens-m1-completion-v2/00-plan-index.md`（header Status: DRAFT） | 2026-08-08（创建）→ 2026-08-10（§6 manifest 回退；99-final 头部改 BLOCKED；INDEX sync pending（Group F，logs/ + handoff/ 旁证待补）） | successor 实施 plan；PHASE-05-v2 NOT_STARTED / PHASE-06-v2 BLOCKED / PHASE-07-v2 BLOCKED / FINAL-v2 BLOCKED；gen2 数据层落盘（run-result-v2 13/13 case PASS + 8 文件 + SHA 一致）但 validator 实跑 INVALID（BUNDLE_HASH_MISMATCH + SPEC_INVALID，因 CLI line 252-253 sources 未归一化）；§6 Final completion gate 0/19 未勾；BLK-V2-001 INDEX sync pending（Group F，logs/ + handoff/ 旁证待补）（2026-08-10 snapshot；current state 2026-08-14：Group D CRLF 归一化修复落地后 validator Git Bash 实跑 EXIT=0/ACTIVE，§6 gate 13/19 — 见 plans/task-lens-m1-completion-v2/00-plan-index.md） |
 | blueprint-todowrite-driven-weak-agent-supervision.md | 已完成 | `audits/todowrite-driven-weak-agent-supervision/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-tool-governance-mvc-refactor.md | 已完成 | `audits/tool-governance-mvc-refactor/LATEST.md` 或 头部自述-未独立验证 | 2026-07（自述） | |
 | blueprint-blueprints-governance.md | 已完成 | `audits/blueprints-governance/LATEST.md` | 2026-07-28（PHASE-05 ACCEPTED） | 本 plan 自身蓝图；PHASE-01~05 全部 ACCEPTED、plan COMPLETE（依 LATEST.md → 2026-07-28-audit-phase-05.md，verdict ACCEPT，invalid_reason null）；按看板规约已完成 blueprint 仍登记于活跃段 |
